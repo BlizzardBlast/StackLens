@@ -38,6 +38,9 @@ jobs:
       - name: Build generated packages
         run: pnpm build
 
+      - name: Validate shadcn project
+        run: pnpm ui:info > /dev/null
+
       - name: Typecheck
         run: pnpm typecheck
 
