@@ -11,7 +11,8 @@
     "lint:fix": "oxlint . --fix",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
-    "ui:add": "pnpm --filter @stacklens/ui exec shadcn add"
+    "ui:add": "pnpm --filter @stacklens/ui exec shadcn add",
+    "ui:info": "pnpm --filter @stacklens/ui exec shadcn info --json"
   },
   "devDependencies": {
     "oxfmt": "^0.68.0",
