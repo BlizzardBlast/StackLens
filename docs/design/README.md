@@ -1,7 +1,7 @@
 # StackLens Product Design
 
-> **Design baseline:** v0.1  
-> **Status:** In review  
+> **Design baseline:** v1  
+> **Status:** Accepted baseline  
 > **Date:** 2026-09-18  
 > **Requirements source:** [../requirements.md](../requirements.md)
 
@@ -16,6 +16,7 @@ This directory records the StackLens product-design journey. Design decisions ar
 5. [Low-fidelity wireframes](wireframes.md) — layout exploration before visual polish.
 6. [Design system](design-system.md) — tokens, component model, shadcn/Base UI policy, accessibility, themes, and data-display rules.
 7. [Prototype specification](prototype.md) — what the coded prototype represents and how to evaluate it.
+8. [Design v1 review](review-v1.md) — validation findings, contrast checks, corrections, and acceptance.
 
 Supporting design artifacts:
 
