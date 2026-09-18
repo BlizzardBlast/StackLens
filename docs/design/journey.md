@@ -140,3 +140,31 @@ A repository-native design baseline was completed without making Figma the only 
 A Figma design-system/prototype artifact is still desirable for visual iteration. It was not created during this step because more than one Figma account is connected and the target workspace is not unambiguous. No design decision is blocked by that: the repo contains the durable specification, tokens, wireframes, and coded prototype.
 
 When Figma is created, it should mirror these accepted artifacts rather than introduce undocumented product behavior.
+
+
+## 2026-09-18 — Step 12: Repository-native Design v1 review
+
+Figma was removed from the required workflow. The coded prototype and repository documentation are sufficient for StackLens and avoid making design progress depend on a rate-limited external editor.
+
+The prototype was reviewed against interaction semantics, responsive navigation, report hierarchy, status/color contrast, evidence access, input validation, and limitation visibility.
+
+The review found and corrected:
+- insufficient light-theme status contrast;
+- insufficient dark-theme heuristic contrast;
+- incorrect primary-button foreground in dark mode;
+- visual-only input tabs;
+- missing package.json interaction;
+- missing inline validation behavior;
+- a non-modal evidence drawer;
+- broken report anchors;
+- non-functional compact navigation;
+- limitations being too easy to miss;
+- undersized key interaction targets.
+
+See [review-v1.md](review-v1.md).
+
+## 2026-09-18 — Step 13: Accept Design v1
+
+After the review corrections and structural validation, Product Design v1 was accepted as the baseline for implementation.
+
+This closes the pre-implementation design phase. The next journey phase is translating tokens and domain patterns into production `packages/design-tokens` and `packages/ui` rather than building screens directly.
