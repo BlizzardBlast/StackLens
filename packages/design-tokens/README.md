@@ -28,6 +28,13 @@ The build produces:
 pnpm --filter @stacklens/design-tokens check
 ```
 
-The command fails when committed generated output does not match the canonical token source.
+The command fails when the generated output currently on disk does not match the canonical token source. Generated `dist/` files are intentionally ignored by Git and are recreated by the package `prepare`/`build` scripts.
 
 **Traceability:** NFR-006, NFR-007, ADR-0006.
+
+
+## Generated output policy
+
+`dist/` is generated and intentionally not committed. The package `prepare` script creates it during workspace installation, and `build` regenerates it in CI/build pipelines.
+
+This keeps the DTCG JSON as the only version-controlled token source while still making package exports available after a normal install.
