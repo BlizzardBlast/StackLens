@@ -1,0 +1,68 @@
+/* Reference mapping for the design prototype.
+ * Canonical design-phase source: stacklens.tokens.json.
+ * Production should generate CSS from tokens instead of maintaining both manually.
+ */
+
+:root {
+  --sl-bg: #f9fafc;
+  --sl-surface: #ffffff;
+  --sl-surface-raised: #ffffff;
+  --sl-fg: #13161c;
+  --sl-muted: #646e7d;
+  --sl-border: #dfe3e8;
+  --sl-primary: #2e5cd1;
+  --sl-primary-soft: #e9efff;
+  --sl-focus: #4078ef;
+
+  --sl-success: #1fa364;
+  --sl-warning: #e38c14;
+  --sl-danger: #db3842;
+  --sl-critical: #db3842;
+  --sl-high: #e85e17;
+  --sl-medium: #e38c14;
+  --sl-low: #4078ef;
+
+  --sl-fact: #4078ef;
+  --sl-heuristic: #7a57eb;
+  --sl-recommendation: #1fa364;
+
+  --sl-radius-control: 8px;
+  --sl-radius-surface: 12px;
+  --sl-radius-feature: 16px;
+
+  --sl-space-1: 4px;
+  --sl-space-2: 8px;
+  --sl-space-3: 12px;
+  --sl-space-4: 16px;
+  --sl-space-5: 20px;
+  --sl-space-6: 24px;
+  --sl-space-8: 32px;
+  --sl-space-10: 40px;
+  --sl-space-12: 48px;
+  --sl-space-16: 64px;
+
+  --sl-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --sl-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --sl-shadow-overlay: 0 16px 48px rgb(15 23 42 / 0.14);
+}
+
+[data-theme="dark"] {
+  --sl-bg: #090a0e;
+  --sl-surface: #13161c;
+  --sl-surface-raised: #1f242e;
+  --sl-fg: #f8fafc;
+  --sl-muted: #828c9c;
+  --sl-border: #303742;
+  --sl-primary: #5c91fa;
+  --sl-primary-soft: #172446;
+  --sl-focus: #5c91fa;
+
+  --sl-success: #38ba79;
+  --sl-warning: #eda635;
+  --sl-danger: #ef5a63;
+  --sl-critical: #ef5a63;
+  --sl-high: #f47b3c;
+  --sl-medium: #eda635;
+  --sl-low: #5c91fa;
+}
