@@ -37,11 +37,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Normalize implementation formatting
-        run: pnpm format
-
       - name: Build generated packages
         run: pnpm build
+
+      - name: Normalize implementation formatting
+        run: pnpm format
 
       - name: Typecheck
         run: pnpm typecheck
