@@ -267,6 +267,18 @@
         }
       },
       "violet": {
+        "400": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.545098,
+              0.419608,
+              0.917647
+            ],
+            "alpha": 1
+          }
+        },
         "500": {
           "$type": "color",
           "$value": {
@@ -432,7 +444,7 @@
           },
           "heuristic": {
             "$type": "color",
-            "$value": "{color.palette.violet.500}"
+            "$value": "{color.palette.violet.400}"
           },
           "recommendation": {
             "$type": "color",
