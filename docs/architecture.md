@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.2  
+> **Architecture version:** 0.1.3  
 > **Date:** 2026-09-18  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006
@@ -429,13 +429,13 @@ The detailed decision record is [ADR-0002](adr/0002-technology-selection.md).
 
 | Concern | Selection |
 | --- | --- |
-| Language | TypeScript 6.x, strict mode |
+| Language | TypeScript 7.x, strict mode |
 | Server runtime | Node.js 24 LTS |
 | Modules | ESM |
-| Package manager | pnpm 10 |
+| Package manager | pnpm 12 |
 | Monorepo task runner | Turborepo |
 
-Node 24 LTS is preferred to the non-LTS current line for production stability. TypeScript is shared across frontend, API, worker, analyzer, and future CLI to reduce contract translation.
+Node 24 LTS is preferred for production stability. TypeScript is shared across frontend, API, worker, analyzer, and future CLI to reduce contract translation. The concrete implementation-version baseline is maintained by ADR-0007.
 
 ### Frontend
 
@@ -482,7 +482,7 @@ The AST parser is behind an adapter so a future parser such as Oxc can be evalua
 
 | Concern | Selection |
 | --- | --- |
-| Unit/integration tests | Vitest 4 |
+| Unit/integration tests | Vitest 5 |
 | UI component tests | Testing Library |
 | Browser E2E | Playwright |
 | Lint | Oxlint |
@@ -681,5 +681,6 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0004 — PostgreSQL-backed asynchronous repository analysis](adr/0004-async-analysis-jobs.md)
 - [ADR-0005 — Web framework and frontend-tooling review](adr/0005-web-framework-and-tooling-review.md)
 - [ADR-0006 — Design system and prototyping strategy](adr/0006-design-system-and-prototyping.md)
+- [ADR-0007 — Design infrastructure bootstrap](adr/0007-design-infrastructure-bootstrap.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).
