@@ -27,7 +27,7 @@ export function FindingTypeBadge({ classification }: { classification: FindingCl
 }
 
 export function SeverityBadge({ priority }: { priority: FindingPriority }) {
-  return <Badge variant={priority}>{priority[0].toUpperCase() + priority.slice(1)}</Badge>;
+  return <Badge variant={priority}>{priority.charAt(0).toUpperCase() + priority.slice(1)}</Badge>;
 }
 
 export function ConfidenceIndicator({ confidence }: { confidence: FindingConfidence }) {
@@ -40,7 +40,7 @@ export function ConfidenceIndicator({ confidence }: { confidence: FindingConfide
         confidence === "low" && "text-confidence-low"
       )}
     >
-      {confidence[0].toUpperCase() + confidence.slice(1)} confidence
+      {confidence.charAt(0).toUpperCase() + confidence.slice(1)} confidence
     </Badge>
   );
 }
