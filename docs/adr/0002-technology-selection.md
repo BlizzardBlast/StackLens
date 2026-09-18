@@ -117,6 +117,23 @@ The versions above describe the selected stable major/release line as of 2026-09
 - avoid beta/RC dependencies for foundational infrastructure unless an ADR explicitly accepts that risk;
 - update this ADR only for material architecture changes, not every patch release.
 
+## External references reviewed
+
+The selection was checked against current upstream documentation on 2026-09-18:
+
+- React 19.3: https://react.dev/blog/2026/09/09/react-19-3
+- Vite 8.1: https://vite.dev/blog/announcing-vite8-1
+- Node.js release/LTS status: https://nodejs.org/en/about/previous-releases
+- Fastify latest documentation: https://fastify.dev/docs/latest/
+- PostgreSQL 18 documentation: https://www.postgresql.org/docs/18/
+- Graphile Worker documentation: https://worker.graphile.org/docs
+- OSV API: https://google.github.io/osv.dev/api/
+- TanStack Router: https://tanstack.com/router/latest/docs/quick-start
+- TanStack Query: https://tanstack.com/query/latest/docs/framework/react/installation
+- TypeScript 6.0: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html
+- Vitest 4: https://vitest.dev/blog/vitest-4
+- Tailwind CSS 4.3: https://tailwindcss.com/blog/tailwindcss-v4-3
+
 ## Consequences
 
 - TypeScript contracts can be shared across runtime boundaries.
