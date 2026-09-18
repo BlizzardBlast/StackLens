@@ -6,13 +6,15 @@
   "imports": {
     "#components/*": "./src/components/*.tsx",
     "#domain/*": "./src/domain/*.tsx",
-    "#lib/*": "./src/lib/*.ts"
+    "#lib/*": "./src/lib/*.ts",
+    "#hooks/*": "./src/hooks/*.ts"
   },
   "exports": {
     "./components/*": "./src/components/*.tsx",
     "./domain/*": "./src/domain/*.tsx",
     "./lib/*": "./src/lib/*.ts",
-    "./styles.css": "./src/styles/globals.css"
+    "./styles.css": "./src/styles/globals.css",
+    "./hooks/*": "./src/hooks/*.ts"
   },
   "scripts": {
     "test": "vitest run",
@@ -33,7 +35,8 @@
     "jsdom": "^30.1.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.1",
+    "tailwindcss": "^4.3.0"
   },
   "peerDependencies": {
     "react": "^19.0.0",
