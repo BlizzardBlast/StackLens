@@ -168,3 +168,44 @@ See [review-v1.md](review-v1.md).
 After the review corrections and structural validation, Product Design v1 was accepted as the baseline for implementation.
 
 This closes the pre-implementation design phase. The next journey phase is translating tokens and domain patterns into production `packages/design-tokens` and `packages/ui` rather than building screens directly.
+
+
+## 2026-09-18 — Step 14: Bootstrap production design infrastructure
+
+Design v1 moved from specification into reusable production packages without creating application screens.
+
+The monorepo root now defines pnpm workspaces, Turborepo tasks, strict TypeScript configuration, Oxlint, Oxfmt, and a GitHub Actions quality gate.
+
+Two packages were created:
+
+- `@stacklens/design-tokens` — deterministic token generation from the canonical DTCG JSON;
+- `@stacklens/ui` — source-owned generic primitives plus StackLens domain components.
+
+This implements the architecture boundary documented after Design v1 instead of copying styles directly from the disposable prototype.
+
+## 2026-09-18 — Step 15: Make design tokens generated, not duplicated
+
+The DTCG JSON remains the only editable token source.
+
+The design-token package now generates Tailwind/shadcn-compatible semantic CSS variables and resolved JavaScript values. A drift-check mode prevents generated token output from quietly diverging from the source.
+
+Additional semantic tokens needed by real components—such as muted surfaces, input borders, danger, success, warning, and info—were added to the canonical source rather than invented inside components.
+
+## 2026-09-18 — Step 16: Encode product semantics in UI APIs
+
+The first domain components deliberately receive product meaning instead of deriving it.
+
+Examples:
+- `HealthScore` receives `state="good"` rather than deciding which score is "good";
+- `FindingCard` receives classification, priority, confidence, category, and rule ID;
+- insufficient evidence is represented by an explicit `score={null}` / `state="unknown"` path.
+
+This keeps deterministic analyzer/scoring logic out of the UI and preserves **DATA-005** and **SCORE-001**.
+
+## 2026-09-18 — Step 17: Correct tool versions at implementation start
+
+The architecture-planning ADR named stable tool lines available at that earlier decision point. Before installing anything, current upstream stable releases were checked again.
+
+The implementation baseline therefore moved to pnpm 12.4.2, TypeScript 7.0.x, Vitest 5.0.x, Base UI 1.8.x, and current Oxlint/Oxfmt/Turborepo lines while retaining the previously accepted architecture.
+
+The correction is recorded explicitly in ADR-0007 instead of silently drifting from ADR-0002.
