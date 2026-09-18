@@ -5,6 +5,9 @@
     "perf": "warn",
     "suspicious": "warn"
   },
+  "options": {
+    "typeAware": true
+  },
   "plugins": ["eslint", "import", "jsx-a11y", "react", "typescript", "unicorn", "vitest"],
   "settings": {
     "react": {
@@ -16,7 +19,9 @@
     "eslint/no-console": "warn",
     "import/no-cycle": "error",
     "react/jsx-no-useless-fragment": "warn",
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error"
   },
-  "ignorePatterns": ["**/dist/**", "**/coverage/**", "design/prototype/**"]
+  "ignorePatterns": [".turbo/**", "**/dist/**", "**/coverage/**", "design/prototype/**"]
 }
