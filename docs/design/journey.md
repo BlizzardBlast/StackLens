@@ -209,3 +209,34 @@ The architecture-planning ADR named stable tool lines available at that earlier 
 The implementation baseline therefore moved to pnpm 12.4.2, TypeScript 7.0.x, Vitest 5.0.x, Base UI 1.8.x, and current Oxlint/Oxfmt/Turborepo lines while retaining the previously accepted architecture.
 
 The correction is recorded explicitly in ADR-0007 instead of silently drifting from ADR-0002.
+
+
+## 2026-09-18 — Step 18: Validate the design infrastructure on the real CI runner
+
+The bootstrap was not merged after static review alone. GitHub Actions was used to exercise the actual dependency graph and strict quality gates.
+
+The validation surfaced and resolved several implementation issues in sequence:
+- pnpm caching could not initialize before the first lockfile existed;
+- strict indexed-access checking found unsafe string indexing in badge labels;
+- Vitest needed explicit DOM cleanup between tests;
+- the accessibility linter correctly preferred native `<progress>` semantics;
+- the corresponding test had to assert the native `value` contract;
+- Oxfmt's Tailwind class sorting required generated theme CSS before formatting.
+
+After correcting those issues, the bootstrap run passed install, token generation, TypeScript, tests, Oxlint, and Oxfmt and committed the normalized source plus the initial lockfile.
+
+## 2026-09-18 — Step 19: Close bootstrap mode
+
+The temporary write-enabled CI bootstrap was removed immediately after it served its one-time purpose.
+
+Normal CI is now:
+- read-only;
+- lockfile-frozen;
+- pnpm-cached;
+- build-first for generated packages;
+- strict typecheck;
+- tests;
+- Oxlint;
+- Oxfmt check.
+
+Generated design-token `dist/` output remains uncommitted and is recreated by the design-token package's `prepare`/`build` scripts. The DTCG JSON remains the only version-controlled token source.
