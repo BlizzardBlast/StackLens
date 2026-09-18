@@ -1,0 +1,37 @@
+name: Bug
+description: Report behavior that does not satisfy an accepted StackLens requirement
+title: ""
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A bug is a mismatch between expected behavior and an accepted requirement. Reference the requirement being violated (GOV-002).
+  - type: input
+    id: requirements
+    attributes:
+      label: Requirement IDs
+      description: Which accepted requirement(s) describe the expected behavior?
+      placeholder: "FR-004"
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Describe the expected behavior using the cited requirement(s).
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Provide minimal steps/input needed to reproduce the mismatch.
+    validations:
+      required: true
