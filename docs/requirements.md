@@ -848,21 +848,10 @@ The report must satisfy the deterministic, evidence, scoring, security, and trac
 | Future automated changes | FR-105, FR-106, FR-107, SEC-006 |
 | Future integrations | FR-108, FR-109, FR-110, NFR-005 |
 
-## 15. Open implementation decisions
+## 15. Implementation decisions outside the requirements
 
-These are intentionally **not** requirements yet and should be resolved through architecture/design work that cites the requirements above:
+Technology and architecture decisions are intentionally kept outside the product requirements so that implementation choices do not redefine product behavior (**GOV-006**).
 
-- frontend framework and UI stack;
-- backend/runtime architecture;
-- persistence technology;
-- hosting platform;
-- package/advisory metadata providers;
-- exact scoring weights;
-- exact priority formula;
-- rule configuration format;
-- repository parsing libraries;
-- caching strategy;
-- authentication provider details;
-- monorepo expansion strategy.
+The accepted architecture and current technology selections are documented in [architecture.md](architecture.md) and the architecture decision records under [adr/](adr/).
 
-The implementation may choose among these options only insofar as the choice satisfies the accepted requirements.
+Some lower-level choices remain intentionally deferred, including exact scoring weights, exact priority coefficients, hosted cloud provider, authentication provider details, cache infrastructure, and future monorepo-expansion behavior. These may be selected only insofar as they satisfy the accepted requirements.
