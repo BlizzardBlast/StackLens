@@ -57,7 +57,7 @@ analyzeButton?.addEventListener("click", () => {
 
   if (inputMode === "github") {
     const value = document.getElementById("repo-input")?.value.trim() ?? "";
-    if (!/^https:\/\/github\.com\/[^/]+\/[^/]+\/?(?:\.git)?$/i.test(value)) {
+    if (!/^https:\/\/github\.com\/[^/]+\/[^/]+(?:\.git)?\/?$/i.test(value)) {
       inputError.textContent = "Enter a public GitHub repository URL such as https://github.com/owner/repository.";
       inputError.hidden = false;
       return;
