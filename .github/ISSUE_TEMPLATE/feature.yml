@@ -1,0 +1,36 @@
+name: Feature / implementation
+description: Propose work that implements an accepted StackLens requirement
+title: ""
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        StackLens is requirements-driven. Product work must trace to `docs/requirements.md` (GOV-001, GOV-002).
+  - type: input
+    id: requirements
+    attributes:
+      label: Requirement IDs
+      description: List the accepted requirement IDs this work implements or verifies.
+      placeholder: "FR-006, DATA-001, DATA-002"
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Required outcome
+      description: Describe the observable outcome required by those requirements.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Map the implementation checks to the cited requirement acceptance criteria.
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Implementation notes
+      description: Optional. Technology choices must serve the requirements rather than redefine them (GOV-006).
