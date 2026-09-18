@@ -61,6 +61,21 @@ The accepted system architecture is documented in **[docs/architecture.md](docs/
 
 The initial architecture is a TypeScript modular monolith with a reusable deterministic analyzer core, React/Vite web client, Fastify API, PostgreSQL-backed worker flow, and explicit npm/OSV/GitHub evidence adapters. Architecture choices are subordinate to the requirements (**GOV-006**).
 
+## Product design
+
+The **StackLens Product Design v0.1** baseline is documented under **[docs/design/](docs/design/README.md)**.
+
+The repository contains:
+- product-design principles and requirement traceability;
+- MVP information architecture and user flows;
+- low-fidelity wireframes;
+- the StackLens design-system specification;
+- DTCG-style platform-neutral design tokens;
+- a disposable coded prototype at `design/prototype/`;
+- a chronological design journey in `docs/design/journey.md`.
+
+StackLens owns its visual language and domain components. shadcn/ui + Base UI are selected only as the implementation foundation for generic accessible primitives; they do not define the product's visual identity (**ADR-0006**).
+
 ## Requirement examples
 
 - `FR-006` — outdated dependency detection
