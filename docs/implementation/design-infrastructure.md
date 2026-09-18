@@ -111,7 +111,9 @@ pnpm format:check
 pnpm check
 ```
 
-During the first CI bootstrap only, installation is allowed without a frozen lockfile so CI can produce the initial lockfile artifact. Once committed, CI switches to `pnpm install --frozen-lockfile`.
+The bootstrap CI produced and committed the first `pnpm-lock.yaml`. Normal CI now uses `pnpm install --frozen-lockfile` with read-only repository permissions and pnpm caching.
+
+Generated token `dist/` output is intentionally not committed. `@stacklens/design-tokens` recreates it through `prepare` during install and through `build` in the task graph.
 
 ## Adding a domain component
 
