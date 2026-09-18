@@ -5,7 +5,7 @@ import { FindingCard } from "#domain/finding-card";
 
 describe("FindingCard", () => {
   it("renders classification, priority, confidence and evidence action as text semantics", () => {
-    const onViewEvidence = vi.fn();
+    const onViewEvidence = vi.fn<() => void>();
 
     render(
       <FindingCard
