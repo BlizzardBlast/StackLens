@@ -1,4 +1,4 @@
-# StackLens Design System v0.1
+# StackLens Design System v1
 
 ## 1. Strategy
 
@@ -127,7 +127,7 @@ Rules:
 - unknown/N/A remains neutral;
 - classification colors are subtle and must always have text labels/icons.
 
-The initial tokens are proposals to validate, not brand-final colors.
+The v1 semantic token values are accepted as the implementation baseline. Brand-level refinement may still change values later, but semantic roles must remain stable unless this specification is revised.
 
 ## 6. Typography
 
