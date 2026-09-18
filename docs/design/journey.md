@@ -119,3 +119,24 @@ Before product UI implementation:
 - translate accepted patterns into `packages/design-tokens` and `packages/ui`.
 
 Any material design change should be appended to this journey rather than silently replacing the historical rationale.
+
+## 2026-09-18 — Step 10: Validate the design baseline
+
+Validation performed before merging the design baseline:
+
+- parsed `stacklens.tokens.json` successfully as JSON;
+- confirmed the file uses the published DTCG 2025.10 token structure and reference syntax;
+- confirmed the prototype contains analyzer, progress, and report states;
+- confirmed the prototype consumes the shared reference token CSS rather than defining an independent palette;
+- aligned the token typography with the prototype's dependency-free system-font strategy;
+- added explicit domain tokens for confidence and score states.
+
+The visual values remain a v0.1 proposal. Their semantics are more important than the exact color values and may be tuned after visual/contrast review.
+
+## 2026-09-18 — Step 11: Figma handoff boundary
+
+A repository-native design baseline was completed without making Figma the only source of truth.
+
+A Figma design-system/prototype artifact is still desirable for visual iteration. It was not created during this step because more than one Figma account is connected and the target workspace is not unambiguous. No design decision is blocked by that: the repo contains the durable specification, tokens, wireframes, and coded prototype.
+
+When Figma is created, it should mirror these accepted artifacts rather than introduce undocumented product behavior.
