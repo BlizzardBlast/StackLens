@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements and system architecture defined; implementation has not started.**
+**Requirements, architecture, and Design v1 are accepted. Production design infrastructure is now implemented; product screens and analyzer functionality are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -75,6 +75,8 @@ The repository contains:
 - a chronological design journey in `docs/design/journey.md`.
 
 StackLens owns its visual language and domain components. shadcn/ui + Base UI are selected only as the implementation foundation for generic accessible primitives; they do not define the product's visual identity (**ADR-0006**).
+
+The production design layer now lives in **`packages/design-tokens`** and **`packages/ui`**. See [Design infrastructure implementation](docs/implementation/design-infrastructure.md) and **ADR-0007**.
 
 ## Requirement examples
 
