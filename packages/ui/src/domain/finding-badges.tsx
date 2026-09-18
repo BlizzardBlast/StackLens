@@ -8,13 +8,13 @@ export type FindingConfidence = "high" | "medium" | "low";
 const classificationLabel: Record<FindingClassification, string> = {
   fact: "Fact",
   heuristic: "Heuristic",
-  recommendation: "Recommendation"
+  recommendation: "Recommendation",
 };
 
 const classificationMark: Record<FindingClassification, string> = {
   fact: "●",
   heuristic: "◆",
-  recommendation: "→"
+  recommendation: "→",
 };
 
 export function FindingTypeBadge({ classification }: { classification: FindingClassification }) {
@@ -37,7 +37,7 @@ export function ConfidenceIndicator({ confidence }: { confidence: FindingConfide
       className={cn(
         confidence === "high" && "text-confidence-high",
         confidence === "medium" && "text-confidence-medium",
-        confidence === "low" && "text-confidence-low"
+        confidence === "low" && "text-confidence-low",
       )}
     >
       {confidence.charAt(0).toUpperCase() + confidence.slice(1)} confidence

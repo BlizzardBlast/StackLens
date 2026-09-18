@@ -7,7 +7,7 @@ import {
   SeverityBadge,
   type FindingClassification,
   type FindingConfidence,
-  type FindingPriority
+  type FindingPriority,
 } from "#domain/finding-badges";
 import { cn } from "#lib/utils";
 
@@ -34,7 +34,7 @@ export function FindingCard({
   category,
   ruleId,
   onViewEvidence,
-  className
+  className,
 }: FindingCardProps) {
   return (
     <article className={cn("rounded-xl border bg-card p-5 text-card-foreground", className)}>

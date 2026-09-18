@@ -5,7 +5,7 @@ import type { ComponentProps } from "react";
 import { cn } from "#lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex min-h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-[color,background-color,border-color,box-shadow] duration-[var(--sl-duration-fast)] outline-none focus-visible:ring-3 focus-visible:ring-ring/35 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20",
+  "inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-md text-sm font-semibold whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-[var(--sl-duration-fast)] outline-none focus-visible:ring-3 focus-visible:ring-ring/35 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20",
   {
     variants: {
       variant: {
@@ -14,21 +14,21 @@ const buttonVariants = cva(
         outline: "border bg-background hover:bg-accent hover:text-accent-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "min-h-auto text-primary underline-offset-4 hover:underline"
+        link: "min-h-auto text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-11 px-4 py-2",
         sm: "h-10 min-h-10 px-3",
         lg: "h-12 px-6",
         icon: "size-11 min-h-11 p-0",
-        "icon-sm": "size-10 min-h-10 p-0"
-      }
+        "icon-sm": "size-10 min-h-10 p-0",
+      },
     },
     defaultVariants: {
       size: "default",
-      variant: "default"
-    }
-  }
+      variant: "default",
+    },
+  },
 );
 
 type ButtonProps = ComponentProps<typeof BaseButton> & VariantProps<typeof buttonVariants>;

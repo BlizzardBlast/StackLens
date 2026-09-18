@@ -8,12 +8,12 @@ describe("AnalysisLimitation", () => {
     render(
       <AnalysisLimitation title="Testing score is unavailable">
         This does not mean the project has no tests.
-      </AnalysisLimitation>
+      </AnalysisLimitation>,
     );
 
     expect(screen.getByRole("note")).toHaveTextContent("Testing score is unavailable");
     expect(screen.getByRole("note")).toHaveTextContent(
-      "This does not mean the project has no tests."
+      "This does not mean the project has no tests.",
     );
   });
 });

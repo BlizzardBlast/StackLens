@@ -1,6 +1,6 @@
 import { readFile, mkdir, writeFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const packageRoot = fileURLToPath(new URL("..", import.meta.url));
 const repositoryRoot = path.resolve(packageRoot, "../..");
@@ -147,7 +147,7 @@ function createModeVariables(root, mode) {
     "score-good": `color.domain.score.${mode}.good`,
     "score-watch": `color.domain.score.${mode}.watch`,
     "score-poor": `color.domain.score.${mode}.poor`,
-    "score-unknown": `color.domain.score.${mode}.unknown`
+    "score-unknown": `color.domain.score.${mode}.unknown`,
   };
 
   return Object.entries(semantic)
@@ -175,7 +175,7 @@ function createCompatibilityVariables() {
     "  --border: var(--sl-border);",
     "  --input: var(--sl-input);",
     "  --ring: var(--sl-focus);",
-    "  --radius: var(--sl-radius-surface);"
+    "  --radius: var(--sl-radius-surface);",
   ].join("\n");
 }
 
@@ -186,11 +186,10 @@ function createThemeCss(root) {
       ([tokenPath]) =>
         !tokenPath.includes(".semantic.light.") &&
         !tokenPath.includes(".semantic.dark.") &&
-        !tokenPath.includes(".domain.")
+        !tokenPath.includes(".domain."),
     )
     .map(
-      ([tokenPath, token]) =>
-        `  ${cssVariableName(tokenPath)}: ${resolveTokenValue(root, token)};`
+      ([tokenPath, token]) => `  ${cssVariableName(tokenPath)}: ${resolveTokenValue(root, token)};`,
     )
     .join("\n");
 
@@ -203,7 +202,7 @@ function createThemeCss(root) {
     `  --sl-radius-pill: ${tokenValue(root, "radius.pill")};`,
     `  --sl-duration-fast: ${tokenValue(root, "motion.duration.fast")};`,
     `  --sl-duration-normal: ${tokenValue(root, "motion.duration.normal")};`,
-    `  --sl-duration-slow: ${tokenValue(root, "motion.duration.slow")};`
+    `  --sl-duration-slow: ${tokenValue(root, "motion.duration.slow")};`,
   ].join("\n");
 
   return `/* Generated from design/tokens/stacklens.tokens.json. Do not edit manually. */
@@ -277,8 +276,8 @@ function createTokenModule(root) {
   const resolved = Object.fromEntries(
     Object.entries(flattenTokens(root)).map(([tokenPath, token]) => [
       tokenPath,
-      resolveTokenValue(root, token)
-    ])
+      resolveTokenValue(root, token),
+    ]),
   );
 
   return `// Generated from design/tokens/stacklens.tokens.json. Do not edit manually.\n\nexport const tokens = Object.freeze(${JSON.stringify(resolved, null, 2)});\n`;
@@ -294,7 +293,7 @@ async function assertFile(filePath, expected) {
 
   if (actual !== expected) {
     throw new Error(
-      `Generated token output is stale: ${path.relative(repositoryRoot, filePath)}. Run the token build.`
+      `Generated token output is stale: ${path.relative(repositoryRoot, filePath)}. Run the token build.`,
     );
   }
 }
@@ -307,7 +306,7 @@ const declaration = `export declare const tokens: Readonly<Record<string, string
 const outputs = [
   [path.join(distDirectory, "theme.css"), themeCss],
   [path.join(distDirectory, "tokens.js"), tokenModule],
-  [path.join(distDirectory, "tokens.d.ts"), declaration]
+  [path.join(distDirectory, "tokens.d.ts"), declaration],
 ];
 
 if (checkOnly) {

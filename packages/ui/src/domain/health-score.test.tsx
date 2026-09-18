@@ -11,13 +11,13 @@ describe("HealthScore", () => {
         state="good"
         coveragePercent={84}
         detail="Evidence is available for four of five categories."
-      />
+      />,
     );
 
     expect(screen.getByText("82")).toBeInTheDocument();
     expect(screen.getByRole("progressbar", { name: /evidence coverage/i })).toHaveAttribute(
       "value",
-      "84"
+      "84",
     );
   });
 
@@ -28,7 +28,7 @@ describe("HealthScore", () => {
         state="unknown"
         coveragePercent={0}
         detail="Insufficient evidence to calculate this category."
-      />
+      />,
     );
 
     expect(screen.getByText("N/A")).toBeInTheDocument();

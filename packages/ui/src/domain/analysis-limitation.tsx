@@ -14,7 +14,7 @@ export function AnalysisLimitation({ title, children, className }: AnalysisLimit
       role="note"
       className={cn(
         "flex gap-3 rounded-xl border border-warning/35 bg-warning/10 p-4 text-sm",
-        className
+        className,
       )}
     >
       <span

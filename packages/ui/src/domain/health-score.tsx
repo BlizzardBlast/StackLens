@@ -28,7 +28,7 @@ const stateClassName: Record<HealthScoreState, string> = {
   good: "border-score-good text-score-good",
   watch: "border-score-watch text-score-watch",
   poor: "border-score-poor text-score-poor",
-  unknown: "border-score-unknown text-score-unknown"
+  unknown: "border-score-unknown text-score-unknown",
 };
 
 export function HealthScore({
@@ -37,7 +37,7 @@ export function HealthScore({
   coveragePercent,
   label = "Stack health",
   detail,
-  className
+  className,
 }: HealthScoreProps) {
   const displayScore = score === null ? "N/A" : String(Math.max(0, Math.min(100, score)));
 
@@ -45,14 +45,14 @@ export function HealthScore({
     <section
       className={cn(
         "grid gap-5 rounded-xl border bg-card p-5 text-card-foreground md:grid-cols-[auto_1fr]",
-        className
+        className,
       )}
       aria-label={label}
     >
       <div
         className={cn(
           "grid size-24 place-content-center rounded-full border-8 bg-background text-center",
-          stateClassName[state]
+          stateClassName[state],
         )}
       >
         <strong className="text-3xl leading-none text-foreground">{displayScore}</strong>

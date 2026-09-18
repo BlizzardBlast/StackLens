@@ -15,7 +15,7 @@ test("generated theme exposes StackLens domain semantics", async () => {
     "--sl-evidence-recommendation",
     "--sl-severity-high",
     "--sl-confidence-high",
-    "--sl-score-unknown"
+    "--sl-score-unknown",
   ]) {
     assert.match(css, new RegExp(variable));
   }

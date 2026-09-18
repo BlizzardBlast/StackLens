@@ -18,7 +18,7 @@ describe("FindingCard", () => {
         category="Maintainability"
         ruleId="JS-MNT-004"
         onViewEvidence={onViewEvidence}
-      />
+      />,
     );
 
     expect(screen.getByText("Heuristic")).toBeInTheDocument();

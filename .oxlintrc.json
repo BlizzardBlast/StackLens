@@ -5,15 +5,7 @@
     "perf": "warn",
     "suspicious": "warn"
   },
-  "plugins": [
-    "eslint",
-    "import",
-    "jsx-a11y",
-    "react",
-    "typescript",
-    "unicorn",
-    "vitest"
-  ],
+  "plugins": ["eslint", "import", "jsx-a11y", "react", "typescript", "unicorn", "vitest"],
   "settings": {
     "react": {
       "version": "19.3.0"
@@ -26,9 +18,5 @@
     "react/jsx-no-useless-fragment": "warn",
     "react/react-in-jsx-scope": "off"
   },
-  "ignorePatterns": [
-    "**/dist/**",
-    "**/coverage/**",
-    "design/prototype/**"
-  ]
+  "ignorePatterns": ["**/dist/**", "**/coverage/**", "design/prototype/**"]
 }
