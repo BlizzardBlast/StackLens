@@ -23,7 +23,8 @@
     "eslint/eqeqeq": "error",
     "eslint/no-console": "warn",
     "import/no-cycle": "error",
-    "react/jsx-no-useless-fragment": "warn"
+    "react/jsx-no-useless-fragment": "warn",
+    "react/react-in-jsx-scope": "off"
   },
   "ignorePatterns": [
     "**/dist/**",
