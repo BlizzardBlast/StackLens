@@ -51,13 +51,12 @@ Rules:
 
 ## shadcn/Base UI workflow
 
-The package-level `components.json` is the shadcn configuration.
+The package-level `components.json` is the shadcn configuration. It uses the Base UI `base-nova` style, Tailwind CSS v4, CSS variables, Lucide, and package `imports` aliases.
 
-When a generic primitive is needed:
+When a generic primitive is needed, use the repository-pinned shadcn CLI:
 
 ```sh
-cd packages/ui
-pnpm dlx shadcn@latest add <component>
+pnpm ui:add -- <component>
 ```
 
 Then review the generated source against:
@@ -87,6 +86,8 @@ Do not bulk-add a component catalog before a requirement needs it.
 
 Domain APIs use product semantics rather than raw colors.
 
+The shared stylesheet also imports the current shadcn Tailwind utilities and `tw-animate-css`, while StackLens design tokens remain the source for product colors, typography, radius, and domain semantics.
+
 ## Important boundary
 
 `packages/ui` does not:
@@ -109,6 +110,7 @@ pnpm test
 pnpm lint
 pnpm format:check
 pnpm check
+pnpm ui:add -- <component>
 ```
 
 The bootstrap CI produced and committed the first `pnpm-lock.yaml`. Normal CI now uses `pnpm install --frozen-lockfile` with read-only repository permissions and pnpm caching.
@@ -126,4 +128,39 @@ Generated token `dist/` output is intentionally not committed. `@stacklens/desig
 
 ## Next step after this bootstrap
 
-Once this quality gate is green and the lockfile/generated tokens are committed, the next production layer is the shared report/domain contracts. Product screens should still wait until those contracts exist.
+Once this quality gate is green, the lockfile is current, and generated tokens are verified, the next production layer is the shared report/domain contracts. Product screens should still wait until those contracts exist.
+
+## TypeScript configuration boundary
+
+`tsconfig.base.json` contains only runtime-neutral strictness rules.
+
+Package/application configs define their own runtime behavior. The current UI package explicitly selects:
+
+- `module: "Preserve"`;
+- `moduleResolution: "Bundler"`;
+- React JSX;
+- DOM libraries;
+- ES2024 target;
+- package import/export resolution.
+
+This prevents the shared base from accidentally imposing browser/DOM or bundler semantics on future Fastify, worker, analyzer, or CLI packages.
+
+## Turborepo cache correctness
+
+Root-level files that affect package tasks are included in Turbo's global hash:
+
+- `tsconfig.base.json`;
+- `design/tokens/stacklens.tokens.json`.
+
+The test task does not declare coverage output because the current tests do not produce coverage artifacts. Declared outputs must correspond to files a task actually creates.
+
+## Editor and agent setup
+
+The repository includes:
+
+- `.editorconfig` for line endings and indentation;
+- `.vscode/extensions.json` recommending Oxc and Tailwind CSS IntelliSense;
+- `.vscode/settings.json` enabling Oxfmt/Oxlint integration and the workspace TypeScript SDK;
+- root `AGENTS.md` for Codex repository instructions.
+
+VS Code-compatible forks can consume the same workspace settings.
