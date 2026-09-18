@@ -331,13 +331,15 @@ When adding a shadcn component:
 
 ## 19. Token implementation path
 
-Design phase:
-`DTCG JSON → reference CSS → prototype`
+The implementation path is now active:
 
-Implementation phase:
-`DTCG JSON → automated transform → packages/design-tokens → packages/ui → apps/web`
+`DTCG JSON → packages/design-tokens generator → generated semantic CSS/JS → packages/ui → future apps/web`
 
-Do not manually maintain duplicated token values indefinitely.
+`design/tokens/stacklens.tokens.json` remains canonical. Generated files under `packages/design-tokens/dist/` must not be hand-edited.
+
+The generator also emits shadcn-compatible CSS variables and Tailwind CSS v4 `@theme inline` aliases so generic primitives and StackLens domain components consume the same semantic system.
+
+See [Design infrastructure implementation](../implementation/design-infrastructure.md) and ADR-0007.
 
 ## 20. External references
 
