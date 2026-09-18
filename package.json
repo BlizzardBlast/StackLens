@@ -10,11 +10,13 @@
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
     "test": "turbo run test",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "ui:add": "pnpm --filter @stacklens/ui exec shadcn add"
   },
   "devDependencies": {
     "oxfmt": "^0.68.0",
     "oxlint": "^1.83.0",
+    "oxlint-tsgolint": "^7.0.2002",
     "turbo": "^2.10.13",
     "typescript": "^7.0.2"
   },
