@@ -4,14 +4,12 @@
   },
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "editor.formatOnSave": true,
-  "editor.rulers": [
-    100
-  ],
-  "files.eol": "\n",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
   "editor.quickSuggestions": {
     "strings": "on"
   },
-  "tailwindCSS.experimental.configFile": "packages/ui/src/styles/globals.css"
+  "editor.rulers": [100],
+  "files.eol": "\n",
+  "tailwindCSS.experimental.configFile": "packages/ui/src/styles/globals.css",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
