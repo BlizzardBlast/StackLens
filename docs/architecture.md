@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.1  
+> **Architecture version:** 0.1.2  
 > **Date:** 2026-09-18  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006
@@ -395,6 +395,8 @@ StackLens/
 │  ├─ data-sources/        # npm, OSV, GitHub adapters
 │  ├─ scoring/             # deterministic score engine/configuration
 │  ├─ database/            # schema/repositories/migrations
+│  ├─ design-tokens/       # generated semantic design tokens
+│  ├─ ui/                  # generic primitives + StackLens domain components
 │  ├─ config/              # shared build/runtime configuration
 │  └─ test-fixtures/       # analyzer fixtures/sample repositories
 ├─ docs/
@@ -678,5 +680,6 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0003 — Repository acquisition and evidence providers](adr/0003-analysis-data-acquisition.md)
 - [ADR-0004 — PostgreSQL-backed asynchronous repository analysis](adr/0004-async-analysis-jobs.md)
 - [ADR-0005 — Web framework and frontend-tooling review](adr/0005-web-framework-and-tooling-review.md)
+- [ADR-0006 — Design system and prototyping strategy](adr/0006-design-system-and-prototyping.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).
