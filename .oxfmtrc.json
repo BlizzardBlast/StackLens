@@ -21,6 +21,7 @@
     "stylesheet": "packages/ui/src/styles/globals.css"
   },
   "ignorePatterns": [
+    ".turbo/**",
     "packages/design-tokens/dist/**",
     "design/**",
     "docs/**",
