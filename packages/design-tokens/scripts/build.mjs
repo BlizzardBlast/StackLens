@@ -128,6 +128,7 @@ function createModeVariables(root, mode) {
     input: `color.semantic.${mode}.input`,
     primary: `color.semantic.${mode}.primary`,
     "primary-foreground": `color.semantic.${mode}.primaryForeground`,
+    focus: `color.semantic.${mode}.focus`,
     danger: `color.semantic.${mode}.danger`,
     success: `color.semantic.${mode}.success`,
     warning: `color.semantic.${mode}.warning`,
@@ -173,7 +174,7 @@ function createCompatibilityVariables() {
     "  --destructive: var(--sl-danger);",
     "  --border: var(--sl-border);",
     "  --input: var(--sl-input);",
-    "  --ring: var(--sl-primary);",
+    "  --ring: var(--sl-focus);",
     "  --radius: var(--sl-radius-surface);"
   ].join("\n");
 }
