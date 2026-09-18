@@ -16,7 +16,7 @@ describe("HealthScore", () => {
 
     expect(screen.getByText("82")).toBeInTheDocument();
     expect(screen.getByRole("progressbar", { name: /evidence coverage/i })).toHaveAttribute(
-      "aria-valuenow",
+      "value",
       "84"
     );
   });
