@@ -1,8 +1,12 @@
 # ADR-0002: Technology selection
 
-- **Status:** Accepted
+- **Status:** Accepted; version baseline partially superseded by ADR-0007
 - **Date:** 2026-09-18
 - **Requirements:** PRD-006, PRD-007, FR-001–FR-004, FR-018–FR-022, NFR-001, NFR-002, NFR-004–NFR-009, SEC-001–SEC-003, GOV-006
+
+## Version note
+
+The architecture decisions in this ADR remain accepted. The implementation-version baseline for pnpm, TypeScript, Turborepo, Vitest, Base UI, Oxlint, and Oxfmt is superseded by [ADR-0007](0007-design-infrastructure-bootstrap.md), which records the stable versions selected when implementation began.
 
 ## Context
 
