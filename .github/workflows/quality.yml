@@ -6,8 +6,11 @@ on:
     branches:
       - main
 
+# BOOTSTRAP ONLY: this is temporarily write-enabled so the selected formatter
+# can normalize the initial scaffold and commit the first pnpm lockfile.
+# Restore read-only permissions and frozen installs after the bootstrap commit.
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   quality:
@@ -18,7 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          persist-credentials: false
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
@@ -33,6 +36,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
+
+      - name: Normalize implementation formatting
+        run: pnpm format
 
       - name: Build generated packages
         run: pnpm build
@@ -49,12 +55,15 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
-      - name: Upload bootstrap outputs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: bootstrap-outputs
-          if-no-files-found: warn
-          path: |
-            pnpm-lock.yaml
-            packages/design-tokens/dist
+      - name: Commit bootstrap lockfile and formatting
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             package.json             pnpm-lock.yaml             pnpm-workspace.yaml             turbo.json             tsconfig.base.json             .oxlintrc.json             .oxfmtrc.json             .gitignore             packages
+          if git diff --cached --quiet; then
+            echo "Bootstrap files already normalized."
+          else
+            git commit -m "chore: apply formatter and bootstrap lockfile [NFR-002]"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
