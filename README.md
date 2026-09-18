@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements baseline defined; implementation has not started.**
+**Requirements and system architecture defined; implementation has not started.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -54,6 +54,12 @@ Per **GOV-002**, every product issue, implementation task, pull request, and acc
 If proposed behavior is not covered by an accepted requirement, update the requirement before or in the same pull request as the implementation (**GOV-003**).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
+
+## Architecture
+
+The accepted system architecture is documented in **[docs/architecture.md](docs/architecture.md)**, with individual decisions recorded under **[docs/adr/](docs/adr/)**.
+
+The initial architecture is a TypeScript modular monolith with a reusable deterministic analyzer core, React/Vite web client, Fastify API, PostgreSQL-backed worker flow, and explicit npm/OSV/GitHub evidence adapters. Architecture choices are subordinate to the requirements (**GOV-006**).
 
 ## Requirement examples
 
