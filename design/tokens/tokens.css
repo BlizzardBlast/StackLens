@@ -11,28 +11,29 @@
   --sl-muted: #646e7d;
   --sl-border: #dfe3e8;
   --sl-primary: #2e5cd1;
+  --sl-primary-fg: #ffffff;
   --sl-primary-soft: #e9efff;
   --sl-focus: #4078ef;
 
-  --sl-success: #1fa364;
-  --sl-warning: #e38c14;
-  --sl-danger: #db3842;
-  --sl-critical: #db3842;
-  --sl-high: #e85e17;
-  --sl-medium: #e38c14;
-  --sl-low: #4078ef;
+  --sl-success: #147a4a;
+  --sl-warning: #9a5a00;
+  --sl-danger: #c82333;
+  --sl-critical: #c82333;
+  --sl-high: #b8420b;
+  --sl-medium: #9a5a00;
+  --sl-low: #2e5cd1;
 
-  --sl-fact: #4078ef;
-  --sl-heuristic: #7a57eb;
-  --sl-recommendation: #1fa364;
+  --sl-fact: #2e5cd1;
+  --sl-heuristic: #6d4ed3;
+  --sl-recommendation: #147a4a;
 
-  --sl-confidence-high: #1fa364;
-  --sl-confidence-medium: #e38c14;
+  --sl-confidence-high: #147a4a;
+  --sl-confidence-medium: #9a5a00;
   --sl-confidence-low: #646e7d;
-  --sl-score-excellent: #1fa364;
-  --sl-score-good: #4078ef;
-  --sl-score-watch: #e38c14;
-  --sl-score-poor: #db3842;
+  --sl-score-excellent: #147a4a;
+  --sl-score-good: #2e5cd1;
+  --sl-score-watch: #9a5a00;
+  --sl-score-poor: #c82333;
   --sl-score-unknown: #646e7d;
 
   --sl-radius-control: 8px;
@@ -64,6 +65,7 @@
   --sl-muted: #828c9c;
   --sl-border: #303742;
   --sl-primary: #5c91fa;
+  --sl-primary-fg: #090a0e;
   --sl-primary-soft: #172446;
   --sl-focus: #5c91fa;
 
@@ -74,4 +76,16 @@
   --sl-high: #f47b3c;
   --sl-medium: #eda635;
   --sl-low: #5c91fa;
+
+  --sl-fact: #5c91fa;
+  --sl-heuristic: #7a57eb;
+  --sl-recommendation: #38ba79;
+  --sl-confidence-high: #38ba79;
+  --sl-confidence-medium: #eda635;
+  --sl-confidence-low: #828c9c;
+  --sl-score-excellent: #38ba79;
+  --sl-score-good: #5c91fa;
+  --sl-score-watch: #eda635;
+  --sl-score-poor: #ef5a63;
+  --sl-score-unknown: #828c9c;
 }
