@@ -35,7 +35,9 @@ Use the current stable implementation baseline reviewed on 2026-09-18:
 - Vitest 5.0.x;
 - Base UI 1.8.x;
 - Oxlint 1.83.x;
-- Oxfmt 0.68.x.
+- Oxfmt 0.68.x;
+- oxlint-tsgolint 7.0.x for stable type-aware linting;
+- shadcn 4.21.x with the current `cn` helper package.
 
 This supersedes only the stale version lines in ADR-0002. It does not change the selected architecture.
 
@@ -65,6 +67,8 @@ Generated output is checked for drift. Product code must not maintain a second h
 
 Generated shadcn source is owned by StackLens after generation. Complex generic interaction primitives should use Base UI/shadcn patterns; domain components remain StackLens-owned.
 
+The UI package follows the current shadcn manual baseline: package `imports` aliases, Tailwind CSS v4, `cn`, Lucide, `tw-animate-css`, and `shadcn/tailwind.css`. The installed CLI is invoked through the workspace rather than relying on an unpinned `@latest` command.
+
 ### Domain components do not invent product truth
 
 The UI package receives analyzer/report semantics.
@@ -83,7 +87,7 @@ The initial quality gate runs:
 1. token generation/build;
 2. TypeScript type checking;
 3. unit/component tests;
-4. Oxlint;
+4. syntax and stable type-aware Oxlint rules;
 5. Oxfmt check.
 
 CI is the authoritative dependency/build verification for this bootstrap because the current execution sandbox used to author the repository does not have package-registry network access.
@@ -103,7 +107,7 @@ A lockfile is committed after the bootstrap install succeeds; subsequent CI inst
 
 ### Negative
 
-- generated token output is another artifact that must be kept synchronized;
+- generated token output is another artifact that must be regenerated consistently;
 - shadcn-generated source still requires StackLens review/customization;
 - the first implementation PR carries workspace/bootstrap configuration before visible product functionality.
 
