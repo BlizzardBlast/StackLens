@@ -97,21 +97,21 @@ Use the Design Tokens Community Group model where practical.
 
 The DTCG published its first stable format specification in 2025. This provides a vendor-neutral representation suitable for future design/code tooling.
 
-## Figma
+## Design workspace
 
-Figma is the intended visual design workspace for the high-fidelity design system and prototype.
+Figma is **not required** for the StackLens design workflow.
 
-The repository remains the durable specification/history:
+The repository-native artifacts are the durable and sufficient design source of truth:
 - requirements;
 - design principles;
 - ADRs;
 - token definitions;
-- prototype notes;
+- low-fidelity wireframes;
+- coded prototype;
+- design reviews;
 - journey log.
 
-Figma should visualize those decisions rather than become the only place where they are documented.
-
-The Figma artifact will be created once the target connected Figma account/workspace is unambiguous.
+A visual editor may be used later if it materially improves a specific design task, but implementation and design progress must not depend on an external rate-limited workspace.
 
 ## Consequences
 

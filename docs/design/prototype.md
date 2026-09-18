@@ -1,8 +1,8 @@
-# StackLens Coded Prototype v0.1
+# StackLens Coded Prototype v1
 
 ## Purpose
 
-The prototype at `design/prototype/` is a disposable design artifact.
+The prototype at `design/prototype/` is a disposable design artifact and the accepted visual/interaction reference for Design v1.
 
 It exists to validate design decisions before production UI scaffolding. It must not be imported into the production application.
 

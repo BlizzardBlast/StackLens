@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>StackLens — Product Design v0.1</title>
+  <title>StackLens — Product Design v1</title>
   <link rel="stylesheet" href="../tokens/tokens.css" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
@@ -14,8 +14,8 @@
       <span>StackLens</span>
     </a>
     <div class="top-actions">
-      <span class="prototype-chip">Design prototype v0.1</span>
-      <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle color theme">◐</button>
+      <span class="prototype-chip">Design prototype v1</span>
+      <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to light theme" aria-pressed="true">◐</button>
     </div>
   </header>
 
@@ -29,13 +29,27 @@
 
       <div class="analyzer-shell">
         <div class="segmented" role="tablist" aria-label="Analysis input">
-          <button class="segment is-selected" type="button">GitHub repository</button>
-          <button class="segment" type="button">package.json</button>
+          <button class="segment is-selected" id="github-tab" role="tab" aria-selected="true" aria-controls="github-panel" type="button">GitHub repository</button>
+          <button class="segment" id="package-tab" role="tab" aria-selected="false" aria-controls="package-panel" type="button">package.json</button>
         </div>
-        <label class="field">
-          <span>Public repository URL</span>
-          <input id="repo-input" value="https://github.com/BlizzardBlast/StackLens" />
-        </label>
+        <div id="github-panel" class="input-panel" role="tabpanel" aria-labelledby="github-tab">
+          <label class="field">
+            <span>Public repository URL</span>
+            <input id="repo-input" type="url" spellcheck="false" autocomplete="url" value="https://github.com/BlizzardBlast/StackLens" />
+          </label>
+        </div>
+        <div id="package-panel" class="input-panel" role="tabpanel" aria-labelledby="package-tab" hidden>
+          <label class="field">
+            <span>package.json</span>
+            <textarea id="package-input" rows="8" spellcheck="false">{
+  "name": "example-project",
+  "dependencies": {
+    "react": "^19.0.0"
+  }
+}</textarea>
+          </label>
+        </div>
+        <p class="field-error" id="input-error" role="alert" hidden></p>
         <div class="analyzer-actions">
           <div class="privacy-note"><span aria-hidden="true">◇</span> Static inspection · no account required</div>
           <button class="primary-button" id="analyze-button" type="button">Analyze repository <span aria-hidden="true">→</span></button>
@@ -107,18 +121,24 @@
 
           <div class="compact-nav">
             <label>Report category
-              <select>
-                <option>Overview</option>
-                <option>Findings</option>
-                <option>Dependencies</option>
-                <option>Security</option>
-                <option>Maintainability</option>
-                <option>Testing</option>
-                <option>Tooling</option>
-                <option>Limitations</option>
+              <select id="compact-category">
+                <option value="overview">Overview</option>
+                <option value="attention">Findings</option>
+                <option value="dependencies">Dependencies</option>
+                <option value="security">Security</option>
+                <option value="maintainability">Maintainability</option>
+                <option value="testing">Testing</option>
+                <option value="tooling">Tooling</option>
+                <option value="limitations">Limitations</option>
               </select>
             </label>
           </div>
+
+          <a class="limitations-banner" href="#limitations">
+            <span class="limitation-icon" aria-hidden="true">!</span>
+            <span><strong>2 limitations affect this report</strong><small>Testing is N/A and dynamic configuration was not executed.</small></span>
+            <span class="banner-action">Review →</span>
+          </a>
 
           <section class="score-grid">
             <article class="overall-score">
@@ -130,10 +150,10 @@
 
           <section class="category-grid" aria-label="Category health">
             <article><span>Dependencies</span><strong>88</strong><small>2 findings</small></article>
-            <article><span>Security</span><strong class="score-watch">72</strong><small>1 high priority</small></article>
-            <article><span>Maintainability</span><strong>79</strong><small>2 findings</small></article>
-            <article class="na-card"><span>Testing</span><strong>N/A</strong><small>Insufficient evidence</small></article>
-            <article><span>Tooling</span><strong>91</strong><small>No urgent issues</small></article>
+            <article id="security"><span>Security</span><strong class="score-watch">72</strong><small>1 high priority</small></article>
+            <article id="maintainability"><span>Maintainability</span><strong>79</strong><small>2 findings</small></article>
+            <article class="na-card" id="testing"><span>Testing</span><strong>N/A</strong><small>Insufficient evidence</small></article>
+            <article id="tooling"><span>Tooling</span><strong>91</strong><small>No urgent issues</small></article>
           </section>
 
           <section class="section" id="attention">
@@ -196,15 +216,14 @@
     </section>
   </main>
 
-  <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
-  <aside class="evidence-drawer" id="evidence-drawer" aria-hidden="true" aria-label="Finding evidence">
-    <div class="drawer-header"><div><span class="eyebrow">EVIDENCE</span><h2>Why StackLens reported this</h2></div><button class="icon-button" id="close-evidence" type="button" aria-label="Close evidence">×</button></div>
+  <dialog class="evidence-drawer" id="evidence-drawer" aria-labelledby="evidence-title">
+    <div class="drawer-header"><div><span class="eyebrow">EVIDENCE</span><h2 id="evidence-title">Why StackLens reported this</h2></div><button class="icon-button" id="close-evidence" type="button" aria-label="Close evidence">×</button></div>
     <div class="drawer-section"><span class="label">Classification</span><div><span class="badge evidence-fact">● Fact</span></div></div>
     <div class="drawer-section"><span class="label">Project evidence</span><strong class="mono">pnpm-lock.yaml</strong><p>Resolved package version: <span class="mono">1.7.0</span></p></div>
     <div class="drawer-section"><span class="label">External evidence</span><strong>OSV advisory OSV-EXAMPLE-001</strong><p>Version 1.7.0 is listed in the affected range.</p><small>Retrieved Sep 18, 2026 · 21:14 WIB</small></div>
     <div class="drawer-section"><span class="label">Rule</span><strong class="mono">JS-SEC-001 · v1</strong><p>Exact resolved version matches a known vulnerability record.</p></div>
     <div class="drawer-section"><span class="label">Limitations</span><p>This sample evidence is illustrative prototype content, not a real advisory claim.</p></div>
-  </aside>
+  </dialog>
 
   <dialog id="score-dialog" class="score-dialog">
     <form method="dialog">
