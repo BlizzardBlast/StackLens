@@ -4,18 +4,29 @@
   "semi": true,
   "singleQuote": false,
   "sortImports": {
-    "internalPattern": ["#*", "@stacklens/*"],
+    "internalPattern": [
+      "#*",
+      "@stacklens/*"
+    ],
     "newlinesBetween": true
   },
   "sortPackageJson": {
     "sortScripts": true
   },
   "sortTailwindcss": {
-    "functions": ["cn", "cva"],
+    "functions": [
+      "cn",
+      "cva"
+    ],
     "stylesheet": "packages/ui/src/styles/globals.css"
   },
   "ignorePatterns": [
     "packages/design-tokens/dist/**",
-    "design/prototype/**"
+    "design/**",
+    "docs/**",
+    ".github/**",
+    "README.md",
+    "CONTRIBUTING.md",
+    "LICENSE"
   ]
 }
