@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "semi": true,
+  "singleQuote": false,
+  "sortImports": {
+    "internalPattern": ["#*", "@stacklens/*"],
+    "newlinesBetween": true
+  },
+  "sortPackageJson": {
+    "sortScripts": true
+  },
+  "sortTailwindcss": {
+    "functions": ["cn", "cva"],
+    "stylesheet": "packages/ui/src/styles/globals.css"
+  },
+  "ignorePatterns": [
+    "packages/design-tokens/dist/**",
+    "design/prototype/**"
+  ]
+}
