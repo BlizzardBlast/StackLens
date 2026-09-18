@@ -240,3 +240,20 @@ Normal CI is now:
 - Oxfmt check.
 
 Generated design-token `dist/` output remains uncommitted and is recreated by the design-token package's `prepare`/`build` scripts. The DTCG JSON remains the only version-controlled token source.
+
+## 2026-09-18 — Step 20: Harden the tooling and agent-development baseline
+
+A second configuration review was performed after the initial CI-green bootstrap.
+
+Current upstream guidance was rechecked for shadcn/ui, TypeScript, Turborepo, Oxlint/Oxfmt, and Codex.
+
+The review found several improvements worth making before product implementation:
+- shadcn's September 2026 `cn` migration had replaced the legacy `clsx + tailwind-merge` helper;
+- current shadcn manual setup expects shared `shadcn/tailwind.css` utilities and `tw-animate-css`;
+- the monorepo base TypeScript configuration mixed browser/bundler settings into what should be a runtime-neutral shared strictness layer;
+- Turborepo did not hash the root DTCG token source even though the design-token package reads it;
+- the test task declared `coverage/**` output even though no coverage artifact is generated;
+- Oxlint's stable TypeScript 7 type-aware backend was available but not enabled;
+- the repository had no shared editor configuration or Codex project instructions.
+
+The production baseline was updated accordingly. The design intent and accepted product requirements did not change.
