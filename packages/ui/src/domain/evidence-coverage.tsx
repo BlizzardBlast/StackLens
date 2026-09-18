@@ -17,14 +17,15 @@ export function EvidenceCoverage({ percent, className, detail }: EvidenceCoverag
         </span>
         <strong>{boundedPercent}%</strong>
       </div>
-      <div
-        className="h-2 overflow-hidden rounded-full bg-muted"
-        role="progressbar"
+      <progress
+        className="sr-only"
         aria-label="Evidence coverage"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={boundedPercent}
+        max={100}
+        value={boundedPercent}
       >
+        {boundedPercent}%
+      </progress>
+      <div className="h-2 overflow-hidden rounded-full bg-muted" aria-hidden="true">
         <div
           className="h-full rounded-full bg-primary"
           style={{ width: `${boundedPercent}%` }}
