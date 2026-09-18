@@ -79,15 +79,23 @@ This parser is selected for robust JavaScript/TypeScript/JSX/TSX support and a s
 ### Test/tooling
 
 - **Vitest 4** for unit/integration tests.
-- **Biome 2** for linting and formatting.
+- **Oxlint** for JavaScript/TypeScript linting, including built-in React, TypeScript, Vitest, import, and accessibility rule coverage as enabled by project policy.
+- **Oxfmt** for formatting, including import sorting, Tailwind CSS class sorting, and package.json sorting.
+- **TypeScript compiler (`tsc --noEmit`)** remains the authoritative type-check step initially. Oxlint type-aware rules may be enabled, but its experimental `typeCheck` mode does not replace the compiler check until separately evaluated.
 - **GitHub Actions** for CI.
 - **Docker Compose** for local PostgreSQL and integration-test infrastructure.
 
 ## Alternatives considered
 
-### Next.js / other full-stack React framework
+### Next.js / T3 Stack / TanStack Start
 
-Not selected for MVP because the product already benefits from a framework-independent API and worker. Server components/SSR are not required by accepted MVP requirements, and coupling server behavior to the frontend would provide little architectural benefit.
+Re-evaluated in ADR-0005.
+
+- **Next.js** is mature and capable, but its App Router centers server rendering, Server Components, and framework-owned server behavior that StackLens does not currently require.
+- **Create T3 App / T3 Stack** is a high-quality modular scaffold around Next.js and TypeScript, but adopting it would not remove StackLens's need for a framework-independent REST/OpenAPI API and worker. Its strongest tRPC-centric benefit is less valuable when future CLI, GitHub, IDE, and third-party clients are explicit requirements.
+- **TanStack Start** is architecturally attractive because it preserves TanStack Router and adds SSR/server functions/routes, but as of this decision it remains officially Release Candidate rather than stable v1.
+
+The MVP therefore keeps React + Vite + TanStack Router. Full-stack React frameworks should be reconsidered if accepted requirements later add SSR/SEO, server-rendered public reports, or substantial framework-local server behavior.
 
 ### tRPC-only API
 
@@ -133,6 +141,12 @@ The selection was checked against current upstream documentation on 2026-09-18:
 - TypeScript 6.0: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html
 - Vitest 4: https://vitest.dev/blog/vitest-4
 - Tailwind CSS 4.3: https://tailwindcss.com/blog/tailwindcss-v4-3
+- Oxlint: https://oxc.rs/docs/guide/usage/linter
+- Oxlint type-aware linting: https://oxc.rs/docs/guide/usage/linter/type-aware
+- Oxfmt: https://oxc.rs/docs/guide/usage/formatter
+- Next.js App Router: https://nextjs.org/docs/app
+- Create T3 App: https://create.t3.gg/en/introduction
+- TanStack Start overview: https://tanstack.com/start/latest/docs/framework/react/overview
 
 ## Consequences
 
