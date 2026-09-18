@@ -1,6 +1,6 @@
 # StackLens System Architecture
 
-> **Status:** Proposed for implementation  
+> **Status:** Accepted baseline  
 > **Architecture version:** 0.1.0  
 > **Date:** 2026-09-18  
 > **Requirements source:** [requirements.md](requirements.md)  
