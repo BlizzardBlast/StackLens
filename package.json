@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build",
-    "check": "pnpm build && pnpm typecheck && pnpm test && pnpm lint && pnpm format:check",
+    "check": "pnpm build && pnpm ui:info && pnpm typecheck && pnpm test && pnpm lint && pnpm format:check",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
