@@ -10,10 +10,13 @@ export {
   GITHUB_REST_API_VERSION,
   GITHUB_WEB_BASE_URL,
   GitHubRepositoryAdapter,
+  githubBlobApiUrl,
+  githubCommitApiUrl,
   githubCommitTreeUrl,
   githubEvidenceId,
   githubRepositoryApiUrl,
   githubRepositorySourceId,
+  githubTreeApiUrl,
   parsePublicGitHubRepositoryUrl,
 } from "./github.js";
 export type {
