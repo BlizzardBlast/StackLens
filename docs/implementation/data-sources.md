@@ -147,6 +147,8 @@ Synthetic tests cover:
 - package identity mismatch;
 - malformed deprecation metadata;
 - invalid dist-tag/version references;
+- invalid provider JSON;
+- request timeout behavior;
 - 404 vs 429 retryability;
 - network failure redaction;
 - response-size limits;
