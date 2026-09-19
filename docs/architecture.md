@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.6  
+> **Architecture version:** 0.1.7  
 > **Date:** 2026-09-19  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
@@ -538,13 +538,13 @@ The project should remain on Drizzle's stable release line rather than adopting 
 | Concern                    | Selection                                        |
 | -------------------------- | ------------------------------------------------ |
 | Manifest/version semantics | Node ecosystem libraries + explicit adapters     |
-| JS/TS AST                  | `@typescript-eslint/typescript-estree` initially |
+| JS/TS AST                  | `@babel/parser` behind an internal adapter        |
 | Package metadata           | npm Registry                                     |
 | Vulnerabilities            | OSV.dev batch API                                |
 | Repository data            | GitHub REST API                                  |
 | Rule testing               | Vitest fixtures                                  |
 
-The AST parser is behind an adapter so a future parser such as Oxc can be evaluated without changing rule/report contracts.
+The AST parser is behind an adapter so a future TypeScript 7-native typescript-eslint/Oxc parser can be evaluated without changing rule/report contracts. ADR-0010 supersedes the original parser implementation choice after the TypeScript 7 baseline made the earlier typescript-estree release line incompatible.
 
 ### Engineering tooling
 
@@ -766,5 +766,6 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0007 — Design infrastructure bootstrap](adr/0007-design-infrastructure-bootstrap.md)
 - [ADR-0008 — Analysis report contract v1](adr/0008-analysis-report-contract-v1.md)
 - [ADR-0009 — Deterministic staged analyzer core](adr/0009-deterministic-staged-analyzer-core.md)
+- [ADR-0010 — Static source parser compatibility under TypeScript 7](adr/0010-static-source-parser-typescript-7.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).

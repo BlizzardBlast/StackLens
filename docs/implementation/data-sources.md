@@ -500,3 +500,32 @@ Synthetic tests cover:
 - omission of selected source contents from public provenance/failure records.
 
 No live GitHub request is part of the PR quality gate.
+
+
+## FR-009 source acquisition extension
+
+The public GitHub adapter now includes supported JS/TS/JSX/TSX source files in the same immutable
+blob-by-SHA acquisition path used for manifest/configuration evidence.
+
+The existing file-count, per-file, aggregate-byte, request-count, timeout, response-size,
+generated/vendor, symlink, submodule, binary, and Git LFS boundaries continue to apply.
+
+The normalized GitHub snapshot exposes a source-coverage summary:
+
+- candidate supported source-file count;
+- successfully acquired supported source-file count;
+- `complete` or `partial` status.
+
+Coverage becomes partial when GitHub tree truncation, unsafe returned paths, source-file count
+truncation, source symlinks, source size/aggregate/request limits, binary/LFS source content, or
+source blob acquisition failures could hide supported source usage.
+
+Generated/vendor directories remain deliberately outside the supported project-source scope rather
+than being traversed merely to improve coverage.
+
+The data-source package still performs no JavaScript parsing. Application/worker orchestration maps
+the transient selected files and source-coverage state into the rules-javascript source parser
+adapter, preserving the provider/rule dependency boundary.
+
+**Traceability:** FR-003, FR-009, FR-017, FR-021, DATA-001, DATA-002, DATA-006, NFR-003, NFR-004,
+SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.

@@ -32,6 +32,7 @@ const prettierSha = "f".repeat(40);
 const symlinkSha = "1".repeat(40);
 const submoduleSha = "2".repeat(40);
 const ignoredSha = "3".repeat(40);
+const sourceSha = "4".repeat(40);
 
 function createAdapter(
   fetchImpl: typeof fetch,
@@ -203,10 +204,10 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
       },
     });
     const viteConfig = 'throw new Error("MUST NOT RUN"); export default {};';
-    const irrelevantSource = "export const secret = 'do-not-fetch';";
+    const sourceText = "import React from 'react'; export const value = React.version;";
 
     const tree = treePayload([
-      treeEntry("src/index.ts", "9".repeat(40), irrelevantSource.length),
+      treeEntry("src/index.ts", sourceSha, sourceText.length),
       treeEntry("vite.config.ts", viteSha, viteConfig.length),
       treeEntry("package.json", manifestSha, packageJson.length),
       treeEntry("tsconfig.json", tsconfigSha, tsconfig.length),
@@ -214,6 +215,7 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     const fetchImpl = successfulBaseFetch(tree, [
       blobPayload(manifestSha, packageJson),
       blobPayload(tsconfigSha, tsconfig),
+      blobPayload(sourceSha, sourceText),
       blobPayload(viteSha, viteConfig),
     ]);
     const adapter = createAdapter(fetchImpl);
@@ -229,13 +231,14 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
 
     const sourceId = githubRepositorySourceId(owner, name, commitSha);
 
-    expect(fetchImpl).toHaveBeenCalledTimes(6);
+    expect(fetchImpl).toHaveBeenCalledTimes(7);
     expect(fetchImpl.mock.calls.map((call) => call[0])).toEqual([
       githubRepositoryApiUrl(owner, name),
       githubCommitApiUrl(owner, name, "main"),
       githubTreeApiUrl(owner, name, treeSha),
       githubBlobApiUrl(owner, name, manifestSha),
       githubBlobApiUrl(owner, name, tsconfigSha),
+      githubBlobApiUrl(owner, name, sourceSha),
       githubBlobApiUrl(owner, name, viteSha),
     ]);
 
@@ -267,6 +270,12 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     });
     expect(result.data.files).toEqual([
       {
+        path: "src/index.ts",
+        blobSha: sourceSha,
+        byteLength: new TextEncoder().encode(sourceText).byteLength,
+        content: sourceText,
+      },
+      {
         path: "tsconfig.json",
         blobSha: tsconfigSha,
         byteLength: new TextEncoder().encode(tsconfig).byteLength,
@@ -279,7 +288,11 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
         content: viteConfig,
       },
     ]);
-    expect(JSON.stringify(result)).not.toContain(irrelevantSource);
+    expect(result.data.sourceCoverage).toEqual({
+      status: "complete",
+      candidateFiles: 2,
+      acquiredFiles: 2,
+    });
     expect(result.data.limitations).toEqual([]);
     expect(result.partialFailures).toEqual([]);
     expect(result.source).toEqual({

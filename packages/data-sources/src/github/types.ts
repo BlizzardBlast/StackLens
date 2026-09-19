@@ -30,10 +30,17 @@ export interface GitHubRepositoryFile {
   readonly content: string;
 }
 
+export interface GitHubSourceCoverage {
+  readonly status: "complete" | "partial";
+  readonly candidateFiles: number;
+  readonly acquiredFiles: number;
+}
+
 export interface GitHubRepositorySnapshot {
   readonly repository: RepositoryIdentity;
   readonly manifest?: GitHubRepositoryFile;
   readonly files: readonly GitHubRepositoryFile[];
+  readonly sourceCoverage: GitHubSourceCoverage;
   readonly limitations: readonly AnalysisLimitation[];
 }
 

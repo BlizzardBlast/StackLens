@@ -42,6 +42,7 @@ import {
   isCanonicalRepositoryPath,
   isIgnoredRepositoryPath,
   isInitialSupportedSnapshotPath,
+  isSupportedJavaScriptSourcePath,
 } from "./selection.js";
 import {
   GITHUB_DEFAULT_MAX_FILES,
@@ -64,23 +65,32 @@ import { validateGitHubRef, validateObservedAt, validatePositiveInteger } from "
 const CONTRACT_REFERENCE_MAX_LENGTH = 1_000;
 
 interface CandidateEntry extends TreeEntry {
-  readonly kind: "manifest" | "config";
+  readonly kind: "manifest" | "config" | "source";
 }
 
 function compareCodeUnits(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
-function candidateOrder(left: CandidateEntry, right: CandidateEntry): number {
-  if (left.kind !== right.kind) {
-    return left.kind === "manifest" ? -1 : 1;
+function candidateRank(kind: CandidateEntry["kind"]): number {
+  if (kind === "manifest") {
+    return 0;
   }
 
-  return compareCodeUnits(left.path, right.path);
+  return kind === "config" ? 1 : 2;
+}
+
+function candidateOrder(left: CandidateEntry, right: CandidateEntry): number {
+  const rankOrder = candidateRank(left.kind) - candidateRank(right.kind);
+  return rankOrder === 0 ? compareCodeUnits(left.path, right.path) : rankOrder;
 }
 
 function safeFailureReference(reference: string, fallback: string): string {
   return reference.length <= CONTRACT_REFERENCE_MAX_LENGTH ? reference : fallback;
+}
+
+function sourcePathWasAffected(paths: readonly string[]): boolean {
+  return paths.some((path) => isSupportedJavaScriptSourcePath(path));
 }
 
 export class GitHubRepositoryAdapter implements EvidenceProvider<
@@ -343,7 +353,12 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
       candidates.push({
         ...entry,
-        kind: entry.path === "package.json" ? "manifest" : "config",
+        kind:
+          entry.path === "package.json"
+            ? "manifest"
+            : isSupportedJavaScriptSourcePath(entry.path)
+              ? "source"
+              : "config",
       });
     }
 
@@ -415,6 +430,12 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
     const orderedCandidates = candidates.toSorted(candidateOrder);
     const retainedCandidates = orderedCandidates.slice(0, this.#maxFiles);
+    const sourceCandidateCount = candidates.filter(
+      (candidate) => candidate.kind === "source",
+    ).length;
+    const retainedSourceCount = retainedCandidates.filter(
+      (candidate) => candidate.kind === "source",
+    ).length;
 
     if (orderedCandidates.length > retainedCandidates.length) {
       limitations.push(
@@ -627,6 +648,20 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
       );
     }
 
+    const acquiredSourceCount = files.filter((file) =>
+      isSupportedJavaScriptSourcePath(file.path),
+    ).length;
+    const sourceCoveragePartial =
+      tree.truncated ||
+      unsafePaths.length > 0 ||
+      retainedSourceCount < sourceCandidateCount ||
+      sourcePathWasAffected(symlinkPaths) ||
+      sourcePathWasAffected(oversizedPaths) ||
+      sourcePathWasAffected(aggregateLimitedPaths) ||
+      sourcePathWasAffected(binaryPaths) ||
+      sourcePathWasAffected(lfsPointerPaths) ||
+      sourcePathWasAffected(failedPaths);
+
     const retrievedAt = validateObservedAt(this.#now());
     const partial = limitations.length > 0 || partialFailures.length > 0;
     const source: AvailableDataSource | PartialDataSource = {
@@ -658,6 +693,11 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
         repository: repositoryIdentity,
         ...(manifest === undefined ? {} : { manifest }),
         files: files.toSorted((left, right) => compareCodeUnits(left.path, right.path)),
+        sourceCoverage: {
+          status: sourceCoveragePartial ? "partial" : "complete",
+          candidateFiles: sourceCandidateCount,
+          acquiredFiles: acquiredSourceCount,
+        },
         limitations,
       },
       source,
