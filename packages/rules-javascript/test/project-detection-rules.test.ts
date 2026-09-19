@@ -196,9 +196,15 @@ describe("dependencyOverlapRule [FR-008, DATA-003, DATA-004, NFR-002]", () => {
         level: "medium",
       },
     });
-    expect(result.findings?.[0]?.confidence.factIds).toHaveLength(2);
-    expect(result.findings?.[0]?.description).toContain("test runner");
-    expect(result.findings?.[0]?.description).toContain(
+    const finding = result.findings?.[0];
+
+    if (finding === undefined || finding.classification !== "heuristic") {
+      throw new Error("Expected one heuristic overlap finding");
+    }
+
+    expect(finding.confidence.factIds).toHaveLength(2);
+    expect(finding.description).toContain("test runner");
+    expect(finding.description).toContain(
       "does not establish that either dependency is unnecessary",
     );
   });
