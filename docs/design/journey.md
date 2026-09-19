@@ -319,3 +319,36 @@ To reduce drift:
 The GitHub Actions themselves remain pinned to immutable full commit SHAs.
 
 The steady-state quality workflow is run again after this change so the single-source configuration is verified rather than assumed.
+
+
+## 2026-09-19 — Step 24: Establish Analysis Report Contract v1
+
+The next implementation layer after design infrastructure was the shared analysis-domain contract rather than product screens.
+
+A new `@stacklens/contracts` package was introduced with Zod runtime schemas for:
+- analysis input identity;
+- data sources and evidence;
+- normalized facts;
+- factual and heuristic findings;
+- separate recommendations;
+- deterministic priority metadata;
+- limitations and partial failures;
+- overall/category score states and explainable contributions;
+- the versioned aggregate `AnalysisReport`.
+
+The model deliberately separates `evidence → facts → findings → recommendations`. This makes **DATA-005** structural: advice cannot accidentally be serialized as raw fact.
+
+Key invariants include:
+- heuristic findings require confidence and supporting facts;
+- factual findings cannot carry heuristic confidence;
+- external evidence cannot reference an unavailable source;
+- fact-based recommendations cannot reference heuristic findings;
+- insufficient evidence is a distinct score state rather than numeric zero;
+- score contributions must reference evidence and at least one fact or finding;
+- report-level references must resolve and collection IDs must be unique.
+
+The existing React finding components were updated to consume classification, priority, confidence, category, and rule types from `@stacklens/contracts` instead of maintaining duplicate UI-owned unions. React remains presentation-focused.
+
+ADR-0008 records the serialized v1 design. The implementation is documented in `docs/implementation/analysis-contracts.md`.
+
+Verification for this step includes package build/type checking, runtime schema tests, UI compatibility checks, Oxlint, Oxfmt, shadcn project validation, and the normal journey-documentation gate.
