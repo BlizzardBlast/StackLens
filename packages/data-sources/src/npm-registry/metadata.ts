@@ -17,11 +17,7 @@ function compareCodeUnits(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
-function requireUnpaddedString(
-  value: unknown,
-  label: string,
-  maximumLength = 4_000,
-): string {
+function requireUnpaddedString(value: unknown, label: string, maximumLength = 4_000): string {
   if (
     typeof value !== "string" ||
     value.length === 0 ||
@@ -93,10 +89,7 @@ function parseVersionTimes(
 
   for (const version of versionNames) {
     if (value[version] !== undefined) {
-      publishedAtByVersion.set(
-        version,
-        parseIsoTimestamp(value[version], `time.${version}`),
-      );
+      publishedAtByVersion.set(version, parseIsoTimestamp(value[version], `time.${version}`));
     }
   }
 
@@ -131,9 +124,7 @@ function parseVersions(
       );
 
       if (declaredVersion !== version) {
-        throw new NpmRegistryPayloadError(
-          `versions.${version}.version must match its version key`,
-        );
+        throw new NpmRegistryPayloadError(`versions.${version}.version must match its version key`);
       }
 
       const deprecatedRaw = versionValue.deprecated;
