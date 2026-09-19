@@ -29,7 +29,7 @@ src/
 ├─ subject.ts          # analysis subjects
 ├─ input.ts            # manifest/repository analysis identity
 ├─ evidence.ts         # project/external provenance
-├─ fact.ts             # normalized observations
+├─ fact.ts             # normalized observations + structured fact details
 ├─ finding.ts          # factual/heuristic conclusions + priority
 ├─ recommendation.ts   # separate actionable advice
 ├─ limitation.ts       # limitations + typed partial failures
@@ -106,18 +106,31 @@ Contract tests cover:
 
 Future contract changes should add both positive and invalid-state tests.
 
+## Structured dependency inventory
+
+FR-005 requires dependency name, declared version/range, and dependency group to remain
+machine-readable.
+
+The v1 fact contract therefore supports optional dependency-inventory `details` with:
+- `kind: "dependency_inventory"`;
+- `dependencyGroup`;
+- `declaredSpecifier`.
+
+The generic fact subject continues to carry the dependency name. `declaredSpecifier` deliberately
+uses neutral terminology because valid declarations can be exact versions, ranges, tags, workspace
+references, file references, or URLs.
+
+The extension is optional and existing reports without `details` remain valid, so the report
+schema version stays `1.0.0`.
+
 ## Dependency version
 
 The implementation pins mature Zod `4.4.3` rather than adopting a just-published release during this milestone. Dependency updates remain subject to the repository's pnpm supply-chain policy.
 
-## Next layer
+## Current consumers
 
-The next production milestone is `packages/analyzer-core`.
+`packages/analyzer-core` consumes these contracts for deterministic orchestration.
 
-It should consume these contracts and define:
-- rule/pipeline interfaces;
-- normalized analysis context;
-- deterministic rule-result assembly;
-- report construction boundaries.
-
-It must not redefine public finding/evidence/score shapes already owned here.
+`packages/rules-javascript` now consumes the fact/evidence contracts for the FR-005 dependency
+inventory slice. Ecosystem packages must continue to reuse these public shapes rather than define
+parallel report entities.
