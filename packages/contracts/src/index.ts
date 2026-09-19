@@ -28,8 +28,16 @@ export type {
   UnavailableDataSource,
 } from "./evidence.js";
 
-export { AnalysisFactSchema } from "./fact.js";
-export type { AnalysisFact } from "./fact.js";
+export {
+  AnalysisFactDetailsSchema,
+  AnalysisFactSchema,
+  DependencyInventoryFactDetailsSchema,
+} from "./fact.js";
+export type {
+  AnalysisFact,
+  AnalysisFactDetails,
+  DependencyInventoryFactDetails,
+} from "./fact.js";
 
 export {
   ConfidenceLevelSchema,
