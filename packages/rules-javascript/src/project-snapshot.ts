@@ -13,13 +13,25 @@ function compareCodeUnits(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
+function containsControlCharacter(value: string): boolean {
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index);
+
+    if (code <= 0x1f || code === 0x7f) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function validateProjectPath(path: string): void {
   if (
     path.length === 0 ||
     path.length > 1_000 ||
     path.startsWith("/") ||
     path.includes("\\") ||
-    /[\u0000-\u001f\u007f]/.test(path)
+    containsControlCharacter(path)
   ) {
     throw new TypeError(
       "Static project file paths must be non-empty relative POSIX paths of at most 1000 characters.",
