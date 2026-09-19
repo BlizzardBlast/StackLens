@@ -459,3 +459,22 @@ This correction keeps detector logic, priority policy, scoring policy, and prese
 `facts → finding candidates → priority → finalized findings → recommendations → scoring → report`
 
 flow.
+
+
+## 2026-09-19 — Step 29: Validate the hardened analyzer-core boundary
+
+The post-review analyzer-core design was validated on the real GitHub Actions runner.
+
+The first read-only run proved that all semantic gates were already green:
+- frozen dependency installation;
+- workspace builds;
+- shadcn project validation;
+- strict TypeScript;
+- analyzer-core, contracts, UI, and design-token tests;
+- type-aware Oxlint with zero warnings/errors.
+
+Only four analyzer-core files required Oxfmt's canonical source formatting. A temporary formatting-only workflow applied Oxfmt and reran the complete quality suite successfully without changing dependencies or the lockfile.
+
+The temporary write permission is removed immediately after that formatting commit. The final merge gate returns to the normal read-only workflow with a frozen lockfile.
+
+This validates the final SOLID boundary introduced in Step 28: finding detection, priority policy, recommendations, and scoring remain separate deterministic responsibilities.
