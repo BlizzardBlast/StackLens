@@ -15,8 +15,10 @@ export type FactualFindingCandidate = Omit<FactualFinding, "priority">;
 export type HeuristicFindingCandidate = Omit<HeuristicFinding, "priority">;
 export type FindingCandidate = FactualFindingCandidate | HeuristicFindingCandidate;
 
-export interface PrioritizationContext<TProjectSnapshot, TMetadataSnapshot>
-  extends AnalysisContext<TProjectSnapshot, TMetadataSnapshot> {
+export interface PrioritizationContext<TProjectSnapshot, TMetadataSnapshot> extends AnalysisContext<
+  TProjectSnapshot,
+  TMetadataSnapshot
+> {
   readonly facts: readonly AnalysisFact[];
   readonly findings: readonly FindingCandidate[];
 }
@@ -34,7 +36,9 @@ export function applyFindingPriority<TProjectSnapshot, TMetadataSnapshot>(
   context: PrioritizationContext<TProjectSnapshot, TMetadataSnapshot>,
   candidate: FindingCandidate,
 ): Finding {
-  const parsedPriority = FindingPrioritySchema.safeParse(prioritizer.prioritize(context, candidate));
+  const parsedPriority = FindingPrioritySchema.safeParse(
+    prioritizer.prioritize(context, candidate),
+  );
 
   if (!parsedPriority.success) {
     throw new AnalyzerInvariantError(

@@ -3,12 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { AnalysisFact } from "@stacklens/contracts";
 
 import { validateFactRuleResult, validateFindingRuleResult } from "../src/rules.js";
-import {
-  createFact,
-  createFindingCandidate,
-  createLimitation,
-  createPriority,
-} from "./fixture.js";
+import { createFact, createFindingCandidate, createLimitation, createPriority } from "./fixture.js";
 
 describe("rule output validation", () => {
   it("rejects requirements that the rule did not declare", () => {

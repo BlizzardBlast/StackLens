@@ -67,7 +67,9 @@ function assertDefinition(rule: RuleDefinition, seenIds: Set<string>) {
   }
 
   if (rule.requirementIds.length === 0) {
-    throw new AnalyzerConfigurationError(`Rule ${rule.id} must declare at least one requirement ID`);
+    throw new AnalyzerConfigurationError(
+      `Rule ${rule.id} must declare at least one requirement ID`,
+    );
   }
 
   for (const requirementId of rule.requirementIds) {
@@ -243,9 +245,7 @@ function assertFindingReferences(
   for (const finding of findings) {
     for (const factId of finding.factIds) {
       if (!factIds.has(factId)) {
-        throw new AnalyzerInvariantError(
-          `Finding ${finding.id} references unknown fact ${factId}`,
-        );
+        throw new AnalyzerInvariantError(`Finding ${finding.id} references unknown fact ${factId}`);
       }
     }
 
@@ -432,14 +432,12 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
     }
   }
 
-  const recommendationStageContext: RecommendationRuleContext<
-    TProjectSnapshot,
-    TMetadataSnapshot
-  > = {
-    ...createStageContext(context, limitations, partialFailures),
-    facts: [...facts],
-    findings: [...findings],
-  };
+  const recommendationStageContext: RecommendationRuleContext<TProjectSnapshot, TMetadataSnapshot> =
+    {
+      ...createStageContext(context, limitations, partialFailures),
+      facts: [...facts],
+      findings: [...findings],
+    };
 
   for (const rule of sortedRules(ruleSet.recommendationRules)) {
     try {
@@ -452,9 +450,7 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
       assertRecommendationReferences(result.recommendations, findingsById, factIds, evidenceIds);
 
       recommendations.push(...result.recommendations);
-      result.recommendations.forEach((recommendation) =>
-        recommendationIds.add(recommendation.id),
-      );
+      result.recommendations.forEach((recommendation) => recommendationIds.add(recommendation.id));
       limitations.push(...result.limitations);
       result.limitations.forEach((limitation) => limitationIds.add(limitation.id));
     } catch (error) {
