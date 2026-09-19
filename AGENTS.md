@@ -99,8 +99,23 @@ Do not introduce an execution path that violates this boundary.
 - UI accessibility semantics must not rely on color alone.
 - Fix lint/type/test failures at the source instead of suppressing them globally unless the rule is genuinely inappropriate for the repository.
 
+## Documentation completion gate
+
+Documentation is part of the change. Before reporting work as complete, every agent must perform a documentation-impact pass according to `docs/documentation-governance.md`.
+
+For **every pull request**:
+- append the chronological step to `docs/design/journey.md`;
+- state what changed, why, and meaningful verification;
+- update `docs/requirements.md` when accepted behavior changes;
+- update architecture/ADRs when architecture or technology decisions change;
+- update design documents when tokens, UI semantics, accessibility patterns, or interaction decisions change;
+- update implementation/contributor/agent documentation when tooling, CI, packages, editor setup, or workflow changes;
+- update `README.md` when its public status or guidance would become stale.
+
+Do not finish with knowingly stale documentation. Do not rewrite historical journey entries to hide earlier decisions; append corrections as new steps.
+
 ## Generated and historical artifacts
 
 - `design/prototype/` is disposable design-validation code, not production implementation.
-- Historical design decisions belong in `docs/design/journey.md`; append new material decisions rather than rewriting history.
+- The project-wide journey lives at `docs/design/journey.md`; append every PR as a new chronological step rather than rewriting history.
 - Generated token output is recreated by package scripts and is not a second source of truth.
