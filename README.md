@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, framework/tool detection, static project-configuration inspection, the framework-independent quick-manifest API boundary, and npm/OSV data adapters are implemented. Fastify transport, product screens, GitHub acquisition, source-usage analysis, and production priority/scoring are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, framework/tool detection, static project-configuration inspection, the framework-independent quick-manifest API boundary, and bounded npm/OSV/public-GitHub data adapters are implemented. Fastify transport, repository-job orchestration, product screens, source-usage analysis, and production priority/scoring are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -124,14 +124,14 @@ See [Quick Manifest Analysis](docs/implementation/quick-manifest-analysis.md).
 
 The first provider package lives in **`packages/data-sources`**.
 
-Its npm Registry adapter performs bounded server-side package-metadata acquisition. Its OSV adapter
-performs bounded exact-version npm vulnerability queries, follows OSV pagination, normalizes advisory
-detail/severity/reference metadata, and preserves partial-source state when detail acquisition is
-incomplete.
+Its npm Registry adapter performs bounded package-metadata acquisition. Its OSV adapter performs
+bounded exact-version vulnerability queries. Its public GitHub adapter validates supported repository
+URLs, resolves an immutable commit SHA, enumerates a bounded recursive tree, and fetches only the
+root manifest plus currently supported configuration files by immutable blob SHA.
 
-Both adapters associate external observations with explicit provenance/retrieval time and convert
-provider/network/schema failures into typed source failures. JavaScript rules call neither provider
-directly. The FR-011 rule consumes the normalized OSV snapshot only after acquisition has completed.
+All adapters associate observations with explicit provenance/retrieval time and convert provider,
+network, schema, and material partial-acquisition states into typed failures/limitations. Analyzer
+rules perform no provider I/O.
 
 See [External Data Sources](docs/implementation/data-sources.md).
 
