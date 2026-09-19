@@ -352,3 +352,24 @@ The existing React finding components were updated to consume classification, pr
 ADR-0008 records the serialized v1 design. The implementation is documented in `docs/implementation/analysis-contracts.md`.
 
 Verification for this step includes package build/type checking, runtime schema tests, UI compatibility checks, Oxlint, Oxfmt, shadcn project validation, and the normal journey-documentation gate.
+
+
+## 2026-09-19 — Step 25: Validate and close the contracts bootstrap
+
+The new workspace package required a lockfile refresh, so the quality workflow temporarily allowed a one-run branch write for dependency resolution and canonical Oxfmt normalization.
+
+The bootstrap run completed successfully across:
+- journey-continuity verification;
+- dependency installation;
+- contract/design-token builds;
+- shadcn project validation;
+- strict TypeScript across contracts and React UI consumers;
+- contract and component tests;
+- type-aware Oxlint;
+- Oxfmt verification.
+
+The resulting lockfile contains the new `packages/contracts` workspace importer and the mature pinned Zod `4.4.3` runtime dependency.
+
+Temporary write permission was then removed. The workflow was restored to its normal read-only, frozen-lockfile configuration before merge.
+
+A normal repository-authored commit is used to trigger the permanent workflow again; that steady-state run is the final merge gate for PR #6.
