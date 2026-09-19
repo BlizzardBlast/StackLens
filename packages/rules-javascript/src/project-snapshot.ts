@@ -19,7 +19,7 @@ function validateProjectPath(path: string): void {
     path.length > 1_000 ||
     path.startsWith("/") ||
     path.includes("\\") ||
-    path.includes("\u0000")
+    /[\u0000-\u001f\u007f]/.test(path)
   ) {
     throw new TypeError(
       "Static project file paths must be non-empty relative POSIX paths of at most 1000 characters.",
