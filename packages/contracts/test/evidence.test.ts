@@ -4,6 +4,15 @@ import { SourceLocationSchema } from "../src/evidence.js";
 import { RequirementIdSchema } from "../src/identifiers.js";
 
 describe("evidence and identifier contracts", () => {
+  it("rejects an end line without a start line", () => {
+    expect(
+      SourceLocationSchema.safeParse({
+        path: "package.json",
+        endLine: 10
+      }).success
+    ).toBe(false);
+  });
+
   it("rejects source ranges whose end precedes the start", () => {
     expect(
       SourceLocationSchema.safeParse({
