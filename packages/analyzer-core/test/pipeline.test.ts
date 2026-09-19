@@ -159,7 +159,7 @@ describe("runRulePipeline", () => {
     expect(result.facts.map((fact) => fact.id)).toEqual(["fact-a"]);
     expect(result.partialFailures).toEqual([
       {
-        id: "analyzer-core.rule-failure.FACT-BROKEN",
+        id: "FACT-BROKEN",
         scope: "rule",
         rule: {
           id: "FACT-BROKEN",
