@@ -35,6 +35,22 @@
     "./deprecated-dependency": {
       "types": "./dist/deprecated-dependency.d.ts",
       "default": "./dist/deprecated-dependency.js"
+    },
+    "./dependency-overlap": {
+      "types": "./dist/dependency-overlap.d.ts",
+      "default": "./dist/dependency-overlap.js"
+    },
+    "./framework-tool-detection": {
+      "types": "./dist/framework-tool-detection.d.ts",
+      "default": "./dist/framework-tool-detection.js"
+    },
+    "./project-configuration": {
+      "types": "./dist/project-configuration.d.ts",
+      "default": "./dist/project-configuration.js"
+    },
+    "./project-snapshot": {
+      "types": "./dist/project-snapshot.d.ts",
+      "default": "./dist/project-snapshot.js"
     }
   },
   "scripts": {
