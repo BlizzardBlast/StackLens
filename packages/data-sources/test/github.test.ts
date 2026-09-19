@@ -464,7 +464,7 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     }
   });
 
-  it("prioritizes package.json and enforces file-count, per-file, aggregate, and request bounds", async () => {
+  it("prioritizes package.json and enforces file-count plus per-file bounds", async () => {
     const packageJson = "{}";
     const smallConfig = "{}";
     const largeConfig = "x".repeat(50);
@@ -507,7 +507,65 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     expect(fetchImpl).toHaveBeenCalledTimes(5);
     const messages = result.data.limitations.map((limitation) => limitation.message).join("\n");
     expect(messages).toContain("retained at most 3 supported files");
-    expect(messages).toContain("aggregate/5-request acquisition bounds");
+  });
+
+  it("enforces aggregate-content and request-count bounds without losing the manifest", async () => {
+    const packageJson = "{}";
+    const firstConfig = "{}";
+    const secondConfig = "{\"a\":1}";
+    const tree = treePayload([
+      treeEntry("package.json", manifestSha, packageJson.length),
+      treeEntry("tsconfig.json", tsconfigSha, firstConfig.length),
+      treeEntry("vite.config.ts", viteSha, secondConfig.length),
+    ]);
+    const aggregateFetch = successfulBaseFetch(tree, [
+      blobPayload(manifestSha, packageJson),
+      blobPayload(tsconfigSha, firstConfig),
+    ]);
+    const aggregateResult = await createAdapter(aggregateFetch, {
+      maxTotalFileBytes: 4,
+    }).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+
+    expect(aggregateResult.ok).toBe(true);
+
+    if (!aggregateResult.ok) {
+      throw new Error("Expected aggregate-limited acquisition");
+    }
+
+    expect(aggregateResult.data.manifest?.content).toBe(packageJson);
+    expect(aggregateResult.data.files).toEqual([
+      {
+        path: "tsconfig.json",
+        blobSha: tsconfigSha,
+        byteLength: firstConfig.length,
+        content: firstConfig,
+      },
+    ]);
+    expect(aggregateResult.data.limitations[0]?.message).toContain(
+      "aggregate/40-request acquisition bounds",
+    );
+
+    const requestFetch = successfulBaseFetch(tree, [blobPayload(manifestSha, packageJson)]);
+    const requestResult = await createAdapter(requestFetch, {
+      maxRequests: 4,
+    }).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+
+    expect(requestResult.ok).toBe(true);
+
+    if (!requestResult.ok) {
+      throw new Error("Expected request-limited acquisition");
+    }
+
+    expect(requestFetch).toHaveBeenCalledTimes(4);
+    expect(requestResult.data.manifest?.content).toBe(packageJson);
+    expect(requestResult.data.files).toEqual([]);
+    expect(requestResult.data.limitations[0]?.message).toContain(
+      "aggregate/4-request acquisition bounds",
+    );
   });
 
   it("skips oversized selected files before fetching their blobs", async () => {
