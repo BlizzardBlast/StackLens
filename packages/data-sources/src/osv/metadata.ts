@@ -48,6 +48,16 @@ function optionalString(
   return requireString(value, label, maxLength);
 }
 
+function requireAdvisoryId(value: unknown, label: string): string {
+  const id = requireString(value, label, 200);
+
+  if (!/^[A-Za-z0-9][A-Za-z0-9._:-]*$/u.test(id)) {
+    throw new OsvPayloadError(`${label} contains unsupported advisory-id characters`);
+  }
+
+  return id;
+}
+
 function parseTimestamp(value: unknown, label: string): string {
   const parsed = IsoDateTimeSchema.safeParse(value);
 
@@ -248,10 +258,9 @@ export function parseOsvBatchResponse(
         }
 
         matches.push({
-          id: requireString(
+          id: requireAdvisoryId(
             vulnerability.id,
             `results[${resultIndex}].vulns[${vulnerabilityIndex}].id`,
-            200,
           ),
           modifiedAt: parseTimestamp(
             vulnerability.modified,
@@ -295,7 +304,7 @@ export function parseOsvVulnerability(
     throw new OsvPayloadError("OSV vulnerability response must be an object");
   }
 
-  const id = requireString(value.id, "id", 200);
+  const id = requireAdvisoryId(value.id, "id");
 
   if (id !== expectedId) {
     throw new OsvPayloadError("OSV vulnerability response id did not match the requested id");
