@@ -87,7 +87,7 @@ See [Analysis Contracts v1](docs/implementation/analysis-contracts.md) and **ADR
 
 ## Analyzer core
 
-The reusable deterministic execution layer lives in **`packages/analyzer-core`**. It provides staged fact/finding/recommendation rule interfaces, rule isolation, scoring dependency inversion, and contract-validated report assembly without provider or UI coupling.
+The reusable deterministic execution layer lives in **`packages/analyzer-core`**. It provides staged fact → finding-candidate → priority → recommendation orchestration, rule/reference isolation, priority and scoring dependency inversion, and contract-validated report assembly without provider or UI coupling.
 
 See [Analyzer Core](docs/implementation/analyzer-core.md) and **ADR-0009**.
 
