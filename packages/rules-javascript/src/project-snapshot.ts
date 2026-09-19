@@ -26,6 +26,10 @@ function compareCodeUnits(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function containsControlCharacter(value: string): boolean {
   for (let index = 0; index < value.length; index += 1) {
     const code = value.charCodeAt(index);
@@ -83,17 +87,13 @@ function validatePackageScript(script: JavaScriptPackageScript): JavaScriptPacka
 }
 
 export function normalizePackageScripts(input: unknown): JavaScriptPackageScript[] {
-  if (typeof input !== "object" || input === null || Array.isArray(input)) {
+  if (!isRecord(input)) {
     return [];
   }
 
-  const scripts = (input as Record<string, unknown>).scripts;
+  const scripts = input.scripts;
 
-  if (scripts === undefined) {
-    return [];
-  }
-
-  if (typeof scripts !== "object" || scripts === null || Array.isArray(scripts)) {
+  if (scripts === undefined || !isRecord(scripts)) {
     return [];
   }
 
