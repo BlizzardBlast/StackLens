@@ -149,6 +149,8 @@ External provider integration lives in `packages/data-sources`.
 - Provider/network/schema failures must become typed partial failures, never false facts or silent empty data.
 - Do not include raw provider bodies or low-level network error details in public failure messages/logging.
 - Publisher-controlled URLs such as package repository/homepage values are metadata only until separately validated for presentation under **SEC-008**.
+- OSV npm queries require exact semantic version evidence. Never send a declared range/tag such as `^1.2.3` or `latest` as though it were an installed version.
+- Preserve OSV query completeness: incomplete pagination/detail acquisition is partial evidence, and an empty match set is never proof that a package is secure.
 - PR tests use synthetic/recorded provider responses; normal PR correctness must not depend on live external services.
 
 ## API application boundary
