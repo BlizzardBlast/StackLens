@@ -64,7 +64,9 @@ function validateObservedAt(value: string): string {
   const parsed = IsoDateTimeSchema.safeParse(value);
 
   if (!parsed.success) {
-    throw new NpmRegistryConfigurationError("now() must return an ISO 8601 timestamp with an offset");
+    throw new NpmRegistryConfigurationError(
+      "now() must return an ISO 8601 timestamp with an offset",
+    );
   }
 
   return parsed.data;
@@ -109,9 +111,10 @@ function isRetryableStatus(status: number): boolean {
   return status === 408 || status === 425 || status === 429 || status >= 500;
 }
 
-export class NpmRegistryAdapter
-  implements EvidenceProvider<NpmPackageMetadataRequest, NpmPackageMetadata>
-{
+export class NpmRegistryAdapter implements EvidenceProvider<
+  NpmPackageMetadataRequest,
+  NpmPackageMetadata
+> {
   readonly id = NPM_REGISTRY_PROVIDER_ID;
 
   readonly #fetchImpl: typeof fetch;
