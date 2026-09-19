@@ -8,10 +8,18 @@ import type {
   PartialFailure,
 } from "@stacklens/contracts";
 
+export type DeepReadonly<T> = T extends (...args: never[]) => unknown
+  ? T
+  : T extends readonly (infer Item)[]
+    ? readonly DeepReadonly<Item>[]
+    : T extends object
+      ? { readonly [Key in keyof T]: DeepReadonly<T[Key]> }
+      : T;
+
 export interface AnalysisContext<TProjectSnapshot, TMetadataSnapshot> {
   readonly input: AnalysisInput;
-  readonly project: Readonly<TProjectSnapshot>;
-  readonly metadata: Readonly<TMetadataSnapshot>;
+  readonly project: DeepReadonly<TProjectSnapshot>;
+  readonly metadata: DeepReadonly<TMetadataSnapshot>;
   readonly sources: readonly DataSource[];
   readonly evidence: readonly Evidence[];
   readonly limitations: readonly AnalysisLimitation[];
@@ -23,16 +31,12 @@ export type FactRuleContext<TProjectSnapshot, TMetadataSnapshot> = AnalysisConte
   TMetadataSnapshot
 >;
 
-export interface FindingRuleContext<TProjectSnapshot, TMetadataSnapshot> extends AnalysisContext<
-  TProjectSnapshot,
-  TMetadataSnapshot
-> {
+export interface FindingRuleContext<TProjectSnapshot, TMetadataSnapshot>
+  extends AnalysisContext<TProjectSnapshot, TMetadataSnapshot> {
   readonly facts: readonly AnalysisFact[];
 }
 
-export interface RecommendationRuleContext<
-  TProjectSnapshot,
-  TMetadataSnapshot,
-> extends FindingRuleContext<TProjectSnapshot, TMetadataSnapshot> {
+export interface RecommendationRuleContext<TProjectSnapshot, TMetadataSnapshot>
+  extends FindingRuleContext<TProjectSnapshot, TMetadataSnapshot> {
   readonly findings: readonly Finding[];
 }
