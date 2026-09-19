@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-import { EvidenceSchema, DataSourceSchema, IsoDateTimeSchema } from "./evidence.js";
+import { DataSourceSchema, EvidenceSchema } from "./evidence.js";
 import { AnalysisFactSchema } from "./fact.js";
 import { FindingSchema } from "./finding.js";
 import { IdentifierSchema } from "./identifiers.js";
@@ -8,6 +8,7 @@ import { AnalysisInputSchema } from "./input.js";
 import { AnalysisLimitationSchema, PartialFailureSchema } from "./limitation.js";
 import { RecommendationSchema } from "./recommendation.js";
 import { AnalysisScoresSchema } from "./score.js";
+import { IsoDateTimeSchema } from "./time.js";
 
 export const ANALYSIS_REPORT_SCHEMA_VERSION = "1.0.0" as const;
 
@@ -303,17 +304,20 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
   });
 
   const scoreEntries = [
-    ["overall", report.scores.overall],
-    ...Object.entries(report.scores.categories)
+    { path: ["scores", "overall"], score: report.scores.overall },
+    ...Object.entries(report.scores.categories).map(([category, score]) => ({
+      path: ["scores", "categories", category],
+      score
+    }))
   ] as const;
 
-  scoreEntries.forEach(([scoreKey, score]) => {
+  scoreEntries.forEach(({ path, score }) => {
     if (score.status === "available") {
       score.contributionIds.forEach((contributionId, referenceIndex) => {
         if (!contributionIds.has(contributionId)) {
           addMissingReferenceIssue(
             ctx,
-            ["scores", scoreKey, "contributionIds", referenceIndex],
+            [...path, "contributionIds", referenceIndex],
             "score contribution",
             contributionId
           );
@@ -324,7 +328,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
         if (!limitationIds.has(limitationId)) {
           addMissingReferenceIssue(
             ctx,
-            ["scores", scoreKey, "limitationIds", referenceIndex],
+            [...path, "limitationIds", referenceIndex],
             "limitation",
             limitationId
           );
