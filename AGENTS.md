@@ -124,6 +124,19 @@ The reusable analyzer execution layer lives in `packages/analyzer-core`.
 - Invalid rule output must be isolated rather than silently normalized.
 - Priority-policy changes must be reflected in the versioned rule set.
 
+## JavaScript/TypeScript rule package
+
+Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules live in
+`packages/rules-javascript`.
+
+- Preserve exact declared dependency specifiers; do not relabel ranges/tags/URLs as installed versions.
+- Keep dependency groups explicit and do not silently merge declarations across groups.
+- Reject malformed manifest groups/values instead of coercing them.
+- Create project evidence without fabricated line numbers.
+- Keep npm/OSV/GitHub/provider I/O outside rule evaluation.
+- Reuse `@stacklens/contracts` structured fact details rather than encoding required machine-readable
+  dependency inventory only in prose.
+
 ## Analyzer safety
 
 Analyzed repositories are untrusted input.
