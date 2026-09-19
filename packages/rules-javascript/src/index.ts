@@ -30,10 +30,7 @@ export {
   projectConfigurationFactId,
   projectConfigurationRule,
 } from "./project-configuration.js";
-export {
-  createJavaScriptProjectSnapshot,
-  normalizePackageScripts,
-} from "./project-snapshot.js";
+export { createJavaScriptProjectSnapshot, normalizePackageScripts } from "./project-snapshot.js";
 export type {
   JavaScriptPackageScript,
   JavaScriptProjectSnapshot,
