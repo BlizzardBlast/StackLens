@@ -22,6 +22,7 @@ import {
 import { OsvPayloadError, parseOsvBatchResponse, parseOsvVulnerability } from "./metadata.js";
 import type { ParsedBatchResult } from "./metadata.js";
 import {
+  OSV_DEFAULT_MAX_ADVISORY_DETAILS,
   OSV_DEFAULT_MAX_PAGINATION_ROUNDS,
   OSV_DEFAULT_MAX_QUERIES,
   OSV_DEFAULT_MAX_RESPONSE_BYTES,
@@ -215,6 +216,7 @@ export class OsvVulnerabilityAdapter implements EvidenceProvider<
   readonly #maxResponseBytes: number;
   readonly #maxQueries: number;
   readonly #maxPaginationRounds: number;
+  readonly #maxAdvisoryDetails: number;
 
   constructor(options: OsvAdapterOptions = {}) {
     this.#fetchImpl = options.fetchImpl ?? globalThis.fetch;
@@ -234,6 +236,10 @@ export class OsvVulnerabilityAdapter implements EvidenceProvider<
     this.#maxPaginationRounds = validatePositiveInteger(
       options.maxPaginationRounds ?? OSV_DEFAULT_MAX_PAGINATION_ROUNDS,
       "maxPaginationRounds",
+    );
+    this.#maxAdvisoryDetails = validatePositiveInteger(
+      options.maxAdvisoryDetails ?? OSV_DEFAULT_MAX_ADVISORY_DETAILS,
+      "maxAdvisoryDetails",
     );
   }
 
@@ -468,7 +474,21 @@ export class OsvVulnerabilityAdapter implements EvidenceProvider<
     }
 
     const vulnerabilities: OsvVulnerabilityRecord[] = [];
-    const vulnerabilityIds = [...matchedPackagesByVulnerability.keys()].toSorted(compareCodeUnits);
+    const allVulnerabilityIds = [...matchedPackagesByVulnerability.keys()].toSorted(compareCodeUnits);
+    const vulnerabilityIds = allVulnerabilityIds.slice(0, this.#maxAdvisoryDetails);
+
+    if (allVulnerabilityIds.length > vulnerabilityIds.length) {
+      partialFailures.push(
+        createPartialFailure(
+          sourceId,
+          validateObservedAt(this.#now()),
+          "osv_detail_limit_reached",
+          "OSV advisory detail acquisition reached the configured safety bound; batch matches remain available.",
+          false,
+          "detail-limit",
+        ),
+      );
+    }
 
     const resolveDetails = async (index: number): Promise<void> => {
       const vulnerabilityId = vulnerabilityIds[index];
