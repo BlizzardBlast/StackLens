@@ -30,10 +30,7 @@ import {
   parseRepositoryPayload,
   parseTreePayload,
 } from "./metadata.js";
-import type {
-  RepositoryPayload,
-  TreeEntry,
-} from "./metadata.js";
+import type { RepositoryPayload, TreeEntry } from "./metadata.js";
 import { GitHubRequestClient } from "./request.js";
 import {
   createLimitation,
@@ -62,11 +59,7 @@ import type {
   GitHubRepositorySnapshot,
 } from "./types.js";
 import { parsePublicGitHubRepositoryUrl } from "./url.js";
-import {
-  validateGitHubRef,
-  validateObservedAt,
-  validatePositiveInteger,
-} from "./validation.js";
+import { validateGitHubRef, validateObservedAt, validatePositiveInteger } from "./validation.js";
 
 const CONTRACT_REFERENCE_MAX_LENGTH = 1_000;
 
@@ -86,10 +79,7 @@ function candidateOrder(left: CandidateEntry, right: CandidateEntry): number {
   return compareCodeUnits(left.path, right.path);
 }
 
-function safeFailureReference(
-  reference: string,
-  fallback: string,
-): string {
+function safeFailureReference(reference: string, fallback: string): string {
   return reference.length <= CONTRACT_REFERENCE_MAX_LENGTH ? reference : fallback;
 }
 
@@ -143,9 +133,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
     }
   }
 
-  async fetch(
-    request: GitHubRepositoryRequest,
-  ): Promise<ProviderResult<GitHubRepositorySnapshot>> {
+  async fetch(request: GitHubRepositoryRequest): Promise<ProviderResult<GitHubRepositorySnapshot>> {
     const parsedRepository = parsePublicGitHubRepositoryUrl(request.repositoryUrl);
     const requestKey = JSON.stringify([request.repositoryUrl, request.ref ?? null]);
 
@@ -228,11 +216,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
     }
 
     const resolvedRef = requestedRef ?? repository.defaultBranch;
-    const commitEndpoint = githubCommitApiUrl(
-      repository.owner,
-      repository.name,
-      resolvedRef,
-    );
+    const commitEndpoint = githubCommitApiUrl(repository.owner, repository.name, resolvedRef);
     let commit;
 
     try {
@@ -273,21 +257,13 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
       );
     }
 
-    const sourceId = githubRepositorySourceId(
-      repository.owner,
-      repository.name,
-      commit.commitSha,
-    );
+    const sourceId = githubRepositorySourceId(repository.owner, repository.name, commit.commitSha);
     const sourceReference = githubCommitTreeUrl(
       repository.owner,
       repository.name,
       commit.commitSha,
     );
-    const treeEndpoint = githubTreeApiUrl(
-      repository.owner,
-      repository.name,
-      commit.treeSha,
-    );
+    const treeEndpoint = githubTreeApiUrl(repository.owner, repository.name, commit.treeSha);
     let tree;
 
     try {
@@ -466,10 +442,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
         return;
       }
 
-      if (
-        entry.size !== undefined &&
-        totalBytes + entry.size > this.#maxTotalFileBytes
-      ) {
+      if (entry.size !== undefined && totalBytes + entry.size > this.#maxTotalFileBytes) {
         aggregateLimitedPaths.push(entry.path);
         return;
       }
