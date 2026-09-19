@@ -140,6 +140,8 @@ HTTP 408/425/429 and 5xx responses are retryable. Other HTTP statuses are non-re
 Synthetic tests cover:
 
 - successful scoped-package acquisition;
+- minimal valid metadata without optional time/repository fields;
+- empty deprecation messages normalizing as not deprecated;
 - versions/dist-tags/deprecation/publication/repository normalization;
 - source/evidence contract validation;
 - deterministic normalization under different object insertion order;
