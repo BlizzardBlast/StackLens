@@ -268,7 +268,8 @@ The first provider-backed finding rule is implemented in `packages/rules-javascr
 Accepted implementation:
 
 - `JS-VULN-011@1` is a synchronous factual finding rule;
-- the rule consumes a minimal `JavaScriptAnalysisMetadata.osv` snapshot and has no
+- the rule consumes source-bound `JavaScriptAnalysisMetadata.osv` metadata containing one exact
+  report-level OSV `sourceId` plus a minimal snapshot and has no
   `rules-javascript -> data-sources` dependency;
 - OSV/provider I/O remains entirely outside rule evaluation;
 - the rule correlates OSV query results only when package name and queried version exactly equal a
@@ -277,15 +278,17 @@ Accepted implementation:
 - duplicate manifest declarations of the same package/version contribute to one finding basis;
 - one stable finding candidate is emitted per package/version/advisory match;
 - each finding identifies the dependency, advisory reference, stable rule identity, project
-  declaration evidence, OSV external evidence, and retrieval-time-associated source provenance;
+  declaration evidence, and OSV external evidence from the exact source bound to the normalized
+  snapshot; the source carries retrieval-time provenance;
 - source-provided severity is surfaced only as attributed metadata and is not converted into a
   StackLens severity label or score effect;
 - batch matches remain factual findings even when optional advisory detail is unavailable;
 - withdrawn advisories are not emitted as active known-vulnerability findings;
 - incomplete OSV query coverage produces an insufficient-evidence limitation while retaining known
   matches;
-- unavailable OSV sources, missing snapshots, missing exact-version query results, and missing
-  advisory evidence produce conservative limitations rather than clean/secure conclusions;
+- unavailable/mismatched OSV sources, missing snapshots, missing exact-version query results, and
+  missing advisory evidence from the exact bound source produce conservative limitations rather
+  than clean/secure conclusions;
 - complete empty OSV results emit no vulnerability finding and no "secure" fact;
 - finding priority, recommendations, and production scoring remain separate/unimplemented;
 - focused rule-level and analyzer-core integration tests are synthetic and network-free.
