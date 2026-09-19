@@ -94,6 +94,20 @@ The authoritative serialized analysis-domain model lives in `packages/contracts`
 - N/A / insufficient evidence must remain structurally distinct from a numeric score of zero.
 - Breaking serialized report changes require a schema-version change and ADR/architecture review.
 
+## Analyzer core rules
+
+The reusable orchestration layer lives in `packages/analyzer-core`.
+
+- Keep ecosystem-specific detection out of analyzer-core.
+- Fact rules emit facts; finding rules emit findings; recommendation rules emit recommendations. Do not collapse these stages.
+- Rules must remain synchronous and free of provider/network I/O.
+- Same-stage rules must not depend on sibling output or registration order.
+- Rule IDs/versions are stable product data.
+- Every rule must declare requirement IDs and emitted entities must stay within that declaration.
+- Do not catch rule failures inside product rules merely to hide them; analyzer-core owns rule-level partial-failure isolation.
+- Scoring formulas belong in `packages/scoring`; analyzer-core depends only on `AnalysisScorer`.
+- Do not create timestamps/random IDs inside analyzer-core. Callers supply nondeterministic values.
+
 ## Analyzer safety
 
 Analyzed repositories are untrusted input.
