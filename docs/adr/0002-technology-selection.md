@@ -1,6 +1,6 @@
 # ADR-0002: Technology selection
 
-- **Status:** Accepted; version baseline partially superseded by ADR-0007
+- **Status:** Accepted; version baseline partially superseded by ADR-0007 and parser choice superseded by ADR-0010
 - **Date:** 2026-09-18
 - **Requirements:** PRD-006, PRD-007, FR-001–FR-004, FR-018–FR-022, NFR-001, NFR-002, NFR-004–NFR-009, SEC-001–SEC-003, GOV-006
 
@@ -69,11 +69,7 @@ Graphile Worker is selected to avoid introducing Redis solely for the queue. It 
 
 ### Static analysis
 
-- **@typescript-eslint/typescript-estree** as the initial JavaScript/TypeScript parser.
-- The parser sits behind an internal adapter.
-- Rules must depend on StackLens AST abstractions/utilities where appropriate rather than parser-specific details everywhere.
-
-This parser is selected for robust JavaScript/TypeScript/JSX/TSX support and a stable ESTree-shaped ecosystem. A future move to Oxc may be evaluated for performance without changing finding/report contracts.
+The parser remains behind an internal adapter, and rules depend on StackLens-owned source-reference abstractions rather than parser-specific AST types. The original typescript-estree implementation choice is superseded by ADR-0010 because the accepted TypeScript 7 baseline is incompatible with the current typescript-estree release line.
 
 ### External evidence
 
