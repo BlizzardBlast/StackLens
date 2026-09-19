@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.4  
+> **Architecture version:** 0.1.5  
 > **Date:** 2026-09-19  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
@@ -188,30 +188,59 @@ Every external record carries provenance and retrieval time (**DATA-001**, **DAT
 
 ### 5.4 Rules
 
-Each rule has a stable identifier.
+Each rule has a stable identifier, version, and requirement declaration.
 
-Conceptual interface:
+Analyzer-core uses three output-responsibility stages:
+
+1. **Fact rules** receive normalized context and emit facts.
+2. **Finding rules** receive normalized context plus the complete fact-stage output and emit findings.
+3. **Recommendation rules** receive normalized context plus complete facts/findings and emit recommendations.
+
+Rules within the same stage do not receive sibling outputs. They execute in stable rule-ID order, so registration order cannot become hidden product behavior.
+
+Conceptual interfaces:
 
 ```ts
-interface AnalysisRule {
-  id: string;
-  version: string;
-  requirementIds: string[];
-  kind: "fact" | "heuristic" | "recommendation";
-  evaluate(context: RuleContext): RuleResult;
+interface FactRule<Project, Metadata> {
+  readonly kind: "fact";
+  readonly id: string;
+  readonly version: string;
+  readonly requirementIds: readonly RequirementId[];
+  evaluate(context: FactRuleContext<Project, Metadata>): FactRuleResult;
+}
+
+interface FindingRule<Project, Metadata> {
+  readonly kind: "finding";
+  // same stable identity/traceability fields
+  evaluate(context: FindingRuleContext<Project, Metadata>): FindingRuleResult;
+}
+
+interface RecommendationRule<Project, Metadata> {
+  readonly kind: "recommendation";
+  // same stable identity/traceability fields
+  evaluate(
+    context: RecommendationRuleContext<Project, Metadata>
+  ): RecommendationRuleResult;
 }
 ```
+
+Rule evaluation is synchronous. Provider/network I/O occurs before analyzer-core through explicit adapters.
 
 Rules:
 
 - receive normalized data;
 - do not mutate shared state;
 - do not perform hidden network access;
-- return structured evidence references;
-- expose confidence for heuristic findings;
+- emit contract-valid entities owned by the executing rule;
+- cite only requirements declared by that rule;
+- expose confidence through heuristic finding/recommendation contracts;
 - are independently fixture-testable (**NFR-002**).
 
+Individual rule failure is isolated as a rule-scoped partial failure + limitation; unrelated rules continue (**NFR-003**). Invalid rule-set configuration such as duplicate IDs fails before evaluation.
+
 Rule IDs are product data and must remain stable once published (**DATA-003**, **NFR-005**).
+
+See [ADR-0009](adr/0009-deterministic-staged-analyzer-core.md).
 
 ### 5.5 Findings
 
@@ -238,6 +267,8 @@ The frontend renders this model; it does not reinterpret raw metadata into indep
 ### 5.6 Scoring
 
 Scoring is a separate pure deterministic step.
+
+Analyzer-core owns only the `AnalysisScorer` abstraction. The concrete deterministic scoring implementation belongs in `packages/scoring`, preserving dependency inversion and keeping score formulas out of orchestration.
 
 Inputs:
 
@@ -715,5 +746,6 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0006 — Design system and prototyping strategy](adr/0006-design-system-and-prototyping.md)
 - [ADR-0007 — Design infrastructure bootstrap](adr/0007-design-infrastructure-bootstrap.md)
 - [ADR-0008 — Analysis report contract v1](adr/0008-analysis-report-contract-v1.md)
+- [ADR-0009 — Deterministic staged analyzer core](adr/0009-deterministic-staged-analyzer-core.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).
