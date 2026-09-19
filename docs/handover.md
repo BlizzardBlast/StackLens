@@ -3,7 +3,7 @@
 > **Status:** Active implementation handover  
 > **Prepared:** 2026-09-19  
 > **Baseline branch:** `main`  
-> **Baseline commit:** FR-005 merge commit (set after merge)  
+> **Baseline commit:** `7168467e458c63ed16cb7017fffe1ceae936da4f`  
 > **Architecture:** v0.1.6  
 > **Immediate milestone:** Milestone A — Quick manifest input/orchestration  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
