@@ -66,7 +66,8 @@ The npm adapter therefore:
 
 - uses a fixed provider origin rather than a user-controlled host;
 - bounds request duration and response bytes;
-- validates package identity and expected metadata shapes;
+- validates package identity, npm's package-name length bound, contract-safe generated references,
+  and expected metadata shapes;
 - does not copy raw response bodies into failures;
 - does not expose low-level network error details;
 - does not promote publisher-controlled repository URLs into external-evidence links.
