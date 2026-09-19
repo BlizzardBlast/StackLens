@@ -814,3 +814,51 @@ FR-006/FR-007/FR-010 behavior on top of the npm provider boundary from PR #13.
 
 **Traceability:** FR-006, FR-007, FR-010, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001,
 NFR-002, NFR-003, NFR-004, SEC-002, GOV-002, GOV-006, GOV-007.
+
+
+## 2026-09-19 — Step 39: Add static overlap, tool, and configuration detection
+
+This implementation PR adds the next deterministic JavaScript/TypeScript analysis slice for
+**FR-008**, **FR-012**, and **FR-013**.
+
+`JS-OVERLAP-008@1` introduces an intentionally narrow curated overlap catalog. The first supported
+pairs cover Biome/ESLint, Biome/Prettier, Axios/Ky, Day.js/Moment, and Jest/Vitest. A match is a
+medium-confidence heuristic based on explicit package declarations and a known overlapping
+capability. Findings explain why parallel ownership can matter while explicitly stating that
+co-declaration does not establish that either dependency is unnecessary. Broad category similarity
+does not produce a finding.
+
+`JS-TOOL-012@1` identifies supported frameworks/development tools from exact dependency package
+identities. It runs as a fact-stage rule directly over the normalized manifest, avoiding same-stage
+dependency on `JS-DEP-005`. The initial catalog covers representative frameworks, build tools, test
+frameworks, linters/formatters, TypeScript, state-management libraries, and observability SDKs.
+Unknown packages are not guessed from names.
+
+FR-013 requires repository analysis, while GitHub acquisition is intentionally deferred to the next
+milestone. To keep that boundary clean, `JavaScriptProjectSnapshot` adds optional already-acquired
+static files to the normalized manifest. Its constructor performs only in-memory validation,
+cloning, path safety checks, duplicate rejection, and deterministic ordering; it performs no
+filesystem or network access.
+
+`JS-CONFIG-013@1` consumes that static snapshot. It identifies supported configuration files and
+creates path-only project evidence. Strict JSON TypeScript, legacy ESLint, Prettier, and Biome
+configuration can expose a bounded allowlist of high-level characteristics. Known JS/TS config
+families such as Vite/Vitest/webpack/Rollup/Jest/ESLint flat config/Next.js/Prettier/Tailwind are
+identified but never imported or executed. Dynamic values, JSONC/comments unsupported by strict JSON,
+unexpected field shapes, and configuration above the 512 Ki-character inspection bound remain
+partial/resource-limited instead of being guessed.
+
+The configuration evidence deliberately excludes source content, and executable-looking fixture
+content verifies that the rule has no evaluation path.
+
+Focused synthetic tests cover supported/unknown tool detection, duplicate declaration evidence,
+curated overlap behavior and deterministic ordering, no broad-category redundancy inference, static
+path validation, declarative high-level config characteristics, dynamic code non-execution,
+JSONC/malformed/resource-limit behavior, unrelated-file exclusion, and analyzer-core integration
+using only test priority plus insufficient-evidence scoring.
+
+No requirement or architecture amendment is needed: this implements the already accepted static
+analysis behavior while preserving the existing modular-monolith/analyzer safety boundaries.
+
+**Traceability:** FR-008, FR-012, FR-013, FR-017, FR-021, DATA-003, DATA-004, DATA-005, NFR-001,
+NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-002, GOV-006, GOV-007.
