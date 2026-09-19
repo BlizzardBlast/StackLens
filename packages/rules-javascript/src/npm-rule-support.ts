@@ -5,7 +5,7 @@ import type {
   JavaScriptNpmMetadata,
   JavaScriptNpmPackageSnapshot,
 } from "./analysis-metadata.js";
-import { compareCodeUnits, createRuleLimitation } from "./rule-support.js";
+import { compareCodeUnits, createDependencyRuleLimitation } from "./rule-support.js";
 
 export const NPM_REGISTRY_PROVIDER_ID = "npm-registry";
 
@@ -20,11 +20,11 @@ export type NpmObservationResolution =
   | {
       readonly ok: true;
       readonly observation: NpmObservation;
-      readonly limitations: readonly ReturnType<typeof createRuleLimitation>[];
+      readonly limitations: readonly ReturnType<typeof createDependencyRuleLimitation>[];
     }
   | {
       readonly ok: false;
-      readonly limitations: readonly ReturnType<typeof createRuleLimitation>[];
+      readonly limitations: readonly ReturnType<typeof createDependencyRuleLimitation>[];
     };
 
 function npmMetadataForPackage(
@@ -63,7 +63,7 @@ export function resolveNpmObservation(options: {
     return {
       ok: false,
       limitations: [
-        createRuleLimitation(
+        createDependencyRuleLimitation(
           options.ruleId,
           "insufficient_evidence",
           "npm-metadata-missing",
@@ -79,7 +79,7 @@ export function resolveNpmObservation(options: {
     return {
       ok: false,
       limitations: [
-        createRuleLimitation(
+        createDependencyRuleLimitation(
           options.ruleId,
           "insufficient_evidence",
           "npm-metadata-ambiguous",
@@ -102,7 +102,7 @@ export function resolveNpmObservation(options: {
     return {
       ok: false,
       limitations: [
-        createRuleLimitation(
+        createDependencyRuleLimitation(
           options.ruleId,
           "external_data",
           "npm-source-unavailable",
@@ -114,29 +114,13 @@ export function resolveNpmObservation(options: {
     };
   }
 
-  if (entry.snapshot.packageName !== options.packageName) {
-    return {
-      ok: false,
-      limitations: [
-        createRuleLimitation(
-          options.ruleId,
-          "external_data",
-          "npm-package-identity-mismatch",
-          JSON.stringify([options.packageName, entry.snapshot.packageName]),
-          `The normalized npm Registry snapshot package identity does not match analyzed dependency ${options.packageName}.`,
-          [source.id],
-        ),
-      ],
-    };
-  }
-
   const evidence = externalEvidenceForSource(options.evidence, source);
 
   if (evidence.length === 0) {
     return {
       ok: false,
       limitations: [
-        createRuleLimitation(
+        createDependencyRuleLimitation(
           options.ruleId,
           "external_data",
           "npm-evidence-missing",
@@ -151,7 +135,7 @@ export function resolveNpmObservation(options: {
   const limitations =
     source.status === "partial"
       ? [
-          createRuleLimitation(
+          createDependencyRuleLimitation(
             options.ruleId,
             "partial_failure",
             "npm-source-partial",
