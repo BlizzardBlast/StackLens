@@ -5,7 +5,7 @@
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
 > **Architecture:** v0.1.6  
-> **Completed milestone:** Known-vulnerability finding rule — this implementation PR  
+> **Completed milestone:** Known-vulnerability finding rule — PR #15  
 > **Immediate milestone:** Milestone E — npm metadata dependency findings  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
@@ -263,7 +263,7 @@ Primary traceability:
 
 ## 8. Completed milestone: Known-vulnerability finding rule
 
-The first provider-backed finding rule is implemented in `packages/rules-javascript`.
+The first provider-backed finding rule is implemented in `packages/rules-javascript` by PR #15.
 
 Accepted implementation:
 
