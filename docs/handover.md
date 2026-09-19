@@ -5,8 +5,8 @@
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
 > **Architecture:** v0.1.6  
-> **Completed milestone:** npm metadata dependency rules — PR #16  
-> **Immediate milestone:** Milestone F — overlap plus framework/tool/configuration detection  
+> **Completed milestone:** overlap plus framework/tool/configuration detection — this implementation PR  
+> **Immediate milestone:** Milestone G — repository acquisition  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -55,6 +55,8 @@ The repository already has the following accepted foundations:
 - deterministic JavaScript dependency inventory in `@stacklens/rules-javascript`;
 - provider-backed npm outdated/deprecation/health analysis in `@stacklens/rules-javascript`;
 - provider-backed factual known-vulnerability detection in `@stacklens/rules-javascript`;
+- curated dependency-overlap heuristics, framework/tool facts, and static configuration inspection in
+  `@stacklens/rules-javascript`;
 - framework-independent quick manifest orchestration in `apps/api`;
 - bounded npm Registry metadata acquisition in `@stacklens/data-sources`;
 - bounded exact-version OSV vulnerability acquisition in `@stacklens/data-sources`;
@@ -64,7 +66,7 @@ The repository already has the following accepted foundations:
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 
-The latest completed product implementation milestone is the **npm Registry-backed FR-006/FR-007/FR-010 rule** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
+The latest completed product implementation milestone is the **FR-008/FR-012/FR-013 static project-detection** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
 
 The analyzer flow is:
 
@@ -94,11 +96,11 @@ scores
 AnalysisReport
 ```
 
-The JavaScript/TypeScript rule package now implements **FR-005 dependency inventory**, **FR-006 exact-version outdated detection**, **FR-007 explicit npm deprecation detection**, neutral **FR-010 npm Registry health facts**, and **FR-011 known-vulnerability detection**.
+The JavaScript/TypeScript rule package now implements **FR-005 dependency inventory**, **FR-006 exact-version outdated detection**, **FR-007 explicit npm deprecation detection**, **FR-008 curated overlap heuristics**, neutral **FR-010 npm Registry health facts**, **FR-011 known-vulnerability detection**, **FR-012 framework/tool detection**, and **FR-013 static configuration detection**.
 
 The API application now has a framework-independent quick-manifest service boundary, but no Fastify HTTP transport is implemented yet.
 
-The npm Registry and OSV adapters are implemented. No GitHub acquisition adapter, worker, web application, overlap/source-usage rule, concrete production priority policy, or concrete scoring policy has been implemented yet.
+The npm Registry and OSV adapters are implemented. No GitHub repository acquisition adapter, worker, web application, source-usage rule, concrete production priority policy, or concrete scoring policy has been implemented yet.
 
 ## 3. Non-negotiable boundaries
 
@@ -340,43 +342,69 @@ Primary traceability:
 
 `FR-006, FR-007, FR-010, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, SEC-002, GOV-002, GOV-006, GOV-007`.
 
-## 10. Immediate next milestone: overlap plus framework/tool/configuration detection
+## 10. Completed milestone: overlap plus framework/tool/configuration detection
 
-Implement the next static JavaScript/TypeScript slice for:
+The static JavaScript/TypeScript project-detection slice is implemented in
+`packages/rules-javascript` by this implementation PR.
 
-- **FR-008** overlapping/redundant dependency cases;
-- **FR-012** framework/tool detection;
-- **FR-013** project configuration detection.
+Accepted implementation:
 
-Required boundaries:
+- `JS-OVERLAP-008@1` emits medium-confidence heuristic findings only for explicit curated
+  package/capability pairs;
+- initial overlap rules cover Biome/ESLint, Biome/Prettier, Axios/Ky, Day.js/Moment, and
+  Jest/Vitest;
+- overlap findings name both packages/capability, preserve all dependency facts/evidence, explain
+  why parallel ownership matters, and explicitly avoid claiming that either dependency is
+  unnecessary;
+- broad category similarity or fuzzy package-name inference does not create overlap findings;
+- `JS-TOOL-012@1` emits deterministic manifest-backed facts for a curated exact-package catalog of
+  supported frameworks, build tools, test frameworks, linters/formatters, TypeScript,
+  state-management libraries, and observability tools;
+- duplicate tool declarations produce one tool fact while retaining all declaration evidence;
+- `JavaScriptProjectSnapshot` adds optional already-acquired static repository files to the
+  normalized manifest without adding filesystem/GitHub acquisition behavior;
+- static file paths are canonicalized/validated as relative POSIX paths and deterministic file order
+  is preserved;
+- `JS-CONFIG-013@1` identifies supported repository configuration files and inspects a bounded
+  allowlist of high-level characteristics from strict JSON;
+- TypeScript, legacy ESLint JSON, Prettier JSON, and Biome JSON are the first declarative
+  configuration families;
+- known JS/TS configuration families are identified by path but never imported, executed, or
+  evaluated; partial inspection is recorded as a limitation;
+- JSONC/comments, malformed/unsupported field shapes, and oversized configuration remain detected
+  but limited rather than guessed;
+- configuration evidence retains path/summary only and does not copy source content into the report;
+- the static configuration inspection bound is 512 Ki characters;
+- no GitHub acquisition, source-usage analysis, production priority, recommendations, or scoring is
+  introduced;
+- focused rule-level and analyzer-core integration tests are synthetic and require no live
+  repository/network access.
 
-- keep analyzer-core ecosystem-agnostic;
-- use deterministic static evidence only;
-- do not claim a dependency is redundant merely because another package shares a broad category;
-- framework/tool detection must identify the evidence used to classify a project;
-- configuration detection must distinguish directly parsed declarative configuration from partial
-  interpretation of dynamic JavaScript/TypeScript configuration;
-- never import or execute project configuration;
-- unsupported/dynamic configuration must produce a limitation when full interpretation is unsafe;
-- keep detection separate from priority, recommendations, and scoring;
-- do not add GitHub repository acquisition, source-usage analysis, production priority/scoring, or
-  Fastify transport in the same PR.
+Primary traceability:
 
-### Milestone G — Repository acquisition
+`FR-008, FR-012, FR-013, FR-017, FR-021, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-002, GOV-006, GOV-007`.
+
+## 11. Immediate next milestone: repository acquisition
 
 Implement public GitHub repository acquisition for **FR-003** using the already accepted
-worker/static-snapshot architecture.
+worker/static-snapshot architecture and feed its output into `JavaScriptProjectSnapshot`.
 
 Required properties:
 
-- resolve immutable commit SHA;
-- fetch bounded static files only;
-- skip/limit binary/generated/vendor content;
-- treat symlinks/submodules as metadata unless later requirements say otherwise;
-- record skipped/unsupported content as limitations;
-- never clone-and-run the project.
-
-This milestone enables stronger evidence for **FR-009**.
+- resolve and record an immutable Git commit SHA before analysis;
+- fetch only bounded static repository content required by supported rules;
+- do not execute repository code, package scripts, builds, tests, hooks, or configuration;
+- enforce file-count, per-file, aggregate-content, and request/time bounds;
+- skip/limit binary, generated, vendor, and unsupported content conservatively;
+- treat symlinks/submodules as metadata rather than following/executing them unless a later accepted
+  requirement changes that boundary;
+- normalize repository-relative POSIX paths and reject unsafe traversal forms;
+- preserve project evidence path provenance and repository identity;
+- record skipped/unsupported/resource-limited content as analysis limitations;
+- avoid retaining/logging full repository source by default;
+- keep GitHub I/O outside analyzer rules;
+- do not implement FR-009 source-usage conclusions, production scoring, private repositories, or
+  write access in the same PR.
 
 ### Milestone H — Static source usage analysis
 
@@ -425,7 +453,7 @@ After the analysis domain is proven in vertical slices, finish:
 
 Do not move analyzer logic into React or Fastify.
 
-## 11. What not to do next
+## 12. What not to do next
 
 Avoid these tempting detours until their requirement slice is ready:
 
@@ -441,48 +469,50 @@ Avoid these tempting detours until their requirement slice is ready:
 - do not build one giant "analyze everything" rule;
 - do not add production scoring weights before evidence coverage is meaningful.
 
-## 12. Pull-request strategy for the next session
+## 13. Pull-request strategy for the next session
 
 Recommended next PR:
 
 **Title**
 
 ```text
-feat: add overlap and project detection rules
+feat: add public GitHub repository acquisition
 ```
 
 **Primary requirements**
 
 ```text
-FR-008, FR-012, FR-013, FR-017, FR-021,
-DATA-001, DATA-003, DATA-005,
-NFR-001, NFR-002, NFR-003, NFR-004, NFR-005,
-SEC-001, SEC-002,
+FR-003, FR-004, FR-013, FR-017, FR-021,
+DATA-001, DATA-002, DATA-006,
+NFR-001, NFR-003, NFR-004, NFR-008, NFR-009,
+SEC-001, SEC-002, SEC-003, SEC-007, SEC-008,
 GOV-002, GOV-006, GOV-007
 ```
 
-Keep the PR limited to deterministic static overlap/framework/tool/configuration detection, focused
-positive/negative/partial fixtures, analyzer-core integration, and documentation.
+Keep the PR limited to immutable/bounded public GitHub snapshot acquisition, project evidence,
+typed limitations/failures, integration with the existing static project snapshot/config rules, and
+documentation.
 
-Do not execute project configuration. Do not add repository acquisition, source-usage analysis,
-production priority, recommendations, scoring, worker/database behavior, or Fastify transport in the
-same PR.
+Do not add private-repository authentication, repository writes, dependency installation, source
+usage/FR-009 conclusions, production priority/recommendations/scoring, or product UI in the same PR.
 
-## 13. Handover completion signal
+## 14. Handover completion signal
 
-The next session can consider the overlap/framework/tool/configuration slice complete when:
+The next session can consider repository acquisition complete when:
 
-1. supported overlap cases are based on explicit known capability relationships rather than broad
-   category similarity;
-2. framework/tool findings identify the static evidence that caused detection;
-3. supported declarative configuration is parsed statically and deterministic output is produced;
-4. dynamic/unsupported configuration is never executed and yields partial/limitation behavior when
-   full interpretation is unsafe;
-5. analyzer-core remains ecosystem-agnostic and no hidden I/O/execution is introduced;
-6. detection remains separate from priority, recommendations, and scoring;
-7. focused rule/analyzer integration tests are green;
-8. the same PR completes journey/handover documentation before merge and the permanent CI gate is
+1. public GitHub repository input resolves to an immutable commit SHA before content analysis;
+2. all network/filesystem work stays outside analyzer rules and no repository code/configuration is
+   executed;
+3. file-count/per-file/aggregate/time bounds are explicit and tested;
+4. path traversal, binary/generated/vendor content, symlinks/submodules, and unsupported content are
+   handled conservatively with limitations where material;
+5. acquired supported static files feed the existing `JavaScriptProjectSnapshot`/configuration
+   rule boundary without duplicating rule semantics;
+6. repository identity/evidence provenance is deterministic and contract-valid;
+7. secrets/full source are not retained or logged by default;
+8. focused synthetic acquisition/integration tests are green;
+9. the same PR completes journey/handover documentation before merge and the permanent CI gate is
    green.
 
-Continue with the smallest deterministic overlap/framework/tool/configuration vertical slice rather
-than combining repository acquisition, source usage, or scoring behavior.
+Continue with the smallest bounded public-repository acquisition slice rather than combining
+source-usage findings, scoring, private access, or UI behavior.
