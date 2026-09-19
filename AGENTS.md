@@ -134,6 +134,9 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
 - Reject malformed manifest groups/values instead of coercing them.
 - Create project evidence without fabricated line numbers.
 - Keep npm/OSV/GitHub/provider I/O outside rule evaluation.
+- Provider-backed JS rules consume normalized analyzer metadata; do not add a `rules-javascript -> data-sources` dependency.
+- The FR-011 rule may correlate only exact package/version OSV query evidence with dependency inventory facts. Declared ranges/tags remain insufficient evidence until a resolved-version source exists.
+- Withdrawn advisories are not active findings, incomplete OSV queries remain limited evidence, and complete empty queries never become a "secure" fact.
 - Reuse `@stacklens/contracts` structured fact details rather than encoding required machine-readable
   dependency inventory only in prose.
 
