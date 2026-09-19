@@ -481,9 +481,9 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
     });
 
     expect(result.facts).toHaveLength(3);
-    expect(result.facts?.find((fact) => fact.subject.path === ".eslintrc.cjs")?.statement).toContain(
-      "was not executed or evaluated",
-    );
+    expect(
+      result.facts?.find((fact) => fact.subject.path === ".eslintrc.cjs")?.statement,
+    ).toContain("was not executed or evaluated");
     expect(
       result.facts?.find((fact) => fact.subject.path === ".prettierrc.yaml")?.statement,
     ).toContain("file format is not supported");
