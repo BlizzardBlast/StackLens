@@ -38,11 +38,11 @@ export function dependencyKey(packageName: string, declaredSpecifier: string): s
   return JSON.stringify([packageName, declaredSpecifier]);
 }
 
-export function ruleLimitationId(ruleId: string, code: string, identity: string): string {
+export function dependencyRuleLimitationId(ruleId: string, code: string, identity: string): string {
   return `limitation-${ruleId.toLowerCase()}-${stableHash(JSON.stringify([code, identity]))}`;
 }
 
-export function createRuleLimitation(
+export function createDependencyRuleLimitation(
   ruleId: string,
   kind: AnalysisLimitation["kind"],
   code: string,
@@ -51,7 +51,7 @@ export function createRuleLimitation(
   sourceIds: readonly string[],
 ): AnalysisLimitation {
   return {
-    id: ruleLimitationId(ruleId, code, identity),
+    id: dependencyRuleLimitationId(ruleId, code, identity),
     kind,
     message: truncate(message, 4_000),
     affectedCategories: ["dependencies"],
