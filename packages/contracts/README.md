@@ -74,3 +74,17 @@ Report-level validation also checks reference integrity and duplicate IDs.
 Breaking changes to the serialized report shape require a schema-version change and corresponding architecture/ADR review.
 
 **Traceability:** FR-015–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-001–NFR-005.
+
+
+## Module boundaries
+
+Shared concepts have explicit owners:
+
+- `identifiers.ts` — stable IDs and rule references;
+- `category.ts` — score/report categories;
+- `time.ts` — serialized timestamps;
+- `subject.ts` — analysis subjects.
+
+Feature modules depend on those shared concepts rather than depending on one another merely to reuse a type. This keeps evidence, findings, limitations, scoring, and recommendations independently evolvable.
+
+The package intentionally avoids generic `utils.ts` and catch-all `types.ts` files.
