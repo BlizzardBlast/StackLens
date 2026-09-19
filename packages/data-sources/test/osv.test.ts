@@ -168,7 +168,13 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
         },
       }),
     );
-    expect(JSON.parse(String(firstCall[1]?.body))).toEqual({
+    const firstBody = firstCall[1]?.body;
+
+    if (typeof firstBody !== "string") {
+      throw new Error("Expected serialized OSV batch request body");
+    }
+
+    expect(JSON.parse(firstBody)).toEqual({
       queries: [
         {
           package: {
@@ -432,7 +438,13 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
       throw new Error("Expected OSV pagination request");
     }
 
-    expect(JSON.parse(String(paginationCall[1]?.body))).toEqual({
+    const paginationBody = paginationCall[1]?.body;
+
+    if (typeof paginationBody !== "string") {
+      throw new Error("Expected serialized OSV pagination request body");
+    }
+
+    expect(JSON.parse(paginationBody)).toEqual({
       queries: [
         {
           package: {
