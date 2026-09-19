@@ -238,6 +238,8 @@ Accepted implementation:
 - equivalent package/version queries are deduplicated and sorted deterministically;
 - OSV `/v1/querybatch` is used for exact package/version matching;
 - per-query pagination is followed within a configurable safety bound;
+- full advisory-detail lookups are separately bounded; reaching that bound preserves all batch
+  matches/evidence and marks the source partial;
 - every normalized query records whether its result is complete;
 - unique matched advisory IDs are resolved through OSV's fixed `/v1/vulns/{id}` endpoint;
 - advisory metadata preserves IDs, modified/published/withdrawn timestamps, aliases/related/upstream
