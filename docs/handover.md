@@ -3,7 +3,7 @@
 > **Status:** Active implementation handover  
 > **Prepared:** 2026-09-19  
 > **Baseline branch:** `main`  
-> **Baseline commit:** Quick-manifest merge commit (set after merge)  
+> **Baseline commit:** `29643a66d36c295067e1907fb07620502a014ffa`  
 > **Architecture:** v0.1.6  
 > **Immediate milestone:** Milestone B — External package metadata adapters  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
