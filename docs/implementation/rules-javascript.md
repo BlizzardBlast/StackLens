@@ -91,16 +91,27 @@ analyzer's generic metadata snapshot. It does not add a dependency on `@stacklen
 does not perform network I/O.
 
 The rule package exposes a minimal readonly `JavaScriptAnalysisMetadata` interface. Its OSV subset
-contains:
+is source-bound:
+
+```ts
+{
+  sourceId: string;
+  snapshot: JavaScriptOsvSnapshot;
+}
+```
+
+The inner snapshot contains:
 
 - exact package/version query results;
 - advisory IDs returned for each query;
 - whether each query result is complete;
 - optional normalized advisory detail required for withdrawal/severity interpretation.
 
-The shape is deliberately narrower than the provider DTO but structurally compatible with the
-normalized OSV adapter snapshot. Acquisition remains responsible for validating provider data and
-for report-level `DataSource`, `ExternalEvidence`, and `PartialFailure` records.
+The inner snapshot is deliberately narrower than the provider DTO but structurally compatible with
+the normalized OSV adapter data. The wrapper's `sourceId` binds that snapshot to one exact
+report-level OSV `DataSource`. Acquisition/orchestration remains responsible for constructing the
+wrapper from the provider result and for supplying the matching `DataSource`,
+`ExternalEvidence`, and `PartialFailure` records.
 
 ### Correlation basis
 
@@ -135,7 +146,9 @@ Every emitted finding:
 - uses the `security` category;
 - identifies the dependency through the generic finding subject;
 - names the advisory in the finding text;
-- references project dependency evidence and OSV external evidence;
+- requires the bound OSV `sourceId` to resolve to one usable report-level OSV source;
+- references project dependency evidence and OSV external evidence whose `sourceId` matches that
+  bound source exactly;
 - uses stable rule identity `JS-VULN-011@1`;
 - carries traceability for **FR-011**, **DATA-001**, **DATA-002**, and **DATA-003**.
 
@@ -166,8 +179,10 @@ The rule is conservative:
   is authoritative; severity/withdrawal detail is simply unavailable;
 - withdrawn advisory detail → no active vulnerability finding is emitted and an external-data
   limitation explains the withdrawal;
-- batch match without usable OSV `ExternalEvidence` → no finding is emitted because provenance
-  would be incomplete;
+- batch match without usable OSV `ExternalEvidence` from the snapshot's exact bound source → no
+  finding is emitted because provenance would be incomplete;
+- snapshot bound to a missing, non-OSV, or unavailable report source → no finding is emitted and an
+  external-data limitation explains the source mismatch;
 - complete query result with zero matches → no vulnerability finding and no "secure" fact.
 
 Provider partial failures remain report-level acquisition artifacts supplied before analyzer
@@ -206,6 +221,8 @@ Focused tests cover:
 - range declarations without exact query evidence;
 - unavailable source and missing snapshot states;
 - missing advisory evidence;
+- advisory evidence from a different OSV source;
+- snapshot bound to a missing/unavailable source;
 - unrelated provider query results;
 - analyzer-core contract integration.
 
