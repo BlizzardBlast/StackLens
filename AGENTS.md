@@ -145,6 +145,10 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
 - FR-012 framework/tool facts must use deterministic supported evidence (currently exact declared package identities); do not guess roles from fuzzy package names.
 - FR-013 configuration analysis is static only. Repository-file snapshots are already-acquired input; never import/execute JS/TS config. Dynamic/JSONC/unsupported shapes must remain partial/limited rather than guessed.
 - Static project evidence for configuration should retain path/high-level findings only; do not copy configuration source content into report evidence.
+- FR-009 source parsing must stay behind the StackLens parser adapter; parser-specific AST shapes must not leak into finding rules.
+- FR-009 may use supported ESM imports/re-exports, static-string require/import(), explicit configuration/plugin conventions, and bounded package-script conventions as positive usage evidence. Never execute any of those inputs.
+- Missing source references are usable for a potentially-unnecessary heuristic only when acquisition and parser coverage are complete. Tree/file/resource truncation, parse failures, unsupported dynamic references, or unavailable source evidence must suppress absence-based findings and remain explicit limitations.
+- Potentially-unnecessary findings must remain heuristic and must not imply that removal is safe. Peer-only declarations are not sufficient candidates for non-use findings.
 - The FR-011 rule may correlate only exact package/version OSV query evidence with dependency inventory facts. Declared ranges/tags remain insufficient evidence until a resolved-version source exists.
 - Withdrawn advisories are not active findings, incomplete OSV queries remain limited evidence, and complete empty queries never become a "secure" fact.
 - Reuse `@stacklens/contracts` structured fact details rather than encoding required machine-readable

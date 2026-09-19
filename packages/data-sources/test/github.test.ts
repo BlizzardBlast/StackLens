@@ -32,6 +32,7 @@ const prettierSha = "f".repeat(40);
 const symlinkSha = "1".repeat(40);
 const submoduleSha = "2".repeat(40);
 const ignoredSha = "3".repeat(40);
+const sourceSha = "4".repeat(40);
 
 function createAdapter(
   fetchImpl: typeof fetch,
@@ -203,10 +204,10 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
       },
     });
     const viteConfig = 'throw new Error("MUST NOT RUN"); export default {};';
-    const irrelevantSource = "export const secret = 'do-not-fetch';";
+    const sourceText = "import React from 'react'; export const value = React.version;";
 
     const tree = treePayload([
-      treeEntry("src/index.ts", "9".repeat(40), irrelevantSource.length),
+      treeEntry("src/index.ts", sourceSha, sourceText.length),
       treeEntry("vite.config.ts", viteSha, viteConfig.length),
       treeEntry("package.json", manifestSha, packageJson.length),
       treeEntry("tsconfig.json", tsconfigSha, tsconfig.length),
@@ -214,6 +215,7 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     const fetchImpl = successfulBaseFetch(tree, [
       blobPayload(manifestSha, packageJson),
       blobPayload(tsconfigSha, tsconfig),
+      blobPayload(sourceSha, sourceText),
       blobPayload(viteSha, viteConfig),
     ]);
     const adapter = createAdapter(fetchImpl);
@@ -229,13 +231,14 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
 
     const sourceId = githubRepositorySourceId(owner, name, commitSha);
 
-    expect(fetchImpl).toHaveBeenCalledTimes(6);
+    expect(fetchImpl).toHaveBeenCalledTimes(7);
     expect(fetchImpl.mock.calls.map((call) => call[0])).toEqual([
       githubRepositoryApiUrl(owner, name),
       githubCommitApiUrl(owner, name, "main"),
       githubTreeApiUrl(owner, name, treeSha),
       githubBlobApiUrl(owner, name, manifestSha),
       githubBlobApiUrl(owner, name, tsconfigSha),
+      githubBlobApiUrl(owner, name, sourceSha),
       githubBlobApiUrl(owner, name, viteSha),
     ]);
 
@@ -267,6 +270,12 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     });
     expect(result.data.files).toEqual([
       {
+        path: "src/index.ts",
+        blobSha: sourceSha,
+        byteLength: new TextEncoder().encode(sourceText).byteLength,
+        content: sourceText,
+      },
+      {
         path: "tsconfig.json",
         blobSha: tsconfigSha,
         byteLength: new TextEncoder().encode(tsconfig).byteLength,
@@ -279,7 +288,11 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
         content: viteConfig,
       },
     ]);
-    expect(JSON.stringify(result)).not.toContain(irrelevantSource);
+    expect(result.data.sourceCoverage).toEqual({
+      status: "complete",
+      candidateFiles: 2,
+      acquiredFiles: 2,
+    });
     expect(result.data.limitations).toEqual([]);
     expect(result.partialFailures).toEqual([]);
     expect(result.source).toEqual({
@@ -302,6 +315,48 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     expect(DataSourceSchema.safeParse(result.source).success).toBe(true);
     expect(EvidenceSchema.safeParse(result.evidence[0]).success).toBe(true);
     expect(RepositoryIdentitySchema.safeParse(result.data.repository).success).toBe(true);
+  });
+
+  it("marks source coverage partial when relevant source evidence is skipped or unsupported", async () => {
+    const packageJson = JSON.stringify({
+      dependencies: {
+        react: "19.0.0",
+      },
+    });
+    const sourceText = "import React from 'react'; export const value = React.version;";
+    const generatedSource = "import unused from 'unused';";
+    const unsupportedSource = "<script>import hidden from 'hidden-package';</script>";
+    const tree = treePayload([
+      treeEntry("package.json", manifestSha, packageJson.length),
+      treeEntry("src/index.ts", sourceSha, sourceText.length),
+      treeEntry("dist/generated.js", ignoredSha, generatedSource.length),
+      treeEntry("src/App.vue", viteSha, unsupportedSource.length),
+    ]);
+    const fetchImpl = successfulBaseFetch(tree, [
+      blobPayload(manifestSha, packageJson),
+      blobPayload(sourceSha, sourceText),
+    ]);
+    const result = await createAdapter(fetchImpl).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+
+    expect(result.ok).toBe(true);
+
+    if (!result.ok) {
+      throw new Error("Expected conservative partial source acquisition");
+    }
+
+    expect(fetchImpl).toHaveBeenCalledTimes(5);
+    expect(result.data.sourceCoverage).toEqual({
+      status: "partial",
+      candidateFiles: 1,
+      acquiredFiles: 1,
+    });
+    expect(result.source.status).toBe("partial");
+
+    const messages = result.data.limitations.map((limitation) => limitation.message).join("\n");
+    expect(messages).toContain("generated/vendor");
+    expect(messages).toContain("unsupported first-slice formats");
   });
 
   it("uses an explicit ref without silently replacing it with the default branch", async () => {
@@ -434,6 +489,7 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
 
     expect(fetchImpl).toHaveBeenCalledTimes(4);
     expect(result.source.status).toBe("partial");
+    expect(result.data.sourceCoverage.status).toBe("partial");
     expect(result.data.manifest?.content).toBe(packageJson);
     expect(result.data.files).toEqual([]);
     expect(result.data.limitations.map((limitation) => limitation.message).join("\n")).toContain(

@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, framework/tool detection, static project-configuration inspection, the framework-independent quick-manifest API boundary, and bounded npm/OSV/public-GitHub data adapters are implemented. Fastify transport, repository-job orchestration, product screens, source-usage analysis, and production priority/scoring are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, the framework-independent quick-manifest API boundary, and bounded npm/OSV/public-GitHub data adapters are implemented. Fastify transport, repository-job orchestration, product screens, migration/recommendation policy, and production priority/scoring are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -100,6 +100,7 @@ The first ecosystem-specific analysis package lives in **`packages/rules-javascr
 It currently implements deterministic `package.json` dependency normalization, explicit project
 evidence, **FR-005** dependency inventory, **FR-006** exact-version outdated detection, **FR-007**
 explicit npm deprecation detection, **FR-008** curated dependency-overlap heuristics, neutral
+**FR-009** bounded static source-usage analysis and potentially-unnecessary dependency heuristics,
 **FR-010** npm Registry health facts, **FR-011** known-vulnerability detection, **FR-012**
 framework/tool detection, and **FR-013** static configuration detection. Provider-backed rules
 consume source-bound normalized analyzer metadata, and project configuration is inspected without
@@ -127,7 +128,7 @@ The first provider package lives in **`packages/data-sources`**.
 Its npm Registry adapter performs bounded package-metadata acquisition. Its OSV adapter performs
 bounded exact-version vulnerability queries. Its public GitHub adapter validates supported repository
 URLs, resolves an immutable commit SHA, enumerates a bounded recursive tree, and fetches only the
-root manifest plus currently supported configuration files by immutable blob SHA.
+root manifest, supported configuration files, and bounded JS/TS/JSX/TSX source files by immutable blob SHA while exposing whether source acquisition was complete enough for absence-based analysis.
 
 All adapters associate observations with explicit provenance/retrieval time and convert provider,
 network, schema, and material partial-acquisition states into typed failures/limitations. Analyzer

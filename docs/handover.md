@@ -4,9 +4,9 @@
 > **Prepared:** 2026-09-19  
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
-> **Architecture:** v0.1.6  
-> **Completed milestone:** public GitHub repository acquisition — PR #18  
-> **Immediate milestone:** Milestone H — static source usage analysis  
+> **Architecture:** v0.1.7  
+> **Completed milestone:** static source usage analysis — PR #19  
+> **Immediate milestone:** Milestone I — migration opportunities, recommendations, priority, scoring  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -67,7 +67,7 @@ The repository already has the following accepted foundations:
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 
-The latest completed product implementation milestone is the **FR-003 bounded public GitHub repository acquisition** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
+The latest completed product implementation milestone is the **FR-009 bounded static source-usage analysis** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
 
 The analyzer flow is:
 
@@ -101,7 +101,7 @@ The JavaScript/TypeScript rule package now implements **FR-005 dependency invent
 
 The API application now has a framework-independent quick-manifest service boundary, but no Fastify HTTP transport is implemented yet.
 
-The npm Registry, OSV, and public GitHub acquisition adapters are implemented. No repository-analysis worker orchestration, web application, source-usage rule, concrete production priority policy, or concrete scoring policy has been implemented yet.
+The npm Registry, OSV, and public GitHub acquisition adapters are implemented, including explicit bounded source-coverage state. Static source-usage facts and potentially-unnecessary dependency heuristics are implemented. No repository-analysis worker orchestration, web application, migration/recommendation policy, concrete production priority policy, or concrete scoring policy has been implemented yet.
 
 ## 3. Non-negotiable boundaries
 
@@ -432,31 +432,38 @@ Primary traceability:
 
 `FR-003, FR-004, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-006, NFR-001, NFR-003, NFR-004, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008, GOV-002, GOV-006, GOV-007`.
 
-## 12. Immediate next milestone: static source usage analysis
+## 12. Completed milestone: static source usage analysis
 
-Implement supported deterministic source-reference analysis for **FR-009** on top of the bounded
-repository snapshot/acquisition boundary.
+PR #19 implements the first bounded **FR-009** repository source-usage slice.
 
-Required first-slice behavior:
+Accepted implementation:
 
-- extend the GitHub acquisition allowlist only as needed for bounded supported JS/TS/JSX/TSX source
-  analysis;
-- keep acquisition and parsing separate from finding rules;
-- introduce the accepted parser-adapter boundary rather than coupling rules directly to parser
-  implementation details;
-- detect supported ESM static imports/exports;
-- detect CommonJS `require("...")` with static string arguments;
-- detect dynamic `import("...")` with static string arguments;
-- account for supported config/plugin references and package scripts/framework conventions where
-  deterministic evidence exists;
-- never execute source or configuration;
-- never declare a dependency unnecessary merely because a basic import scan does not find it;
-- potential unnecessary-dependency findings must remain heuristic unless stronger direct evidence
-  exists and must expose their basis/confidence;
-- unsupported/dynamic references, skipped source due acquisition limits, parse failures, and missing
-  source evidence must remain limitations/insufficient evidence rather than negative-use claims;
-- quick manifest analysis must continue to state that source-level necessity is unavailable;
-- do not add production priority/recommendations/scoring or product UI in the same PR.
+- public GitHub acquisition includes bounded JS/TS/JSX/TSX source files from immutable blob SHAs;
+- acquisition exposes complete/partial source coverage without moving parsing into the provider;
+- source parsing is behind a StackLens-owned adapter and currently uses `@babel/parser` under
+  ADR-0010 because the accepted TypeScript 7 baseline is incompatible with the current
+  typescript-estree release line;
+- supported syntax includes ESM imports/re-exports, static-string CommonJS `require()`, and
+  static-string dynamic `import()`;
+- bare subpaths normalize to declared package identity while relative/builtin/protocol references do
+  not count as external dependency usage;
+- a bounded catalog accounts for deterministic configuration conventions, exact Prettier plugin
+  references, and supported package-script executable conventions without executing anything;
+- `JS-USAGE-009@1` emits positive static usage facts with project path/line evidence;
+- parse failures, non-static dynamic references, and partial/unavailable acquisition suppress
+  absence-based conclusions and produce insufficient-evidence limitations;
+- `JS-UNNECESSARY-009@1` emits only heuristic potentially-unnecessary findings when supported
+  coverage is complete;
+- peer-only declarations are not flagged, and development/peer-involved declarations carry lower
+  confidence;
+- findings explicitly do not claim that dependency removal is safe;
+- quick manifest analysis remains source-insufficient;
+- no production recommendation, priority, scoring, worker, API transport, or UI behavior is added.
+
+Primary traceability:
+
+`FR-003, FR-009, FR-017, FR-021, DATA-003, DATA-004, DATA-005, DATA-006, NFR-001, NFR-002, NFR-003,
+NFR-004, NFR-005, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007`.
 
 ### Milestone I — Migration opportunities, recommendations, priority, scoring
 

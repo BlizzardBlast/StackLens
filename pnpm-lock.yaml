@@ -232,6 +232,9 @@ importers:
 
   packages/rules-javascript:
     dependencies:
+      '@babel/parser':
+        specifier: 7.29.8
+        version: 7.29.8
       '@stacklens/analyzer-core':
         specifier: workspace:*
         version: link:../analyzer-core

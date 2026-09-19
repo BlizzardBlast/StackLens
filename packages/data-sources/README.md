@@ -187,6 +187,7 @@ Successful data contains:
 - contract-valid repository identity with immutable commit SHA/ref;
 - optional root manifest content;
 - selected static files as `{ path, content, blobSha, byteLength }`;
+- source acquisition coverage (`complete` or `partial`) plus source candidate/acquired counts;
 - acquisition limitations.
 
 The selected file `path/content` shape is intentionally compatible with
@@ -194,8 +195,9 @@ The selected file `path/content` shape is intentionally compatible with
 
 1. parse and normalize the transient root manifest with `@stacklens/rules-javascript`;
 2. discard the raw manifest after normalization;
-3. pass the selected config `path/content` fields into `createJavaScriptProjectSnapshot`;
-4. run existing configuration rules without any further GitHub I/O.
+3. pass selected config/source `path/content` fields into `createJavaScriptProjectSnapshot`;
+4. map GitHub source coverage into the source-usage parser adapter;
+5. run configuration/source rules without any further GitHub I/O.
 
 This adapter does not parse project semantics and does not execute repository content.
 
@@ -213,7 +215,7 @@ Private repository authentication and write access are outside this milestone.
 ## GitHub tests
 
 Synthetic tests cover URL/ref validation, immutable commit resolution, fixed-host request behavior,
-deterministic file selection, source/evidence contract validation, file/request/byte limits, tree
+deterministic config/source selection, source-coverage classification, source/evidence contract validation, file/request/byte limits, tree
 truncation, symlink/submodule/generated/vendor handling, binary/LFS handling, missing root manifests,
 partial blob failures, malformed provider payloads, timeout/rate-limit/network behavior, response
 limits, and source-content isolation from report provenance.

@@ -77,7 +77,7 @@ This is required by **PRD-004**, **FR-011**, and **SCORE-003**.
 
 ### JavaScript/TypeScript source analysis
 
-Use `@typescript-eslint/typescript-estree` behind a parser adapter for initial JS/TS/JSX/TSX static analysis.
+Use the parser adapter defined by ADR-0010 for initial JS/TS/JSX/TSX static analysis. The adapter currently uses `@babel/parser` because the accepted TypeScript 7 baseline is incompatible with the current typescript-estree release line.
 
 Initial source-reference detection may consider:
 

@@ -15,6 +15,7 @@ export type {
   GitHubRepositoryFile,
   GitHubRepositoryRequest,
   GitHubRepositorySnapshot,
+  GitHubSourceCoverage,
   ParsedGitHubRepositoryUrl,
 } from "./github/types.js";
 

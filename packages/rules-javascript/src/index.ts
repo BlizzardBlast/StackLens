@@ -30,8 +30,48 @@ export {
   projectConfigurationFactId,
   projectConfigurationRule,
 } from "./project-configuration.js";
-export { createJavaScriptProjectSnapshot } from "./project-snapshot.js";
-export type { JavaScriptProjectSnapshot, JavaScriptStaticProjectFile } from "./project-snapshot.js";
+export { createJavaScriptProjectSnapshot, normalizePackageScripts } from "./project-snapshot.js";
+export type {
+  JavaScriptPackageScript,
+  JavaScriptProjectSnapshot,
+  JavaScriptProjectSnapshotOptions,
+  JavaScriptStaticProjectFile,
+} from "./project-snapshot.js";
+
+export {
+  babelSourceReferenceParser,
+  isSupportedJavaScriptSourcePath,
+  packageNameFromModuleSpecifier,
+} from "./source-parser.js";
+export type {
+  JavaScriptSourceParseIssue,
+  JavaScriptSourceParseResult,
+  JavaScriptSourceReference,
+  JavaScriptSourceReferenceKind,
+  JavaScriptSourceReferenceParser,
+} from "./source-parser.js";
+
+export {
+  createJavaScriptSourceUsageSnapshot,
+  createSourceUsageEvidence,
+  sourceUsageCoverageEvidenceId,
+  sourceUsageFactId,
+  sourceUsageFactRule,
+  sourceUsageReferenceEvidenceId,
+  withJavaScriptSourceUsage,
+} from "./source-usage.js";
+export type {
+  JavaScriptDependencyReference,
+  JavaScriptDependencyReferenceKind,
+  JavaScriptSourceAcquisitionCoverage,
+  JavaScriptSourceUsageIssue,
+  JavaScriptSourceUsageSnapshot,
+} from "./source-usage.js";
+
+export {
+  potentiallyUnnecessaryDependencyFindingId,
+  potentiallyUnnecessaryDependencyRule,
+} from "./unnecessary-dependency.js";
 
 export type {
   JavaScriptAnalysisMetadata,

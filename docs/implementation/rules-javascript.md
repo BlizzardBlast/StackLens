@@ -2,7 +2,7 @@
 
 > **Status:** Accepted implementation baseline
 > **Date:** 2026-09-19
-> **Requirements:** FR-004, FR-005, FR-006, FR-007, FR-008, FR-010, FR-011, FR-012, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-007
+> **Requirements:** FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-007
 > **Related decisions:** ADR-0008, ADR-0009
 
 ## Package responsibility
@@ -439,8 +439,9 @@ that strict JSON cannot parse remain file detections with an `unsupported_config
 limitation. Static declarative content over 512 Ki characters remains detected with a
 `resource_limit` limitation and is not parsed.
 
-This slice intentionally does not acquire repository files. Milestone G will supply bounded static
-files from an immutable GitHub commit into this already-defined snapshot/rule boundary.
+The rule package still does not acquire repository files itself. Milestone G supplies bounded static
+files from an immutable GitHub commit into this snapshot/rule boundary, and Milestone H reuses that
+boundary for static source-usage analysis.
 
 ## Verification
 
@@ -463,3 +464,67 @@ Synthetic fixtures cover:
 - analyzer-core integration with test-only priority and insufficient-evidence scoring.
 
 No live repository/network access is used.
+
+
+## FR-009 static source usage and potentially unnecessary dependencies
+
+Milestone H adds an explicit source-reference parser adapter and keeps parsing outside finding-rule
+logic.
+
+The adapter currently uses `@babel/parser` under ADR-0010. This supersedes the original
+typescript-estree implementation choice because StackLens now compiles with TypeScript 7 while the
+current typescript-estree release line still depends on the TypeScript 6 compiler API. Analyzer
+rules consume only StackLens-owned normalized references.
+
+Supported JS/TS/JSX/TSX syntax includes:
+
+- ESM static imports;
+- ESM re-exports with a static source;
+- CommonJS `require("...")` with a static string;
+- dynamic `import("...")` with a static string.
+
+Bare package subpaths normalize to the declared package identity. Relative references, Node built-ins,
+URL/protocol imports, and package-import-map references are not external dependency usage.
+
+`JavaScriptProjectSnapshot` can preserve already-normalized package-script commands.
+`createJavaScriptSourceUsageSnapshot` combines supported source references with a narrow,
+deterministic catalog of configuration-file conventions, exact Prettier plugin strings, and supported
+script executable conventions. It never runs scripts, imports configuration, resolves modules, or
+performs network/filesystem I/O.
+
+Source usage has an explicit coverage state:
+
+- `complete` — bounded acquisition provided the complete supported usage-evidence scope and all
+  supported source parsed without unsupported dynamic references;
+- `partial` — acquisition skipped relevant supported evidence, reported known unsupported
+  code-bearing source formats, or parsing/dynamic-reference uncertainty exists;
+- `unavailable` — repository source acquisition was not supplied.
+
+`JS-USAGE-009@1` emits positive `dependency.usage.static` facts only for declared dependencies and
+retains path/line project evidence without copying source text into the report. Partial/unavailable
+coverage emits an insufficient-evidence limitation.
+
+`JS-UNNECESSARY-009@1` runs after completed facts. It emits at most one heuristic finding per
+declared package only when coverage is complete and no supported source/configuration/script usage
+fact exists. Peer-only declarations are excluded. Development/peer-involved declarations use lower
+confidence than ordinary runtime/optional declarations. The description explicitly states that
+static non-observation is not proof that removal is safe.
+
+A potentially-unnecessary finding also fails closed when FR-013 reports a configuration limitation,
+because an unsupported/dynamic configuration may contain plugin or tool references that the supported
+source/configuration catalog cannot prove absent.
+
+Quick-manifest analysis remains source-insufficient and therefore cannot produce FR-009 non-use
+findings.
+
+### FR-009 verification
+
+Focused fixtures cover ESM import/export, static CommonJS require, static dynamic import, scoped and
+subpath package normalization, local/builtin/protocol exclusion, parse failure, non-static dynamic
+references, deterministic configuration/script conventions, positive usage facts, a complete-coverage
+potentially-unnecessary finding, peer-only exclusion, and suppression of absence-based findings when
+coverage is partial. Provider fixtures additionally verify that skipped supported config/source
+evidence and known unsupported source formats downgrade coverage instead of creating negative-use
+evidence.
+
+No analyzed source or configuration is executed.

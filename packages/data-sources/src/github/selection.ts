@@ -26,8 +26,21 @@ const CONFIG_PREFIXES = [
   "webpack.config.",
 ] as const;
 
+const SOURCE_EXTENSIONS = [".js", ".jsx", ".cjs", ".mjs", ".ts", ".tsx", ".cts", ".mts"] as const;
+const UNSUPPORTED_SOURCE_USAGE_EXTENSIONS = [".astro", ".mdx", ".svelte", ".vue"] as const;
+
 function baseName(path: string): string {
   return path.slice(path.lastIndexOf("/") + 1);
+}
+
+export function isSupportedJavaScriptSourcePath(path: string): boolean {
+  const name = baseName(path).toLowerCase();
+  return SOURCE_EXTENSIONS.some((extension) => name.endsWith(extension));
+}
+
+export function isUnsupportedSourceUsagePath(path: string): boolean {
+  const name = baseName(path).toLowerCase();
+  return UNSUPPORTED_SOURCE_USAGE_EXTENSIONS.some((extension) => name.endsWith(extension));
 }
 
 export function isCanonicalRepositoryPath(path: string): boolean {
@@ -53,7 +66,7 @@ export function isIgnoredRepositoryPath(path: string): boolean {
 }
 
 export function isInitialSupportedSnapshotPath(path: string): boolean {
-  if (path === "package.json") {
+  if (path === "package.json" || isSupportedJavaScriptSourcePath(path)) {
     return true;
   }
 
