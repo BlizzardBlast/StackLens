@@ -20,9 +20,7 @@ export function deprecatedDependencyFindingId(
   packageName: string,
   declaredVersion: string,
 ): string {
-  return `finding-js-npm-deprecated-${stableHash(
-    JSON.stringify([packageName, declaredVersion]),
-  )}`;
+  return `finding-js-npm-deprecated-${stableHash(JSON.stringify([packageName, declaredVersion]))}`;
 }
 
 export const deprecatedDependencyRule: FindingRule<
