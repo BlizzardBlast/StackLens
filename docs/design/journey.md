@@ -478,3 +478,25 @@ Only four analyzer-core files required Oxfmt's canonical source formatting. A te
 The temporary write permission is removed immediately after that formatting commit. The final merge gate returns to the normal read-only workflow with a frozen lockfile.
 
 This validates the final SOLID boundary introduced in Step 28: finding detection, priority policy, recommendations, and scoring remain separate deterministic responsibilities.
+
+
+## 2026-09-19 — Step 30: Create the implementation-session handover
+
+After merging the deterministic analyzer core, the next implementation sequence was captured in a dedicated repository handover so a fresh session does not depend on chat history.
+
+`docs/handover.md` records:
+
+- the exact `main` baseline and architecture version;
+- the source-of-truth reading order for a new session;
+- non-negotiable analyzer/security/governance boundaries;
+- the immediate **FR-005 dependency inventory** vertical slice;
+- the current contract-representation question around dependency name/range/group;
+- the intended `@stacklens/rules-javascript` package boundary;
+- required fixtures, analyzer integration, and definition of done;
+- the recommended sequence for later manifest, metadata, vulnerability, repository, source-analysis, scoring, and application milestones;
+- explicit non-goals to avoid prematurely expanding scope;
+- the expected next PR scope and requirement traceability.
+
+The README now links directly to the handover.
+
+This is documentation-only and does not change accepted product behavior or architecture. It exists to preserve **GOV-002**, **GOV-003**, **GOV-006**, and **GOV-007** across session boundaries.
