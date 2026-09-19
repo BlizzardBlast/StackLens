@@ -2,8 +2,8 @@ import type { FindingCandidate, FindingRule } from "@stacklens/analyzer-core";
 import type { AnalysisFact } from "@stacklens/contracts";
 
 import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
-import { sourceUsageCoverageEvidenceId } from "./source-usage.js";
 import { compareCodeUnits, truncate, uniqueSorted } from "./rule-support.js";
+import { sourceUsageCoverageEvidenceId } from "./source-usage.js";
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-UNNECESSARY-009";
@@ -102,48 +102,46 @@ function createFinding(
   };
 }
 
-export const potentiallyUnnecessaryDependencyRule: FindingRule<
-  JavaScriptProjectSnapshot,
-  unknown
-> = {
-  kind: "finding",
-  id: RULE_ID,
-  version: RULE_VERSION,
-  requirementIds: [
-    "FR-009",
-    "FR-017",
-    "DATA-003",
-    "DATA-004",
-    "DATA-005",
-    "NFR-001",
-    "NFR-002",
-    "NFR-004",
-    "NFR-005",
-    "SEC-001",
-    "SEC-002",
-  ],
-  evaluate(context) {
-    if (context.project.sourceUsage?.coverage !== "complete") {
-      return {};
-    }
+export const potentiallyUnnecessaryDependencyRule: FindingRule<JavaScriptProjectSnapshot, unknown> =
+  {
+    kind: "finding",
+    id: RULE_ID,
+    version: RULE_VERSION,
+    requirementIds: [
+      "FR-009",
+      "FR-017",
+      "DATA-003",
+      "DATA-004",
+      "DATA-005",
+      "NFR-001",
+      "NFR-002",
+      "NFR-004",
+      "NFR-005",
+      "SEC-001",
+      "SEC-002",
+    ],
+    evaluate(context) {
+      if (context.project.sourceUsage?.coverage !== "complete") {
+        return {};
+      }
 
-    const inventory = inventoryFactsByPackage(context.facts);
-    const usedPackages = sourceUsagePackages(context.facts);
-    const findings = [...inventory.entries()]
-      .filter(([packageName, facts]) => {
-        if (usedPackages.has(packageName)) {
-          return false;
-        }
+      const inventory = inventoryFactsByPackage(context.facts);
+      const usedPackages = sourceUsagePackages(context.facts);
+      const findings = [...inventory.entries()]
+        .filter(([packageName, facts]) => {
+          if (usedPackages.has(packageName)) {
+            return false;
+          }
 
-        return !facts.every(
-          (fact) =>
-            fact.details?.kind === "dependency_inventory" &&
-            fact.details.dependencyGroup === "peerDependencies",
-        );
-      })
-      .toSorted(([left], [right]) => compareCodeUnits(left, right))
-      .map(([packageName, facts]) => createFinding(packageName, facts, context.project));
+          return !facts.every(
+            (fact) =>
+              fact.details?.kind === "dependency_inventory" &&
+              fact.details.dependencyGroup === "peerDependencies",
+          );
+        })
+        .toSorted(([left], [right]) => compareCodeUnits(left, right))
+        .map(([packageName, facts]) => createFinding(packageName, facts, context.project));
 
-    return { findings };
-  },
-};
+      return { findings };
+    },
+  };
