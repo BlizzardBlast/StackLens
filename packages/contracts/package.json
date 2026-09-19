@@ -39,6 +39,22 @@
     "./score": {
       "types": "./dist/score.d.ts",
       "default": "./dist/score.js"
+    },
+    "./category": {
+      "types": "./dist/category.d.ts",
+      "default": "./dist/category.js"
+    },
+    "./identifiers": {
+      "types": "./dist/identifiers.d.ts",
+      "default": "./dist/identifiers.js"
+    },
+    "./subject": {
+      "types": "./dist/subject.d.ts",
+      "default": "./dist/subject.js"
+    },
+    "./time": {
+      "types": "./dist/time.d.ts",
+      "default": "./dist/time.js"
     }
   },
   "scripts": {
