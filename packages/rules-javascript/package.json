@@ -23,6 +23,18 @@
     "./known-vulnerability": {
       "types": "./dist/known-vulnerability.d.ts",
       "default": "./dist/known-vulnerability.js"
+    },
+    "./npm-registry-health": {
+      "types": "./dist/npm-registry-health.d.ts",
+      "default": "./dist/npm-registry-health.js"
+    },
+    "./outdated-dependency": {
+      "types": "./dist/outdated-dependency.d.ts",
+      "default": "./dist/outdated-dependency.js"
+    },
+    "./deprecated-dependency": {
+      "types": "./dist/deprecated-dependency.d.ts",
+      "default": "./dist/deprecated-dependency.js"
     }
   },
   "scripts": {

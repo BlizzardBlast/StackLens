@@ -5,8 +5,8 @@
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
 > **Architecture:** v0.1.6  
-> **Completed milestone:** Known-vulnerability finding rule — PR #15  
-> **Immediate milestone:** Milestone E — npm metadata dependency findings  
+> **Completed milestone:** npm metadata dependency rules — PR #16  
+> **Immediate milestone:** Milestone F — overlap plus framework/tool/configuration detection  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -53,6 +53,7 @@ The repository already has the following accepted foundations:
 - Analysis Report Contract v1 in `@stacklens/contracts`;
 - deterministic analyzer execution in `@stacklens/analyzer-core`;
 - deterministic JavaScript dependency inventory in `@stacklens/rules-javascript`;
+- provider-backed npm outdated/deprecation/health analysis in `@stacklens/rules-javascript`;
 - provider-backed factual known-vulnerability detection in `@stacklens/rules-javascript`;
 - framework-independent quick manifest orchestration in `apps/api`;
 - bounded npm Registry metadata acquisition in `@stacklens/data-sources`;
@@ -63,7 +64,7 @@ The repository already has the following accepted foundations:
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 
-The latest completed product implementation milestone is the **FR-011 known-vulnerability finding rule** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
+The latest completed product implementation milestone is the **npm Registry-backed FR-006/FR-007/FR-010 rule** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
 
 The analyzer flow is:
 
@@ -93,11 +94,11 @@ scores
 AnalysisReport
 ```
 
-The JavaScript/TypeScript rule package now implements **FR-005 dependency inventory** and the first **FR-011 known-vulnerability factual finding rule**.
+The JavaScript/TypeScript rule package now implements **FR-005 dependency inventory**, **FR-006 exact-version outdated detection**, **FR-007 explicit npm deprecation detection**, neutral **FR-010 npm Registry health facts**, and **FR-011 known-vulnerability detection**.
 
 The API application now has a framework-independent quick-manifest service boundary, but no Fastify HTTP transport is implemented yet.
 
-The npm Registry and OSV adapters are implemented. No GitHub acquisition adapter, worker, web application, npm outdated/deprecation/health finding rule, concrete priority policy, or concrete scoring policy has been implemented yet.
+The npm Registry and OSV adapters are implemented. No GitHub acquisition adapter, worker, web application, overlap/source-usage rule, concrete production priority policy, or concrete scoring policy has been implemented yet.
 
 ## 3. Non-negotiable boundaries
 
@@ -297,46 +298,69 @@ Primary traceability:
 
 `FR-011, DATA-001, DATA-002, DATA-003, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, SEC-002, GOV-002, GOV-006, GOV-007`.
 
-## 9. Immediate next milestone: npm metadata dependency findings
+## 9. Completed milestone: npm metadata dependency rules
 
-Implement focused JavaScript/TypeScript rules using the already-normalized npm Registry snapshot for:
+The npm Registry-backed JavaScript/TypeScript rule slice is implemented in
+`packages/rules-javascript` by PR #16.
 
-- **FR-006** outdated dependency detection;
-- **FR-007** explicit deprecation plus carefully bounded unmaintained heuristics;
-- **FR-010** dependency health signals.
+Accepted implementation:
 
-Keep provider acquisition separate and keep the first npm finding slice narrow.
+- `JavaScriptAnalysisMetadata.npmRegistry` carries source-bound normalized npm package snapshots;
+- each snapshot is associated with one exact report-level npm Registry `DataSource.id`;
+- npm-backed rules require external evidence tied to that exact source/reference;
+- rules remain synchronous and add no `rules-javascript -> data-sources` dependency;
+- shared deterministic dependency grouping/order/truncation helpers are reused by npm rules and
+  FR-011 without changing existing vulnerability rule IDs or behavior;
+- `JS-NPM-006@1` implements factual outdated detection for exact Semantic Version declarations;
+- the declared exact version and npm `latest` comparison version must both exist as normalized
+  registry version records;
+- version precedence supports major/minor/patch plus prerelease ordering and ignores build metadata;
+- findings explicitly distinguish major, minor, patch, and prerelease-to-release differences;
+- ranges/tags/URLs/workspace and other non-exact declarations remain insufficient evidence until a
+  resolved exact version source exists;
+- `JS-NPM-007@1` emits factual findings only when the exact declared version carries an explicit
+  normalized npm deprecation message;
+- the optional FR-007 "unmaintained" heuristic is intentionally not implemented because no accepted
+  deterministic maintenance threshold/basis exists yet;
+- `JS-NPM-010@1` emits neutral package-level npm Registry health facts containing supported
+  verifiable metadata such as latest dist-tag, latest publication time, and registry modification
+  time;
+- FR-010 facts do not label packages healthy/stale/unmaintained and do not create a combined health
+  interpretation;
+- partial sources may preserve observed positive facts/findings while retaining rule-specific
+  partial-failure limitations;
+- missing/ambiguous metadata, missing/unavailable bound sources, cross-source evidence, missing
+  version records, and unsupported comparison versions produce limitations rather than invented
+  conclusions;
+- no production priority, recommendation, scoring, repository acquisition, or source-usage policy is
+  introduced;
+- focused rule-level and analyzer-core integration tests are synthetic and network-free.
+
+Primary traceability:
+
+`FR-006, FR-007, FR-010, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, SEC-002, GOV-002, GOV-006, GOV-007`.
+
+## 10. Immediate next milestone: overlap plus framework/tool/configuration detection
+
+Implement the next static JavaScript/TypeScript slice for:
+
+- **FR-008** overlapping/redundant dependency cases;
+- **FR-012** framework/tool detection;
+- **FR-013** project configuration detection.
 
 Required boundaries:
 
-- rules consume normalized registry metadata through analyzer metadata and remain synchronous;
-- declared ranges/tags are not installed versions and must not be compared as exact installed
-  versions unless the rule has explicit resolved-version evidence;
-- outdated findings must identify the declared/comparison version basis and distinguish
-  major/minor/patch difference when that basis is sufficient;
-- explicit npm deprecation metadata is factual evidence;
-- "unmaintained" must remain heuristic unless an authoritative provider fact exists, with explicit
-  basis and confidence;
-- every health signal must identify its data source;
-- no missing registry evidence path may become a positive or negative package-health claim;
+- keep analyzer-core ecosystem-agnostic;
+- use deterministic static evidence only;
+- do not claim a dependency is redundant merely because another package shares a broad category;
+- framework/tool detection must identify the evidence used to classify a project;
+- configuration detection must distinguish directly parsed declarative configuration from partial
+  interpretation of dynamic JavaScript/TypeScript configuration;
+- never import or execute project configuration;
+- unsupported/dynamic configuration must produce a limitation when full interpretation is unsafe;
 - keep detection separate from priority, recommendations, and scoring;
-- do not add overlap/redundancy, repository acquisition, source-usage analysis, or production score
-  policy in the same PR.
-
-### Milestone F — Overlap plus framework/tool/configuration detection
-
-Implement:
-
-- FR-008 overlapping/redundant dependency cases;
-- FR-012 framework/tool detection;
-- FR-013 project configuration detection.
-
-Static inspection only.
-
-Dynamic JavaScript configuration is text/AST-inspected and marked partial when it cannot be safely
-resolved.
-
-Never import/execute project configuration.
+- do not add GitHub repository acquisition, source-usage analysis, production priority/scoring, or
+  Fastify transport in the same PR.
 
 ### Milestone G — Repository acquisition
 
@@ -401,7 +425,7 @@ After the analysis domain is proven in vertical slices, finish:
 
 Do not move analyzer logic into React or Fastify.
 
-## 10. What not to do next
+## 11. What not to do next
 
 Avoid these tempting detours until their requirement slice is ready:
 
@@ -417,48 +441,48 @@ Avoid these tempting detours until their requirement slice is ready:
 - do not build one giant "analyze everything" rule;
 - do not add production scoring weights before evidence coverage is meaningful.
 
-## 11. Pull-request strategy for the next session
+## 12. Pull-request strategy for the next session
 
 Recommended next PR:
 
 **Title**
 
 ```text
-feat: add npm metadata dependency findings
+feat: add overlap and project detection rules
 ```
 
 **Primary requirements**
 
 ```text
-FR-006, FR-007, FR-010,
-DATA-001, DATA-002, DATA-003, DATA-004, DATA-005,
-NFR-001, NFR-002, NFR-003, NFR-004,
-SEC-002,
+FR-008, FR-012, FR-013, FR-017, FR-021,
+DATA-001, DATA-003, DATA-005,
+NFR-001, NFR-002, NFR-003, NFR-004, NFR-005,
+SEC-001, SEC-002,
 GOV-002, GOV-006, GOV-007
 ```
 
-Keep the PR limited to synchronous npm-metadata-backed dependency findings, the minimal analyzer
-metadata shape they need, focused factual/heuristic/insufficient-evidence fixtures, analyzer-core
-integration, and documentation.
+Keep the PR limited to deterministic static overlap/framework/tool/configuration detection, focused
+positive/negative/partial fixtures, analyzer-core integration, and documentation.
 
-Do not add provider I/O to JavaScript rules. Do not add overlap/redundancy, source usage, production
-priority, recommendations, scoring, GitHub acquisition, or Fastify transport in the same PR.
+Do not execute project configuration. Do not add repository acquisition, source-usage analysis,
+production priority, recommendations, scoring, worker/database behavior, or Fastify transport in the
+same PR.
 
-## 12. Handover completion signal
+## 13. Handover completion signal
 
-The next session can consider the npm metadata finding slice complete when:
+The next session can consider the overlap/framework/tool/configuration slice complete when:
 
-1. npm Registry metadata is consumed through analyzer metadata without network I/O;
-2. outdated/deprecation/health outputs identify their exact evidence basis and stable rule identity;
-3. explicit provider facts remain factual while maintenance judgments remain heuristic with
-   confidence when required;
-4. declared ranges/tags are not silently treated as installed versions;
-5. missing/partial registry evidence produces limitations rather than clean or negative health
-   conclusions;
+1. supported overlap cases are based on explicit known capability relationships rather than broad
+   category similarity;
+2. framework/tool findings identify the static evidence that caused detection;
+3. supported declarative configuration is parsed statically and deterministic output is produced;
+4. dynamic/unsupported configuration is never executed and yields partial/limitation behavior when
+   full interpretation is unsafe;
+5. analyzer-core remains ecosystem-agnostic and no hidden I/O/execution is introduced;
 6. detection remains separate from priority, recommendations, and scoring;
 7. focused rule/analyzer integration tests are green;
 8. the same PR completes journey/handover documentation before merge and the permanent CI gate is
    green.
 
-Continue with the smallest npm-metadata-backed vertical slice rather than combining unrelated
-analysis domains or scoring behavior.
+Continue with the smallest deterministic overlap/framework/tool/configuration vertical slice rather
+than combining repository acquisition, source usage, or scoring behavior.

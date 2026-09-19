@@ -38,6 +38,31 @@ export interface JavaScriptOsvMetadata {
   readonly snapshot: JavaScriptOsvSnapshot;
 }
 
+export interface JavaScriptNpmDistTag {
+  readonly tag: string;
+  readonly version: string;
+}
+
+export interface JavaScriptNpmPackageVersion {
+  readonly version: string;
+  readonly deprecatedMessage?: string;
+  readonly publishedAt?: string;
+}
+
+export interface JavaScriptNpmPackageSnapshot {
+  readonly packageName: string;
+  readonly registryCreatedAt?: string;
+  readonly registryModifiedAt?: string;
+  readonly distTags: readonly JavaScriptNpmDistTag[];
+  readonly versions: readonly JavaScriptNpmPackageVersion[];
+}
+
+export interface JavaScriptNpmMetadata {
+  readonly sourceId: string;
+  readonly snapshot: JavaScriptNpmPackageSnapshot;
+}
+
 export interface JavaScriptAnalysisMetadata {
   readonly osv?: JavaScriptOsvMetadata;
+  readonly npmRegistry?: readonly JavaScriptNpmMetadata[];
 }

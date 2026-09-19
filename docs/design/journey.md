@@ -758,3 +758,59 @@ mismatches, unrelated query results, deterministic ordering, and analyzer-core i
 
 **Traceability:** FR-011, DATA-001, DATA-002, DATA-003, DATA-005, NFR-001, NFR-002, NFR-003,
 NFR-004, SEC-002, GOV-002, GOV-006, GOV-007.
+
+
+## 2026-09-19 — Step 38: Add source-bound npm metadata dependency analysis
+
+PR #16 adds the npm metadata dependency-analysis slice. The JavaScript/TypeScript rule package now consumes pre-acquired normalized npm Registry metadata for
+**FR-006**, **FR-007**, and **FR-010** without adding provider I/O to analyzer execution.
+
+`JavaScriptAnalysisMetadata.npmRegistry` carries minimal package snapshots bound to exact
+report-level npm Registry source IDs. Rule support requires matching external evidence from the same
+bound source/reference before provider-backed output can be emitted.
+
+Three responsibilities remain separate:
+
+- `JS-NPM-006@1` — factual outdated-dependency findings;
+- `JS-NPM-007@1` — factual explicit npm deprecation findings;
+- `JS-NPM-010@1` — neutral npm Registry health-signal facts.
+
+The outdated rule intentionally starts from a conservative exact-version basis. It requires the
+project declaration to be an exact supported Semantic Version, requires that exact version to exist
+in the normalized registry records, and compares it with npm's normalized `latest` dist-tag only
+when the comparison version record also exists. Supported comparisons distinguish major, minor,
+patch, and prerelease-to-release differences.
+
+Ranges, tags, URLs, workspace protocols, and other non-exact declarations are preserved but remain
+insufficient evidence until a future resolved-version source exists. The rule does not infer an
+installed version from a declaration range and does not claim that `latest` is automatically a safe
+or recommended upgrade.
+
+The deprecation rule selects only the exact normalized version record and treats a provider-supplied
+deprecation message as factual evidence. The optional FR-007 "unmaintained" heuristic is deliberately
+not implemented: no accepted deterministic inactivity threshold/basis currently exists, so adding
+one would create unsupported product behavior.
+
+The FR-010 rule emits a package-level fact containing only verifiable npm Registry signals such as
+the `latest` version, publication timestamp when supplied, and registry modification timestamp when
+supplied. It does not transform those values into "healthy", "stale", or "unmaintained" judgments and
+does not create a combined health score.
+
+Missing/ambiguous normalized metadata, missing/unavailable bound sources, cross-source evidence,
+missing declared/comparison version records, unsupported comparison versions, and partial provider
+state all have explicit conservative limitation behavior.
+
+A shared internal rule-support module now owns deterministic dependency grouping/order/truncation
+helpers used by the npm slice and the existing FR-011 vulnerability rule. This removes duplicated
+mechanics while preserving existing FR-011 IDs and semantics.
+
+Focused synthetic tests cover Semantic Version parsing/precedence, major/minor/patch/prerelease
+classification, duplicate declarations, range/tag limitations, equal/older comparisons, missing
+version records, source/evidence binding, partial providers, explicit deprecation, neutral health
+facts, absence of an invented maintenance heuristic, and analyzer-core integration.
+
+The accepted requirements and architecture do not change; this step implements the already-accepted
+FR-006/FR-007/FR-010 behavior on top of the npm provider boundary from PR #13.
+
+**Traceability:** FR-006, FR-007, FR-010, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001,
+NFR-002, NFR-003, NFR-004, SEC-002, GOV-002, GOV-006, GOV-007.
