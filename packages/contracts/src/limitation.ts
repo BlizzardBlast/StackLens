@@ -1,15 +1,8 @@
 import * as z from "zod";
 
+import { ScoreCategorySchema } from "./category.js";
 import { IdentifierSchema, RuleReferenceSchema } from "./identifiers.js";
-import { IsoDateTimeSchema } from "./evidence.js";
-
-export const ScoreCategorySchema = z.enum([
-  "dependencies",
-  "security",
-  "maintainability",
-  "testing",
-  "tooling"
-]);
+import { IsoDateTimeSchema } from "./time.js";
 
 export const AnalysisLimitationKindSchema = z.enum([
   "input_mode",
@@ -64,7 +57,6 @@ export const PartialFailureSchema = z.discriminatedUnion("scope", [
   AcquisitionPartialFailureSchema
 ]);
 
-export type ScoreCategory = z.infer<typeof ScoreCategorySchema>;
 export type AnalysisLimitationKind = z.infer<typeof AnalysisLimitationKindSchema>;
 export type AnalysisLimitation = z.infer<typeof AnalysisLimitationSchema>;
 export type PartialFailure = z.infer<typeof PartialFailureSchema>;
