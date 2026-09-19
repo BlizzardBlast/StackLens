@@ -114,8 +114,8 @@ describe("source parser adapter [FR-009, SEC-001, SEC-002]", () => {
 
     expect(parsed.issues).toEqual([]);
     expect(parsed.references.map((reference) => [reference.kind, reference.specifier])).toEqual([
-      ["esm_export", "@scope/pkg/subpath"],
       ["dynamic_import", "./local"],
+      ["esm_export", "@scope/pkg/subpath"],
       ["dynamic_import", "ky"],
       ["commonjs_require", "lodash/fp"],
       ["esm_import", "react"],
