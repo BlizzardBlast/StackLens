@@ -99,12 +99,30 @@ function assertRuleReference(
   }
 }
 
+function parseContractEntity<T>(
+  result: { readonly success: true; readonly data: T } | { readonly success: false },
+  rule: RuleDefinition,
+  entityLabel: string
+): T {
+  if (!result.success) {
+    throw new AnalyzerInvariantError(
+      `Rule ${rule.id} emitted schema-invalid ${entityLabel}`
+    );
+  }
+
+  return result.data;
+}
+
 function validateLimitations(
   rule: RuleDefinition,
   limitations: readonly AnalysisLimitation[] | undefined
 ): readonly AnalysisLimitation[] {
   return (limitations ?? []).map((limitation) => {
-    const parsed = AnalysisLimitationSchema.parse(limitation);
+    const parsed = parseContractEntity(
+      AnalysisLimitationSchema.safeParse(limitation),
+      rule,
+      "limitation"
+    );
 
     if (!parsed.ruleIds.includes(rule.id)) {
       throw new AnalyzerInvariantError(
@@ -121,7 +139,11 @@ export function validateFactRuleResult(
   result: FactRuleResult
 ): Required<FactRuleResult> {
   const facts = (result.facts ?? []).map((fact) => {
-    const parsed = AnalysisFactSchema.parse(fact);
+    const parsed = parseContractEntity(
+      AnalysisFactSchema.safeParse(fact),
+      rule,
+      "fact"
+    );
     assertRuleReference(rule, parsed, `fact ${parsed.id}`);
     assertOwnedRequirements(rule, parsed.requirementIds, `fact ${parsed.id}`);
     return parsed;
@@ -138,7 +160,11 @@ export function validateFindingRuleResult(
   result: FindingRuleResult
 ): Required<FindingRuleResult> {
   const findings = (result.findings ?? []).map((finding) => {
-    const parsed = FindingSchema.parse(finding);
+    const parsed = parseContractEntity(
+      FindingSchema.safeParse(finding),
+      rule,
+      "finding"
+    );
     assertRuleReference(rule, parsed, `finding ${parsed.id}`);
     assertOwnedRequirements(rule, parsed.requirementIds, `finding ${parsed.id}`);
     return parsed;
@@ -155,7 +181,11 @@ export function validateRecommendationRuleResult(
   result: RecommendationRuleResult
 ): Required<RecommendationRuleResult> {
   const recommendations = (result.recommendations ?? []).map((recommendation) => {
-    const parsed = RecommendationSchema.parse(recommendation);
+    const parsed = parseContractEntity(
+      RecommendationSchema.safeParse(recommendation),
+      rule,
+      "recommendation"
+    );
     assertRuleReference(rule, parsed, `recommendation ${parsed.id}`);
     assertOwnedRequirements(
       rule,
