@@ -301,13 +301,22 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
         url: "https://example.com/reference",
       },
     ]);
-    expect(result.evidence).toHaveLength(2);
-    expect(result.evidence[0]).toMatchObject({
+    expect(result.evidence).toHaveLength(4);
+    expect(
+      result.evidence.find((item) => item.reference === "GHSA-aaaa-bbbb-cccc"),
+    ).toMatchObject({
       kind: "external",
       sourceId: result.source.id,
       reference: "GHSA-aaaa-bbbb-cccc",
       url: osvVulnerabilityPageUrl("GHSA-aaaa-bbbb-cccc"),
       publishedAt: "2026-09-17T08:00:00Z",
+    });
+    expect(
+      result.evidence.find((item) => item.reference === "npm:lodash@4.17.20"),
+    ).toMatchObject({
+      kind: "external",
+      sourceId: result.source.id,
+      url: OSV_QUERY_BATCH_URL,
     });
     expect(result.partialFailures).toEqual([]);
     expect(DataSourceSchema.safeParse(result.source).success).toBe(true);
@@ -351,7 +360,14 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
       },
     ]);
     expect(result.data.vulnerabilities).toEqual([]);
-    expect(result.evidence).toEqual([]);
+    expect(result.evidence).toHaveLength(1);
+    expect(result.evidence[0]).toMatchObject({
+      kind: "external",
+      sourceId: result.source.id,
+      reference: "npm:react@18.2.0",
+      url: OSV_QUERY_BATCH_URL,
+    });
+    expect(result.evidence[0]?.summary).toContain("0 known vulnerability match(es)");
     expect(JSON.stringify(result).toLowerCase()).not.toContain("secure");
   });
 
@@ -613,7 +629,7 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
     expect(result.source.status).toBe("partial");
     expect(result.data.queryResults[0]?.matches).toHaveLength(2);
     expect(result.data.vulnerabilities).toHaveLength(1);
-    expect(result.evidence).toHaveLength(2);
+    expect(result.evidence).toHaveLength(3);
     expect(result.partialFailures).toEqual([
       expect.objectContaining({
         code: "osv_detail_limit_reached",
@@ -661,12 +677,19 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
     expect(result.source.status).toBe("partial");
     expect(result.data.queryResults[0]?.matches).toHaveLength(1);
     expect(result.data.vulnerabilities).toEqual([]);
-    expect(result.evidence).toEqual([
-      expect.objectContaining({
-        reference: "GHSA-aaaa-bbbb-cccc",
-        url: osvVulnerabilityPageUrl("GHSA-aaaa-bbbb-cccc"),
-      }),
-    ]);
+    expect(result.evidence).toHaveLength(2);
+    expect(result.evidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          reference: "npm:example-package@1.0.0",
+          url: OSV_QUERY_BATCH_URL,
+        }),
+        expect.objectContaining({
+          reference: "GHSA-aaaa-bbbb-cccc",
+          url: osvVulnerabilityPageUrl("GHSA-aaaa-bbbb-cccc"),
+        }),
+      ]),
+    );
     expect(result.partialFailures[0]).toMatchObject({
       code: "osv_detail_http_503",
       retryable: true,
@@ -721,7 +744,9 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
 
     expect(result.source.status).toBe("partial");
     expect(result.data.vulnerabilities).toEqual([]);
-    expect(result.evidence[0]?.url).toBe(osvVulnerabilityPageUrl("GHSA-aaaa-bbbb-cccc"));
+    expect(
+      result.evidence.find((item) => item.reference === "GHSA-aaaa-bbbb-cccc")?.url,
+    ).toBe(osvVulnerabilityPageUrl("GHSA-aaaa-bbbb-cccc"));
     expect(result.partialFailures[0]?.code).toBe("osv_invalid_detail_response");
   });
 
