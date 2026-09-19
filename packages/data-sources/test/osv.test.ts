@@ -17,6 +17,7 @@ function createAdapter(
   options: {
     readonly maxPaginationRounds?: number;
     readonly maxQueries?: number;
+    readonly maxAdvisoryDetails?: number;
     readonly maxResponseBytes?: number;
     readonly timeoutMs?: number;
   } = {},
@@ -90,6 +91,35 @@ function createVulnerability(
 }
 
 describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]", () => {
+  it("creates the same source identity for equivalent query sets", () => {
+    const first = osvSourceId([
+      {
+        packageName: "react",
+        version: "18.2.0",
+      },
+      {
+        packageName: "lodash",
+        version: "4.17.20",
+      },
+      {
+        packageName: "react",
+        version: "18.2.0",
+      },
+    ]);
+    const second = osvSourceId([
+      {
+        packageName: "lodash",
+        version: "4.17.20",
+      },
+      {
+        packageName: "react",
+        version: "18.2.0",
+      },
+    ]);
+
+    expect(first).toBe(second);
+  });
+
   it("normalizes exact-version batch matches and advisory details deterministically", async () => {
     const fetchImpl = vi
       .fn<typeof fetch>()
@@ -534,6 +564,63 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
       sourceId: result.source.id,
     });
     expect(PartialFailureSchema.safeParse(result.partialFailures[0]).success).toBe(true);
+  });
+
+  it("bounds advisory detail requests without losing authoritative batch matches", async () => {
+    const fetchImpl = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(
+        jsonResponse({
+          results: [
+            {
+              vulns: [
+                {
+                  id: "GHSA-aaaa-bbbb-cccc",
+                  modified: "2026-09-18T10:00:00Z",
+                },
+                {
+                  id: "GHSA-dddd-eeee-ffff",
+                  modified: "2026-09-18T11:00:00Z",
+                },
+              ],
+            },
+          ],
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(createVulnerability("GHSA-aaaa-bbbb-cccc", "example-package")),
+      );
+    const adapter = createAdapter(fetchImpl, {
+      maxAdvisoryDetails: 1,
+    });
+
+    const result = await adapter.fetch({
+      queries: [
+        {
+          packageName: "example-package",
+          version: "1.0.0",
+        },
+      ],
+    });
+
+    expect(result.ok).toBe(true);
+
+    if (!result.ok) {
+      throw new Error("Expected bounded OSV detail acquisition");
+    }
+
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(result.source.status).toBe("partial");
+    expect(result.data.queryResults[0]?.matches).toHaveLength(2);
+    expect(result.data.vulnerabilities).toHaveLength(1);
+    expect(result.evidence).toHaveLength(2);
+    expect(result.partialFailures).toEqual([
+      expect.objectContaining({
+        code: "osv_detail_limit_reached",
+        retryable: false,
+        sourceId: result.source.id,
+      }),
+    ]);
   });
 
   it("keeps an authoritative batch match when advisory detail retrieval fails", async () => {
