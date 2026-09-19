@@ -700,7 +700,7 @@ GOV-007.
 
 ## 2026-09-19 — Step 37: Establish the first provider-backed finding rule
 
-The JavaScript/TypeScript rule package now consumes pre-acquired normalized OSV metadata to implement
+PR #15 adds the first provider-backed finding rule. The JavaScript/TypeScript rule package now consumes pre-acquired normalized OSV metadata to implement
 the first **FR-011** known-vulnerability finding slice without introducing provider I/O into analyzer
 execution.
 
