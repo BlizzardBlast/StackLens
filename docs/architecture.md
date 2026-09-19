@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.4  
+> **Architecture version:** 0.1.6  
 > **Date:** 2026-09-19  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
@@ -146,11 +146,19 @@ flowchart LR
     I[Input] --> V[Normalize + Validate]
     V --> S[Project Snapshot]
     S --> M[Metadata Collection]
-    M --> R[Rule Engine]
-    R --> F[Facts + Findings]
-    F --> P[Priority Engine]
-    F --> SC[Scoring Engine]
-    P --> O[Analysis Report]
+    M --> FR[Fact Rules]
+    FR --> F[Facts]
+    F --> DR[Finding Rules]
+    DR --> C[Finding Candidates]
+    C --> P[Priority Engine]
+    P --> FN[Finalized Findings]
+    FN --> RR[Recommendation Rules]
+    RR --> R[Recommendations]
+    FN --> SC[Scoring Engine]
+    F --> SC
+    R --> O[Analysis Report]
+    FN --> O
+    F --> O
     SC --> O
     O --> L[Limitations + Provenance]
 ```
@@ -188,60 +196,102 @@ Every external record carries provenance and retrieval time (**DATA-001**, **DAT
 
 ### 5.4 Rules
 
-Each rule has a stable identifier.
+Each rule-stage component has a stable identifier, version, and requirement declaration.
 
-Conceptual interface:
+Analyzer-core uses explicit responsibility stages:
+
+1. **Fact rules** receive normalized context and emit facts.
+2. **Finding rules** receive normalized context plus completed facts and emit finding candidates.
+3. **Priority strategy** receives completed facts plus all validated finding candidates and emits only `FindingPriority`.
+4. **Recommendation rules** receive normalized context plus completed facts/finalized findings and emit recommendations.
+
+Fact/finding/recommendation rules within the same stage do not receive sibling outputs. They execute in stable code-unit rule-ID order, so registration order cannot become hidden product behavior.
+
+Conceptual interfaces:
 
 ```ts
-interface AnalysisRule {
-  id: string;
-  version: string;
-  requirementIds: string[];
-  kind: "fact" | "heuristic" | "recommendation";
-  evaluate(context: RuleContext): RuleResult;
+interface FactRule<Project, Metadata> {
+  readonly kind: "fact";
+  readonly id: string;
+  readonly version: string;
+  readonly requirementIds: readonly RequirementId[];
+  evaluate(context: FactRuleContext<Project, Metadata>): FactRuleResult;
+}
+
+interface FindingRule<Project, Metadata> {
+  readonly kind: "finding";
+  evaluate(context: FindingRuleContext<Project, Metadata>): FindingRuleResult;
+}
+
+interface FindingPrioritizer<Project, Metadata> {
+  readonly kind: "priority";
+  readonly id: string;
+  readonly version: string;
+  readonly requirementIds: readonly RequirementId[];
+  prioritize(
+    context: PrioritizationContext<Project, Metadata>,
+    finding: FindingCandidate
+  ): FindingPriority;
+}
+
+interface RecommendationRule<Project, Metadata> {
+  readonly kind: "recommendation";
+  evaluate(
+    context: RecommendationRuleContext<Project, Metadata>
+  ): RecommendationRuleResult;
 }
 ```
 
-Rules:
+Evaluation is synchronous. Provider/network I/O occurs before analyzer-core through explicit adapters.
 
-- receive normalized data;
-- do not mutate shared state;
-- do not perform hidden network access;
-- return structured evidence references;
-- expose confidence for heuristic findings;
-- are independently fixture-testable (**NFR-002**).
+Analyzer-core validates rule schemas, identity/requirement ownership, duplicate IDs, and stage-appropriate references before output is allowed to advance.
+
+Individual rule failure is isolated as a rule-scoped partial failure + limitation; unrelated rules continue (**NFR-003**). Invalid analyzer configuration such as duplicate rule IDs—including the prioritizer—fails before evaluation.
 
 Rule IDs are product data and must remain stable once published (**DATA-003**, **NFR-005**).
 
-### 5.5 Findings
+See [ADR-0009](adr/0009-deterministic-staged-analyzer-core.md).
 
-Findings use a stable structured contract.
+### 5.5 Finding candidates and findings
 
-Facts, findings, and recommendations are separate report entities. Findings represent attention-worthy conclusions and are classified only as factual or heuristic. Recommendations are separate advice entities so advice cannot be serialized as raw observation (**DATA-005**).
+Finding rules do not choose priority.
 
-A finding contains, as applicable:
+They emit a `FindingCandidate`: the factual/heuristic public finding shape without `priority`.
+
+The priority stage converts each valid candidate into the public `Finding` contract. If priority evaluation fails for one candidate, only that finding is omitted and the failure is disclosed; other candidates continue.
+
+A finalized finding contains, as applicable:
 
 - finding ID;
-- stable rule ID and rule version;
+- stable detector rule ID/version;
 - requirement IDs;
 - classification: fact / heuristic;
 - title and structured description;
 - affected package/tool/configuration;
-- evidence references;
+- evidence/fact references;
 - confidence for heuristics;
-- priority factors;
-- provenance/timestamps through referenced evidence and data sources;
+- priority and priority-rule provenance;
 - limitations.
 
-The frontend renders this model; it does not reinterpret raw metadata into independent product findings.
+Facts, findings, and recommendations remain separate report entities (**DATA-005**).
 
-### 5.6 Scoring
+### 5.6 Priority
+
+Priority is a separate deterministic policy stage (**FR-016**).
+
+Analyzer-core owns only the `FindingPrioritizer` abstraction and orchestration. It does not own priority formulas.
+
+The prioritizer belongs to the versioned rule set and returns a contract-valid `FindingPriority` identifying its own rule ID/version. This keeps priority policy independently replaceable while preserving reproducibility through the rule-set version.
+
+### 5.7 Scoring
 
 Scoring is a separate pure deterministic step.
 
+Analyzer-core owns only the `AnalysisScorer` abstraction. The concrete deterministic scoring implementation belongs in `packages/scoring`, preserving dependency inversion and keeping score formulas out of orchestration.
+
 Inputs:
 
-- eligible findings;
+- eligible finalized findings;
 - category evidence coverage;
 - versioned scoring configuration.
 
@@ -715,5 +765,6 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0006 — Design system and prototyping strategy](adr/0006-design-system-and-prototyping.md)
 - [ADR-0007 — Design infrastructure bootstrap](adr/0007-design-infrastructure-bootstrap.md)
 - [ADR-0008 — Analysis report contract v1](adr/0008-analysis-report-contract-v1.md)
+- [ADR-0009 — Deterministic staged analyzer core](adr/0009-deterministic-staged-analyzer-core.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).

@@ -94,6 +94,36 @@ The authoritative serialized analysis-domain model lives in `packages/contracts`
 - N/A / insufficient evidence must remain structurally distinct from a numeric score of zero.
 - Breaking serialized report changes require a schema-version change and ADR/architecture review.
 
+## Analyzer core rules
+
+The reusable orchestration layer lives in `packages/analyzer-core`.
+
+- Keep ecosystem-specific detection out of analyzer-core.
+- Fact rules emit facts; finding rules emit findings; recommendation rules emit recommendations. Do not collapse these stages.
+- Rules must remain synchronous and free of provider/network I/O.
+- Same-stage rules must not depend on sibling output or registration order.
+- Rule IDs/versions are stable product data.
+- Every rule must declare requirement IDs and emitted entities must stay within that declaration.
+- Do not catch rule failures inside product rules merely to hide them; analyzer-core owns rule-level partial-failure isolation.
+- Scoring formulas belong in `packages/scoring`; analyzer-core depends only on `AnalysisScorer`.
+- Do not create timestamps/random IDs inside analyzer-core. Callers supply nondeterministic values.
+
+## Analyzer core boundaries
+
+The reusable analyzer execution layer lives in `packages/analyzer-core`.
+
+- Keep fact, finding-candidate, priority, recommendation, and scoring responsibilities separate.
+- Fact rules emit facts only.
+- Finding rules emit finding candidates and **must not** embed `priority`.
+- The configured `FindingPrioritizer` is the only analyzer stage that creates `FindingPriority`.
+- Recommendation rules consume finalized findings; they do not calculate priority or scores.
+- Scoring policy stays behind `AnalysisScorer`; analyzer-core must not define score weights/bands/deductions.
+- Rule/prioritizer/scorer evaluation remains synchronous. Provider/network I/O happens before analyzer-core.
+- Treat project and metadata snapshots as immutable; rule contexts expose them through `DeepReadonly`.
+- Reuse `@stacklens/contracts` entities instead of creating parallel public finding/report shapes.
+- Invalid rule output must be isolated rather than silently normalized.
+- Priority-policy changes must be reflected in the versioned rule set.
+
 ## Analyzer safety
 
 Analyzed repositories are untrusted input.

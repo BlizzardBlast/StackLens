@@ -373,3 +373,108 @@ The resulting lockfile contains the new `packages/contracts` workspace importer 
 Temporary write permission was then removed. The workflow was restored to its normal read-only, frozen-lockfile configuration before merge.
 
 A normal repository-authored commit is used to trigger the permanent workflow again; that steady-state run is the final merge gate for PR #6.
+
+
+## 2026-09-19 — Step 26: Establish the deterministic analyzer core
+
+After merging Analysis Report Contract v1, implementation moved to the reusable analyzer execution layer rather than directly adding ecosystem rules or screens.
+
+A new `@stacklens/analyzer-core` package defines:
+- immutable normalized analysis context boundaries;
+- fact, finding, and recommendation rule interfaces;
+- deterministic stage execution;
+- stable rule-ID ordering;
+- runtime rule-output ownership/requirement validation;
+- per-rule failure isolation;
+- scoring dependency inversion;
+- contract-validated AnalysisReport assembly.
+
+The pipeline is intentionally staged:
+
+`normalized evidence/context → facts → findings → recommendations → scoring → report`
+
+Rules in one stage cannot see sibling outputs. Finding rules see the completed fact stage; recommendation rules see completed facts/findings. This prevents hidden registration-order coupling.
+
+Rule evaluation is synchronous so provider/network I/O cannot become an implicit rule behavior. External data must already be normalized before entering analyzer-core.
+
+If a single rule throws or emits invalid output, its output is omitted and a deterministic rule-scoped partial failure + limitation is recorded. Duplicate rule IDs or missing requirement declarations are configuration errors detected before rule execution.
+
+Analyzer-core defines `AnalysisScorer` but no score formulas. The future scoring package will implement that interface.
+
+Focused tests cover ordering, stage visibility, exception isolation, invalid output, duplicate IDs, traceability, scorer integration, and caller-owned IDs/timestamps.
+
+ADR-0009 and `docs/implementation/analyzer-core.md` document this boundary.
+
+The next implementation milestone is a narrow JavaScript/TypeScript vertical slice for **FR-005 dependency inventory**, using normalized package-manifest evidence without external registry metadata.
+
+
+## 2026-09-19 — Step 27: Validate and close the analyzer-core bootstrap
+
+The new analyzer-core workspace package was exercised on the real GitHub Actions runner before merge.
+
+The bootstrap validation surfaced two implementation-quality issues and corrected them without weakening repository rules:
+
+- strict TypeScript found a negative-test fixture that had accidentally changed a serialized mutable array into a readonly tuple; the fixture was corrected to remain a valid `AnalysisFact` while testing only requirement-ownership behavior;
+- type-aware Oxlint rejected redundant error constructors, unused imports, mutable `Array#sort()`, and an unsafe type assertion used only to bypass the contract in a test. The production/runtime validation remained, while the unsafe test escape was removed.
+
+The successful bootstrap run then passed:
+- journey continuity;
+- dependency resolution;
+- all workspace builds;
+- canonical Oxfmt formatting;
+- shadcn project validation;
+- strict TypeScript;
+- analyzer-core and existing test suites;
+- type-aware Oxlint with warnings denied;
+- Oxfmt verification.
+
+The generated lockfile now contains the `packages/analyzer-core` workspace importer.
+
+Temporary CI write permission is removed immediately after this step. The final merge gate is the normal read-only workflow with `pnpm install --frozen-lockfile`.
+
+
+## 2026-09-19 — Step 28: Separate finding detection from priority policy
+
+A full pre-merge SOLID/architecture review of PR #7 found one important mismatch: finding rules were emitting final `Finding` objects including priority, even though the accepted architecture defines priority as a separate deterministic stage.
+
+The analyzer core was hardened before merge:
+
+- finding rules now emit `FindingCandidate` without priority;
+- a versioned `FindingPrioritizer` is part of the rule set;
+- the prioritizer alone creates `FindingPriority`;
+- priority output is validated for schema and rule ownership;
+- a priority failure omits only the affected finding and records a partial failure/limitation;
+- recommendation rules see only successfully finalized findings;
+- project/metadata context is recursively `DeepReadonly` at the type boundary;
+- analyzer/scorer versions are validated before rule execution;
+- duplicate emitted IDs and invalid evidence/fact/limitation/finding references are isolated at the emitting rule;
+- recommendation basis is checked against referenced finding classifications before report assembly;
+- generated failure identifiers are deterministic and collision-safe within report collections;
+- rule metadata moved to a shared `rule-definition.ts` abstraction so priority and detector rules do not depend on one another.
+
+The architecture was bumped to v0.1.6 and ADR-0009/implementation/agent documentation were updated to match the executable pipeline.
+
+This correction keeps detector logic, priority policy, scoring policy, and presentation as separate reasons to change, and restores the documented:
+
+`facts → finding candidates → priority → finalized findings → recommendations → scoring → report`
+
+flow.
+
+
+## 2026-09-19 — Step 29: Validate the hardened analyzer-core boundary
+
+The post-review analyzer-core design was validated on the real GitHub Actions runner.
+
+The first read-only run proved that all semantic gates were already green:
+- frozen dependency installation;
+- workspace builds;
+- shadcn project validation;
+- strict TypeScript;
+- analyzer-core, contracts, UI, and design-token tests;
+- type-aware Oxlint with zero warnings/errors.
+
+Only four analyzer-core files required Oxfmt's canonical source formatting. A temporary formatting-only workflow applied Oxfmt and reran the complete quality suite successfully without changing dependencies or the lockfile.
+
+The temporary write permission is removed immediately after that formatting commit. The final merge gate returns to the normal read-only workflow with a frozen lockfile.
+
+This validates the final SOLID boundary introduced in Step 28: finding detection, priority policy, recommendations, and scoring remain separate deterministic responsibilities.
