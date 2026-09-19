@@ -270,13 +270,19 @@ export class OsvVulnerabilityAdapter
     );
     const partialFailures: PartialFailure[] = [];
 
-    let pending: PendingQuery[] = queries.map((query) => ({
+    const initialPending: PendingQuery[] = queries.map((query) => ({
       query,
       pageRound: 0,
     }));
-    let acquiredAnyBatchPage = false;
 
-    while (pending.length > 0) {
+    const acquireBatchPages = async (
+      pending: readonly PendingQuery[],
+      acquiredAnyBatchPage: boolean,
+    ): Promise<ProviderFailure | null> => {
+      if (pending.length === 0) {
+        return null;
+      }
+
       const body = {
         queries: pending.map((entry) => ({
           package: {
@@ -331,7 +337,7 @@ export class OsvVulnerabilityAdapter
             "pagination",
           ),
         );
-        break;
+        return null;
       }
 
       let parsedBatch: readonly ParsedBatchResult[];
@@ -373,10 +379,9 @@ export class OsvVulnerabilityAdapter
             "pagination",
           ),
         );
-        break;
+        return null;
       }
 
-      acquiredAnyBatchPage = true;
       const nextPending: PendingQuery[] = [];
 
       for (const [index, parsedResult] of parsedBatch.entries()) {
@@ -395,7 +400,10 @@ export class OsvVulnerabilityAdapter
         for (const match of parsedResult.matches) {
           const existing = accumulator.matches.get(match.id);
 
-          if (existing === undefined || match.modifiedAt > existing.modifiedAt) {
+          if (
+            existing === undefined ||
+            Date.parse(match.modifiedAt) > Date.parse(existing.modifiedAt)
+          ) {
             accumulator.matches.set(match.id, match);
           }
         }
@@ -431,7 +439,13 @@ export class OsvVulnerabilityAdapter
         });
       }
 
-      pending = nextPending;
+      return acquireBatchPages(nextPending, true);
+    };
+
+    const unavailableResult = await acquireBatchPages(initialPending, false);
+
+    if (unavailableResult !== null) {
+      return unavailableResult;
     }
 
     const queryResults: OsvPackageVersionResult[] = [...accumulators.values()]
@@ -459,10 +473,15 @@ export class OsvVulnerabilityAdapter
     }
 
     const vulnerabilities: OsvVulnerabilityRecord[] = [];
+    const vulnerabilityIds = [...matchedPackagesByVulnerability.keys()].toSorted(compareCodeUnits);
 
-    for (const vulnerabilityId of [...matchedPackagesByVulnerability.keys()].toSorted(
-      compareCodeUnits,
-    )) {
+    const resolveDetails = async (index: number): Promise<void> => {
+      const vulnerabilityId = vulnerabilityIds[index];
+
+      if (vulnerabilityId === undefined) {
+        return;
+      }
+
       const detailResult = await this.#requestJson(
         osvVulnerabilityApiUrl(vulnerabilityId),
         {
@@ -485,7 +504,7 @@ export class OsvVulnerabilityAdapter
             vulnerabilityId,
           ),
         );
-        continue;
+        return resolveDetails(index + 1);
       }
 
       try {
@@ -512,7 +531,11 @@ export class OsvVulnerabilityAdapter
           ),
         );
       }
-    }
+
+      return resolveDetails(index + 1);
+    };
+
+    await resolveDetails(0);
 
     const vulnerabilityById = new Map(
       vulnerabilities.map((vulnerability) => [vulnerability.id, vulnerability]),
