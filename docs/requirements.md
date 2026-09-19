@@ -1,8 +1,8 @@
 # StackLens Product & System Requirements
 
 > **Status:** Accepted baseline  
-> **Version:** 0.1.0  
-> **Last updated:** 2026-09-18  
+> **Version:** 0.1.1  
+> **Last updated:** 2026-09-19  
 > **Product:** StackLens  
 > **Repository:** BlizzardBlast/StackLens
 
@@ -806,6 +806,23 @@ Changes to accepted requirements must be explicit in a pull request and must des
 **Status:** Accepted
 
 Technology and architecture choices must cite the requirements they are intended to satisfy. A technology choice is not itself a product requirement.
+
+### GOV-007 — Documentation and journey continuity
+
+**Phase:** Core  
+**Status:** Accepted
+
+Every pull request must keep StackLens's durable documentation synchronized with the change and append a chronological entry to `docs/design/journey.md`.
+
+**Acceptance criteria**
+- The pull request identifies the requirement IDs it serves.
+- The journey entry records what changed and why, including material decisions or corrections.
+- Product behavior changes update `docs/requirements.md` when applicable.
+- Architecture or technology changes update `docs/architecture.md` and/or the relevant ADR when applicable.
+- Design-system, UI-pattern, or token changes update the relevant design documentation when applicable.
+- Tooling, workflow, package, CI, editor, or agent-instruction changes update the relevant implementation/contributor documentation when applicable.
+- Milestone/status changes update `README.md` when its current-status statement would otherwise become stale.
+- A change is not considered complete while documentation that describes the changed area is knowingly stale.
 
 ## 13. MVP success definition
 
