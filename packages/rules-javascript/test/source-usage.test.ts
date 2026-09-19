@@ -14,7 +14,10 @@ import {
   dependencyInventoryRule,
 } from "../src/dependency-inventory.js";
 import { normalizePackageManifest } from "../src/manifest.js";
-import { createJavaScriptProjectSnapshot } from "../src/project-snapshot.js";
+import {
+  createJavaScriptProjectSnapshot,
+  normalizePackageScripts,
+} from "../src/project-snapshot.js";
 import type { JavaScriptProjectSnapshot } from "../src/project-snapshot.js";
 import {
   babelSourceReferenceParser,
@@ -150,6 +153,67 @@ describe("source parser adapter [FR-009, SEC-001, SEC-002]", () => {
 });
 
 describe("static source usage and potentially unnecessary dependency analysis [FR-009]", () => {
+  it("treats missing supported source files as insufficient negative evidence", () => {
+    const manifest = normalizePackageManifest({
+      dependencies: {
+        unused: "1.0.0",
+      },
+    });
+    const project = withJavaScriptSourceUsage(
+      createJavaScriptProjectSnapshot(manifest, []),
+      "complete",
+    );
+
+    expect(project.sourceUsage?.coverage).toBe("partial");
+    expect(project.sourceUsage?.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          kind: "acquisition",
+          message: expect.stringContaining("No supported JavaScript/TypeScript source files"),
+        }),
+      ]),
+    );
+  });
+
+  it("accounts for supported ESLint plugin conventions without executing configuration", () => {
+    const manifest = normalizePackageManifest({
+      devDependencies: {
+        eslint: "9.0.0",
+        "eslint-plugin-react": "7.0.0",
+      },
+    });
+    const baseProject = createJavaScriptProjectSnapshot(manifest, [
+      {
+        path: ".eslintrc.json",
+        content: JSON.stringify({
+          plugins: ["react"],
+          extends: ["plugin:react/recommended"],
+        }),
+      },
+      {
+        path: "src/index.ts",
+        content: "export const value = 1;",
+      },
+    ]);
+    const project = withJavaScriptSourceUsage(baseProject, "complete");
+
+    expect(project.sourceUsage?.coverage).toBe("complete");
+    expect(project.sourceUsage?.references.map((reference) => reference.packageName)).toEqual([
+      "eslint",
+      "eslint-plugin-react",
+    ]);
+  });
+
+  it("fails closed when package script evidence has an unsupported shape", () => {
+    expect(() =>
+      normalizePackageScripts({
+        scripts: {
+          test: 42,
+        },
+      }),
+    ).toThrow(/scripts\.test must be a string/);
+  });
+
   it("uses source/config/script evidence and emits one conservative heuristic for an unreferenced dependency", () => {
     const manifest = normalizePackageManifest({
       dependencies: {
