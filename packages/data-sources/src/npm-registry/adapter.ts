@@ -226,6 +226,10 @@ export class NpmRegistryAdapter
         partialFailures: [],
       };
     } catch (error) {
+      if (error instanceof NpmRegistryConfigurationError) {
+        throw error;
+      }
+
       const attemptedAt = validateObservedAt(this.#now());
 
       if (error instanceof NpmRegistryResponseTooLargeError) {
