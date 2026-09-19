@@ -1,10 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import {
-  DataSourceSchema,
-  EvidenceSchema,
-  PartialFailureSchema,
-} from "@stacklens/contracts";
+import { DataSourceSchema, EvidenceSchema, PartialFailureSchema } from "@stacklens/contracts";
 
 import {
   NPM_REGISTRY_PROVIDER_ID,
@@ -301,9 +297,7 @@ describe("NpmRegistryAdapter [FR-006, FR-007, FR-010, DATA-001, DATA-002]", () =
     }
 
     expect(result.data.repository?.url).toBe("https://example.invalid/untrusted");
-    expect(result.evidence[0]?.url).toBe(
-      "https://registry.npmjs.org/%40stacklens%2Fexample",
-    );
+    expect(result.evidence[0]?.url).toBe("https://registry.npmjs.org/%40stacklens%2Fexample");
   });
 
   it("rejects a response whose package identity does not match the request", async () => {
