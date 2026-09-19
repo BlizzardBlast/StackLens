@@ -99,6 +99,7 @@ The adapter:
 
 - deduplicates/sorts equivalent queries deterministically;
 - follows per-query OSV pagination within an explicit safety bound;
+- bounds full advisory-detail lookups while retaining all exact-version batch matches/evidence;
 - preserves whether each query result is complete;
 - preserves advisory IDs, match modified timestamps, publication/withdrawal timestamps, aliases,
   related/upstream IDs, CVSS severity records (including source when supplied), affected package
