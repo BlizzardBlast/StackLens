@@ -6,6 +6,7 @@ export const OSV_DEFAULT_TIMEOUT_MS = 8_000;
 export const OSV_DEFAULT_MAX_RESPONSE_BYTES = 16 * 1024 * 1024;
 export const OSV_DEFAULT_MAX_QUERIES = 100;
 export const OSV_DEFAULT_MAX_PAGINATION_ROUNDS = 20;
+export const OSV_DEFAULT_MAX_ADVISORY_DETAILS = 500;
 
 export interface OsvPackageVersionQuery {
   readonly packageName: string;
@@ -74,4 +75,5 @@ export interface OsvAdapterOptions {
   readonly maxResponseBytes?: number;
   readonly maxQueries?: number;
   readonly maxPaginationRounds?: number;
+  readonly maxAdvisoryDetails?: number;
 }
