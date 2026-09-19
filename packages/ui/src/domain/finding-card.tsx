@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import type { ReactNode } from "react";
 
 import { Button } from "#components/button";
@@ -9,7 +10,6 @@ import {
   type FindingConfidence,
   type FindingPriority,
 } from "#domain/finding-badges";
-import { cn } from "cn";
 
 export interface FindingCardProps {
   classification: FindingClassification;

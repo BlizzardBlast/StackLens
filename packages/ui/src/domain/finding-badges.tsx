@@ -1,5 +1,6 @@
-import { Badge } from "#components/badge";
 import { cn } from "cn";
+
+import { Badge } from "#components/badge";
 
 export type FindingClassification = "fact" | "heuristic" | "recommendation";
 export type FindingPriority = "critical" | "high" | "medium" | "low";

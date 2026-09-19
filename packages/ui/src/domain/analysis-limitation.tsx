@@ -1,6 +1,5 @@
-import type { ReactNode } from "react";
-
 import { cn } from "cn";
+import type { ReactNode } from "react";
 
 export interface AnalysisLimitationProps {
   title: string;

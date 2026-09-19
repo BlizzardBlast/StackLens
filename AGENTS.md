@@ -104,6 +104,7 @@ Do not introduce an execution path that violates this boundary.
 Documentation is part of the change. Before reporting work as complete, every agent must perform a documentation-impact pass according to `docs/documentation-governance.md`.
 
 For **every pull request**:
+
 - append the chronological step to `docs/design/journey.md`;
 - state what changed, why, and meaningful verification;
 - update `docs/requirements.md` when accepted behavior changes;
