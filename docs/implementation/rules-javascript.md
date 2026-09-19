@@ -428,14 +428,16 @@ Declarative strict-JSON inspection currently supports:
 Only an allowlisted set of high-level fields is surfaced. Unsupported value shapes produce a
 configuration limitation instead of coercion.
 
-Known JS/TS config families are identified by filename for ESLint flat config, Jest, Next.js,
-Prettier, Rollup, Tailwind, Vite, Vitest, and webpack. These files are never imported or executed.
-The fact records file detection, and a separate rule-level limitation explains that dynamic values
-were not resolved.
+Known JS/TS config families are identified by filename for ESLint flat/legacy config, Jest, Next.js,
+Prettier, Rollup, Tailwind, Vite, Vitest, and webpack. Supported JS/CJS/MJS/TS/CTS/MTS variants are
+never imported or executed; a separate rule-level limitation explains that dynamic values were not
+resolved.
 
-JSONC/comments that strict JSON cannot parse remain file detections with an
-`unsupported_configuration` limitation. Static declarative content over 512 Ki characters remains
-detected with a `resource_limit` limitation and is not parsed.
+Recognized config-family filenames with unsupported extensions/formats still become configuration
+facts plus `unsupported_configuration` limitations instead of being silently ignored. JSONC/comments
+that strict JSON cannot parse remain file detections with an `unsupported_configuration`
+limitation. Static declarative content over 512 Ki characters remains detected with a
+`resource_limit` limitation and is not parsed.
 
 This slice intentionally does not acquire repository files. Milestone G will supply bounded static
 files from an immutable GitHub commit into this already-defined snapshot/rule boundary.
@@ -454,6 +456,7 @@ Synthetic fixtures cover:
 - supported TypeScript/Prettier characteristics;
 - executable-looking dynamic config proving no code evaluation path exists;
 - JSONC/comment partial inspection;
+- recognized config families with unsupported formats/extensions;
 - malformed supported configuration shapes;
 - static configuration content limits;
 - unrelated source files being ignored;
