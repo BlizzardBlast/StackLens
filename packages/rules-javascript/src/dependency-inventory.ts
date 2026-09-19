@@ -2,7 +2,6 @@ import type { FactRule } from "@stacklens/analyzer-core";
 import type { AnalysisFact, ProjectEvidence } from "@stacklens/contracts";
 
 import type { NormalizedDependencyDeclaration, NormalizedPackageManifest } from "./manifest.js";
-
 import { stableHash } from "./stable-id.js";
 
 function declarationIdentity(declaration: NormalizedDependencyDeclaration): string {
