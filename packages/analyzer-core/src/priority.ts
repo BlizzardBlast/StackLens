@@ -51,8 +51,15 @@ export function applyFindingPriority<TProjectSnapshot, TMetadataSnapshot>(
     );
   }
 
+  if (candidate.classification === "fact") {
+    return {
+      ...candidate,
+      priority: parsedPriority.data,
+    };
+  }
+
   return {
     ...candidate,
     priority: parsedPriority.data,
-  } as Finding;
+  };
 }
