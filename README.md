@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, and Design v1 are accepted. Production design infrastructure is now implemented; product screens and analyzer functionality are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, and Analysis Report Contract v1 are implemented. Analyzer rules and product screens are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -78,6 +78,12 @@ The repository contains:
 StackLens owns its visual language and domain components. shadcn/ui + Base UI are selected only as the implementation foundation for generic accessible primitives; they do not define the product's visual identity (**ADR-0006**).
 
 The production design layer now lives in **`packages/design-tokens`** and **`packages/ui`**. See [Design infrastructure implementation](docs/implementation/design-infrastructure.md) and **ADR-0007**.
+
+## Analysis contracts
+
+The shared runtime-validatable analysis model lives in **`packages/contracts`**. It defines evidence, facts, factual/heuristic findings, separate recommendations, limitations, partial failures, and explainable score states for all future consumers.
+
+See [Analysis Contracts v1](docs/implementation/analysis-contracts.md) and **ADR-0008**.
 
 ## Requirement examples
 
