@@ -27,11 +27,11 @@ export async function readBoundedResponseText(
   const parts: string[] = [];
   let totalBytes = 0;
 
-  while (true) {
+  async function readNextChunk(): Promise<void> {
     const result = await reader.read();
 
     if (result.done) {
-      break;
+      return;
     }
 
     totalBytes += result.value.byteLength;
@@ -44,8 +44,10 @@ export async function readBoundedResponseText(
     }
 
     parts.push(decoder.decode(result.value, { stream: true }));
+    return readNextChunk();
   }
 
+  await readNextChunk();
   parts.push(decoder.decode());
 
   return parts.join("");
