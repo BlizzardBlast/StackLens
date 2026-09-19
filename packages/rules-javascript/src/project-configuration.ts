@@ -10,7 +10,10 @@ const RULE_VERSION = "1";
 const MAX_STATIC_CONFIG_CONTENT_LENGTH = 512 * 1024;
 const DYNAMIC_EXTENSIONS = ["js", "cjs", "mjs", "ts", "cts", "mts"] as const;
 
-type ConfigurationInspectionMode = "declarative_json" | "dynamic_code";
+type ConfigurationInspectionMode =
+  | "declarative_json"
+  | "dynamic_code"
+  | "unsupported_format";
 
 interface ConfigurationDescriptor {
   readonly kind: string;
@@ -71,6 +74,30 @@ function descriptorForPath(path: string): ConfigurationDescriptor | undefined {
     };
   }
 
+  if (name.startsWith(".eslintrc.")) {
+    const extension = name.slice(".eslintrc.".length);
+
+    return {
+      kind: "eslint",
+      displayName: "ESLint legacy configuration",
+      inspectionMode: (DYNAMIC_EXTENSIONS as readonly string[]).includes(extension)
+        ? "dynamic_code"
+        : "unsupported_format",
+    };
+  }
+
+  if (name.startsWith(".prettierrc.")) {
+    const extension = name.slice(".prettierrc.".length);
+
+    return {
+      kind: "prettier",
+      displayName: "Prettier configuration",
+      inspectionMode: (DYNAMIC_EXTENSIONS as readonly string[]).includes(extension)
+        ? "dynamic_code"
+        : "unsupported_format",
+    };
+  }
+
   if (name === "biome.json") {
     return {
       kind: "biome",
@@ -94,13 +121,13 @@ function descriptorForPath(path: string): ConfigurationDescriptor | undefined {
 
     const extension = name.slice(prefix.length);
 
-    if ((DYNAMIC_EXTENSIONS as readonly string[]).includes(extension)) {
-      return {
-        kind,
-        displayName,
-        inspectionMode: "dynamic_code",
-      };
-    }
+    return {
+      kind,
+      displayName,
+      inspectionMode: (DYNAMIC_EXTENSIONS as readonly string[]).includes(extension)
+        ? "dynamic_code"
+        : "unsupported_format",
+    };
   }
 
   return undefined;
@@ -393,7 +420,9 @@ function createFact(
   const baseStatement =
     descriptor.inspectionMode === "dynamic_code"
       ? `Detected ${descriptor.displayName} at ${file.path}. The file contains executable configuration code and was not executed or evaluated.`
-      : `Detected ${descriptor.displayName} at ${file.path} through static file inspection.`;
+      : descriptor.inspectionMode === "unsupported_format"
+        ? `Detected ${descriptor.displayName} at ${file.path}, but this file format is not supported by the current static inspector.`
+        : `Detected ${descriptor.displayName} at ${file.path} through static file inspection.`;
   const characteristics =
     inspection.characteristics.length === 0
       ? ""
@@ -453,6 +482,13 @@ export const projectConfigurationRule: FactRule<JavaScriptProjectSnapshot, unkno
           "dynamic-configuration-unexecuted",
           "unsupported_configuration",
           `${descriptor.displayName} at ${file.path} is JavaScript/TypeScript configuration code. StackLens identified the file but did not import, execute, or resolve dynamic values.`,
+        );
+      } else if (descriptor.inspectionMode === "unsupported_format") {
+        limitation = createLimitation(
+          file,
+          "unsupported-configuration-format",
+          "unsupported_configuration",
+          `${descriptor.displayName} at ${file.path} uses a recognized configuration filename but an unsupported file format. StackLens identified the file without interpreting its contents.`,
         );
       } else {
         inspection = inspectDeclarativeConfiguration(descriptor, file);
