@@ -60,7 +60,9 @@ export function createDependencyRuleLimitation(
   };
 }
 
-export function dependencyFactBases(facts: readonly AnalysisFact[]): readonly DependencyFactBasis[] {
+export function dependencyFactBases(
+  facts: readonly AnalysisFact[],
+): readonly DependencyFactBasis[] {
   const grouped = new Map<
     string,
     {
