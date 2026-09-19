@@ -7,6 +7,7 @@
 ## Context
 
 Public repository analysis may require:
+
 - multiple GitHub API requests;
 - bounded source/config retrieval;
 - package metadata lookup;
@@ -57,6 +58,7 @@ State transitions are server-controlled. The frontend does not infer completion 
 ### Persistence
 
 MVP persists only what asynchronous delivery requires:
+
 - analysis identifier;
 - status/progress;
 - repository coordinates;
@@ -90,6 +92,7 @@ External data may change between attempts. Therefore retrieval timestamps and pr
 Retry transient infrastructure/provider failures with bounded backoff.
 
 Do not retry:
+
 - invalid repository URL;
 - unsupported repository state;
 - deterministic input validation failures;
@@ -100,6 +103,7 @@ A failure in one evidence provider may yield `completed_with_limitations` when v
 ## Why Graphile Worker
 
 Graphile Worker is selected because:
+
 - it is built around PostgreSQL;
 - it avoids introducing Redis solely for MVP jobs;
 - it supports durable background processing and retries;
@@ -129,6 +133,7 @@ Not selected as the architectural baseline because provider-specific time limits
 ## Consequences
 
 ### Positive
+
 - durable repository analyses;
 - visible progress;
 - retryable transient failures;
@@ -137,6 +142,7 @@ Not selected as the architectural baseline because provider-specific time limits
 - direct path to future monitoring/history.
 
 ### Negative
+
 - hosted repository analysis requires PostgreSQL from the start;
 - worker deployment is an additional process;
 - polling introduces small repeated API traffic;

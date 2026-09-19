@@ -9,6 +9,7 @@ It exists to validate design decisions before production UI scaffolding. It must
 ## Included states
 
 The prototype includes:
+
 - analyzer input;
 - repository analysis progress;
 - completed report;
@@ -23,20 +24,21 @@ The prototype includes:
 
 ## Requirement coverage
 
-| Prototype area | Requirements |
-| --- | --- |
-| Analyzer input | FR-001–FR-004, FR-022 |
-| Progress | NFR-003, NFR-008 |
-| Score summary | FR-018–FR-020, SCORE-001–SCORE-004 |
-| Finding cards | FR-015–FR-017, DATA-003–DATA-005 |
-| Evidence panel | DATA-001–DATA-006 |
-| Limitations | FR-021, PRD-004 |
-| Responsive behavior | NFR-007 |
-| Interaction/accessibility direction | NFR-006 |
+| Prototype area                      | Requirements                       |
+| ----------------------------------- | ---------------------------------- |
+| Analyzer input                      | FR-001–FR-004, FR-022              |
+| Progress                            | NFR-003, NFR-008                   |
+| Score summary                       | FR-018–FR-020, SCORE-001–SCORE-004 |
+| Finding cards                       | FR-015–FR-017, DATA-003–DATA-005   |
+| Evidence panel                      | DATA-001–DATA-006                  |
+| Limitations                         | FR-021, PRD-004                    |
+| Responsive behavior                 | NFR-007                            |
+| Interaction/accessibility direction | NFR-006                            |
 
 ## What the prototype does not decide
 
 The prototype does not define:
+
 - production component APIs;
 - backend/API behavior;
 - final scoring thresholds;
@@ -65,6 +67,7 @@ Before converting this design to production components, evaluate:
 ## Production handoff
 
 Once accepted:
+
 1. create `packages/design-tokens`;
 2. automate DTCG token transformation;
 3. create `packages/ui`;

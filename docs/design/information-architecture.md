@@ -54,6 +54,7 @@ Content order:
 6. cancel/navigation behavior when supported
 
 Stages mirror the accepted architecture:
+
 - queued
 - resolving repository
 - collecting snapshot
@@ -69,6 +70,7 @@ Stages mirror the accepted architecture:
 ### A. Report header
 
 Shows:
+
 - repository/project identity;
 - analyzed commit/reference or input fingerprint;
 - analysis time;
@@ -78,6 +80,7 @@ Shows:
 ### B. Health summary
 
 Shows:
+
 - overall score, if available;
 - evidence coverage;
 - category scores;
@@ -90,6 +93,7 @@ No score should imply certainty when evidence coverage is incomplete.
 Top prioritized actions from **FR-016**.
 
 Each action exposes:
+
 - severity/priority;
 - finding type;
 - concise problem;
@@ -100,6 +104,7 @@ Each action exposes:
 ### D. Stack summary
 
 Compact inventory:
+
 - package manager;
 - framework;
 - build tool;
@@ -112,6 +117,7 @@ Compact inventory:
 ### E. Category sections
 
 The report can be navigated by:
+
 - Findings
 - Dependencies
 - Security
@@ -126,6 +132,7 @@ Each section uses the same finding/evidence grammar.
 Limitations are not buried in a footer.
 
 Examples:
+
 - OSV lookup unavailable;
 - no exact installed version evidence;
 - dynamic config not inspected;

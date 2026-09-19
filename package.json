@@ -1,0 +1,28 @@
+{
+  "name": "stacklens",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "turbo run build",
+    "check": "pnpm build && pnpm ui:info && pnpm typecheck && pnpm test && pnpm lint && pnpm format:check",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint . --fix",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "ui:add": "pnpm --filter @stacklens/ui exec shadcn add",
+    "ui:info": "pnpm --filter @stacklens/ui exec shadcn info --json"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.68.0",
+    "oxlint": "^1.83.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "turbo": "^2.10.13",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": "^24.0.0"
+  },
+  "packageManager": "pnpm@12.4.2"
+}

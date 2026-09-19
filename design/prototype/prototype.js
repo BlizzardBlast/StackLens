@@ -36,7 +36,10 @@ function setInputMode(mode) {
   packageTab?.setAttribute("aria-selected", String(!githubActive));
   if (githubPanel) githubPanel.hidden = !githubActive;
   if (packagePanel) packagePanel.hidden = githubActive;
-  if (analyzeButton) analyzeButton.firstChild.textContent = githubActive ? "Analyze repository " : "Analyze package.json ";
+  if (analyzeButton)
+    analyzeButton.firstChild.textContent = githubActive
+      ? "Analyze repository "
+      : "Analyze package.json ";
   if (inputError) inputError.hidden = true;
 }
 
@@ -58,7 +61,8 @@ analyzeButton?.addEventListener("click", () => {
   if (inputMode === "github") {
     const value = document.getElementById("repo-input")?.value.trim() ?? "";
     if (!/^https:\/\/github\.com\/[^/]+\/[^/]+(?:\.git)?\/?$/i.test(value)) {
-      inputError.textContent = "Enter a public GitHub repository URL such as https://github.com/owner/repository.";
+      inputError.textContent =
+        "Enter a public GitHub repository URL such as https://github.com/owner/repository.";
       inputError.hidden = false;
       return;
     }

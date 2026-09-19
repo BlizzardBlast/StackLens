@@ -1,243 +1,473 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>StackLens — Product Design v1</title>
-  <link rel="stylesheet" href="../tokens/tokens.css" />
-  <link rel="stylesheet" href="./styles.css" />
-</head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="#" data-view-link="analyzer" aria-label="StackLens home">
-      <span class="brand-mark" aria-hidden="true">◎</span>
-      <span>StackLens</span>
-    </a>
-    <div class="top-actions">
-      <span class="prototype-chip">Design prototype v1</span>
-      <button class="icon-button" id="theme-toggle" type="button" aria-label="Switch to light theme" aria-pressed="true">◐</button>
-    </div>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StackLens — Product Design v1</title>
+    <link rel="stylesheet" href="../tokens/tokens.css" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
 
-  <main>
-    <section class="view analyzer-view is-active" data-view="analyzer">
-      <div class="hero">
-        <div class="eyebrow">DETERMINISTIC STACK ANALYSIS</div>
-        <h1>Understand what your stack contains—and what deserves attention.</h1>
-        <p class="hero-copy">Evidence-backed dependency, security, tooling, and maintainability analysis. StackLens inspects repository content statically and does not execute project code.</p>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" data-view-link="analyzer" aria-label="StackLens home">
+        <span class="brand-mark" aria-hidden="true">◎</span>
+        <span>StackLens</span>
+      </a>
+      <div class="top-actions">
+        <span class="prototype-chip">Design prototype v1</span>
+        <button
+          class="icon-button"
+          id="theme-toggle"
+          type="button"
+          aria-label="Switch to light theme"
+          aria-pressed="true"
+        >
+          ◐
+        </button>
       </div>
+    </header>
 
-      <div class="analyzer-shell">
-        <div class="segmented" role="tablist" aria-label="Analysis input">
-          <button class="segment is-selected" id="github-tab" role="tab" aria-selected="true" aria-controls="github-panel" type="button">GitHub repository</button>
-          <button class="segment" id="package-tab" role="tab" aria-selected="false" aria-controls="package-panel" type="button">package.json</button>
+    <main>
+      <section class="view analyzer-view is-active" data-view="analyzer">
+        <div class="hero">
+          <div class="eyebrow">DETERMINISTIC STACK ANALYSIS</div>
+          <h1>Understand what your stack contains—and what deserves attention.</h1>
+          <p class="hero-copy">
+            Evidence-backed dependency, security, tooling, and maintainability analysis. StackLens
+            inspects repository content statically and does not execute project code.
+          </p>
         </div>
-        <div id="github-panel" class="input-panel" role="tabpanel" aria-labelledby="github-tab">
-          <label class="field">
-            <span>Public repository URL</span>
-            <input id="repo-input" type="url" spellcheck="false" autocomplete="url" value="https://github.com/BlizzardBlast/StackLens" />
-          </label>
-        </div>
-        <div id="package-panel" class="input-panel" role="tabpanel" aria-labelledby="package-tab" hidden>
-          <label class="field">
-            <span>package.json</span>
-            <textarea id="package-input" rows="8" spellcheck="false">{
+
+        <div class="analyzer-shell">
+          <div class="segmented" role="tablist" aria-label="Analysis input">
+            <button
+              class="segment is-selected"
+              id="github-tab"
+              role="tab"
+              aria-selected="true"
+              aria-controls="github-panel"
+              type="button"
+            >
+              GitHub repository
+            </button>
+            <button
+              class="segment"
+              id="package-tab"
+              role="tab"
+              aria-selected="false"
+              aria-controls="package-panel"
+              type="button"
+            >
+              package.json
+            </button>
+          </div>
+          <div id="github-panel" class="input-panel" role="tabpanel" aria-labelledby="github-tab">
+            <label class="field">
+              <span>Public repository URL</span>
+              <input
+                id="repo-input"
+                type="url"
+                spellcheck="false"
+                autocomplete="url"
+                value="https://github.com/BlizzardBlast/StackLens"
+              />
+            </label>
+          </div>
+          <div
+            id="package-panel"
+            class="input-panel"
+            role="tabpanel"
+            aria-labelledby="package-tab"
+            hidden
+          >
+            <label class="field">
+              <span>package.json</span>
+              <textarea id="package-input" rows="8" spellcheck="false">
+{
   "name": "example-project",
   "dependencies": {
     "react": "^19.0.0"
   }
-}</textarea>
-          </label>
-        </div>
-        <p class="field-error" id="input-error" role="alert" hidden></p>
-        <div class="analyzer-actions">
-          <div class="privacy-note"><span aria-hidden="true">◇</span> Static inspection · no account required</div>
-          <button class="primary-button" id="analyze-button" type="button">Analyze repository <span aria-hidden="true">→</span></button>
-        </div>
-      </div>
-
-      <div class="trust-grid" aria-label="StackLens principles">
-        <article><strong>Evidence first</strong><span>Every material finding can lead back to its source and rule.</span></article>
-        <article><strong>Honest uncertainty</strong><span>Missing evidence becomes N/A—not an invented conclusion.</span></article>
-        <article><strong>No code execution</strong><span>MVP analysis uses bounded static inspection only.</span></article>
-      </div>
-    </section>
-
-    <section class="view progress-view" data-view="progress">
-      <div class="progress-card">
-        <button class="text-button" type="button" data-view-link="analyzer">← New analysis</button>
-        <div class="repo-heading">
-          <div>
-            <div class="eyebrow">PUBLIC REPOSITORY</div>
-            <h1>BlizzardBlast/StackLens</h1>
-            <p class="muted mono">main · resolving immutable commit</p>
-          </div>
-          <span class="status-chip">Analysis running</span>
-        </div>
-        <ol class="stage-list" aria-label="Analysis progress">
-          <li class="stage is-done"><span>✓</span><div><strong>Resolve repository</strong><small>Repository is public and accessible</small></div></li>
-          <li class="stage is-done"><span>✓</span><div><strong>Collect project snapshot</strong><small>package.json, lockfile and supported configuration</small></div></li>
-          <li class="stage is-current"><span>3</span><div><strong>Collect external metadata</strong><small>Checking npm package and OSV advisory evidence</small></div></li>
-          <li class="stage"><span>4</span><div><strong>Run analyzer rules</strong><small>Deterministic rules with explicit evidence</small></div></li>
-          <li class="stage"><span>5</span><div><strong>Calculate health score</strong><small>Versioned deterministic scoring</small></div></li>
-        </ol>
-        <div class="progress-callout">
-          <span class="spinner" aria-hidden="true"></span>
-          <div><strong>Checking package metadata</strong><p>This prototype uses stage progress rather than inventing a percentage.</p></div>
-        </div>
-        <button class="secondary-button" id="show-report" type="button">Prototype: show completed report</button>
-      </div>
-    </section>
-
-    <section class="view report-view" data-view="report">
-      <div class="report-shell">
-        <aside class="report-rail">
-          <div class="rail-repo">
-            <div class="repo-avatar">SL</div>
-            <div><strong>StackLens</strong><small>BlizzardBlast</small></div>
-          </div>
-          <nav aria-label="Analysis sections">
-            <a class="rail-link is-active" href="#overview">Overview</a>
-            <a class="rail-link" href="#attention">Findings <span>5</span></a>
-            <a class="rail-link" href="#dependencies">Dependencies <span>3</span></a>
-            <a class="rail-link" href="#security">Security <span>1</span></a>
-            <a class="rail-link" href="#maintainability">Maintainability <span>2</span></a>
-            <a class="rail-link" href="#testing">Testing <span>N/A</span></a>
-            <a class="rail-link" href="#tooling">Tooling</a>
-            <a class="rail-link rail-warning" href="#limitations">Limitations <span>2</span></a>
-          </nav>
-          <button class="text-button" type="button" data-view-link="analyzer">← New analysis</button>
-        </aside>
-
-        <div class="report-main">
-          <header class="report-header" id="overview">
-            <div>
-              <div class="eyebrow">ANALYSIS REPORT</div>
-              <h1>BlizzardBlast/StackLens</h1>
-              <div class="report-meta"><span class="mono">main @ beafd57</span><span>Sep 18, 2026 · 21:14 WIB</span></div>
-            </div>
-            <span class="complete-chip">✓ Completed with limitations</span>
-          </header>
-
-          <div class="compact-nav">
-            <label>Report category
-              <select id="compact-category">
-                <option value="overview">Overview</option>
-                <option value="attention">Findings</option>
-                <option value="dependencies">Dependencies</option>
-                <option value="security">Security</option>
-                <option value="maintainability">Maintainability</option>
-                <option value="testing">Testing</option>
-                <option value="tooling">Tooling</option>
-                <option value="limitations">Limitations</option>
-              </select>
+}</textarea
+              >
             </label>
           </div>
-
-          <a class="limitations-banner" href="#limitations">
-            <span class="limitation-icon" aria-hidden="true">!</span>
-            <span><strong>2 limitations affect this report</strong><small>Testing is N/A and dynamic configuration was not executed.</small></span>
-            <span class="banner-action">Review →</span>
-          </a>
-
-          <section class="score-grid">
-            <article class="overall-score">
-              <div class="score-ring" aria-label="Overall health score 82 out of 100"><span>82</span><small>/100</small></div>
-              <div><h2>Stack health</h2><p>Good evidence coverage with a few meaningful issues to address.</p><button class="link-button" type="button" id="score-details">Explain this score →</button></div>
-            </article>
-            <article class="coverage-card"><span class="label">Evidence coverage</span><strong>84%</strong><div class="coverage-bar"><i style="width:84%"></i></div><small>Testing is excluded because evidence is insufficient.</small></article>
-          </section>
-
-          <section class="category-grid" aria-label="Category health">
-            <article><span>Dependencies</span><strong>88</strong><small>2 findings</small></article>
-            <article id="security"><span>Security</span><strong class="score-watch">72</strong><small>1 high priority</small></article>
-            <article id="maintainability"><span>Maintainability</span><strong>79</strong><small>2 findings</small></article>
-            <article class="na-card" id="testing"><span>Testing</span><strong>N/A</strong><small>Insufficient evidence</small></article>
-            <article id="tooling"><span>Tooling</span><strong>91</strong><small>No urgent issues</small></article>
-          </section>
-
-          <section class="section" id="attention">
-            <div class="section-heading"><div><span class="eyebrow">PRIORITIZED ACTIONS</span><h2>Needs attention</h2></div><button class="secondary-button compact" type="button">View all findings</button></div>
-
-            <article class="finding-card">
-              <div class="finding-topline">
-                <span class="badge severity-high">High</span>
-                <span class="badge evidence-fact">● Fact</span>
-                <span class="mono subject">example-package@1.7.0</span>
-              </div>
-              <h3>A resolved dependency version matches a known vulnerability.</h3>
-              <p>OSV returned an advisory affecting the exact version resolved in the lockfile. Review the advisory and upgrade to a non-affected version.</p>
-              <div class="finding-footer"><span>Security · Rule <span class="mono">JS-SEC-001</span></span><button class="link-button evidence-button" type="button">View evidence →</button></div>
-            </article>
-
-            <article class="finding-card">
-              <div class="finding-topline">
-                <span class="badge severity-medium">Medium</span>
-                <span class="badge evidence-heuristic">◆ Heuristic</span>
-                <span class="badge confidence">High confidence</span>
-                <span class="mono subject">legacy-tool</span>
-              </div>
-              <h3>This package appears unmaintained based on multiple maintenance signals.</h3>
-              <p>The finding combines release recency and repository state. StackLens does not present the heuristic as an authoritative deprecation fact.</p>
-              <div class="finding-footer"><span>Maintainability · Rule <span class="mono">JS-MNT-004</span></span><button class="link-button evidence-button" type="button">View evidence →</button></div>
-            </article>
-
-            <article class="finding-card">
-              <div class="finding-topline">
-                <span class="badge severity-low">Low</span>
-                <span class="badge evidence-recommendation">→ Recommendation</span>
-                <span class="mono subject">tooling</span>
-              </div>
-              <h3>Consider consolidating overlapping formatting dependencies.</h3>
-              <p>Both packages appear to serve the same formatting responsibility. Review the evidence before removing either package.</p>
-              <div class="finding-footer"><span>Tooling · Rule <span class="mono">JS-DEP-012</span></span><button class="link-button evidence-button" type="button">View evidence →</button></div>
-            </article>
-          </section>
-
-          <section class="section" id="dependencies">
-            <div class="section-heading"><div><span class="eyebrow">PROJECT PROFILE</span><h2>Stack summary</h2></div></div>
-            <div class="stack-grid">
-              <article><span>Package manager</span><strong>pnpm</strong><small class="mono">pnpm-lock.yaml</small></article>
-              <article><span>Framework</span><strong>React</strong><small class="mono">react@19.x</small></article>
-              <article><span>Build</span><strong>Vite</strong><small class="mono">vite.config.ts</small></article>
-              <article><span>Tests</span><strong>Vitest</strong><small class="mono">vitest.config.ts</small></article>
-              <article><span>Styling</span><strong>Tailwind CSS</strong><small class="mono">v4</small></article>
-              <article><span>Dependencies</span><strong>47</strong><small>22 runtime · 25 dev</small></article>
+          <p class="field-error" id="input-error" role="alert" hidden></p>
+          <div class="analyzer-actions">
+            <div class="privacy-note">
+              <span aria-hidden="true">◇</span> Static inspection · no account required
             </div>
-          </section>
-
-          <section class="section limitation-section" id="limitations">
-            <div class="section-heading"><div><span class="eyebrow">HONEST UNCERTAINTY</span><h2>Analysis limitations</h2></div></div>
-            <article class="limitation-card"><span class="limitation-icon">?</span><div><strong>Testing score is unavailable</strong><p>The collected input was insufficient to calculate a supported Testing score. This does not mean the project has no tests.</p></div></article>
-            <article class="limitation-card"><span class="limitation-icon">!</span><div><strong>Two dynamic configuration branches were not evaluated</strong><p>Configuration was inspected statically and never executed. Dynamic runtime behavior is outside this analysis.</p></div></article>
-          </section>
+            <button class="primary-button" id="analyze-button" type="button">
+              Analyze repository <span aria-hidden="true">→</span>
+            </button>
+          </div>
         </div>
+
+        <div class="trust-grid" aria-label="StackLens principles">
+          <article>
+            <strong>Evidence first</strong
+            ><span>Every material finding can lead back to its source and rule.</span>
+          </article>
+          <article>
+            <strong>Honest uncertainty</strong
+            ><span>Missing evidence becomes N/A—not an invented conclusion.</span>
+          </article>
+          <article>
+            <strong>No code execution</strong
+            ><span>MVP analysis uses bounded static inspection only.</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="view progress-view" data-view="progress">
+        <div class="progress-card">
+          <button class="text-button" type="button" data-view-link="analyzer">
+            ← New analysis
+          </button>
+          <div class="repo-heading">
+            <div>
+              <div class="eyebrow">PUBLIC REPOSITORY</div>
+              <h1>BlizzardBlast/StackLens</h1>
+              <p class="muted mono">main · resolving immutable commit</p>
+            </div>
+            <span class="status-chip">Analysis running</span>
+          </div>
+          <ol class="stage-list" aria-label="Analysis progress">
+            <li class="stage is-done">
+              <span>✓</span>
+              <div>
+                <strong>Resolve repository</strong
+                ><small>Repository is public and accessible</small>
+              </div>
+            </li>
+            <li class="stage is-done">
+              <span>✓</span>
+              <div>
+                <strong>Collect project snapshot</strong
+                ><small>package.json, lockfile and supported configuration</small>
+              </div>
+            </li>
+            <li class="stage is-current">
+              <span>3</span>
+              <div>
+                <strong>Collect external metadata</strong
+                ><small>Checking npm package and OSV advisory evidence</small>
+              </div>
+            </li>
+            <li class="stage">
+              <span>4</span>
+              <div>
+                <strong>Run analyzer rules</strong
+                ><small>Deterministic rules with explicit evidence</small>
+              </div>
+            </li>
+            <li class="stage">
+              <span>5</span>
+              <div>
+                <strong>Calculate health score</strong
+                ><small>Versioned deterministic scoring</small>
+              </div>
+            </li>
+          </ol>
+          <div class="progress-callout">
+            <span class="spinner" aria-hidden="true"></span>
+            <div>
+              <strong>Checking package metadata</strong>
+              <p>This prototype uses stage progress rather than inventing a percentage.</p>
+            </div>
+          </div>
+          <button class="secondary-button" id="show-report" type="button">
+            Prototype: show completed report
+          </button>
+        </div>
+      </section>
+
+      <section class="view report-view" data-view="report">
+        <div class="report-shell">
+          <aside class="report-rail">
+            <div class="rail-repo">
+              <div class="repo-avatar">SL</div>
+              <div><strong>StackLens</strong><small>BlizzardBlast</small></div>
+            </div>
+            <nav aria-label="Analysis sections">
+              <a class="rail-link is-active" href="#overview">Overview</a>
+              <a class="rail-link" href="#attention">Findings <span>5</span></a>
+              <a class="rail-link" href="#dependencies">Dependencies <span>3</span></a>
+              <a class="rail-link" href="#security">Security <span>1</span></a>
+              <a class="rail-link" href="#maintainability">Maintainability <span>2</span></a>
+              <a class="rail-link" href="#testing">Testing <span>N/A</span></a>
+              <a class="rail-link" href="#tooling">Tooling</a>
+              <a class="rail-link rail-warning" href="#limitations">Limitations <span>2</span></a>
+            </nav>
+            <button class="text-button" type="button" data-view-link="analyzer">
+              ← New analysis
+            </button>
+          </aside>
+
+          <div class="report-main">
+            <header class="report-header" id="overview">
+              <div>
+                <div class="eyebrow">ANALYSIS REPORT</div>
+                <h1>BlizzardBlast/StackLens</h1>
+                <div class="report-meta">
+                  <span class="mono">main @ beafd57</span><span>Sep 18, 2026 · 21:14 WIB</span>
+                </div>
+              </div>
+              <span class="complete-chip">✓ Completed with limitations</span>
+            </header>
+
+            <div class="compact-nav">
+              <label
+                >Report category
+                <select id="compact-category">
+                  <option value="overview">Overview</option>
+                  <option value="attention">Findings</option>
+                  <option value="dependencies">Dependencies</option>
+                  <option value="security">Security</option>
+                  <option value="maintainability">Maintainability</option>
+                  <option value="testing">Testing</option>
+                  <option value="tooling">Tooling</option>
+                  <option value="limitations">Limitations</option>
+                </select>
+              </label>
+            </div>
+
+            <a class="limitations-banner" href="#limitations">
+              <span class="limitation-icon" aria-hidden="true">!</span>
+              <span
+                ><strong>2 limitations affect this report</strong
+                ><small>Testing is N/A and dynamic configuration was not executed.</small></span
+              >
+              <span class="banner-action">Review →</span>
+            </a>
+
+            <section class="score-grid">
+              <article class="overall-score">
+                <div class="score-ring" aria-label="Overall health score 82 out of 100">
+                  <span>82</span><small>/100</small>
+                </div>
+                <div>
+                  <h2>Stack health</h2>
+                  <p>Good evidence coverage with a few meaningful issues to address.</p>
+                  <button class="link-button" type="button" id="score-details">
+                    Explain this score →
+                  </button>
+                </div>
+              </article>
+              <article class="coverage-card">
+                <span class="label">Evidence coverage</span><strong>84%</strong>
+                <div class="coverage-bar"><i style="width: 84%"></i></div>
+                <small>Testing is excluded because evidence is insufficient.</small>
+              </article>
+            </section>
+
+            <section class="category-grid" aria-label="Category health">
+              <article>
+                <span>Dependencies</span><strong>88</strong><small>2 findings</small>
+              </article>
+              <article id="security">
+                <span>Security</span><strong class="score-watch">72</strong
+                ><small>1 high priority</small>
+              </article>
+              <article id="maintainability">
+                <span>Maintainability</span><strong>79</strong><small>2 findings</small>
+              </article>
+              <article class="na-card" id="testing">
+                <span>Testing</span><strong>N/A</strong><small>Insufficient evidence</small>
+              </article>
+              <article id="tooling">
+                <span>Tooling</span><strong>91</strong><small>No urgent issues</small>
+              </article>
+            </section>
+
+            <section class="section" id="attention">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">PRIORITIZED ACTIONS</span>
+                  <h2>Needs attention</h2>
+                </div>
+                <button class="secondary-button compact" type="button">View all findings</button>
+              </div>
+
+              <article class="finding-card">
+                <div class="finding-topline">
+                  <span class="badge severity-high">High</span>
+                  <span class="badge evidence-fact">● Fact</span>
+                  <span class="mono subject">example-package@1.7.0</span>
+                </div>
+                <h3>A resolved dependency version matches a known vulnerability.</h3>
+                <p>
+                  OSV returned an advisory affecting the exact version resolved in the lockfile.
+                  Review the advisory and upgrade to a non-affected version.
+                </p>
+                <div class="finding-footer">
+                  <span>Security · Rule <span class="mono">JS-SEC-001</span></span
+                  ><button class="link-button evidence-button" type="button">
+                    View evidence →
+                  </button>
+                </div>
+              </article>
+
+              <article class="finding-card">
+                <div class="finding-topline">
+                  <span class="badge severity-medium">Medium</span>
+                  <span class="badge evidence-heuristic">◆ Heuristic</span>
+                  <span class="badge confidence">High confidence</span>
+                  <span class="mono subject">legacy-tool</span>
+                </div>
+                <h3>This package appears unmaintained based on multiple maintenance signals.</h3>
+                <p>
+                  The finding combines release recency and repository state. StackLens does not
+                  present the heuristic as an authoritative deprecation fact.
+                </p>
+                <div class="finding-footer">
+                  <span>Maintainability · Rule <span class="mono">JS-MNT-004</span></span
+                  ><button class="link-button evidence-button" type="button">
+                    View evidence →
+                  </button>
+                </div>
+              </article>
+
+              <article class="finding-card">
+                <div class="finding-topline">
+                  <span class="badge severity-low">Low</span>
+                  <span class="badge evidence-recommendation">→ Recommendation</span>
+                  <span class="mono subject">tooling</span>
+                </div>
+                <h3>Consider consolidating overlapping formatting dependencies.</h3>
+                <p>
+                  Both packages appear to serve the same formatting responsibility. Review the
+                  evidence before removing either package.
+                </p>
+                <div class="finding-footer">
+                  <span>Tooling · Rule <span class="mono">JS-DEP-012</span></span
+                  ><button class="link-button evidence-button" type="button">
+                    View evidence →
+                  </button>
+                </div>
+              </article>
+            </section>
+
+            <section class="section" id="dependencies">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">PROJECT PROFILE</span>
+                  <h2>Stack summary</h2>
+                </div>
+              </div>
+              <div class="stack-grid">
+                <article>
+                  <span>Package manager</span><strong>pnpm</strong
+                  ><small class="mono">pnpm-lock.yaml</small>
+                </article>
+                <article>
+                  <span>Framework</span><strong>React</strong><small class="mono">react@19.x</small>
+                </article>
+                <article>
+                  <span>Build</span><strong>Vite</strong><small class="mono">vite.config.ts</small>
+                </article>
+                <article>
+                  <span>Tests</span><strong>Vitest</strong
+                  ><small class="mono">vitest.config.ts</small>
+                </article>
+                <article>
+                  <span>Styling</span><strong>Tailwind CSS</strong><small class="mono">v4</small>
+                </article>
+                <article>
+                  <span>Dependencies</span><strong>47</strong><small>22 runtime · 25 dev</small>
+                </article>
+              </div>
+            </section>
+
+            <section class="section limitation-section" id="limitations">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">HONEST UNCERTAINTY</span>
+                  <h2>Analysis limitations</h2>
+                </div>
+              </div>
+              <article class="limitation-card">
+                <span class="limitation-icon">?</span>
+                <div>
+                  <strong>Testing score is unavailable</strong>
+                  <p>
+                    The collected input was insufficient to calculate a supported Testing score.
+                    This does not mean the project has no tests.
+                  </p>
+                </div>
+              </article>
+              <article class="limitation-card">
+                <span class="limitation-icon">!</span>
+                <div>
+                  <strong>Two dynamic configuration branches were not evaluated</strong>
+                  <p>
+                    Configuration was inspected statically and never executed. Dynamic runtime
+                    behavior is outside this analysis.
+                  </p>
+                </div>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="evidence-drawer" id="evidence-drawer" aria-labelledby="evidence-title">
+      <div class="drawer-header">
+        <div>
+          <span class="eyebrow">EVIDENCE</span>
+          <h2 id="evidence-title">Why StackLens reported this</h2>
+        </div>
+        <button class="icon-button" id="close-evidence" type="button" aria-label="Close evidence">
+          ×
+        </button>
       </div>
-    </section>
-  </main>
-
-  <dialog class="evidence-drawer" id="evidence-drawer" aria-labelledby="evidence-title">
-    <div class="drawer-header"><div><span class="eyebrow">EVIDENCE</span><h2 id="evidence-title">Why StackLens reported this</h2></div><button class="icon-button" id="close-evidence" type="button" aria-label="Close evidence">×</button></div>
-    <div class="drawer-section"><span class="label">Classification</span><div><span class="badge evidence-fact">● Fact</span></div></div>
-    <div class="drawer-section"><span class="label">Project evidence</span><strong class="mono">pnpm-lock.yaml</strong><p>Resolved package version: <span class="mono">1.7.0</span></p></div>
-    <div class="drawer-section"><span class="label">External evidence</span><strong>OSV advisory OSV-EXAMPLE-001</strong><p>Version 1.7.0 is listed in the affected range.</p><small>Retrieved Sep 18, 2026 · 21:14 WIB</small></div>
-    <div class="drawer-section"><span class="label">Rule</span><strong class="mono">JS-SEC-001 · v1</strong><p>Exact resolved version matches a known vulnerability record.</p></div>
-    <div class="drawer-section"><span class="label">Limitations</span><p>This sample evidence is illustrative prototype content, not a real advisory claim.</p></div>
-  </dialog>
-
-  <dialog id="score-dialog" class="score-dialog">
-    <form method="dialog">
-      <header><div><span class="eyebrow">EXPLAINABLE SCORING</span><h2>Overall score contribution</h2></div><button class="icon-button" value="close" aria-label="Close score explanation">×</button></header>
-      <div class="score-ledger">
-        <div><span>Eligible category baseline</span><strong>100</strong></div>
-        <div><span>Security finding</span><strong>−12</strong></div>
-        <div><span>Maintainability findings</span><strong>−6</strong></div>
-        <div class="ledger-total"><span>Overall score</span><strong>82</strong></div>
+      <div class="drawer-section">
+        <span class="label">Classification</span>
+        <div><span class="badge evidence-fact">● Fact</span></div>
       </div>
-      <p class="muted">Testing is not treated as zero. It is excluded because the prototype marks the category as insufficient evidence.</p>
-    </form>
-  </dialog>
+      <div class="drawer-section">
+        <span class="label">Project evidence</span><strong class="mono">pnpm-lock.yaml</strong>
+        <p>Resolved package version: <span class="mono">1.7.0</span></p>
+      </div>
+      <div class="drawer-section">
+        <span class="label">External evidence</span><strong>OSV advisory OSV-EXAMPLE-001</strong>
+        <p>Version 1.7.0 is listed in the affected range.</p>
+        <small>Retrieved Sep 18, 2026 · 21:14 WIB</small>
+      </div>
+      <div class="drawer-section">
+        <span class="label">Rule</span><strong class="mono">JS-SEC-001 · v1</strong>
+        <p>Exact resolved version matches a known vulnerability record.</p>
+      </div>
+      <div class="drawer-section">
+        <span class="label">Limitations</span>
+        <p>This sample evidence is illustrative prototype content, not a real advisory claim.</p>
+      </div>
+    </dialog>
 
-  <script src="./prototype.js"></script>
-</body>
+    <dialog id="score-dialog" class="score-dialog">
+      <form method="dialog">
+        <header>
+          <div>
+            <span class="eyebrow">EXPLAINABLE SCORING</span>
+            <h2>Overall score contribution</h2>
+          </div>
+          <button class="icon-button" value="close" aria-label="Close score explanation">×</button>
+        </header>
+        <div class="score-ledger">
+          <div><span>Eligible category baseline</span><strong>100</strong></div>
+          <div><span>Security finding</span><strong>−12</strong></div>
+          <div><span>Maintainability findings</span><strong>−6</strong></div>
+          <div class="ledger-total"><span>Overall score</span><strong>82</strong></div>
+        </div>
+        <p class="muted">
+          Testing is not treated as zero. It is excluded because the prototype marks the category as
+          insufficient evidence.
+        </p>
+      </form>
+    </dialog>
+
+    <script src="./prototype.js"></script>
+  </body>
 </html>

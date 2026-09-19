@@ -26,6 +26,7 @@ This design-system strategy is recorded in [ADR-0006](../adr/0006-design-system-
 ## 2. Why shadcn/ui
 
 Use shadcn/ui for source-owned generic components such as:
+
 - Button
 - Input
 - Textarea
@@ -81,6 +82,7 @@ Token levels:
 ### Foundation
 
 Raw reusable values:
+
 - neutral/accent/status palettes;
 - font families;
 - type sizes;
@@ -92,6 +94,7 @@ Raw reusable values:
 ### Semantic
 
 UI intent:
+
 - background;
 - surface;
 - surface-raised;
@@ -108,6 +111,7 @@ UI intent:
 ### Domain semantic
 
 StackLens meaning:
+
 - severity critical/high/medium/low;
 - evidence fact/heuristic/recommendation;
 - confidence high/medium/low;
@@ -120,6 +124,7 @@ Components should consume semantic/domain tokens, not raw palette tokens, except
 The UI is neutral-first with a restrained cool accent.
 
 Rules:
+
 - background and surface hierarchy carries most visual structure;
 - accent is used for interactive emphasis, not decoration;
 - red/orange/yellow are reserved for semantic status;
@@ -132,12 +137,14 @@ The v1 semantic token values are accepted as the implementation baseline. Brand-
 ## 6. Typography
 
 Initial stack:
+
 - UI: system sans stack;
 - technical identifiers/package names: system monospace stack.
 
 Production implementation may adopt a bundled/web font later, but typography hierarchy must not depend on a specific proprietary font.
 
 Type roles:
+
 - display — landing promise only;
 - heading-1 — report/page title;
 - heading-2 — major report sections;
@@ -155,6 +162,7 @@ Dense technical tables use a slightly tighter body scale while preserving readab
 Use a 4 px base rhythm with a practical semantic scale.
 
 Preferred common values:
+
 - 4
 - 8
 - 12
@@ -173,6 +181,7 @@ Avoid arbitrary values in product components unless a documented layout requirem
 StackLens should not look overly soft.
 
 Initial intent:
+
 - controls: 8 px;
 - standard surfaces/cards: 12 px;
 - large feature surfaces: 16 px;
@@ -183,6 +192,7 @@ Initial intent:
 Use border/surface contrast before shadow.
 
 Elevation levels:
+
 - 0 — flat;
 - 1 — overlays/subtle raised panels;
 - 2 — dialog/popover.
@@ -204,6 +214,7 @@ Motion communicates state, not personality.
 Light and dark are token modes, not separate component designs.
 
 Dark mode rules:
+
 - avoid pure black large backgrounds;
 - maintain surface separation;
 - do not simply brighten all semantic colors;
@@ -214,6 +225,7 @@ Dark mode rules:
 ### Classification
 
 Use text + icon + semantic token:
+
 - Fact
 - Heuristic
 - Recommendation
@@ -221,6 +233,7 @@ Use text + icon + semantic token:
 ### Priority/severity
 
 Use explicit labels:
+
 - Critical
 - High
 - Medium
@@ -231,6 +244,7 @@ Do not use color-only dots.
 ### Confidence
 
 Only show confidence when it has semantic meaning, primarily for heuristic findings:
+
 - High confidence
 - Medium confidence
 - Low confidence
@@ -242,6 +256,7 @@ Confidence is not severity.
 Score ranges are presentation helpers, not requirements and must remain subordinate to scoring rules.
 
 Initial visual states:
+
 - excellent;
 - good;
 - watch;
@@ -255,6 +270,7 @@ Do not hardcode product conclusions such as "healthy" solely from color. Score c
 **Requirement:** NFR-006
 
 Baseline:
+
 - target WCAG 2.2 AA;
 - visible keyboard focus;
 - headings follow logical order;
@@ -274,11 +290,13 @@ Base UI provides significant keyboard/ARIA/focus behavior, but StackLens remains
 Do not design components around device names.
 
 Suggested layout thresholds:
+
 - compact: < 640 px;
 - medium: 640–1023 px;
 - wide: ≥ 1024 px.
 
 Key behavioral changes:
+
 - report rail becomes a compact category selector below wide layout;
 - score cards wrap;
 - tables may switch to stacked rows when horizontal comparison is not essential;
@@ -289,6 +307,7 @@ Key behavioral changes:
 Use a consistent open-source icon set during implementation (candidate: Lucide, which aligns naturally with shadcn).
 
 Rules:
+
 - icons support labels rather than replacing unfamiliar concepts;
 - severity/classification icons remain consistent;
 - no decorative icon overload;
@@ -301,12 +320,7 @@ StackLens components should expose domain semantics:
 Prefer:
 
 ```tsx
-<FindingCard
-  classification="heuristic"
-  priority="medium"
-  confidence="high"
-  finding={finding}
-/>
+<FindingCard classification="heuristic" priority="medium" confidence="high" finding={finding} />
 ```
 
 over:
@@ -331,19 +345,21 @@ When adding a shadcn component:
 
 ## 19. Token implementation path
 
-Design phase:
-`DTCG JSON → reference CSS → prototype`
+The implementation path is now active:
 
-Implementation phase:
-`DTCG JSON → automated transform → packages/design-tokens → packages/ui → apps/web`
+`DTCG JSON → packages/design-tokens generator → generated semantic CSS/JS → packages/ui → future apps/web`
 
-Do not manually maintain duplicated token values indefinitely.
+`design/tokens/stacklens.tokens.json` remains canonical. Generated files under `packages/design-tokens/dist/` must not be hand-edited.
+
+The generator also emits shadcn-compatible CSS variables and Tailwind CSS v4 `@theme inline` aliases so generic primitives and StackLens domain components consume the same semantic system.
+
+See [Design infrastructure implementation](../implementation/design-infrastructure.md) and ADR-0007.
 
 ## 20. External references
 
 Reviewed 2026-09-18:
 
-- shadcn/ui Base UI default: https://ui.shadcn.com/docs/changelog/2026-07-base-ui-default
-- shadcn/ui theming: https://ui.shadcn.com/docs/theming
-- Base UI accessibility: https://base-ui.com/react/overview/accessibility
-- Design Tokens Community Group: https://www.designtokens.org/
+- shadcn/ui Base UI default: <https://ui.shadcn.com/docs/changelog/2026-07-base-ui-default>
+- shadcn/ui theming: <https://ui.shadcn.com/docs/theming>
+- Base UI accessibility: <https://base-ui.com/react/overview/accessibility>
+- Design Tokens Community Group: <https://www.designtokens.org/>

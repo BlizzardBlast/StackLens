@@ -19,16 +19,16 @@ The goal is not to maximize framework features. The selected stack should implem
 
 ## Decision summary
 
-| Area | Decision |
-| --- | --- |
-| Web framework | Keep React + Vite |
-| Routing | Keep TanStack Router |
-| Server state | Keep TanStack Query |
-| Public application API | Keep Fastify REST/OpenAPI |
-| Full-stack framework | Do not adopt for MVP |
-| Linter | Switch from Biome to Oxlint |
-| Formatter | Switch from Biome to Oxfmt |
-| Type check | Keep `tsc --noEmit` initially |
+| Area                   | Decision                      |
+| ---------------------- | ----------------------------- |
+| Web framework          | Keep React + Vite             |
+| Routing                | Keep TanStack Router          |
+| Server state           | Keep TanStack Query           |
+| Public application API | Keep Fastify REST/OpenAPI     |
+| Full-stack framework   | Do not adopt for MVP          |
+| Linter                 | Switch from Biome to Oxlint   |
+| Formatter              | Switch from Biome to Oxfmt    |
+| Type check             | Keep `tsc --noEmit` initially |
 
 ## 1. Oxlint
 
@@ -72,6 +72,7 @@ Adopt **Oxfmt** as StackLens's formatter.
 ### Rationale
 
 Oxfmt currently provides:
+
 - Prettier-compatible JavaScript/TypeScript formatting behavior;
 - broad repository file-format support;
 - built-in import sorting;
@@ -96,6 +97,7 @@ Do **not** adopt Next.js for the MVP.
 ### Evidence considered
 
 Current Next.js App Router is a mature full-stack framework with:
+
 - Server Components by default;
 - Server/Client component boundaries;
 - server rendering and streaming;
@@ -107,6 +109,7 @@ Current Next.js App Router is a mature full-stack framework with:
 Those are valuable capabilities, but the accepted StackLens MVP does not currently require SSR, React Server Components, or framework-local API routes.
 
 StackLens already requires a framework-independent backend boundary because:
+
 - future CLI clients must consume the same product contracts (**FR-108**);
 - GitHub automation must consume the same product contracts (**FR-109**);
 - IDE integration must consume the same product contracts (**FR-110**);
@@ -117,6 +120,7 @@ Using Next.js only as a frontend while retaining Fastify is possible, but it int
 ### Reconsider when
 
 Re-evaluate Next.js if requirements are accepted for:
+
 - SEO-critical application/report routes;
 - server-rendered public reports;
 - extensive content/marketing pages requiring integrated metadata/image features;
@@ -135,6 +139,7 @@ The T3 Stack intentionally centers Next.js + TypeScript, commonly with Tailwind 
 ### Why it is not selected
 
 Several individual T3 choices already align with StackLens:
+
 - TypeScript;
 - Tailwind;
 - Drizzle.
@@ -162,6 +167,7 @@ Do **not** adopt TanStack Start for MVP yet.
 TanStack Start is especially relevant because StackLens already selects TanStack Router.
 
 It adds:
+
 - SSR and streaming;
 - server functions;
 - server/API routes;
@@ -217,6 +223,7 @@ pnpm test:e2e
 ```
 
 Where:
+
 - `lint` uses Oxlint;
 - `format` uses Oxfmt;
 - `typecheck` uses the TypeScript compiler initially;
@@ -228,15 +235,15 @@ Exact rule configuration belongs to implementation and should prioritize correct
 
 Reviewed on 2026-09-18:
 
-- Oxlint: https://oxc.rs/docs/guide/usage/linter
-- Oxlint type-aware linting: https://oxc.rs/docs/guide/usage/linter/type-aware
-- Oxlint JS plugins: https://oxc.rs/docs/guide/usage/linter/js-plugins
-- Oxfmt: https://oxc.rs/docs/guide/usage/formatter
-- Next.js App Router: https://nextjs.org/docs/app
-- Next.js Server and Client Components: https://nextjs.org/docs/app/getting-started/server-and-client-components
-- Create T3 App introduction: https://create.t3.gg/en/introduction
-- TanStack Start overview: https://tanstack.com/start/latest/docs/framework/react/overview
-- TanStack Start vs Next.js: https://tanstack.com/start/latest/docs/framework/react/start-vs-nextjs
+- Oxlint: <https://oxc.rs/docs/guide/usage/linter>
+- Oxlint type-aware linting: <https://oxc.rs/docs/guide/usage/linter/type-aware>
+- Oxlint JS plugins: <https://oxc.rs/docs/guide/usage/linter/js-plugins>
+- Oxfmt: <https://oxc.rs/docs/guide/usage/formatter>
+- Next.js App Router: <https://nextjs.org/docs/app>
+- Next.js Server and Client Components: <https://nextjs.org/docs/app/getting-started/server-and-client-components>
+- Create T3 App introduction: <https://create.t3.gg/en/introduction>
+- TanStack Start overview: <https://tanstack.com/start/latest/docs/framework/react/overview>
+- TanStack Start vs Next.js: <https://tanstack.com/start/latest/docs/framework/react/start-vs-nextjs>
 
 ## Consequences
 

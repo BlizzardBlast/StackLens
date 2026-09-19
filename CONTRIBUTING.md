@@ -25,7 +25,9 @@ A product change without an applicable accepted requirement must first add or am
 4. Implement the smallest change that satisfies the requirement.
 5. Add verification for the relevant acceptance criteria.
 6. Reference requirement IDs in tests where practical.
-7. Open a pull request using the repository template and list the requirement IDs it satisfies.
+7. Update every durable document made stale by the change.
+8. Append the work as a chronological step in `docs/design/journey.md`.
+9. Open a pull request using the repository template and list the requirement IDs it satisfies.
 
 ## Tests and analysis rules
 
@@ -57,3 +59,18 @@ A requirement change should explain:
 - whether existing implementations/tests become non-compliant.
 
 Do not silently redefine a requirement through code.
+
+## Documentation definition of done
+
+Per **GOV-007**, documentation is part of the implementation.
+
+Every pull request must:
+
+- update `docs/design/journey.md`;
+- update the requirements, architecture/ADR, design, implementation, contributor, agent, or README documentation that the change materially affects;
+- leave unrelated documents alone;
+- explain documentation impact in the pull-request template.
+
+See [docs/documentation-governance.md](docs/documentation-governance.md) for the source-of-truth map and completion checklist.
+
+A change is not complete while documentation that describes the changed area is knowingly stale.

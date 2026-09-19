@@ -1,0 +1,19 @@
+{
+  "name": "@stacklens/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./theme.css": "./dist/theme.css",
+    "./tokens": {
+      "types": "./dist/tokens.d.ts",
+      "default": "./dist/tokens.js"
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "prepare": "node scripts/build.mjs",
+    "test": "node scripts/build.mjs && node --test tests/*.test.mjs"
+  }
+}

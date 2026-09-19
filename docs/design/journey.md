@@ -1,6 +1,6 @@
-# StackLens Design Journey
+# StackLens Project Journey
 
-This document is the chronological design log for StackLens. It records not only what was chosen, but the reasoning and requirement links behind each step.
+This document is the chronological project log for StackLens. The path is historical; the journey now covers requirements, architecture, product design, tooling, implementation, corrections, and verification. It records not only what was chosen, but why.
 
 ## 2026-09-18 — Step 1: Requirements before interface
 
@@ -46,6 +46,7 @@ The report is treated as the center of the product. The MVP journey is organized
 `Input → Validation → Analysis progress → Report → Finding/Evidence detail`
 
 The report hierarchy prioritizes:
+
 1. state and limitations;
 2. overall/category health;
 3. urgent actions;
@@ -64,6 +65,7 @@ See [wireframes.md](wireframes.md).
 ## 2026-09-18 — Step 7: Establish the design-system strategy
 
 Decision:
+
 - StackLens owns its **tokens, visual language, product components, and patterns**.
 - **shadcn/ui** is used as source-owned implementation scaffolding for generic UI primitives.
 - New shadcn components use **Base UI** where appropriate.
@@ -96,6 +98,7 @@ The CSS file beside it is a reference mapping for the prototype. During implemen
 A standalone prototype was added at `design/prototype/index.html`.
 
 It intentionally has no application framework or backend. Its purpose is to validate:
+
 - hierarchy;
 - visual density;
 - light/dark semantics;
@@ -111,6 +114,7 @@ The prototype is disposable. Production code must be implemented later against t
 ## Pending design-validation steps
 
 Before product UI implementation:
+
 - review the prototype visually on desktop and narrow viewport widths;
 - verify text and semantic-color contrast;
 - validate keyboard focus order and interaction expectations;
@@ -141,7 +145,6 @@ A Figma design-system/prototype artifact is still desirable for visual iteration
 
 When Figma is created, it should mirror these accepted artifacts rather than introduce undocumented product behavior.
 
-
 ## 2026-09-18 — Step 12: Repository-native Design v1 review
 
 Figma was removed from the required workflow. The coded prototype and repository documentation are sufficient for StackLens and avoid making design progress depend on a rate-limited external editor.
@@ -149,6 +152,7 @@ Figma was removed from the required workflow. The coded prototype and repository
 The prototype was reviewed against interaction semantics, responsive navigation, report hierarchy, status/color contrast, evidence access, input validation, and limitation visibility.
 
 The review found and corrected:
+
 - insufficient light-theme status contrast;
 - insufficient dark-theme heuristic contrast;
 - incorrect primary-button foreground in dark mode;
@@ -168,3 +172,150 @@ See [review-v1.md](review-v1.md).
 After the review corrections and structural validation, Product Design v1 was accepted as the baseline for implementation.
 
 This closes the pre-implementation design phase. The next journey phase is translating tokens and domain patterns into production `packages/design-tokens` and `packages/ui` rather than building screens directly.
+
+## 2026-09-18 — Step 14: Bootstrap production design infrastructure
+
+Design v1 moved from specification into reusable production packages without creating application screens.
+
+The monorepo root now defines pnpm workspaces, Turborepo tasks, strict TypeScript configuration, Oxlint, Oxfmt, and a GitHub Actions quality gate.
+
+Two packages were created:
+
+- `@stacklens/design-tokens` — deterministic token generation from the canonical DTCG JSON;
+- `@stacklens/ui` — source-owned generic primitives plus StackLens domain components.
+
+This implements the architecture boundary documented after Design v1 instead of copying styles directly from the disposable prototype.
+
+## 2026-09-18 — Step 15: Make design tokens generated, not duplicated
+
+The DTCG JSON remains the only editable token source.
+
+The design-token package now generates Tailwind/shadcn-compatible semantic CSS variables and resolved JavaScript values. A drift-check mode prevents generated token output from quietly diverging from the source.
+
+Additional semantic tokens needed by real components—such as muted surfaces, input borders, danger, success, warning, and info—were added to the canonical source rather than invented inside components.
+
+## 2026-09-18 — Step 16: Encode product semantics in UI APIs
+
+The first domain components deliberately receive product meaning instead of deriving it.
+
+Examples:
+
+- `HealthScore` receives `state="good"` rather than deciding which score is "good";
+- `FindingCard` receives classification, priority, confidence, category, and rule ID;
+- insufficient evidence is represented by an explicit `score={null}` / `state="unknown"` path.
+
+This keeps deterministic analyzer/scoring logic out of the UI and preserves **DATA-005** and **SCORE-001**.
+
+## 2026-09-18 — Step 17: Correct tool versions at implementation start
+
+The architecture-planning ADR named stable tool lines available at that earlier decision point. Before installing anything, current upstream stable releases were checked again.
+
+The implementation baseline therefore moved to pnpm 12.4.2, TypeScript 7.0.x, Vitest 5.0.x, Base UI 1.8.x, and current Oxlint/Oxfmt/Turborepo lines while retaining the previously accepted architecture.
+
+The correction is recorded explicitly in ADR-0007 instead of silently drifting from ADR-0002.
+
+## 2026-09-18 — Step 18: Validate the design infrastructure on the real CI runner
+
+The bootstrap was not merged after static review alone. GitHub Actions was used to exercise the actual dependency graph and strict quality gates.
+
+The validation surfaced and resolved several implementation issues in sequence:
+
+- pnpm caching could not initialize before the first lockfile existed;
+- strict indexed-access checking found unsafe string indexing in badge labels;
+- Vitest needed explicit DOM cleanup between tests;
+- the accessibility linter correctly preferred native `<progress>` semantics;
+- the corresponding test had to assert the native `value` contract;
+- Oxfmt's Tailwind class sorting required generated theme CSS before formatting.
+
+After correcting those issues, the bootstrap run passed install, token generation, TypeScript, tests, Oxlint, and Oxfmt and committed the normalized source plus the initial lockfile.
+
+## 2026-09-18 — Step 19: Close bootstrap mode
+
+The temporary write-enabled CI bootstrap was removed immediately after it served its one-time purpose.
+
+Normal CI is now:
+
+- read-only;
+- lockfile-frozen;
+- pnpm-cached;
+- build-first for generated packages;
+- strict typecheck;
+- tests;
+- Oxlint;
+- Oxfmt check.
+
+Generated design-token `dist/` output remains uncommitted and is recreated by the design-token package's `prepare`/`build` scripts. The DTCG JSON remains the only version-controlled token source.
+
+## 2026-09-18 — Step 20: Harden the tooling and agent-development baseline
+
+A second configuration review was performed after the initial CI-green bootstrap.
+
+Current upstream guidance was rechecked for shadcn/ui, TypeScript, Turborepo, Oxlint/Oxfmt, and Codex.
+
+The review found several improvements worth making before product implementation:
+
+- shadcn's September 2026 `cn` migration had replaced the legacy `clsx + tailwind-merge` helper;
+- current shadcn manual setup expects shared `shadcn/tailwind.css` utilities and `tw-animate-css`;
+- the monorepo base TypeScript configuration mixed browser/bundler settings into what should be a runtime-neutral shared strictness layer;
+- Turborepo did not hash the root DTCG token source even though the design-token package reads it;
+- the test task declared `coverage/**` output even though no coverage artifact is generated;
+- Oxlint's stable TypeScript 7 type-aware backend was available but not enabled;
+- the repository had no shared editor configuration or Codex project instructions.
+
+The production baseline was updated accordingly. The design intent and accepted product requirements did not change.
+
+## 2026-09-19 — Step 21: Full PR and configuration hardening
+
+Before merging the design-infrastructure bootstrap, the entire pull request was reviewed again for codebase-specific configuration, unnecessary abstraction, supply-chain hygiene, and future-agent continuity.
+
+The review produced these corrections:
+
+- removed `packages/ui/src/lib/utils.ts`; UI code now imports `cn` directly from the package;
+- removed the public UI `./lib/*` export and unused TypeScript extension options;
+- moved the shadcn CLI to development dependencies while retaining runtime UI dependencies where they are actually consumed;
+- constrained Node to the selected 24.x LTS major;
+- replaced the generic Node `.gitignore` with StackLens-specific generated/cache/environment entries;
+- pinned the mature TypeScript-aware Oxlint bridge release and removed temporary pnpm release-age exceptions;
+- made Oxlint warnings and unused suppression directives fail the quality gate;
+- made design-token tests independently generate the artifacts they inspect;
+- hardened GitHub Actions with immutable action SHAs and journey-continuity enforcement;
+- formalized documentation continuity as **GOV-007**;
+- added documentation governance and a requirements/documentation-aware pull-request template;
+- made `AGENTS.md` and `CONTRIBUTING.md` explicitly require affected-document and journey updates before work is considered complete.
+
+This step intentionally prefers small, direct configuration over abstractions or generic boilerplate that StackLens does not currently need.
+
+Verification continues on the real GitHub Actions runner after the lockfile and canonical formatting are refreshed.
+
+## 2026-09-19 — Step 22: Close the hardening bootstrap
+
+The hardened dependency graph was resolved from a clean pnpm lockfile under the active minimum-release-age supply-chain policy.
+
+The rebuilt lockfile contains `oxlint-tsgolint@7.0.2001` and no longer contains the recently published `7.0.2002` entries that caused the policy rejection.
+
+The temporary write-enabled workflow completed successfully across:
+
+- journey-continuity verification;
+- clean dependency resolution;
+- generated-token build;
+- canonical formatting;
+- pinned shadcn project validation;
+- strict TypeScript;
+- component/token tests;
+- type-aware Oxlint;
+- Oxfmt verification.
+
+The temporary CI write permission is removed immediately after this step. The final steady-state workflow returns to read-only repository permissions and frozen-lockfile installation.
+
+## 2026-09-19 — Step 23: Remove CI runtime-version duplication
+
+The final configuration review found that GitHub Actions repeated the pnpm and Node versions already declared in `package.json`.
+
+To reduce drift:
+
+- `pnpm/action-setup` now reads the exact pnpm version from `packageManager`;
+- `actions/setup-node` now reads the Node 24.x range from `engines.node`.
+
+The GitHub Actions themselves remain pinned to immutable full commit SHAs.
+
+The steady-state quality workflow is run again after this change so the single-source configuration is verified rather than assumed.

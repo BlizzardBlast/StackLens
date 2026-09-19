@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.2  
+> **Architecture version:** 0.1.3  
 > **Date:** 2026-09-18  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006
@@ -63,6 +63,7 @@ External services are accessed only through explicit adapters. Core rules do not
 ### 4.1 Web application
 
 **Responsibilities**
+
 - accept `package.json` paste/upload input (**FR-001**, **FR-002**);
 - accept public GitHub repository URLs (**FR-003**);
 - validate obvious client-side input while treating server validation as authoritative (**FR-004**);
@@ -71,6 +72,7 @@ External services are accessed only through explicit adapters. Core rules do not
 - meet the accessibility and responsive requirements (**NFR-006**, **NFR-007**).
 
 **Must not**
+
 - contain authoritative analyzer/scoring rules;
 - call npm/OSV/GitHub directly for product analysis;
 - infer findings independently of the analyzer report.
@@ -78,6 +80,7 @@ External services are accessed only through explicit adapters. Core rules do not
 ### 4.2 API application
 
 **Responsibilities**
+
 - expose versioned REST endpoints;
 - perform authoritative request validation;
 - run fast manifest analyses in-process;
@@ -93,6 +96,7 @@ The API is an orchestration boundary, not the home of rule logic.
 ### 4.3 Worker application
 
 **Responsibilities**
+
 - process asynchronous public-repository analyses;
 - resolve an immutable repository reference/commit;
 - build a bounded repository snapshot without executing repository code;
@@ -108,6 +112,7 @@ Keeping repository analysis in a worker satisfies **NFR-008** without making API
 PostgreSQL is the only required stateful infrastructure component for the hosted application.
 
 MVP uses it for:
+
 - repository-analysis jobs/status;
 - transient/report metadata needed for asynchronous delivery;
 - structured analysis reports when configured for hosted retention;
@@ -123,6 +128,7 @@ Future use includes saved repositories, analysis history, user/account data, mon
 Repository analyses are jobs backed by PostgreSQL.
 
 The job system exists to:
+
 - survive API process restarts;
 - separate bounded repository fetching from request handling;
 - support retries for transient external failures;
@@ -156,6 +162,7 @@ The pipeline is staged so deterministic rules receive explicit inputs rather tha
 A normalized `ProjectSnapshot` represents what StackLens actually observed.
 
 Examples:
+
 - manifest content;
 - dependency groups and ranges;
 - lockfile metadata when supported;
@@ -172,6 +179,7 @@ The snapshot records its own limitations. Missing files are not represented as n
 External data is collected into normalized, timestamped records before rule evaluation.
 
 Initial providers:
+
 - npm public registry — package/version/deprecation/repository metadata;
 - OSV.dev — known vulnerability records;
 - GitHub REST API — public repository metadata and source/configuration retrieval.
@@ -195,6 +203,7 @@ interface AnalysisRule {
 ```
 
 Rules:
+
 - receive normalized data;
 - do not mutate shared state;
 - do not perform hidden network access;
@@ -209,6 +218,7 @@ Rule IDs are product data and must remain stable once published (**DATA-003**, *
 Findings use a stable structured contract.
 
 A finding contains, as applicable:
+
 - finding ID;
 - stable rule ID and rule version;
 - requirement IDs;
@@ -228,11 +238,13 @@ The frontend renders this model; it does not reinterpret raw metadata into indep
 Scoring is a separate pure deterministic step.
 
 Inputs:
+
 - eligible findings;
 - category evidence coverage;
 - versioned scoring configuration.
 
 Outputs:
+
 - overall score when sufficient evidence exists;
 - category scores for Dependencies, Security, Maintainability, Testing, and Tooling;
 - contribution ledger explaining every deduction/addition;
@@ -305,6 +317,7 @@ Polling is the initial progress mechanism. Server-sent events may be added later
 ## 7. Repository acquisition and static-analysis boundary
 
 To satisfy **SEC-001** and **SEC-002**, StackLens does not run:
+
 - `npm install`, `pnpm install`, `yarn`, or package-manager lifecycle scripts;
 - builds;
 - tests;
@@ -316,6 +329,7 @@ To satisfy **SEC-001** and **SEC-002**, StackLens does not run:
 Repository acquisition uses GitHub APIs and bounded static file retrieval.
 
 The acquisition layer:
+
 - resolves the repository to an immutable commit SHA;
 - enumerates files without following arbitrary local execution paths;
 - ignores binaries and known generated/vendor directories;
@@ -427,69 +441,69 @@ The detailed decision record is [ADR-0002](adr/0002-technology-selection.md).
 
 ### Runtime and language
 
-| Concern | Selection |
-| --- | --- |
-| Language | TypeScript 6.x, strict mode |
-| Server runtime | Node.js 24 LTS |
-| Modules | ESM |
-| Package manager | pnpm 10 |
-| Monorepo task runner | Turborepo |
+| Concern              | Selection                   |
+| -------------------- | --------------------------- |
+| Language             | TypeScript 7.x, strict mode |
+| Server runtime       | Node.js 24 LTS              |
+| Modules              | ESM                         |
+| Package manager      | pnpm 12                     |
+| Monorepo task runner | Turborepo                   |
 
-Node 24 LTS is preferred to the non-LTS current line for production stability. TypeScript is shared across frontend, API, worker, analyzer, and future CLI to reduce contract translation.
+Node 24 LTS is preferred for production stability. TypeScript is shared across frontend, API, worker, analyzer, and future CLI to reduce contract translation. The concrete implementation-version baseline is maintained by ADR-0007.
 
 ### Frontend
 
-| Concern | Selection |
-| --- | --- |
-| UI | React 19.3 |
-| Build/dev | Vite 8.1 |
-| Routing | TanStack Router v1, file-based |
-| Server state | TanStack Query v5 |
-| Styling | Tailwind CSS 4.3 |
-| Runtime validation | Zod 4 |
-| E2E | Playwright |
+| Concern            | Selection                      |
+| ------------------ | ------------------------------ |
+| UI                 | React 19.3                     |
+| Build/dev          | Vite 8.1                       |
+| Routing            | TanStack Router v1, file-based |
+| Server state       | TanStack Query v5              |
+| Styling            | Tailwind CSS 4.3               |
+| Runtime validation | Zod 4                          |
+| E2E                | Playwright                     |
 
 The web application remains a client of the public API; analyzer logic does not run in React.
 
 ### Backend
 
-| Concern | Selection |
-| --- | --- |
-| HTTP | Fastify 5 |
-| Validation/contracts | Zod 4 |
-| API description | OpenAPI via Fastify integration |
-| Database | PostgreSQL 18 |
-| SQL/ORM | Drizzle ORM stable 0.44 line |
-| Background jobs | Graphile Worker |
-| Logging | Pino-compatible structured logs |
+| Concern              | Selection                       |
+| -------------------- | ------------------------------- |
+| HTTP                 | Fastify 5                       |
+| Validation/contracts | Zod 4                           |
+| API description      | OpenAPI via Fastify integration |
+| Database             | PostgreSQL 18                   |
+| SQL/ORM              | Drizzle ORM stable 0.44 line    |
+| Background jobs      | Graphile Worker                 |
+| Logging              | Pino-compatible structured logs |
 
 The project should remain on Drizzle's stable release line rather than adopting the 1.0 beta until it is stable.
 
 ### Analysis
 
-| Concern | Selection |
-| --- | --- |
-| Manifest/version semantics | Node ecosystem libraries + explicit adapters |
-| JS/TS AST | `@typescript-eslint/typescript-estree` initially |
-| Package metadata | npm Registry |
-| Vulnerabilities | OSV.dev batch API |
-| Repository data | GitHub REST API |
-| Rule testing | Vitest fixtures |
+| Concern                    | Selection                                        |
+| -------------------------- | ------------------------------------------------ |
+| Manifest/version semantics | Node ecosystem libraries + explicit adapters     |
+| JS/TS AST                  | `@typescript-eslint/typescript-estree` initially |
+| Package metadata           | npm Registry                                     |
+| Vulnerabilities            | OSV.dev batch API                                |
+| Repository data            | GitHub REST API                                  |
+| Rule testing               | Vitest fixtures                                  |
 
 The AST parser is behind an adapter so a future parser such as Oxc can be evaluated without changing rule/report contracts.
 
 ### Engineering tooling
 
-| Concern | Selection |
-| --- | --- |
-| Unit/integration tests | Vitest 4 |
-| UI component tests | Testing Library |
-| Browser E2E | Playwright |
-| Lint | Oxlint |
-| Format | Oxfmt |
-| Type checking | TypeScript compiler (`tsc --noEmit`) initially |
-| CI | GitHub Actions |
-| Local infrastructure | Docker Compose |
+| Concern                | Selection                                      |
+| ---------------------- | ---------------------------------------------- |
+| Unit/integration tests | Vitest 5                                       |
+| UI component tests     | Testing Library                                |
+| Browser E2E            | Playwright                                     |
+| Lint                   | Oxlint                                         |
+| Format                 | Oxfmt                                          |
+| Type checking          | TypeScript compiler (`tsc --noEmit`) initially |
+| CI                     | GitHub Actions                                 |
+| Local infrastructure   | Docker Compose                                 |
 
 ## 12. Persistence model
 
@@ -498,6 +512,7 @@ The MVP database should model analysis metadata, not act as a source-code wareho
 Initial logical entities:
 
 ### `analysis`
+
 - id;
 - input type;
 - status;
@@ -513,6 +528,7 @@ Initial logical entities:
 - retention expiry where applicable.
 
 ### `analysis_report`
+
 - analysis id;
 - report schema version;
 - structured report JSON;
@@ -543,6 +559,7 @@ The UI polls while a job is active. Individual provider failure may produce `com
 Everything originating from an analyzed repository or external metadata provider is untrusted.
 
 Controls include:
+
 - strict schema validation;
 - bounded file and payload sizes;
 - URL/domain validation for supported GitHub inputs;
@@ -557,6 +574,7 @@ Controls include:
 ### Private repositories
 
 Private repository support is explicitly post-MVP. When added:
+
 - GitHub permissions must be least privilege (**SEC-005**);
 - source is transient by default (**SEC-004**);
 - write scopes are separate from read scopes;
@@ -565,6 +583,7 @@ Private repository support is explicitly post-MVP. When added:
 ## 15. Data-source failure policy
 
 Each adapter returns either:
+
 - normalized evidence; or
 - a typed partial failure with provider, operation, timestamp, and retryability.
 
@@ -575,6 +594,7 @@ If npm metadata is unavailable, StackLens may still report manifest facts but ca
 ## 16. Testing architecture
 
 ### Analyzer
+
 - fixture-driven unit tests per rule (**NFR-002**);
 - exact structured finding assertions;
 - explicit negative/insufficient-evidence cases;
@@ -582,26 +602,31 @@ If npm metadata is unavailable, StackLens may still report manifest facts but ca
 - no live-network dependency in normal unit tests.
 
 ### Data-source adapters
+
 - contract tests against recorded/synthetic provider responses;
 - parsing tests for malformed/unexpected responses;
 - optional scheduled live smoke tests isolated from PR correctness.
 
 ### API
+
 - route/schema integration tests;
 - async job-state tests with PostgreSQL;
 - security/resource-limit tests.
 
 ### Web
+
 - component/accessibility tests;
 - report rendering tests against contract fixtures;
 - Playwright flows for manifest and repository analysis.
 
 ### Traceability
+
 Tests that verify requirements should identify requirement IDs according to **GOV-004**.
 
 ## 17. Observability
 
 Structured telemetry should record:
+
 - request/analysis ID;
 - job ID;
 - rule ID;
@@ -631,6 +656,7 @@ Containerized API ---- PostgreSQL
 Local development uses Docker Compose for PostgreSQL while web/API/worker can run as normal pnpm workspace processes.
 
 A specific cloud vendor is intentionally not an architectural dependency. The deployment provider may be selected later as long as it can run:
+
 - a static frontend;
 - long-running Node API and worker processes;
 - PostgreSQL;
@@ -643,6 +669,7 @@ This preserves the open-source-core/self-hosting direction in **PRD-006**.
 Do not introduce distributed complexity before measurements justify it.
 
 Initial scaling:
+
 - horizontally scale API statelessly;
 - horizontally scale workers using the PostgreSQL-backed queue;
 - cap per-job analysis concurrency;
@@ -651,6 +678,7 @@ Initial scaling:
 - avoid repeated repository file fetches within one analysis.
 
 Possible later extraction boundaries:
+
 - metadata collection;
 - repository acquisition;
 - monitoring scheduler.
@@ -681,5 +709,6 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0004 — PostgreSQL-backed asynchronous repository analysis](adr/0004-async-analysis-jobs.md)
 - [ADR-0005 — Web framework and frontend-tooling review](adr/0005-web-framework-and-tooling-review.md)
 - [ADR-0006 — Design system and prototyping strategy](adr/0006-design-system-and-prototyping.md)
+- [ADR-0007 — Design infrastructure bootstrap](adr/0007-design-infrastructure-bootstrap.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).
