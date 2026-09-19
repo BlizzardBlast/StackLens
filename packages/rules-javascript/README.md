@@ -66,10 +66,11 @@ The rule emits no finding, priority, recommendation, or scoring policy.
 
 `JS-VULN-011@1` is a finding rule. It does not call OSV.
 
-The rule consumes a normalized OSV snapshot that acquisition/orchestration has already placed in
-`JavaScriptAnalysisMetadata.osv`. The public metadata interface intentionally contains only the
-fields the rule needs and is structurally compatible with the corresponding normalized OSV adapter
-output without creating a `rules-javascript -> data-sources` dependency.
+The rule consumes source-bound OSV metadata that acquisition/orchestration has already placed in
+`JavaScriptAnalysisMetadata.osv`. The wrapper contains the report-level OSV `sourceId` plus a
+minimal `snapshot`; that inner snapshot intentionally contains only the fields the rule needs and is
+structurally compatible with the corresponding normalized OSV adapter data without creating a
+`rules-javascript -> data-sources` dependency.
 
 For each dependency inventory fact set, the rule:
 
@@ -77,7 +78,9 @@ For each dependency inventory fact set, the rule:
   fact's package name and preserved declared specifier;
 - combines duplicate declarations of the same package/version into one finding basis;
 - emits one factual security finding per package/version/advisory match;
-- references both project declaration evidence and OSV external evidence;
+- requires the metadata's bound `sourceId` to resolve to the exact usable report-level OSV
+  `DataSource`;
+- references both project declaration evidence and OSV external evidence from that exact source;
 - preserves stable `JS-VULN-011@1` rule identity and deterministic finding IDs;
 - surfaces OSV severity only when normalized advisory metadata supplies it, attributing each record
   to its supplied severity source or OSV when no more-specific source is supplied;
