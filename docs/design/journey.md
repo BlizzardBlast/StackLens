@@ -678,6 +678,8 @@ Partial failure semantics are conservative:
 - pagination/detail failures after valid match data was acquired preserve known matches and mark the
   source partial;
 - repeated/exhausted pagination marks the affected query incomplete;
+- full advisory-detail requests are separately bounded; hitting that bound marks the source partial
+  while retaining every authoritative batch match/evidence link;
 - a detail failure never erases the authoritative exact-version batch match;
 - an empty complete match list is not translated into a "secure" conclusion.
 
