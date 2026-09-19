@@ -1,3 +1,4 @@
+import { IdentifierSchema, RequirementIdSchema } from "@stacklens/contracts";
 import type {
   AnalysisFact,
   AnalysisLimitation,
@@ -56,8 +57,8 @@ function sortedRules<T extends RuleDefinition>(rules: readonly T[]): readonly T[
 function assertRuleSet<TProjectSnapshot, TMetadataSnapshot>(
   ruleSet: AnalysisRuleSet<TProjectSnapshot, TMetadataSnapshot>
 ) {
-  if (ruleSet.version.trim().length === 0) {
-    throw new AnalyzerConfigurationError("Rule-set version must not be empty");
+  if (!IdentifierSchema.safeParse(ruleSet.version).success) {
+    throw new AnalyzerConfigurationError("Rule-set version must be a valid identifier");
   }
 
   const allRules = [
@@ -68,18 +69,26 @@ function assertRuleSet<TProjectSnapshot, TMetadataSnapshot>(
   const seenIds = new Set<string>();
 
   for (const rule of allRules) {
-    if (rule.id.trim().length === 0) {
-      throw new AnalyzerConfigurationError("Rule IDs must not be empty");
+    if (!IdentifierSchema.safeParse(rule.id).success) {
+      throw new AnalyzerConfigurationError("Rule IDs must be valid identifiers");
     }
 
-    if (rule.version.trim().length === 0) {
-      throw new AnalyzerConfigurationError(`Rule ${rule.id} has an empty version`);
+    if (!IdentifierSchema.safeParse(rule.version).success) {
+      throw new AnalyzerConfigurationError(`Rule ${rule.id} has an invalid version`);
     }
 
     if (rule.requirementIds.length === 0) {
       throw new AnalyzerConfigurationError(
         `Rule ${rule.id} must declare at least one requirement ID`
       );
+    }
+
+    for (const requirementId of rule.requirementIds) {
+      if (!RequirementIdSchema.safeParse(requirementId).success) {
+        throw new AnalyzerConfigurationError(
+          `Rule ${rule.id} declares invalid requirement ID: ${requirementId}`
+        );
+      }
     }
 
     if (seenIds.has(rule.id)) {
