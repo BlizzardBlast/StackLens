@@ -5,12 +5,14 @@ export {
 } from "./analysis-report.js";
 export type { AnalysisReport, AnalyzerMetadata } from "./analysis-report.js";
 
+export { ScoreCategorySchema } from "./category.js";
+export type { ScoreCategory } from "./category.js";
+
 export {
   AvailableDataSourceSchema,
   DataSourceSchema,
   EvidenceSchema,
   ExternalEvidenceSchema,
-  IsoDateTimeSchema,
   PartialDataSourceSchema,
   ProjectEvidenceSchema,
   SourceLocationSchema,
@@ -52,16 +54,11 @@ export type {
 } from "./finding.js";
 
 export {
-  AnalysisSubjectSchema,
   IdentifierSchema,
   RequirementIdSchema,
   RuleReferenceSchema
 } from "./identifiers.js";
-export type {
-  AnalysisSubject,
-  RequirementId,
-  RuleReference
-} from "./identifiers.js";
+export type { RequirementId, RuleReference } from "./identifiers.js";
 
 export {
   AnalysisInputSchema,
@@ -82,14 +79,12 @@ export {
   AnalysisLimitationSchema,
   PartialFailureSchema,
   RulePartialFailureSchema,
-  ScoreCategorySchema,
   SourcePartialFailureSchema
 } from "./limitation.js";
 export type {
   AnalysisLimitation,
   AnalysisLimitationKind,
-  PartialFailure,
-  ScoreCategory
+  PartialFailure
 } from "./limitation.js";
 
 export {
@@ -121,3 +116,9 @@ export type {
   ScoreContributionDirection,
   ScoreResult
 } from "./score.js";
+
+export { AnalysisSubjectSchema } from "./subject.js";
+export type { AnalysisSubject } from "./subject.js";
+
+export { IsoDateTimeSchema } from "./time.js";
+export type { IsoDateTime } from "./time.js";
