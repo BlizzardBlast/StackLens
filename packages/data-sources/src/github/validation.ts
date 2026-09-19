@@ -14,9 +14,7 @@ export function validateObservedAt(value: string): string {
   const parsed = IsoDateTimeSchema.safeParse(value);
 
   if (!parsed.success) {
-    throw new GitHubConfigurationError(
-      "now() must return an ISO 8601 timestamp with an offset",
-    );
+    throw new GitHubConfigurationError("now() must return an ISO 8601 timestamp with an offset");
   }
 
   return parsed.data;
