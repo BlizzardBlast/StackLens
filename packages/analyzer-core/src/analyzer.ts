@@ -1,3 +1,4 @@
+import { IdentifierSchema } from "@stacklens/contracts";
 import type {
   AnalysisInput,
   AnalysisLimitation,
@@ -7,7 +8,8 @@ import type {
   PartialFailure,
 } from "@stacklens/contracts";
 
-import type { AnalysisContext } from "./context.js";
+import type { AnalysisContext, DeepReadonly } from "./context.js";
+import { AnalyzerConfigurationError } from "./errors.js";
 import { runRulePipeline } from "./pipeline.js";
 import { assembleAnalysisReport } from "./report.js";
 import type { AnalysisRuleSet } from "./rules.js";
@@ -23,18 +25,32 @@ export interface AnalyzerRunInput<TProjectSnapshot, TMetadataSnapshot> {
   readonly analysisId: string;
   readonly createdAt: string;
   readonly input: AnalysisInput;
-  readonly project: Readonly<TProjectSnapshot>;
-  readonly metadata: Readonly<TMetadataSnapshot>;
+  readonly project: DeepReadonly<TProjectSnapshot>;
+  readonly metadata: DeepReadonly<TMetadataSnapshot>;
   readonly sources: readonly DataSource[];
   readonly evidence: readonly Evidence[];
   readonly limitations?: readonly AnalysisLimitation[];
   readonly partialFailures?: readonly PartialFailure[];
 }
 
+function assertAnalyzerDefinition<TProjectSnapshot, TMetadataSnapshot>(
+  definition: AnalyzerDefinition<TProjectSnapshot, TMetadataSnapshot>,
+) {
+  if (!IdentifierSchema.safeParse(definition.version).success) {
+    throw new AnalyzerConfigurationError("Analyzer version must be a valid identifier");
+  }
+
+  if (!IdentifierSchema.safeParse(definition.scorer.version).success) {
+    throw new AnalyzerConfigurationError("Scorer version must be a valid identifier");
+  }
+}
+
 export function runAnalyzer<TProjectSnapshot, TMetadataSnapshot>(
   definition: AnalyzerDefinition<TProjectSnapshot, TMetadataSnapshot>,
   runInput: AnalyzerRunInput<TProjectSnapshot, TMetadataSnapshot>,
 ): AnalysisReport {
+  assertAnalyzerDefinition(definition);
+
   const context: AnalysisContext<TProjectSnapshot, TMetadataSnapshot> = {
     input: runInput.input,
     project: runInput.project,
