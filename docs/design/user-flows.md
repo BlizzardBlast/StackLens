@@ -49,6 +49,7 @@ flowchart TD
 ### UX rules
 
 The report must not imply source-level certainty. For example:
+
 - package-use heuristics requiring imports may be unavailable;
 - vulnerability matching may be N/A when no exact installed version can be established.
 

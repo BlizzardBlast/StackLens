@@ -60,12 +60,12 @@ A requirement change should explain:
 
 Do not silently redefine a requirement through code.
 
-
 ## Documentation definition of done
 
 Per **GOV-007**, documentation is part of the implementation.
 
 Every pull request must:
+
 - update `docs/design/journey.md`;
 - update the requirements, architecture/ADR, design, implementation, contributor, agent, or README documentation that the change materially affects;
 - leave unrelated documents alone;

@@ -66,6 +66,7 @@ The initial architecture is a TypeScript modular monolith with a reusable determ
 The **StackLens Product Design v1** baseline is documented under **[docs/design/](docs/design/README.md)**.
 
 The repository contains:
+
 - product-design principles and requirement traceability;
 - MVP information architecture and user flows;
 - low-fidelity wireframes;

@@ -7,7 +7,11 @@ export interface AnalysisLimitationProps {
   className?: string;
 }
 
-export function AnalysisLimitation({ title, children, className }: AnalysisLimitationProps) {
+export function AnalysisLimitation({
+  title,
+  children,
+  className,
+}: Readonly<AnalysisLimitationProps>) {
   return (
     <aside
       role="note"

@@ -18,7 +18,9 @@ const classificationMark: Record<FindingClassification, string> = {
   recommendation: "→",
 };
 
-export function FindingTypeBadge({ classification }: { classification: FindingClassification }) {
+export function FindingTypeBadge({
+  classification,
+}: Readonly<{ classification: FindingClassification }>) {
   return (
     <Badge variant={classification}>
       <span aria-hidden="true">{classificationMark[classification]}</span>
@@ -27,11 +29,11 @@ export function FindingTypeBadge({ classification }: { classification: FindingCl
   );
 }
 
-export function SeverityBadge({ priority }: { priority: FindingPriority }) {
+export function SeverityBadge({ priority }: Readonly<{ priority: FindingPriority }>) {
   return <Badge variant={priority}>{priority.charAt(0).toUpperCase() + priority.slice(1)}</Badge>;
 }
 
-export function ConfidenceIndicator({ confidence }: { confidence: FindingConfidence }) {
+export function ConfidenceIndicator({ confidence }: Readonly<{ confidence: FindingConfidence }>) {
   return (
     <Badge
       variant="neutral"

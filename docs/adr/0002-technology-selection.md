@@ -11,6 +11,7 @@ The architecture decisions in this ADR remain accepted. The implementation-versi
 ## Context
 
 StackLens needs:
+
 - one language across web, server, worker, analyzer, and future CLI where practical;
 - a browser UI optimized for a developer-tool workflow;
 - a stable versioned API consumable by future non-web clients;
@@ -124,6 +125,7 @@ Oxc is attractive for performance, but the initial priority is correctness and i
 ## Version policy
 
 The versions above describe the selected stable major/release line as of 2026-09-18. Implementation should:
+
 - pin reproducible versions in the lockfile;
 - prefer supported stable releases;
 - avoid beta/RC dependencies for foundational infrastructure unless an ADR explicitly accepts that risk;
@@ -133,24 +135,24 @@ The versions above describe the selected stable major/release line as of 2026-09
 
 The selection was checked against current upstream documentation on 2026-09-18:
 
-- React 19.3: https://react.dev/blog/2026/09/09/react-19-3
-- Vite 8.1: https://vite.dev/blog/announcing-vite8-1
-- Node.js release/LTS status: https://nodejs.org/en/about/previous-releases
-- Fastify latest documentation: https://fastify.dev/docs/latest/
-- PostgreSQL 18 documentation: https://www.postgresql.org/docs/18/
-- Graphile Worker documentation: https://worker.graphile.org/docs
-- OSV API: https://google.github.io/osv.dev/api/
-- TanStack Router: https://tanstack.com/router/latest/docs/quick-start
-- TanStack Query: https://tanstack.com/query/latest/docs/framework/react/installation
-- TypeScript 6.0: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html
-- Vitest 4: https://vitest.dev/blog/vitest-4
-- Tailwind CSS 4.3: https://tailwindcss.com/blog/tailwindcss-v4-3
-- Oxlint: https://oxc.rs/docs/guide/usage/linter
-- Oxlint type-aware linting: https://oxc.rs/docs/guide/usage/linter/type-aware
-- Oxfmt: https://oxc.rs/docs/guide/usage/formatter
-- Next.js App Router: https://nextjs.org/docs/app
-- Create T3 App: https://create.t3.gg/en/introduction
-- TanStack Start overview: https://tanstack.com/start/latest/docs/framework/react/overview
+- React 19.3: <https://react.dev/blog/2026/09/09/react-19-3>
+- Vite 8.1: <https://vite.dev/blog/announcing-vite8-1>
+- Node.js release/LTS status: <https://nodejs.org/en/about/previous-releases>
+- Fastify latest documentation: <https://fastify.dev/docs/latest/>
+- PostgreSQL 18 documentation: <https://www.postgresql.org/docs/18/>
+- Graphile Worker documentation: <https://worker.graphile.org/docs>
+- OSV API: <https://google.github.io/osv.dev/api/>
+- TanStack Router: <https://tanstack.com/router/latest/docs/quick-start>
+- TanStack Query: <https://tanstack.com/query/latest/docs/framework/react/installation>
+- TypeScript 6.0: <https://www.typescriptlang.org/docs/handbook/release-notes/typescript-6-0.html>
+- Vitest 4: <https://vitest.dev/blog/vitest-4>
+- Tailwind CSS 4.3: <https://tailwindcss.com/blog/tailwindcss-v4-3>
+- Oxlint: <https://oxc.rs/docs/guide/usage/linter>
+- Oxlint type-aware linting: <https://oxc.rs/docs/guide/usage/linter/type-aware>
+- Oxfmt: <https://oxc.rs/docs/guide/usage/formatter>
+- Next.js App Router: <https://nextjs.org/docs/app>
+- Create T3 App: <https://create.t3.gg/en/introduction>
+- TanStack Start overview: <https://tanstack.com/start/latest/docs/framework/react/overview>
 
 ## Consequences
 

@@ -51,7 +51,8 @@
   --sl-space-12: 48px;
   --sl-space-16: 64px;
 
-  --sl-font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --sl-font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --sl-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --sl-shadow-overlay: 0 16px 48px rgb(15 23 42 / 0.14);

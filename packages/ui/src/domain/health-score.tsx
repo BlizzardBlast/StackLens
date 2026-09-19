@@ -39,7 +39,7 @@ export function HealthScore({
   label = "Stack health",
   detail,
   className,
-}: HealthScoreProps) {
+}: Readonly<HealthScoreProps>) {
   const displayScore = score === null ? "N/A" : String(Math.max(0, Math.min(100, score)));
 
   return (

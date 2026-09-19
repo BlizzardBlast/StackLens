@@ -15,6 +15,7 @@ At the same time, the MVP does not justify independently deployed microservices 
 ## Decision
 
 Use a **TypeScript modular monolith** with:
+
 - separate runtime apps for web, API, and worker;
 - reusable workspace packages for analyzer logic, JS/TS rules, contracts, scoring, data-source adapters, and persistence;
 - strict dependency direction preventing analyzer packages from depending on web/API/database framework code.
@@ -24,6 +25,7 @@ The analyzer core is a library boundary, not a network service.
 ## Consequences
 
 ### Positive
+
 - one authoritative analysis implementation;
 - fast local development;
 - low deployment complexity;
@@ -32,6 +34,7 @@ The analyzer core is a library boundary, not a network service.
 - modules can be extracted later if scaling measurements justify it.
 
 ### Negative
+
 - package boundaries require discipline because a monorepo makes improper imports technically easy;
 - worker and API deployments share release cadence initially;
 - some future independent scaling boundaries may require extraction work.

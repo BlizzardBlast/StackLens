@@ -10,15 +10,15 @@ A pull request is incomplete when it changes a documented area but leaves the co
 
 ## Source-of-truth map
 
-| Change | Required durable documentation |
-| --- | --- |
-| Product behavior, scope, acceptance criteria | `docs/requirements.md` |
-| Architecture boundaries or technology decisions | `docs/architecture.md` and the relevant ADR |
-| Product design, interaction patterns, accessibility semantics | relevant files under `docs/design/` |
-| Design tokens or shared UI implementation | `docs/design/design-system.md` and/or `docs/implementation/design-infrastructure.md` |
-| Tooling, workspace, CI, editor, package, or agent workflow | relevant ADR/implementation document, `CONTRIBUTING.md`, and/or `AGENTS.md` |
-| Public project status or milestone | `README.md` |
-| Every pull request | `docs/design/journey.md` |
+| Change                                                        | Required durable documentation                                                       |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Product behavior, scope, acceptance criteria                  | `docs/requirements.md`                                                               |
+| Architecture boundaries or technology decisions               | `docs/architecture.md` and the relevant ADR                                          |
+| Product design, interaction patterns, accessibility semantics | relevant files under `docs/design/`                                                  |
+| Design tokens or shared UI implementation                     | `docs/design/design-system.md` and/or `docs/implementation/design-infrastructure.md` |
+| Tooling, workspace, CI, editor, package, or agent workflow    | relevant ADR/implementation document, `CONTRIBUTING.md`, and/or `AGENTS.md`          |
+| Public project status or milestone                            | `README.md`                                                                          |
+| Every pull request                                            | `docs/design/journey.md`                                                             |
 
 Only update documents that are materially affected. Do not make unrelated documentation edits merely to create churn.
 

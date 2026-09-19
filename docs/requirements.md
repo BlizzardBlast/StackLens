@@ -27,15 +27,15 @@ The baseline requirements in this document are **Accepted**. Implementation stat
 
 ### Requirement classes
 
-| Prefix | Meaning |
-| --- | --- |
-| `PRD` | Product direction and product constraints |
-| `FR` | Functional requirement |
-| `NFR` | Non-functional requirement |
-| `SEC` | Security and privacy requirement |
-| `DATA` | Evidence, provenance, and data-quality requirement |
-| `SCORE` | Stack health scoring requirement |
-| `GOV` | Requirements governance and traceability |
+| Prefix  | Meaning                                            |
+| ------- | -------------------------------------------------- |
+| `PRD`   | Product direction and product constraints          |
+| `FR`    | Functional requirement                             |
+| `NFR`   | Non-functional requirement                         |
+| `SEC`   | Security and privacy requirement                   |
+| `DATA`  | Evidence, provenance, and data-quality requirement |
+| `SCORE` | Stack health scoring requirement                   |
+| `GOV`   | Requirements governance and traceability           |
 
 ## 2. Product vision
 
@@ -123,6 +123,7 @@ The MVP supports JavaScript and TypeScript projects and provides two analysis mo
 #### Quick analysis
 
 Input:
+
 - pasted `package.json`; or
 - uploaded `package.json`.
 
@@ -131,6 +132,7 @@ Quick analysis can only make findings supported by package metadata and availabl
 #### Repository analysis
 
 Input:
+
 - public GitHub repository URL.
 
 Repository analysis may inspect relevant repository files without executing repository code.
@@ -184,6 +186,7 @@ Workspace/monorepo configuration may be detected in MVP, but complete multi-pack
 A user must be able to paste valid `package.json` content and request a quick analysis.
 
 **Acceptance criteria**
+
 - Valid JSON with a supported package manifest is accepted.
 - Invalid JSON returns a clear validation error.
 - Analysis can be performed without creating an account.
@@ -196,6 +199,7 @@ A user must be able to paste valid `package.json` content and request a quick an
 A user must be able to upload a `package.json` file for quick analysis.
 
 **Acceptance criteria**
+
 - A supported manifest can be selected and analyzed.
 - Invalid or unsupported files fail safely with an actionable message.
 - The uploaded manifest is subject to the data-retention requirements in this document.
@@ -208,6 +212,7 @@ A user must be able to upload a `package.json` file for quick analysis.
 A user must be able to submit a public GitHub repository URL for repository analysis.
 
 **Acceptance criteria**
+
 - Valid public GitHub repository URLs can be resolved.
 - Invalid, inaccessible, or unsupported URLs produce a clear error.
 - StackLens identifies the analyzed repository and revision/reference where available.
@@ -227,6 +232,7 @@ StackLens must validate analysis inputs before analysis and must not silently re
 StackLens must identify declared runtime and development dependencies and relevant dependency groups from the analyzed project.
 
 **Acceptance criteria**
+
 - The report identifies dependency name, declared version/range, and dependency group.
 - The report does not silently merge dependency groups when that would change meaning.
 
@@ -238,6 +244,7 @@ StackLens must identify declared runtime and development dependencies and releva
 StackLens must identify dependencies for which a newer relevant release exists.
 
 **Acceptance criteria**
+
 - The report distinguishes the project's declared version/range from the comparison version.
 - Version comparisons include evidence/provenance.
 - Major-version differences are distinguishable from minor/patch differences.
@@ -250,6 +257,7 @@ StackLens must identify dependencies for which a newer relevant release exists.
 StackLens must identify packages that are explicitly deprecated and may identify packages showing evidence of being unmaintained.
 
 **Acceptance criteria**
+
 - Explicit deprecation is presented as a fact with its source.
 - "Unmaintained" is presented as a heuristic unless supported by an authoritative declaration.
 - Heuristic maintenance findings expose their basis and confidence.
@@ -262,6 +270,7 @@ StackLens must identify packages that are explicitly deprecated and may identify
 StackLens must detect known cases where multiple dependencies provide materially overlapping responsibilities.
 
 **Acceptance criteria**
+
 - A finding names the overlapping packages/capabilities.
 - The finding explains why the overlap matters.
 - StackLens must not claim that a dependency is redundant solely because another library exists in the same broad category.
@@ -274,6 +283,7 @@ StackLens must detect known cases where multiple dependencies provide materially
 StackLens must identify potentially unnecessary dependencies when sufficient deterministic evidence exists.
 
 **Acceptance criteria**
+
 - Findings are labeled as potential/heuristic unless necessity can be established directly.
 - Repository analysis may use imports, configuration, scripts, and other static evidence.
 - Quick analysis must not claim source-level non-use when source code was not provided.
@@ -289,6 +299,7 @@ StackLens must provide relevant dependency-health signals derived from verifiabl
 Possible signals include release recency, deprecation state, repository/archive state, maintenance activity, and other supported signals.
 
 **Acceptance criteria**
+
 - Every signal identifies its data source.
 - A combined interpretation must disclose the rule used to derive it.
 
@@ -300,6 +311,7 @@ Possible signals include release recency, deprecation state, repository/archive 
 StackLens must identify known vulnerabilities affecting dependencies when supported by available version information and vulnerability data.
 
 **Acceptance criteria**
+
 - Findings identify the affected package and advisory/vulnerability reference.
 - Severity is attributed to the underlying source when provided.
 - Lack of vulnerability data must not be described as proof that a package is secure.
@@ -321,6 +333,7 @@ Examples include frameworks, build tools, test frameworks, linters/formatters, p
 For repository analysis, StackLens must identify supported project configuration files and relevant high-level configuration characteristics through static inspection.
 
 **Acceptance criteria**
+
 - Detection does not execute configuration code.
 - Unsupported or dynamic configuration is reported as unsupported/partially inspected rather than guessed.
 
@@ -332,6 +345,7 @@ For repository analysis, StackLens must identify supported project configuration
 StackLens must identify relevant migration opportunities when a deterministic rule and sufficient evidence indicate that a project may benefit from a known migration path.
 
 **Acceptance criteria**
+
 - The current state and target state are identified.
 - The reason for suggesting the migration is shown.
 - The evidence and rule that triggered the suggestion are shown.
@@ -345,6 +359,7 @@ StackLens must identify relevant migration opportunities when a deterministic ru
 StackLens must convert supported findings into actionable recommendations where appropriate.
 
 Each recommendation must include:
+
 - what StackLens suggests considering;
 - why;
 - supporting evidence;
@@ -361,6 +376,7 @@ Each recommendation must include:
 StackLens must present findings in a prioritized action view so users can understand what deserves attention first.
 
 **Acceptance criteria**
+
 - Priority is produced by an explicit deterministic rule.
 - Priority considers supported factors such as security impact, breakage/deprecation risk, evidence strength, and likely maintenance impact.
 - Priority is explainable; it must not be an opaque AI judgment.
@@ -404,6 +420,7 @@ A category with insufficient evidence must be shown as **N/A / insufficient evid
 Users must be able to understand why a health score has its value.
 
 **Acceptance criteria**
+
 - Score-impacting findings are visible.
 - Weighting/rules are documented.
 - Missing evidence is not silently converted into a penalty.
@@ -815,6 +832,7 @@ Technology and architecture choices must cite the requirements they are intended
 Every pull request must keep StackLens's durable documentation synchronized with the change and append a chronological entry to `docs/design/journey.md`.
 
 **Acceptance criteria**
+
 - The pull request identifies the requirement IDs it serves.
 - The journey entry records what changed and why, including material decisions or corrections.
 - Product behavior changes update `docs/requirements.md` when applicable.
@@ -840,31 +858,31 @@ The report must satisfy the deterministic, evidence, scoring, security, and trac
 
 ## 14. Initial requirement-to-capability map
 
-| Capability | Requirements |
-| --- | --- |
-| Paste/upload analysis | FR-001, FR-002, FR-004, FR-022 |
-| Public GitHub analysis | FR-003, FR-004, SEC-001, SEC-002 |
-| Dependency inventory | FR-005 |
-| Outdated packages | FR-006, DATA-001, DATA-002 |
-| Deprecated/unmaintained packages | FR-007, DATA-004 |
-| Overlap/redundancy | FR-008, PRD-003 |
-| Potentially unnecessary packages | FR-009, PRD-004, DATA-004 |
-| Dependency health | FR-010 |
-| Vulnerabilities | FR-011, DATA-001 |
-| Framework/tool detection | FR-012 |
-| Configuration detection | FR-013, SEC-001 |
-| Migration opportunities | FR-014 |
-| Recommendations | FR-015, PRD-001 |
-| Prioritization | FR-016 |
-| Evidence model | FR-017, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, DATA-006 |
-| Health scoring | FR-018, FR-019, FR-020, SCORE-001, SCORE-002, SCORE-003 |
-| Limitations | FR-021, PRD-004 |
-| Documentation continuity | GOV-007 |
-| Analyzer design | NFR-001, NFR-002, NFR-004, NFR-005 |
-| Privacy/security | SEC-001, SEC-002, SEC-003, SEC-007, NFR-009 |
-| Future GitHub private access | FR-100, SEC-004, SEC-005 |
-| Future automated changes | FR-105, FR-106, FR-107, SEC-006 |
-| Future integrations | FR-108, FR-109, FR-110, NFR-005 |
+| Capability                       | Requirements                                                       |
+| -------------------------------- | ------------------------------------------------------------------ |
+| Paste/upload analysis            | FR-001, FR-002, FR-004, FR-022                                     |
+| Public GitHub analysis           | FR-003, FR-004, SEC-001, SEC-002                                   |
+| Dependency inventory             | FR-005                                                             |
+| Outdated packages                | FR-006, DATA-001, DATA-002                                         |
+| Deprecated/unmaintained packages | FR-007, DATA-004                                                   |
+| Overlap/redundancy               | FR-008, PRD-003                                                    |
+| Potentially unnecessary packages | FR-009, PRD-004, DATA-004                                          |
+| Dependency health                | FR-010                                                             |
+| Vulnerabilities                  | FR-011, DATA-001                                                   |
+| Framework/tool detection         | FR-012                                                             |
+| Configuration detection          | FR-013, SEC-001                                                    |
+| Migration opportunities          | FR-014                                                             |
+| Recommendations                  | FR-015, PRD-001                                                    |
+| Prioritization                   | FR-016                                                             |
+| Evidence model                   | FR-017, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, DATA-006 |
+| Health scoring                   | FR-018, FR-019, FR-020, SCORE-001, SCORE-002, SCORE-003            |
+| Limitations                      | FR-021, PRD-004                                                    |
+| Documentation continuity         | GOV-007                                                            |
+| Analyzer design                  | NFR-001, NFR-002, NFR-004, NFR-005                                 |
+| Privacy/security                 | SEC-001, SEC-002, SEC-003, SEC-007, NFR-009                        |
+| Future GitHub private access     | FR-100, SEC-004, SEC-005                                           |
+| Future automated changes         | FR-105, FR-106, FR-107, SEC-006                                    |
+| Future integrations              | FR-108, FR-109, FR-110, NFR-005                                    |
 
 ## 15. Implementation decisions outside the requirements
 

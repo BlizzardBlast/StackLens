@@ -39,10 +39,12 @@ over:
 ## Initial components
 
 Generic:
+
 - `Button`
 - `Badge`
 
 Domain:
+
 - `FindingTypeBadge`
 - `SeverityBadge`
 - `ConfidenceIndicator`
@@ -54,7 +56,6 @@ Domain:
 The domain layer intentionally does not derive analyzer/scoring decisions. For example, `HealthScore` receives an explicit state rather than inventing score thresholds in the UI.
 
 **Traceability:** FR-015–FR-021, DATA-004–DATA-005, SCORE-001–SCORE-003, NFR-006–NFR-007, ADR-0006.
-
 
 ## Utility policy
 

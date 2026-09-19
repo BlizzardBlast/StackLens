@@ -6,7 +6,7 @@ export interface EvidenceCoverageProps {
   detail?: string;
 }
 
-export function EvidenceCoverage({ percent, className, detail }: EvidenceCoverageProps) {
+export function EvidenceCoverage({ percent, className, detail }: Readonly<EvidenceCoverageProps>) {
   const boundedPercent = Math.max(0, Math.min(100, percent));
 
   return (

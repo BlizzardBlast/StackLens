@@ -60,6 +60,7 @@ White text on the brighter dark-theme primary blue did not meet normal-text cont
 **Status:** Fixed
 
 The GitHub/package.json switch now uses:
+
 - `role="tablist"`;
 - `role="tab"`;
 - `aria-selected`;
@@ -76,6 +77,7 @@ The package.json flow is now actually represented in the prototype.
 **Status:** Fixed
 
 The prototype now preserves user input and displays an inline `role="alert"` validation message for:
+
 - malformed/unsupported GitHub URLs;
 - invalid package.json JSON.
 
@@ -129,31 +131,31 @@ Contrast ratios below were calculated using WCAG relative-luminance math.
 
 ### Light theme
 
-| Semantic use | Foreground | Background | Ratio |
-| --- | --- | --- | ---: |
-| Main foreground | `#13161c` | `#f9fafc` | 17.35:1 |
-| Muted text | `#646e7d` | `#f9fafc` | 4.94:1 |
-| Primary/action text | `#2e5cd1` | `#f9fafc` | 5.64:1 |
-| Critical | `#c82333` | `#f9fafc` | 5.37:1 |
-| High | `#b8420b` | `#f9fafc` | 5.26:1 |
-| Medium/warning | `#9a5a00` | `#f9fafc` | 5.24:1 |
-| Recommendation/success | `#147a4a` | `#f9fafc` | 5.14:1 |
-| Heuristic | `#6d4ed3` | `#f9fafc` | 5.46:1 |
-| Primary button foreground | white | `#2e5cd1` | 5.89:1 |
+| Semantic use              | Foreground | Background |   Ratio |
+| ------------------------- | ---------- | ---------- | ------: |
+| Main foreground           | `#13161c`  | `#f9fafc`  | 17.35:1 |
+| Muted text                | `#646e7d`  | `#f9fafc`  |  4.94:1 |
+| Primary/action text       | `#2e5cd1`  | `#f9fafc`  |  5.64:1 |
+| Critical                  | `#c82333`  | `#f9fafc`  |  5.37:1 |
+| High                      | `#b8420b`  | `#f9fafc`  |  5.26:1 |
+| Medium/warning            | `#9a5a00`  | `#f9fafc`  |  5.24:1 |
+| Recommendation/success    | `#147a4a`  | `#f9fafc`  |  5.14:1 |
+| Heuristic                 | `#6d4ed3`  | `#f9fafc`  |  5.46:1 |
+| Primary button foreground | white      | `#2e5cd1`  |  5.89:1 |
 
 ### Dark theme
 
-| Semantic use | Foreground | Background/surface | Ratio |
-| --- | --- | --- | ---: |
-| Main foreground | `#f8fafc` | `#090a0e` | 18.91:1 |
-| Muted text | `#828c9c` | `#090a0e` | 5.82:1 |
-| Primary/action text | `#5c91fa` | `#090a0e` | 6.49:1 |
-| Critical | `#ef5a63` | `#13161c` | 5.45:1 |
-| High | `#f47b3c` | `#13161c` | 6.68:1 |
-| Medium/warning | `#eda635` | `#13161c` | 8.72:1 |
-| Recommendation/success | `#38ba79` | `#13161c` | 7.30:1 |
-| Heuristic | `#8b6bea` | `#13161c` | 4.65:1 |
-| Primary button foreground | `#090a0e` | `#5c91fa` | 6.49:1 |
+| Semantic use              | Foreground | Background/surface |   Ratio |
+| ------------------------- | ---------- | ------------------ | ------: |
+| Main foreground           | `#f8fafc`  | `#090a0e`          | 18.91:1 |
+| Muted text                | `#828c9c`  | `#090a0e`          |  5.82:1 |
+| Primary/action text       | `#5c91fa`  | `#090a0e`          |  6.49:1 |
+| Critical                  | `#ef5a63`  | `#13161c`          |  5.45:1 |
+| High                      | `#f47b3c`  | `#13161c`          |  6.68:1 |
+| Medium/warning            | `#eda635`  | `#13161c`          |  8.72:1 |
+| Recommendation/success    | `#38ba79`  | `#13161c`          |  7.30:1 |
+| Heuristic                 | `#8b6bea`  | `#13161c`          |  4.65:1 |
+| Primary button foreground | `#090a0e`  | `#5c91fa`          |  6.49:1 |
 
 These checks validate intended small-text/status use against the principal surfaces. Production components must still receive automated accessibility tests because composition can change effective contrast.
 
@@ -190,6 +192,7 @@ No evidence justified changing these v0.1 decisions:
 **Design v1 is accepted as the production-implementation baseline.**
 
 This means implementation may now begin for the design infrastructure and shared UI layer, but screen implementation must still:
+
 - reference accepted requirements;
 - consume semantic design tokens;
 - use production accessible primitives rather than copying prototype interaction code;
@@ -201,6 +204,7 @@ The disposable prototype remains useful for reference but is not application sou
 ## 7. Next implementation step
 
 Translate the accepted design into:
+
 1. `packages/design-tokens`;
 2. `packages/ui`;
 3. token build/generation;

@@ -164,7 +164,6 @@ The repository includes:
 
 VS Code-compatible forks can consume the same workspace settings.
 
-
 ## Dependency and configuration policy
 
 The repository favors the smallest durable configuration that expresses a real StackLens need:
@@ -180,7 +179,6 @@ The repository favors the smallest durable configuration that expresses a real S
 Per **GOV-007**, implementation changes are incomplete until affected durable documentation and the project journey are updated.
 
 `docs/documentation-governance.md` defines the source-of-truth map. The root `AGENTS.md`, `CONTRIBUTING.md`, PR template, and CI journey check all reinforce that workflow.
-
 
 ## Runtime version ownership
 

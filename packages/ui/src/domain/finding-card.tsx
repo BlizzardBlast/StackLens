@@ -35,7 +35,7 @@ export function FindingCard({
   ruleId,
   onViewEvidence,
   className,
-}: FindingCardProps) {
+}: Readonly<FindingCardProps>) {
   return (
     <article className={cn("rounded-xl border bg-card p-5 text-card-foreground", className)}>
       <div className="flex flex-wrap items-center gap-2">

@@ -1,5 +1,6 @@
 {
   "editor.codeActionsOnSave": {
+    "source.format.oxc": "always",
     "source.fixAll.oxc": "always"
   },
   "editor.defaultFormatter": "oxc.oxc-vscode",
@@ -10,6 +11,7 @@
   "editor.rulers": [100],
   "files.eol": "\n",
   "tailwindCSS.experimental.configFile": "packages/ui/src/styles/globals.css",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "js/ts.experimental.useTsgo": true,
+  "js/ts.tsdk.path": "./node_modules/typescript"
 }

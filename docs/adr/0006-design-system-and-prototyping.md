@@ -9,6 +9,7 @@
 StackLens requires a UI that communicates technical findings, provenance, uncertainty, severity, confidence, limitations, and explainable scores.
 
 Using an off-the-shelf component aesthetic without an explicit design system risks:
+
 - inconsistent semantics;
 - inaccessible status communication;
 - generic dashboard styling;
@@ -24,6 +25,7 @@ Building every interaction primitive from scratch would also spend engineering e
 ### StackLens owns its design system
 
 StackLens will define and own:
+
 - product-design principles;
 - information architecture;
 - semantic design tokens;
@@ -48,6 +50,7 @@ Do not custom-implement dialogs, menus, popovers, selects, comboboxes, tooltips,
 ### Build StackLens domain components ourselves
 
 Domain-specific semantics are custom product components, including:
+
 - health scores;
 - finding cards;
 - evidence panels;
@@ -82,6 +85,7 @@ This lets StackLens spend custom-design effort on its actual product semantics.
 shadcn/ui cannot define StackLens's product semantics.
 
 A default component collection does not answer:
+
 - how facts differ from heuristics;
 - how evidence is exposed;
 - what insufficient evidence looks like;
@@ -102,6 +106,7 @@ The DTCG published its first stable format specification in 2025. This provides 
 Figma is **not required** for the StackLens design workflow.
 
 The repository-native artifacts are the durable and sufficient design source of truth:
+
 - requirements;
 - design principles;
 - ADRs;
@@ -116,6 +121,7 @@ A visual editor may be used later if it materially improves a specific design ta
 ## Consequences
 
 ### Positive
+
 - consistent domain semantics;
 - accessible generic primitives without reinventing them;
 - source-owned component code;
@@ -124,6 +130,7 @@ A visual editor may be used later if it materially improves a specific design ta
 - design rationale remains reviewable in Git.
 
 ### Negative
+
 - requires design-system governance even for a small MVP;
 - shadcn-generated code may need deliberate normalization;
 - token transformation tooling must be added later;

@@ -75,6 +75,7 @@ The UI package follows the current shadcn manual baseline: package `imports` ali
 The UI package receives analyzer/report semantics.
 
 For example:
+
 - `HealthScore` receives an explicit score state rather than deciding score thresholds;
 - `FindingCard` receives classification, priority, confidence, category, and rule ID;
 - N/A/unknown is represented explicitly rather than mapped to zero.
@@ -118,14 +119,13 @@ These costs are accepted because they prevent screen-level implementation from b
 
 ## References reviewed
 
-- pnpm releases: https://github.com/pnpm/pnpm/releases
-- TypeScript: https://www.typescriptlang.org/
-- Vitest 5: https://vitest.dev/blog/vitest-5
-- Base UI releases: https://base-ui.com/react/overview/releases
-- Oxlint: https://oxc.rs/docs/guide/usage/linter
-- Oxfmt: https://oxc.rs/docs/guide/usage/formatter
-- shadcn monorepo: https://ui.shadcn.com/docs/monorepo
-
+- pnpm releases: <https://github.com/pnpm/pnpm/releases>
+- TypeScript: <https://www.typescriptlang.org/>
+- Vitest 5: <https://vitest.dev/blog/vitest-5>
+- Base UI releases: <https://base-ui.com/react/overview/releases>
+- Oxlint: <https://oxc.rs/docs/guide/usage/linter>
+- Oxfmt: <https://oxc.rs/docs/guide/usage/formatter>
+- shadcn monorepo: <https://ui.shadcn.com/docs/monorepo>
 
 ### CI and supply-chain hardening
 

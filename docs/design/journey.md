@@ -46,6 +46,7 @@ The report is treated as the center of the product. The MVP journey is organized
 `Input → Validation → Analysis progress → Report → Finding/Evidence detail`
 
 The report hierarchy prioritizes:
+
 1. state and limitations;
 2. overall/category health;
 3. urgent actions;
@@ -64,6 +65,7 @@ See [wireframes.md](wireframes.md).
 ## 2026-09-18 — Step 7: Establish the design-system strategy
 
 Decision:
+
 - StackLens owns its **tokens, visual language, product components, and patterns**.
 - **shadcn/ui** is used as source-owned implementation scaffolding for generic UI primitives.
 - New shadcn components use **Base UI** where appropriate.
@@ -96,6 +98,7 @@ The CSS file beside it is a reference mapping for the prototype. During implemen
 A standalone prototype was added at `design/prototype/index.html`.
 
 It intentionally has no application framework or backend. Its purpose is to validate:
+
 - hierarchy;
 - visual density;
 - light/dark semantics;
@@ -111,6 +114,7 @@ The prototype is disposable. Production code must be implemented later against t
 ## Pending design-validation steps
 
 Before product UI implementation:
+
 - review the prototype visually on desktop and narrow viewport widths;
 - verify text and semantic-color contrast;
 - validate keyboard focus order and interaction expectations;
@@ -141,7 +145,6 @@ A Figma design-system/prototype artifact is still desirable for visual iteration
 
 When Figma is created, it should mirror these accepted artifacts rather than introduce undocumented product behavior.
 
-
 ## 2026-09-18 — Step 12: Repository-native Design v1 review
 
 Figma was removed from the required workflow. The coded prototype and repository documentation are sufficient for StackLens and avoid making design progress depend on a rate-limited external editor.
@@ -149,6 +152,7 @@ Figma was removed from the required workflow. The coded prototype and repository
 The prototype was reviewed against interaction semantics, responsive navigation, report hierarchy, status/color contrast, evidence access, input validation, and limitation visibility.
 
 The review found and corrected:
+
 - insufficient light-theme status contrast;
 - insufficient dark-theme heuristic contrast;
 - incorrect primary-button foreground in dark mode;
@@ -168,7 +172,6 @@ See [review-v1.md](review-v1.md).
 After the review corrections and structural validation, Product Design v1 was accepted as the baseline for implementation.
 
 This closes the pre-implementation design phase. The next journey phase is translating tokens and domain patterns into production `packages/design-tokens` and `packages/ui` rather than building screens directly.
-
 
 ## 2026-09-18 — Step 14: Bootstrap production design infrastructure
 
@@ -196,6 +199,7 @@ Additional semantic tokens needed by real components—such as muted surfaces, i
 The first domain components deliberately receive product meaning instead of deriving it.
 
 Examples:
+
 - `HealthScore` receives `state="good"` rather than deciding which score is "good";
 - `FindingCard` receives classification, priority, confidence, category, and rule ID;
 - insufficient evidence is represented by an explicit `score={null}` / `state="unknown"` path.
@@ -210,12 +214,12 @@ The implementation baseline therefore moved to pnpm 12.4.2, TypeScript 7.0.x, Vi
 
 The correction is recorded explicitly in ADR-0007 instead of silently drifting from ADR-0002.
 
-
 ## 2026-09-18 — Step 18: Validate the design infrastructure on the real CI runner
 
 The bootstrap was not merged after static review alone. GitHub Actions was used to exercise the actual dependency graph and strict quality gates.
 
 The validation surfaced and resolved several implementation issues in sequence:
+
 - pnpm caching could not initialize before the first lockfile existed;
 - strict indexed-access checking found unsafe string indexing in badge labels;
 - Vitest needed explicit DOM cleanup between tests;
@@ -230,6 +234,7 @@ After correcting those issues, the bootstrap run passed install, token generatio
 The temporary write-enabled CI bootstrap was removed immediately after it served its one-time purpose.
 
 Normal CI is now:
+
 - read-only;
 - lockfile-frozen;
 - pnpm-cached;
@@ -248,6 +253,7 @@ A second configuration review was performed after the initial CI-green bootstrap
 Current upstream guidance was rechecked for shadcn/ui, TypeScript, Turborepo, Oxlint/Oxfmt, and Codex.
 
 The review found several improvements worth making before product implementation:
+
 - shadcn's September 2026 `cn` migration had replaced the legacy `clsx + tailwind-merge` helper;
 - current shadcn manual setup expects shared `shadcn/tailwind.css` utilities and `tw-animate-css`;
 - the monorepo base TypeScript configuration mixed browser/bundler settings into what should be a runtime-neutral shared strictness layer;
@@ -257,7 +263,6 @@ The review found several improvements worth making before product implementation
 - the repository had no shared editor configuration or Codex project instructions.
 
 The production baseline was updated accordingly. The design intent and accepted product requirements did not change.
-
 
 ## 2026-09-19 — Step 21: Full PR and configuration hardening
 
@@ -282,7 +287,6 @@ This step intentionally prefers small, direct configuration over abstractions or
 
 Verification continues on the real GitHub Actions runner after the lockfile and canonical formatting are refreshed.
 
-
 ## 2026-09-19 — Step 22: Close the hardening bootstrap
 
 The hardened dependency graph was resolved from a clean pnpm lockfile under the active minimum-release-age supply-chain policy.
@@ -290,6 +294,7 @@ The hardened dependency graph was resolved from a clean pnpm lockfile under the 
 The rebuilt lockfile contains `oxlint-tsgolint@7.0.2001` and no longer contains the recently published `7.0.2002` entries that caused the policy rejection.
 
 The temporary write-enabled workflow completed successfully across:
+
 - journey-continuity verification;
 - clean dependency resolution;
 - generated-token build;
@@ -302,12 +307,12 @@ The temporary write-enabled workflow completed successfully across:
 
 The temporary CI write permission is removed immediately after this step. The final steady-state workflow returns to read-only repository permissions and frozen-lockfile installation.
 
-
 ## 2026-09-19 — Step 23: Remove CI runtime-version duplication
 
 The final configuration review found that GitHub Actions repeated the pnpm and Node versions already declared in `package.json`.
 
 To reduce drift:
+
 - `pnpm/action-setup` now reads the exact pnpm version from `packageManager`;
 - `actions/setup-node` now reads the Node 24.x range from `engines.node`.
 

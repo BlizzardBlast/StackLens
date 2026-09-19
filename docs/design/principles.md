@@ -7,6 +7,7 @@
 A user should be able to move from recommendation → reason → evidence → source/rule without leaving the conceptual context of the finding.
 
 Implications:
+
 - evidence access is part of every finding pattern;
 - rule/source information is secondary but discoverable;
 - recommendations do not visually masquerade as observed facts.
@@ -16,6 +17,7 @@ Implications:
 **Requirements:** PRD-003, PRD-004, FR-021, SCORE-003
 
 StackLens must represent:
+
 - confirmed fact;
 - heuristic finding;
 - recommendation;
@@ -32,6 +34,7 @@ StackLens must represent:
 Large repositories may have many findings. The design should answer "What deserves attention first?" before presenting exhaustive detail.
 
 Implications:
+
 - urgent actions appear before full tables;
 - filters default to useful prioritization;
 - counts support navigation but do not become vanity metrics.
@@ -43,6 +46,7 @@ Implications:
 Scores summarize evidence; they do not replace it.
 
 Implications:
+
 - score cards show evidence coverage;
 - every score links to a contribution breakdown;
 - missing evidence is visible;
@@ -53,6 +57,7 @@ Implications:
 StackLens is a technical inspection tool. It should feel closer to a high-quality developer tool than an executive BI dashboard.
 
 Implications:
+
 - high information density where useful;
 - strong typographic hierarchy;
 - restrained decoration;
@@ -64,6 +69,7 @@ Implications:
 Avoid alarmist visual language. A vulnerability can be critical without the entire screen becoming red.
 
 Color is reserved for meaning:
+
 - danger/critical;
 - warning;
 - success;
@@ -85,6 +91,7 @@ Surfaces, borders, focus rings, code blocks, severity states, and data visualiza
 Accessibility is not a QA phase.
 
 Design requirements include:
+
 - visible focus;
 - semantic headings;
 - keyboard-operable disclosure/navigation;
@@ -101,6 +108,7 @@ Design requirements include:
 Desktop can use persistent report navigation and dense tables. Narrow screens should reorder content rather than simply shrink it.
 
 Priority:
+
 1. analysis state;
 2. score/coverage;
 3. urgent findings;
@@ -112,6 +120,7 @@ Priority:
 Generic primitives come from shadcn/Base UI. StackLens owns the components that express product semantics.
 
 Examples:
+
 - `HealthScore`
 - `ScoreCoverage`
 - `FindingCard`

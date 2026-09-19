@@ -32,7 +32,6 @@ The command fails when the generated output currently on disk does not match the
 
 **Traceability:** NFR-006, NFR-007, ADR-0006.
 
-
 ## Generated output policy
 
 `dist/` is generated and intentionally not committed. The package `prepare` script creates it during workspace installation, and `build` regenerates it in CI/build pipelines.
