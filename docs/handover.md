@@ -5,7 +5,7 @@
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
 > **Architecture:** v0.1.6  
-> **Completed milestone:** public GitHub repository acquisition — this implementation PR  
+> **Completed milestone:** public GitHub repository acquisition — PR #18  
 > **Immediate milestone:** Milestone H — static source usage analysis  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
@@ -389,7 +389,7 @@ Primary traceability:
 ## 11. Completed milestone: public GitHub repository acquisition
 
 The bounded public GitHub REST acquisition adapter is implemented in
-`packages/data-sources` by this implementation PR.
+`packages/data-sources` by PR #18.
 
 Accepted implementation:
 
