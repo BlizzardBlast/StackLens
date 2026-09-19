@@ -2,7 +2,7 @@
 
 > **Status:** Accepted implementation baseline
 > **Date:** 2026-09-19
-> **Requirements:** FR-006, FR-007, FR-010, DATA-001, DATA-002, NFR-003, NFR-004, SEC-002, SEC-008, GOV-007
+> **Requirements:** FR-006, FR-007, FR-010, FR-011, DATA-001, DATA-002, NFR-003, NFR-004, SEC-002, SEC-008, GOV-007
 > **Decision:** ADR-0003
 
 ## Purpose
@@ -162,3 +162,141 @@ Synthetic tests cover:
   access.
 
 No live provider request is required for the PR quality gate.
+
+
+## OSV.dev vulnerability data
+
+The second provider adapter implements the OSV boundary accepted by ADR-0003.
+
+Current official API behavior reviewed for this implementation:
+
+- `POST https://api.osv.dev/v1/querybatch` accepts multiple package/version queries and guarantees
+  response ordering that matches the input;
+- batch results contain vulnerability IDs/modified timestamps and can paginate per query;
+- `GET https://api.osv.dev/v1/vulns/{id}` returns full advisory records;
+- current OSV schema records can include top-level/per-package severity, severity source,
+  publication/withdrawal timestamps, aliases/related/upstream IDs, affected packages, and references.
+
+References:
+
+- https://google.github.io/osv.dev/post-v1-querybatch/
+- https://google.github.io/osv.dev/get-v1-vulns/
+- https://ossf.github.io/osv-schema/
+
+### Exact npm version boundary
+
+OSV matching is version-sensitive. The adapter therefore accepts only exact npm semantic versions.
+
+Accepted examples include:
+
+- `1.2.3`;
+- `1.2.3-beta.1`;
+- `1.2.3-beta.1+build.5`.
+
+Rejected before network access include ranges/tags such as:
+
+- `^1.2.3`;
+- `~1.2.3`;
+- `>=1.2.3`;
+- `1.2`;
+- `latest`;
+- `v1.2.3`.
+
+This preserves ADR-0003's rule that a manifest range is not silently reinterpreted as an installed
+version.
+
+### Query normalization and pagination
+
+Equivalent package/version queries are deduplicated and sorted before acquisition.
+
+Each normalized result records:
+
+- package name;
+- exact queried version;
+- matched advisory IDs plus OSV's match `modified` timestamp;
+- `complete: true|false`.
+
+OSV pagination is followed per query. Repeated page tokens or the configured pagination-round safety
+bound mark only the affected query incomplete and convert the source to `partial`.
+
+Known matches already returned by OSV are retained.
+
+### Advisory details
+
+Unique matched advisory IDs are resolved through OSV's fixed detail endpoint.
+
+Normalized advisory metadata includes:
+
+- advisory ID and schema version when supplied;
+- summary;
+- modified/published/withdrawn timestamps;
+- aliases, related IDs, and upstream IDs;
+- top-level severity records;
+- affected package identity, explicit affected versions, and per-package severity records;
+- validated HTTP(S) references.
+
+Severity is preserved exactly as source metadata. This adapter does not derive a qualitative severity
+label or scoring effect.
+
+### Provenance and safe evidence links
+
+The OSV source uses the fixed query-batch endpoint as its source reference.
+
+Every matched advisory gets `ExternalEvidence` whose URL is generated from:
+
+```text
+https://osv.dev/vulnerability/<validated-advisory-id>
+```
+
+Provider-returned reference URLs are validated as absolute HTTP(S) URLs and remain normalized
+advisory metadata. They are not substituted for the known OSV evidence URL.
+
+### Partial failure semantics
+
+Initial query acquisition failure makes the OSV source unavailable.
+
+After at least one valid batch page has been acquired, later failures preserve known data and produce
+a partial source instead. Examples include:
+
+- pagination request failure;
+- repeated/exhausted pagination token;
+- advisory-detail HTTP/network failure;
+- malformed advisory-detail payload.
+
+A failed advisory-detail lookup does **not** erase the authoritative exact-version batch match. The
+match remains available with the known OSV evidence URL, while the unavailable detail is disclosed
+through a source-scoped partial failure.
+
+A complete empty match list means only "no matching known vulnerability was returned by OSV for this
+exact package/version query." It must not be converted into a "secure" fact (**FR-011**, **PRD-004**,
+**SCORE-003**).
+
+### Resource limits
+
+OSV defaults in this slice:
+
+- maximum query entries: 100;
+- request timeout: 8 seconds;
+- maximum response body: 16 MiB;
+- maximum pagination rounds: 20.
+
+All are adapter options so deployment boundaries can be tightened without changing rule semantics.
+
+### OSV verification
+
+Synthetic tests cover:
+
+- deterministic query sorting/deduplication;
+- exact npm-version acceptance/rejection;
+- batch ordering and contract-valid provenance;
+- advisory/severity/reference normalization;
+- publication/withdrawal metadata;
+- pagination accumulation;
+- incomplete/repeated pagination handling;
+- authoritative match retention when detail retrieval fails;
+- unsafe advisory-reference rejection without unsafe evidence links;
+- initial provider failure and malformed batch response behavior;
+- query-count and response-size safety bounds;
+- explicit empty-match semantics.
+
+No live OSV request is required for the PR quality gate.
