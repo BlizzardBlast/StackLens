@@ -182,9 +182,10 @@ export function parseBlobPayload(value: unknown, expectedSha: string): BlobPaylo
   };
 }
 
-export function decodeBlobText(
-  payload: BlobPayload,
-): { readonly text: string; readonly byteLength: number } {
+export function decodeBlobText(payload: BlobPayload): {
+  readonly text: string;
+  readonly byteLength: number;
+} {
   let binary: string;
 
   try {
