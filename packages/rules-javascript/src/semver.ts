@@ -12,7 +12,7 @@ const SEMVER_PATTERN =
   /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 
 function parseNumericIdentifier(value: string): number | undefined {
-  if (!/^0|[1-9]\d*$/.test(value)) {
+  if (!/^(?:0|[1-9]\d*)$/.test(value)) {
     return undefined;
   }
 
