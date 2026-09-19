@@ -6,14 +6,11 @@
     "suspicious": "warn"
   },
   "options": {
+    "denyWarnings": true,
+    "reportUnusedDisableDirectives": "error",
     "typeAware": true
   },
   "plugins": ["eslint", "import", "jsx-a11y", "react", "typescript", "unicorn", "vitest"],
-  "settings": {
-    "react": {
-      "version": "19.3.0"
-    }
-  },
   "rules": {
     "eslint/eqeqeq": "error",
     "eslint/no-console": "warn",
@@ -23,5 +20,5 @@
     "typescript/no-floating-promises": "error",
     "typescript/no-misused-promises": "error"
   },
-  "ignorePatterns": [".turbo/**", "**/dist/**", "**/coverage/**", "design/prototype/**"]
+  "ignorePatterns": ["**/dist/**", "**/coverage/**", "design/prototype/**"]
 }
