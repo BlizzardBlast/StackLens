@@ -59,6 +59,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@babel/parser": "7.29.8",
     "@stacklens/analyzer-core": "workspace:*",
     "@stacklens/contracts": "workspace:*"
   },
