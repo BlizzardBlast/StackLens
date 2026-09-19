@@ -480,7 +480,7 @@ export const sourceUsageFactRule: FactRule<JavaScriptProjectSnapshot, unknown> =
           version: RULE_VERSION,
         },
         requirementIds: ["FR-009"],
-        evidenceIds: uniqueSorted(references.map(sourceUsageReferenceEvidenceId)),
+        evidenceIds: [...uniqueSorted(references.map(sourceUsageReferenceEvidenceId))],
       }));
 
     const limitation = coverageLimitation(snapshot);
