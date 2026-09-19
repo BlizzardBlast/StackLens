@@ -123,9 +123,7 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
           }),
         ),
       )
-      .mockResolvedValueOnce(
-        jsonResponse(createVulnerability("GHSA-zzzz-yyyy-xxxx", "react")),
-      );
+      .mockResolvedValueOnce(jsonResponse(createVulnerability("GHSA-zzzz-yyyy-xxxx", "react")));
     const adapter = createAdapter(fetchImpl);
 
     const result = await adapter.fetch({
