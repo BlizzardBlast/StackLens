@@ -512,7 +512,7 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
   it("enforces aggregate-content and request-count bounds without losing the manifest", async () => {
     const packageJson = "{}";
     const firstConfig = "{}";
-    const secondConfig = "{\"a\":1}";
+    const secondConfig = '{"a":1}';
     const tree = treePayload([
       treeEntry("package.json", manifestSha, packageJson.length),
       treeEntry("tsconfig.json", tsconfigSha, firstConfig.length),
@@ -635,8 +635,7 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
   it("skips binary and Git LFS selected content without dereferencing it", async () => {
     const packageJson = "{}";
     const binaryContent = encodeBase64Bytes(new Uint8Array([0xff, 0xfe, 0xfd]));
-    const lfsText =
-      "version https://git-lfs.github.com/spec/v1\noid sha256:abc\nsize 123\n";
+    const lfsText = "version https://git-lfs.github.com/spec/v1\noid sha256:abc\nsize 123\n";
     const tree = treePayload([
       treeEntry("package.json", manifestSha, packageJson.length),
       treeEntry("tsconfig.json", tsconfigSha, 3),
