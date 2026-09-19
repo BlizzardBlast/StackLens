@@ -137,6 +137,10 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
 - Provider-backed JS rules consume normalized analyzer metadata; do not add a `rules-javascript -> data-sources` dependency.
 - Bind provider-backed analyzer metadata to the exact report-level `DataSource.id` that produced it,
   and require external evidence used by a rule to reference that same source.
+- The FR-006/FR-007 npm rules may use version-specific provider metadata only when the project has an exact supported Semantic Version declaration and the matching registry version record. Declared ranges/tags/URLs/workspace specifiers remain insufficient evidence until a resolved-version source exists.
+- FR-006 compares supported exact declarations with npm's normalized `latest` dist-tag and must identify major/minor/patch/prerelease difference without implying that the upgrade is automatically recommended.
+- Explicit npm deprecation is factual. Do not create an "unmaintained" heuristic without an accepted deterministic basis, explicit confidence, and insufficient-evidence behavior.
+- FR-010 health facts must remain neutral source-backed signals unless a separate accepted rule defines a combined interpretation.
 - The FR-011 rule may correlate only exact package/version OSV query evidence with dependency inventory facts. Declared ranges/tags remain insufficient evidence until a resolved-version source exists.
 - Withdrawn advisories are not active findings, incomplete OSV queries remain limited evidence, and complete empty queries never become a "secure" fact.
 - Reuse `@stacklens/contracts` structured fact details rather than encoding required machine-readable
