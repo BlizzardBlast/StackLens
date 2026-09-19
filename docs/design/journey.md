@@ -935,3 +935,45 @@ No live GitHub dependency is part of PR correctness.
 
 **Traceability:** FR-003, FR-004, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-006, NFR-001,
 NFR-003, NFR-004, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008, GOV-002, GOV-006, GOV-007.
+
+
+## 2026-09-19 — Step 41: Add bounded static source usage analysis
+
+PR #19 implements Milestone H for **FR-009**.
+
+Public GitHub acquisition now includes bounded supported JS/TS/JSX/TSX files from the already-resolved
+immutable commit. The adapter exposes explicit source coverage so later rules can distinguish a
+complete supported scan from tree/file/byte/request/source failures. Existing no-execution,
+generated/vendor, symlink/submodule, binary/LFS, content-retention, and provider-provenance boundaries
+remain intact.
+
+The JavaScript rules package adds a parser adapter rather than coupling finding rules to a concrete
+AST. ADR-0010 records a necessary implementation adjustment: the original typescript-estree choice
+is currently incompatible with StackLens's accepted TypeScript 7 baseline, so the first syntax-only
+adapter uses the already-resolved `@babel/parser` release. Parser-specific AST shapes remain inside
+the adapter.
+
+Supported source references are ESM imports/re-exports, static-string CommonJS `require()`, and
+static-string dynamic `import()`. Bare subpaths normalize to package identity. Relative, built-in,
+URL/protocol, and package-import-map specifiers are excluded from external dependency usage.
+
+The normalized source-usage snapshot also recognizes a narrow catalog of configuration filename
+conventions, exact Prettier plugin strings, and supported package-script executable conventions.
+No project script or configuration is executed.
+
+`JS-USAGE-009@1` emits positive static-usage facts. Parse failures, unsupported dynamic references,
+or incomplete/unavailable acquisition produce insufficient-evidence coverage rather than negative
+usage claims.
+
+`JS-UNNECESSARY-009@1` emits a potentially-unnecessary dependency finding only when supported
+source coverage is complete and no supported source/config/script usage exists. Findings are
+heuristic, peer-only declarations are excluded, development/peer-involved declarations receive lower
+confidence, and descriptions explicitly state that removal safety is not established.
+
+Focused synthetic tests cover supported syntax forms, package/subpath normalization, dynamic/parse
+uncertainty, configuration/script conventions, positive facts, complete-coverage heuristics, peer
+exclusion, partial-coverage suppression, and GitHub source-coverage acquisition. No live GitHub
+dependency or analyzed-project execution is used.
+
+**Traceability:** FR-003, FR-009, FR-017, FR-021, DATA-003, DATA-004, DATA-005, DATA-006, NFR-001,
+NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.
