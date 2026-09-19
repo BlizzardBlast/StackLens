@@ -143,7 +143,7 @@ function blobPayload(sha: string, text: string) {
 function successfulBaseFetch(
   tree: Record<string, unknown>,
   blobs: readonly Record<string, unknown>[],
-): ReturnType<typeof vi.fn<typeof fetch>> {
+) {
   const fetchImpl = vi
     .fn<typeof fetch>()
     .mockResolvedValueOnce(jsonResponse(repositoryPayload()))
