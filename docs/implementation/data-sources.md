@@ -300,7 +300,7 @@ Synthetic tests cover:
 - incomplete/repeated pagination handling;
 - authoritative match retention when detail retrieval fails;
 - unsafe advisory-reference rejection without unsafe evidence links;
-- initial provider failure and malformed batch response behavior;
+- initial HTTP, invalid-JSON, transport, timeout, and malformed batch-response behavior;
 - query-count, response-size, and advisory-detail request safety bounds;
 - explicit empty-match semantics.
 
