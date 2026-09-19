@@ -6,8 +6,9 @@ import type {
   UnavailableDataSource,
 } from "@stacklens/contracts";
 
+import { ProviderResponseTooLargeError, readBoundedResponseText } from "../http.js";
+import { isValidNpmPackageName, NPM_PACKAGE_NAME_MAX_LENGTH } from "../npm-package.js";
 import type { EvidenceProvider, ProviderFailure, ProviderResult } from "../provider.js";
-import { readBoundedResponseText, NpmRegistryResponseTooLargeError } from "./http.js";
 import {
   npmRegistryEvidenceId,
   npmRegistryFailureId,
@@ -27,32 +28,9 @@ import type {
 } from "./types.js";
 
 const NPM_REGISTRY_ACCEPT = "application/json";
-const NPM_PACKAGE_NAME_MAX_LENGTH = 214;
 const CONTRACT_REFERENCE_MAX_LENGTH = 1_000;
 
 class NpmRegistryConfigurationError extends Error {}
-
-function containsControlCharacter(value: string): boolean {
-  for (const character of value) {
-    const code = character.charCodeAt(0);
-
-    if (code <= 0x1f || code === 0x7f) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function validatePackageName(value: unknown): value is string {
-  return (
-    typeof value === "string" &&
-    value.length > 0 &&
-    value.length <= NPM_PACKAGE_NAME_MAX_LENGTH &&
-    value.trim() === value &&
-    !containsControlCharacter(value)
-  );
-}
 
 function validatePositiveInteger(value: number, label: string): number {
   if (!Number.isSafeInteger(value) || value <= 0) {
@@ -140,14 +118,14 @@ export class NpmRegistryAdapter implements EvidenceProvider<
   async fetch(request: NpmPackageMetadataRequest): Promise<ProviderResult<NpmPackageMetadata>> {
     const packageName = request.packageName;
 
-    if (!validatePackageName(packageName)) {
+    if (!isValidNpmPackageName(packageName)) {
       const attemptedAt = validateObservedAt(this.#now());
 
       return createSourceFailure(
         typeof packageName === "string" ? packageName : "invalid-package-name",
         attemptedAt,
         "npm_invalid_package_name",
-        "npm Registry package names must be non-empty, unpadded strings no longer than 214 characters and without control characters.",
+        `npm Registry package names must be non-empty, unpadded strings no longer than ${NPM_PACKAGE_NAME_MAX_LENGTH} characters and without control characters.`,
         false,
       );
     }
@@ -260,7 +238,7 @@ export class NpmRegistryAdapter implements EvidenceProvider<
 
       const attemptedAt = validateObservedAt(this.#now());
 
-      if (error instanceof NpmRegistryResponseTooLargeError) {
+      if (error instanceof ProviderResponseTooLargeError) {
         return createSourceFailure(
           packageName,
           attemptedAt,

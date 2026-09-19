@@ -12,6 +12,10 @@
       "types": "./dist/npm-registry.d.ts",
       "default": "./dist/npm-registry.js"
     },
+    "./osv": {
+      "types": "./dist/osv.d.ts",
+      "default": "./dist/osv.js"
+    },
     "./provider": {
       "types": "./dist/provider.d.ts",
       "default": "./dist/provider.js"

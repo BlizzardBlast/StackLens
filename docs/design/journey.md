@@ -639,3 +639,60 @@ current `main`.
 
 **Traceability:** FR-006, FR-007, FR-010, DATA-001, DATA-002, NFR-003, NFR-004, SEC-002, SEC-008,
 GOV-002, GOV-006, GOV-007.
+
+
+## 2026-09-19 — Step 36: Establish the OSV vulnerability-data provider boundary
+
+PR #14 adds the second `@stacklens/data-sources` provider and implements the accepted **FR-011** OSV acquisition
+boundary without introducing vulnerability finding rules or provider I/O inside analyzer execution.
+
+The implementation follows the current OSV API split:
+
+- `POST /v1/querybatch` establishes exact package/version → advisory matches and preserves OSV's
+  per-match modified timestamp;
+- `GET /v1/vulns/{id}` resolves full advisory metadata for each unique matched ID.
+
+The adapter deliberately accepts only exact npm semantic versions. Manifest ranges/tags/short
+versions such as `^1.2.3`, `latest`, and `1.2` are rejected before network access so they cannot
+be silently reinterpreted as installed versions.
+
+Provider normalization preserves:
+
+- deterministic package/version query identity;
+- pagination completeness per query;
+- advisory IDs and query match timestamps;
+- advisory modified/published/withdrawn timestamps;
+- aliases, related IDs, and upstream IDs;
+- source-supplied top-level/per-package severity;
+- affected package/version metadata;
+- validated HTTP(S) advisory references;
+- contract-valid OSV source/evidence provenance with retrieval time.
+
+OSV evidence links are generated only from the known `https://osv.dev/vulnerability/` origin.
+Provider-returned advisory reference URLs remain normalized metadata and must pass HTTP(S)
+validation.
+
+Partial failure semantics are conservative:
+
+- failure of the initial query makes the OSV source unavailable;
+- pagination/detail failures after valid match data was acquired preserve known matches and mark the
+  source partial;
+- repeated/exhausted pagination marks the affected query incomplete;
+- full advisory-detail requests are separately bounded; hitting that bound marks the source partial
+  while retaining every authoritative batch match/evidence link;
+- a detail failure never erases the authoritative exact-version batch match;
+- an empty complete match list is not translated into a "secure" conclusion.
+
+The npm and OSV adapters now reuse a shared bounded-response reader and npm package-name validation
+helper.
+
+Synthetic tests cover deterministic query normalization, exact-version boundaries, batch provenance,
+advisory/severity/reference parsing, withdrawal metadata, pagination, partial detail failures, unsafe
+reference rejection, HTTP/invalid-JSON/transport/timeout provider failures, response/query/detail
+safety limits, and explicit empty-match semantics. No live OSV request is needed for PR correctness.
+
+The accepted requirements and architecture/ADR do not change; this step implements ADR-0003's
+existing OSV decision.
+
+**Traceability:** FR-011, DATA-001, DATA-002, NFR-003, NFR-004, SEC-002, SEC-008, GOV-002, GOV-006,
+GOV-007.
