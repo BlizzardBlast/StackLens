@@ -704,9 +704,10 @@ PR #15 adds the first provider-backed finding rule. The JavaScript/TypeScript ru
 the first **FR-011** known-vulnerability finding slice without introducing provider I/O into analyzer
 execution.
 
-A new `JavaScriptAnalysisMetadata` interface defines only the OSV fields the rule needs. The shape is
-structurally compatible with the normalized OSV adapter snapshot while preserving the accepted
-package direction:
+A new `JavaScriptAnalysisMetadata` interface defines only the OSV fields the rule needs. Its
+`JavaScriptOsvMetadata` wrapper binds one exact report-level OSV `sourceId` to a minimal snapshot;
+the inner snapshot is structurally compatible with the normalized OSV adapter data while preserving
+the accepted package direction:
 
 ```text
 rules-javascript -> analyzer-core + contracts
@@ -722,7 +723,9 @@ No `rules-javascript -> data-sources` dependency was added.
   than silently treating them as installed versions;
 - groups duplicate declarations of the same package/version into one finding basis;
 - emits one deterministic factual security finding per package/version/advisory;
-- references all matching project declaration evidence plus OSV external evidence;
+- references all matching project declaration evidence plus OSV external evidence from the exact
+  report source bound to the snapshot;
+- rejects cross-source advisory evidence even when another OSV source is otherwise usable;
 - identifies stable rule/requirement provenance;
 - surfaces only source-provided severity metadata, explicitly attributing it to the provider-supplied
   source or OSV;
@@ -743,10 +746,15 @@ contains the required package subject, advisory evidence reference, source retri
 association, limitation references, and stable rule identity, so no shared contract/schema version
 change or ADR amendment is required.
 
+A later exact-head review tightened provenance further: normalized OSV metadata is now explicitly
+bound to its report-level `DataSource.id`, and advisory evidence must reference that exact source.
+This prevents a caller with multiple valid OSV sources from accidentally satisfying one snapshot
+with another source's evidence.
+
 Focused tests cover active findings, duplicate declarations, severity attribution, detail-unavailable
 matches, withdrawn advisories, incomplete query coverage, complete empty results, range declarations,
-unavailable/missing OSV data, missing external advisory evidence, unrelated query results,
-deterministic ordering, and analyzer-core integration.
+unavailable/missing OSV data, missing or cross-source external advisory evidence, source-binding
+mismatches, unrelated query results, deterministic ordering, and analyzer-core integration.
 
 **Traceability:** FR-011, DATA-001, DATA-002, DATA-003, DATA-005, NFR-001, NFR-002, NFR-003,
 NFR-004, SEC-002, GOV-002, GOV-006, GOV-007.
