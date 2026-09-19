@@ -43,7 +43,9 @@ function sortedRules<T extends RuleDefinition>(rules: readonly T[]): readonly T[
   return [...rules].sort((left, right) => left.id.localeCompare(right.id));
 }
 
-function assertRuleSet(ruleSet: AnalysisRuleSet<unknown, unknown>) {
+function assertRuleSet<TProjectSnapshot, TMetadataSnapshot>(
+  ruleSet: AnalysisRuleSet<TProjectSnapshot, TMetadataSnapshot>
+) {
   if (ruleSet.version.trim().length === 0) {
     throw new AnalyzerConfigurationError("Rule-set version must not be empty");
   }
@@ -127,7 +129,7 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
   ruleSet: AnalysisRuleSet<TProjectSnapshot, TMetadataSnapshot>,
   occurredAt: string
 ): RulePipelineResult {
-  assertRuleSet(ruleSet as AnalysisRuleSet<unknown, unknown>);
+  assertRuleSet(ruleSet);
 
   const limitations: AnalysisLimitation[] = [...context.limitations];
   const partialFailures: PartialFailure[] = [...context.partialFailures];
