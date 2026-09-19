@@ -12,11 +12,7 @@ export type {
   PackageDependencyGroup,
 } from "./manifest.js";
 
-
-export {
-  knownVulnerabilityFindingId,
-  knownVulnerabilityRule,
-} from "./known-vulnerability.js";
+export { knownVulnerabilityFindingId, knownVulnerabilityRule } from "./known-vulnerability.js";
 
 export type {
   JavaScriptAnalysisMetadata,
