@@ -31,12 +31,7 @@ function baseName(path: string): string {
 }
 
 export function isCanonicalRepositoryPath(path: string): boolean {
-  if (
-    path.length === 0 ||
-    path.length > 1_000 ||
-    path.startsWith("/") ||
-    path.includes("\\")
-  ) {
+  if (path.length === 0 || path.length > 1_000 || path.startsWith("/") || path.includes("\\")) {
     return false;
   }
 
@@ -54,9 +49,7 @@ export function isCanonicalRepositoryPath(path: string): boolean {
 
 export function isIgnoredRepositoryPath(path: string): boolean {
   const segments = path.split("/");
-  return segments
-    .slice(0, -1)
-    .some((segment) => IGNORED_DIRECTORY_NAMES.has(segment));
+  return segments.slice(0, -1).some((segment) => IGNORED_DIRECTORY_NAMES.has(segment));
 }
 
 export function isInitialSupportedSnapshotPath(path: string): boolean {
