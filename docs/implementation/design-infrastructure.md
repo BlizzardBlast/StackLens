@@ -180,3 +180,13 @@ The repository favors the smallest durable configuration that expresses a real S
 Per **GOV-007**, implementation changes are incomplete until affected durable documentation and the project journey are updated.
 
 `docs/documentation-governance.md` defines the source-of-truth map. The root `AGENTS.md`, `CONTRIBUTING.md`, PR template, and CI journey check all reinforce that workflow.
+
+
+## Runtime version ownership
+
+`package.json` is the single source for local and CI runtime selection:
+
+- `packageManager` declares the pnpm version consumed by `pnpm/action-setup`;
+- `engines.node` declares the supported Node 24.x line consumed by `actions/setup-node`.
+
+The workflow intentionally does not duplicate those version values, reducing configuration drift.
