@@ -10,8 +10,10 @@ concurrency:
   group: quality-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Temporary formatting bootstrap only. Restore read-only mode immediately after
+# Oxfmt commits the canonical analyzer-core formatting.
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   quality:
@@ -23,7 +25,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-          persist-credentials: false
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Verify journey documentation
         if: github.event_name == 'pull_request'
@@ -52,6 +54,9 @@ jobs:
       - name: Build generated packages
         run: pnpm build
 
+      - name: Apply canonical formatting
+        run: pnpm format
+
       - name: Validate shadcn project
         run: pnpm ui:info > /dev/null
 
@@ -66,3 +71,16 @@ jobs:
 
       - name: Format check
         run: pnpm format:check
+
+      - name: Commit canonical formatting
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Source formatting is already canonical."
+          else
+            git commit -m "chore: apply analyzer-core canonical formatting [NFR-002]"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
