@@ -600,8 +600,8 @@ continuity update.
 
 ## 2026-09-19 — Step 35: Establish the first external package-metadata provider boundary
 
-The first `@stacklens/data-sources` package implements the accepted npm Registry adapter boundary
-without moving provider I/O into analyzer rules.
+PR #13 introduces the first `@stacklens/data-sources` package and implements the accepted npm
+Registry adapter boundary without moving provider I/O into analyzer rules.
 
 The adapter:
 
