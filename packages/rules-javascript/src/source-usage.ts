@@ -120,6 +120,7 @@ function configurationConvention(
 
 function prettierPluginReferences(
   file: JavaScriptStaticProjectFile,
+  issues: JavaScriptSourceUsageIssue[],
 ): JavaScriptDependencyReference[] {
   const name = baseName(file.path);
 
@@ -132,16 +133,35 @@ function prettierPluginReferences(
   try {
     parsed = JSON.parse(file.content);
   } catch {
+    issues.push({
+      path: file.path,
+      kind: "parse_failure",
+      message: "Prettier plugin references could not be inspected because the configuration is not supported strict JSON.",
+    });
     return [];
   }
 
   if (!isRecord(parsed)) {
+    issues.push({
+      path: file.path,
+      kind: "parse_failure",
+      message: "Prettier plugin references could not be inspected because the configuration root is not an object.",
+    });
     return [];
   }
 
   const plugins = parsed.plugins;
 
-  if (!Array.isArray(plugins)) {
+  if (plugins === undefined) {
+    return [];
+  }
+
+  if (!Array.isArray(plugins) || plugins.some((plugin) => typeof plugin !== "string")) {
+    issues.push({
+      path: file.path,
+      kind: "parse_failure",
+      message: "Prettier plugin references use an unsupported non-string plugin shape.",
+    });
     return [];
   }
 
@@ -162,6 +182,125 @@ function prettierPluginReferences(
         kind: "configuration_plugin" as const,
         path: file.path,
         detail: "Prettier configuration statically references plugin " + plugin + ".",
+      },
+    ];
+  });
+}
+
+function eslintPluginPackageName(pluginName: string): string | undefined {
+  if (pluginName.length === 0 || pluginName.includes("/../")) {
+    return undefined;
+  }
+
+  if (!pluginName.startsWith("@")) {
+    return pluginName.startsWith("eslint-plugin-") ? pluginName : "eslint-plugin-" + pluginName;
+  }
+
+  const segments = pluginName.split("/");
+
+  if (segments.length === 1) {
+    return pluginName + "/eslint-plugin";
+  }
+
+  if (segments.length !== 2 || segments[0]!.length <= 1 || segments[1]!.length === 0) {
+    return undefined;
+  }
+
+  return segments[1]!.startsWith("eslint-plugin-")
+    ? pluginName
+    : segments[0] + "/eslint-plugin-" + segments[1];
+}
+
+function eslintPluginReferences(
+  file: JavaScriptStaticProjectFile,
+  issues: JavaScriptSourceUsageIssue[],
+): JavaScriptDependencyReference[] {
+  if (baseName(file.path) !== ".eslintrc.json") {
+    return [];
+  }
+
+  let parsed: unknown;
+
+  try {
+    parsed = JSON.parse(file.content);
+  } catch {
+    issues.push({
+      path: file.path,
+      kind: "parse_failure",
+      message: "ESLint plugin references could not be inspected because the configuration is not valid strict JSON.",
+    });
+    return [];
+  }
+
+  if (!isRecord(parsed)) {
+    issues.push({
+      path: file.path,
+      kind: "parse_failure",
+      message: "ESLint plugin references could not be inspected because the configuration root is not an object.",
+    });
+    return [];
+  }
+
+  const pluginNames: string[] = [];
+  const plugins = parsed.plugins;
+
+  if (plugins !== undefined) {
+    if (!Array.isArray(plugins) || plugins.some((plugin) => typeof plugin !== "string")) {
+      issues.push({
+        path: file.path,
+        kind: "parse_failure",
+        message: "ESLint plugin references use an unsupported plugins shape.",
+      });
+      return [];
+    }
+
+    pluginNames.push(...plugins.filter((plugin): plugin is string => typeof plugin === "string"));
+  }
+
+  const extensions =
+    typeof parsed.extends === "string"
+      ? [parsed.extends]
+      : Array.isArray(parsed.extends) &&
+          parsed.extends.every((entry) => typeof entry === "string")
+        ? parsed.extends
+        : parsed.extends === undefined
+          ? []
+          : undefined;
+
+  if (extensions === undefined) {
+    issues.push({
+      path: file.path,
+      kind: "parse_failure",
+      message: "ESLint plugin references use an unsupported extends shape.",
+    });
+    return [];
+  }
+
+  for (const extension of extensions) {
+    if (!extension.startsWith("plugin:")) {
+      continue;
+    }
+
+    const pluginName = extension.slice("plugin:".length).split("/")[0];
+
+    if (pluginName !== undefined && pluginName.length > 0) {
+      pluginNames.push(pluginName);
+    }
+  }
+
+  return [...new Set(pluginNames)].flatMap((pluginName) => {
+    const packageName = eslintPluginPackageName(pluginName);
+
+    if (packageName === undefined) {
+      return [];
+    }
+
+    return [
+      {
+        packageName,
+        kind: "configuration_plugin" as const,
+        path: file.path,
+        detail: "ESLint configuration statically references plugin " + pluginName + ".",
       },
     ];
   });
@@ -242,7 +381,11 @@ export function createJavaScriptSourceUsageSnapshot(
   let parsedSourceFiles = 0;
 
   for (const file of files) {
-    references.push(...configurationConvention(file), ...prettierPluginReferences(file));
+    references.push(
+      ...configurationConvention(file),
+      ...prettierPluginReferences(file, issues),
+      ...eslintPluginReferences(file, issues),
+    );
 
     if (!isSupportedJavaScriptSourcePath(file.path)) {
       continue;
@@ -283,6 +426,14 @@ export function createJavaScriptSourceUsageSnapshot(
         ...(issue.line === undefined ? {} : { line: issue.line }),
       })),
     );
+  }
+
+  if (parsedSourceFiles === 0) {
+    issues.push({
+      kind: "acquisition",
+      message:
+        "No supported JavaScript/TypeScript source files were available, so source-level dependency non-use cannot be inferred.",
+    });
   }
 
   const declaredPackages = new Set(project.dependencies.map((dependency) => dependency.name));
