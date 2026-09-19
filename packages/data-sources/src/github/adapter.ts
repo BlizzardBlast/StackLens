@@ -246,12 +246,10 @@ function parseRepositoryPayload(value: unknown, expected: ParsedGitHubRepository
 
   const owner = value.owner;
 
-  if (
-    !isRecord(owner) ||
-    typeof owner.login !== "string" ||
-    typeof value.default_branch !== "string" ||
-    value.default_branch.length === 0
-  ) {
+  const defaultBranch =
+    typeof value.default_branch === "string" ? validateRef(value.default_branch) : undefined;
+
+  if (!isRecord(owner) || typeof owner.login !== "string" || defaultBranch === undefined) {
     throw new TypeError("invalid repository payload");
   }
 
@@ -270,7 +268,7 @@ function parseRepositoryPayload(value: unknown, expected: ParsedGitHubRepository
   return {
     owner: owner.login,
     name: value.name,
-    defaultBranch: value.default_branch,
+    defaultBranch,
   };
 }
 
@@ -293,6 +291,18 @@ function parseCommitPayload(value: unknown): CommitPayload {
   };
 }
 
+function isValidTreeEntryMode(type: TreeEntry["type"], mode: string): boolean {
+  if (type === "blob") {
+    return mode === "100644" || mode === "100755" || mode === "120000";
+  }
+
+  if (type === "tree") {
+    return mode === "040000";
+  }
+
+  return mode === "160000";
+}
+
 function parseTreePayload(value: unknown): TreePayload {
   if (!isRecord(value) || !Array.isArray(value.tree) || typeof value.truncated !== "boolean") {
     throw new TypeError("invalid tree payload");
@@ -309,6 +319,7 @@ function parseTreePayload(value: unknown): TreePayload {
       !["blob", "tree", "commit"].includes(item.type) ||
       typeof item.sha !== "string" ||
       !SHA_PATTERN.test(item.sha) ||
+      !isValidTreeEntryMode(item.type as TreeEntry["type"], item.mode) ||
       (item.size !== undefined &&
         (!Number.isSafeInteger(item.size) || (item.size as number) < 0))
     ) {
@@ -893,7 +904,12 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
             continue;
           }
 
-          throw error;
+          throw new GitHubRequestError(
+            "github_invalid_blob_response",
+            `GitHub returned an unsupported blob payload for ${JSON.stringify(entry.path)}.`,
+            false,
+            endpoint,
+          );
         }
 
         if (totalBytes + decoded.byteLength > this.#maxTotalFileBytes) {
