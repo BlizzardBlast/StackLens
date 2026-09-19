@@ -430,7 +430,9 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
     const orderedCandidates = candidates.toSorted(candidateOrder);
     const retainedCandidates = orderedCandidates.slice(0, this.#maxFiles);
-    const sourceCandidateCount = candidates.filter((candidate) => candidate.kind === "source").length;
+    const sourceCandidateCount = candidates.filter(
+      (candidate) => candidate.kind === "source",
+    ).length;
     const retainedSourceCount = retainedCandidates.filter(
       (candidate) => candidate.kind === "source",
     ).length;
