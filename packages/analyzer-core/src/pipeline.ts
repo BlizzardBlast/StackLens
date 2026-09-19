@@ -12,7 +12,7 @@ import type {
   FindingRuleContext,
   RecommendationRuleContext
 } from "./context.js";
-import { AnalyzerConfigurationError } from "./errors.js";
+import { AnalyzerConfigurationError, AnalyzerInvariantError } from "./errors.js";
 import type {
   AnalysisRuleSet,
   FactRule,
@@ -92,7 +92,8 @@ function assertRuleSet<TProjectSnapshot, TMetadataSnapshot>(
 
 function createRuleFailureArtifacts(
   rule: RuleDefinition,
-  occurredAt: string
+  occurredAt: string,
+  code: "rule_evaluation_failed" | "rule_output_invalid"
 ): RuleFailureArtifacts {
   const ruleReference: RuleReference = {
     id: rule.id,
@@ -112,8 +113,11 @@ function createRuleFailureArtifacts(
       id: rule.id,
       scope: "rule",
       rule: ruleReference,
-      code: "rule_evaluation_failed",
-      message: `Rule ${rule.id} could not complete deterministic evaluation.`,
+      code,
+      message:
+        code === "rule_output_invalid"
+          ? `Rule ${rule.id} emitted invalid analyzer output.`
+          : `Rule ${rule.id} could not complete deterministic evaluation.`,
       retryable: false,
       occurredAt
     }
@@ -154,8 +158,14 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
       const result = validateFactRuleResult(rule, rule.evaluate(factStageContext));
       facts.push(...result.facts);
       limitations.push(...result.limitations);
-    } catch {
-      const failure = createRuleFailureArtifacts(rule, occurredAt);
+    } catch (error) {
+      const failure = createRuleFailureArtifacts(
+        rule,
+        occurredAt,
+        error instanceof AnalyzerInvariantError
+          ? "rule_output_invalid"
+          : "rule_evaluation_failed"
+      );
       limitations.push(failure.limitation);
       partialFailures.push(failure.partialFailure);
     }
@@ -171,8 +181,14 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
       const result = validateFindingRuleResult(rule, rule.evaluate(findingStageContext));
       findings.push(...result.findings);
       limitations.push(...result.limitations);
-    } catch {
-      const failure = createRuleFailureArtifacts(rule, occurredAt);
+    } catch (error) {
+      const failure = createRuleFailureArtifacts(
+        rule,
+        occurredAt,
+        error instanceof AnalyzerInvariantError
+          ? "rule_output_invalid"
+          : "rule_evaluation_failed"
+      );
       limitations.push(failure.limitation);
       partialFailures.push(failure.partialFailure);
     }
@@ -195,8 +211,14 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
       );
       recommendations.push(...result.recommendations);
       limitations.push(...result.limitations);
-    } catch {
-      const failure = createRuleFailureArtifacts(rule, occurredAt);
+    } catch (error) {
+      const failure = createRuleFailureArtifacts(
+        rule,
+        occurredAt,
+        error instanceof AnalyzerInvariantError
+          ? "rule_output_invalid"
+          : "rule_evaluation_failed"
+      );
       limitations.push(failure.limitation);
       partialFailures.push(failure.partialFailure);
     }
