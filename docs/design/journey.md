@@ -606,6 +606,8 @@ Registry adapter boundary without moving provider I/O into analyzer rules.
 The adapter:
 
 - fetches only from the fixed public npm Registry host;
+- bounds npm package names to the documented 214-character maximum and verifies the generated
+  registry reference also fits StackLens's source/evidence contract before network access;
 - applies request timeout and response-size limits before provider data enters analysis;
 - validates the returned package identity, version records, dist-tags, timestamps, deprecation
   values, and repository metadata as untrusted input;
