@@ -23,7 +23,10 @@ Zod is the only runtime dependency.
 
 ```text
 src/
-├─ identifiers.ts      # requirement/rule/subject identity
+├─ identifiers.ts      # stable identifiers and rule references
+├─ category.ts         # shared scoring/report categories
+├─ time.ts             # serialized timestamps
+├─ subject.ts          # analysis subjects
 ├─ input.ts            # manifest/repository analysis identity
 ├─ evidence.ts         # project/external provenance
 ├─ fact.ts             # normalized observations
