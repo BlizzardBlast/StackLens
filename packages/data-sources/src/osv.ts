@@ -1,5 +1,7 @@
 export {
   osvEvidenceId,
+  osvQueryEvidenceId,
+  osvQueryEvidenceReference,
   osvSourceId,
   osvVulnerabilityApiUrl,
   osvVulnerabilityPageUrl,

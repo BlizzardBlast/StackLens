@@ -51,6 +51,22 @@
     "./project-snapshot": {
       "types": "./dist/project-snapshot.d.ts",
       "default": "./dist/project-snapshot.js"
+    },
+    "./migration-opportunity": {
+      "types": "./dist/migration-opportunity.d.ts",
+      "default": "./dist/migration-opportunity.js"
+    },
+    "./priority-policy": {
+      "types": "./dist/priority-policy.d.ts",
+      "default": "./dist/priority-policy.js"
+    },
+    "./recommendations": {
+      "types": "./dist/recommendations.d.ts",
+      "default": "./dist/recommendations.js"
+    },
+    "./scoring-coverage": {
+      "types": "./dist/scoring-coverage.d.ts",
+      "default": "./dist/scoring-coverage.js"
     }
   },
   "scripts": {
@@ -64,6 +80,7 @@
     "@stacklens/contracts": "workspace:*"
   },
   "devDependencies": {
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.1",
+    "@stacklens/scoring": "workspace:*"
   }
 }

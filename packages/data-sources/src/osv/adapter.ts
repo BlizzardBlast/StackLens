@@ -13,6 +13,8 @@ import type { EvidenceProvider, ProviderFailure, ProviderResult } from "../provi
 import {
   osvEvidenceId,
   osvFailureId,
+  osvQueryEvidenceId,
+  osvQueryEvidenceReference,
   osvInvalidRequestSourceId,
   osvQueryKey,
   osvSourceId,
@@ -557,7 +559,23 @@ export class OsvVulnerabilityAdapter implements EvidenceProvider<
     const vulnerabilityById = new Map(
       vulnerabilities.map((vulnerability) => [vulnerability.id, vulnerability]),
     );
-    const evidence: ExternalEvidence[] = [...matchedPackagesByVulnerability.keys()]
+    const queryEvidence: ExternalEvidence[] = queryResults.map((result) => ({
+      id: osvQueryEvidenceId(sourceId, {
+        packageName: result.packageName,
+        version: result.version,
+      }),
+      kind: "external",
+      sourceId,
+      summary: result.complete
+        ? `OSV exact-version query for ${result.packageName}@${result.version} completed with ${result.matches.length} known vulnerability match(es).`
+        : `OSV exact-version query for ${result.packageName}@${result.version} returned ${result.matches.length} known vulnerability match(es), but pagination was incomplete.`,
+      reference: osvQueryEvidenceReference({
+        packageName: result.packageName,
+        version: result.version,
+      }),
+      url: OSV_QUERY_BATCH_URL,
+    }));
+    const advisoryEvidence: ExternalEvidence[] = [...matchedPackagesByVulnerability.keys()]
       .toSorted(compareCodeUnits)
       .map((vulnerabilityId) => {
         const detail = vulnerabilityById.get(vulnerabilityId);
@@ -572,6 +590,9 @@ export class OsvVulnerabilityAdapter implements EvidenceProvider<
           ...(detail?.publishedAt === undefined ? {} : { publishedAt: detail.publishedAt }),
         };
       });
+    const evidence = [...queryEvidence, ...advisoryEvidence].toSorted((left, right) =>
+      compareCodeUnits(left.id, right.id),
+    );
 
     const retrievedAt = validateObservedAt(this.#now());
     const source: AvailableDataSource | PartialDataSource =

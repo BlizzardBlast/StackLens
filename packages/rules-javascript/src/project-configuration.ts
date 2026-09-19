@@ -176,7 +176,7 @@ function createLimitation(
     id: limitationId(file.path, code),
     kind,
     message: truncate(message, 4_000),
-    affectedCategories: ["tooling"],
+    affectedCategories: ["dependencies", "tooling"],
     sourceIds: [],
     ruleIds: [RULE_ID],
   };
