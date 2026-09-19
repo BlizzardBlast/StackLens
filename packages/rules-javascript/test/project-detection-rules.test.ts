@@ -22,6 +22,20 @@ import {
 } from "../src/project-configuration.js";
 import { createJavaScriptProjectSnapshot } from "../src/project-snapshot.js";
 
+function repositoryInput(fingerprint: string) {
+  return {
+    type: "repository" as const,
+    fingerprint,
+    repository: {
+      provider: "github" as const,
+      owner: "stacklens-fixture",
+      name: "fixture-repository",
+      commitSha: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      ref: "main",
+    },
+  };
+}
+
 function dependencyFacts(manifest: unknown): {
   readonly project: ReturnType<typeof normalizePackageManifest>;
   readonly evidence: ReturnType<typeof createDependencyInventoryEvidence>;
@@ -337,10 +351,7 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
     ]);
     const evidence = createProjectConfigurationEvidence(project);
     const result = projectConfigurationRule.evaluate({
-      input: {
-        type: "repository",
-        fingerprint: "commit:fixture",
-      },
+      input: repositoryInput("commit:fixture"),
       project,
       metadata: {},
       sources: [],
@@ -377,10 +388,7 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
     ]);
     const evidence = createProjectConfigurationEvidence(project);
     const result = projectConfigurationRule.evaluate({
-      input: {
-        type: "repository",
-        fingerprint: "commit:dynamic-config",
-      },
+      input: repositoryInput("commit:dynamic-config"),
       project,
       metadata: {},
       sources: [],
@@ -420,10 +428,7 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
     ]);
     const evidence = createProjectConfigurationEvidence(project);
     const result = projectConfigurationRule.evaluate({
-      input: {
-        type: "repository",
-        fingerprint: "commit:jsonc",
-      },
+      input: repositoryInput("commit:jsonc"),
       project,
       metadata: {},
       sources: [],
@@ -464,10 +469,7 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
     ]);
     const evidence = createProjectConfigurationEvidence(project);
     const result = projectConfigurationRule.evaluate({
-      input: {
-        type: "repository",
-        fingerprint: "commit:partial-config",
-      },
+      input: repositoryInput("commit:partial-config"),
       project,
       metadata: {},
       sources: [],
@@ -503,10 +505,7 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
     ]);
     const evidence = createProjectConfigurationEvidence(project);
     const result = projectConfigurationRule.evaluate({
-      input: {
-        type: "repository",
-        fingerprint: "commit:unrelated",
-      },
+      input: repositoryInput("commit:unrelated"),
       project,
       metadata: {},
       sources: [],
