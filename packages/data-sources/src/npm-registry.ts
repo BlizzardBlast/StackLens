@@ -114,7 +114,7 @@ function parseDistTags(value: unknown): readonly NpmDistTag[] {
       tag: requireUnpaddedString(tag, "dist-tag name", 500),
       version: requireUnpaddedString(version, `dist-tag ${tag}`, 500),
     }))
-    .toSorted((left, right) => left.tag.localeCompare(right.tag, "en", { sensitivity: "variant" }));
+    .toSorted((left, right) => (left.tag < right.tag ? -1 : left.tag > right.tag ? 1 : 0));
 }
 
 function parseVersionTimes(
@@ -218,7 +218,7 @@ function parseVersions(
       };
     })
     .toSorted((left, right) =>
-      left.version.localeCompare(right.version, "en", { sensitivity: "variant" }),
+      left.version < right.version ? -1 : left.version > right.version ? 1 : 0,
     );
 }
 
@@ -468,7 +468,7 @@ export class NpmRegistryAdapter
       const attemptedAt = validateObservedAt(this.#now());
 
       return createSourceFailure(
-        typeof packageName === "string" ? packageName : String(packageName),
+        typeof packageName === "string" ? packageName : "invalid-package-name",
         attemptedAt,
         "npm_invalid_package_name",
         "npm Registry package names must be non-empty, unpadded strings without control characters.",
@@ -542,7 +542,7 @@ export class NpmRegistryAdapter
           packageName,
           attemptedAt,
           "npm_invalid_response",
-          `npm Registry returned an unsupported metadata shape for ${packageName}: ${error.message}`,
+          `npm Registry returned an unsupported metadata shape for ${packageName}.`,
           false,
           endpoint,
         );
