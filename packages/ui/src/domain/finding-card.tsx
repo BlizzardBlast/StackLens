@@ -2,24 +2,32 @@ import { cn } from "cn";
 import type { ReactNode } from "react";
 
 import { Button } from "#components/button";
-import {
-  ConfidenceIndicator,
-  FindingTypeBadge,
-  SeverityBadge,
-  type FindingClassification,
-  type FindingConfidence,
-  type FindingPriority,
-} from "#domain/finding-badges";
+import { ConfidenceIndicator, FindingTypeBadge, SeverityBadge } from "#domain/finding-badges";
+import type { RuleReference } from "@stacklens/contracts";
+import type { ScoreCategory } from "@stacklens/contracts/category";
+import type {
+  ConfidenceLevel,
+  FindingClassification,
+  PriorityLevel,
+} from "@stacklens/contracts/finding";
+
+const categoryLabel: Record<ScoreCategory, string> = {
+  dependencies: "Dependencies",
+  security: "Security",
+  maintainability: "Maintainability",
+  testing: "Testing",
+  tooling: "Tooling",
+};
 
 export interface FindingCardProps {
   classification: FindingClassification;
-  priority: FindingPriority;
-  confidence?: FindingConfidence;
+  priority: PriorityLevel;
+  confidence?: ConfidenceLevel;
   subject?: string;
   title: string;
   description: ReactNode;
-  category: string;
-  ruleId: string;
+  category: ScoreCategory;
+  ruleId: RuleReference["id"];
   onViewEvidence?: () => void;
   className?: string;
 }
@@ -52,7 +60,7 @@ export function FindingCard({
 
       <footer className="mt-4 flex flex-col gap-3 border-t pt-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <span>
-          {category} · Rule <code>{ruleId}</code>
+          {categoryLabel[category]} · Rule <code>{ruleId}</code>
         </span>
         {onViewEvidence ? (
           <Button variant="link" size="sm" onClick={onViewEvidence}>

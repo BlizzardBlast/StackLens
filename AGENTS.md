@@ -83,6 +83,17 @@ Do not hand-edit `packages/design-tokens/dist/`. It is generated and ignored by 
 
 When tokens change, run the build and tests. Product UI should consume semantic/domain tokens rather than raw palette values whenever a semantic token exists.
 
+## Shared analysis contracts
+
+The authoritative serialized analysis-domain model lives in `packages/contracts`.
+
+- Reuse contract schemas/types rather than redefining finding, confidence, priority, category, evidence, limitation, recommendation, or score vocabulary in apps/packages.
+- Keep contracts framework-agnostic: no React, Fastify, database, provider-client, or analyzer implementation dependencies.
+- React/UI code should use type-only imports when it only needs domain vocabulary.
+- Facts, findings, and recommendations are distinct. Recommendations must never be added back as a finding classification.
+- N/A / insufficient evidence must remain structurally distinct from a numeric score of zero.
+- Breaking serialized report changes require a schema-version change and ADR/architecture review.
+
 ## Analyzer safety
 
 Analyzed repositories are untrusted input.

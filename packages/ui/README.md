@@ -62,3 +62,12 @@ The domain layer intentionally does not derive analyzer/scoring decisions. For e
 Do not create a local utility module merely to re-export a dependency. In particular, shared components import `cn` directly from `"cn"`.
 
 Add a local utility only when StackLens owns meaningful behavior that cannot be expressed clearly at the call site.
+
+
+## Contract ownership
+
+Serialized analysis-domain vocabulary is owned by `@stacklens/contracts`.
+
+UI components import shared types such as finding classification, priority, confidence, score category, and rule identity rather than redefining them locally. Use type-only imports when runtime validation is not required.
+
+Recommendations are separate from findings. `FindingCard` and `FindingTypeBadge` accept only factual/heuristic finding classifications.

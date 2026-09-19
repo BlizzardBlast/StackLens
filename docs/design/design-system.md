@@ -222,13 +222,14 @@ Dark mode rules:
 
 ## 12. Finding grammar
 
-### Classification
+### Finding classification
 
 Use text + icon + semantic token:
 
 - Fact
 - Heuristic
-- Recommendation
+
+Recommendations are separate domain entities, not a finding classification. Recommendation UI should use its own label/pattern rather than passing `"recommendation"` to `FindingCard` or `FindingTypeBadge`.
 
 ### Priority/severity
 

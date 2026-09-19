@@ -1,0 +1,71 @@
+{
+  "name": "@stacklens/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./analysis-report": {
+      "types": "./dist/analysis-report.d.ts",
+      "default": "./dist/analysis-report.js"
+    },
+    "./evidence": {
+      "types": "./dist/evidence.d.ts",
+      "default": "./dist/evidence.js"
+    },
+    "./fact": {
+      "types": "./dist/fact.d.ts",
+      "default": "./dist/fact.js"
+    },
+    "./finding": {
+      "types": "./dist/finding.d.ts",
+      "default": "./dist/finding.js"
+    },
+    "./input": {
+      "types": "./dist/input.d.ts",
+      "default": "./dist/input.js"
+    },
+    "./limitation": {
+      "types": "./dist/limitation.d.ts",
+      "default": "./dist/limitation.js"
+    },
+    "./recommendation": {
+      "types": "./dist/recommendation.d.ts",
+      "default": "./dist/recommendation.js"
+    },
+    "./score": {
+      "types": "./dist/score.d.ts",
+      "default": "./dist/score.js"
+    },
+    "./category": {
+      "types": "./dist/category.d.ts",
+      "default": "./dist/category.js"
+    },
+    "./identifiers": {
+      "types": "./dist/identifiers.d.ts",
+      "default": "./dist/identifiers.js"
+    },
+    "./subject": {
+      "types": "./dist/subject.d.ts",
+      "default": "./dist/subject.js"
+    },
+    "./time": {
+      "types": "./dist/time.d.ts",
+      "default": "./dist/time.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.1"
+  }
+}
