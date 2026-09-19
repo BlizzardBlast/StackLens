@@ -2,7 +2,7 @@
 
 > **Status:** Accepted implementation baseline
 > **Date:** 2026-09-19
-> **Requirements:** FR-004, FR-005, FR-011, FR-017, DATA-001, DATA-002, DATA-003, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-007
+> **Requirements:** FR-004, FR-005, FR-006, FR-007, FR-010, FR-011, FR-017, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-007
 > **Related decisions:** ADR-0008, ADR-0009
 
 ## Package responsibility
@@ -225,5 +225,137 @@ Focused tests cover:
 - snapshot bound to a missing/unavailable source;
 - unrelated provider query results;
 - analyzer-core contract integration.
+
+No live network access is used.
+
+
+## npm Registry metadata rules
+
+The next provider-backed slice consumes already-normalized npm Registry metadata through
+`JavaScriptAnalysisMetadata.npmRegistry`. It adds no provider/network I/O and no
+`rules-javascript -> data-sources` dependency.
+
+Each normalized entry contains:
+
+```ts
+{
+  sourceId: string;
+  snapshot: {
+    packageName: string;
+    registryCreatedAt?: string;
+    registryModifiedAt?: string;
+    distTags: { tag: string; version: string }[];
+    versions: {
+      version: string;
+      deprecatedMessage?: string;
+      publishedAt?: string;
+    }[];
+  };
+}
+```
+
+The snapshot is deliberately limited to fields used by the current rules and is structurally
+compatible with the corresponding normalized npm Registry adapter output. The wrapper binds that
+snapshot to the report-level npm Registry `DataSource`.
+
+Shared npm-rule support requires:
+
+- exactly one normalized snapshot for the analyzed package;
+- a bound source whose provider is `npm-registry` and whose state is usable;
+- external evidence tied to the same source and, when supplied, the same source reference.
+
+Partial sources remain usable for observed positive evidence but produce a rule-specific
+`partial_failure` limitation.
+
+### FR-006 outdated dependency finding
+
+`JS-NPM-006@1` compares exact project declarations with npm's `latest` dist-tag.
+
+Supported factual comparison requires all of the following:
+
+1. the declared specifier parses as an exact Semantic Version;
+2. the exact declared version exists in the normalized registry version records;
+3. a `latest` dist-tag exists;
+4. the version named by `latest` exists in the normalized registry version records;
+5. the comparison value is also a supported exact Semantic Version.
+
+The rule implements Semantic Version precedence for numeric major/minor/patch parts and prerelease
+identifiers. Build metadata does not affect precedence.
+
+If `latest` is newer, one factual finding is emitted for the package/declaration/comparison tuple.
+The finding description explicitly identifies the declared version, comparison version, npm
+Registry basis, and whether the difference is major, minor, patch, or prerelease-to-release.
+
+If the declaration is a range/tag/URL/workspace or otherwise not an exact supported Semantic Version,
+the rule emits an insufficient-evidence limitation rather than interpreting it as an installed
+version.
+
+This slice does not resolve lockfiles and does not claim that the `latest` release is automatically a
+safe or recommended upgrade.
+
+### FR-007 explicit deprecation finding
+
+`JS-NPM-007@1` implements the mandatory explicit-deprecation portion of FR-007.
+
+The rule:
+
+- requires an exact declared Semantic Version;
+- requires the exact normalized registry version record;
+- treats a provider-supplied non-empty `deprecatedMessage` as factual evidence;
+- emits one factual dependency finding with the exact npm source/evidence and all matching project
+  dependency-inventory facts.
+
+It does not emit an "unmaintained" heuristic. That portion of FR-007 is optional ("may identify"),
+and no accepted deterministic threshold currently defines inactivity as unmaintained. Introducing
+such a heuristic later requires an explicit basis, confidence, positive fixtures, and
+insufficient-evidence fixtures per DATA-004/NFR-002.
+
+### FR-010 neutral npm health signal
+
+`JS-NPM-010@1` emits one package-level `dependency.health.npm_registry` fact when the normalized
+npm snapshot provides a valid `latest` record.
+
+The fact can state:
+
+- the `latest` dist-tag version;
+- the latest version publication timestamp when available;
+- package metadata modification time when available.
+
+These are neutral verifiable signals, not a combined health score or maintenance judgment. No
+"recent/stale/healthy/unhealthy/unmaintained" threshold is encoded. Therefore this slice does not
+create a combined interpretation that would require a new undisclosed rule.
+
+The fact references every project declaration evidence record for that package plus the exact npm
+Registry external evidence.
+
+### Deterministic shared support
+
+The package now shares deterministic dependency grouping/order/truncation helpers across npm rules
+and the existing FR-011 vulnerability rule. The refactor does not change FR-011 IDs or product
+behavior.
+
+Duplicate declarations of the same package/specifier remain one finding basis while preserving all
+underlying dependency facts. Package-level health signals remain one fact per package and preserve
+all declaration evidence.
+
+### Verification
+
+Focused fixtures cover:
+
+- exact Semantic Version parsing and prerelease precedence;
+- major/minor/patch/prerelease outdated differences;
+- equal/older `latest` versions;
+- ranges/tags as insufficient exact-version evidence;
+- missing declared/comparison registry records;
+- duplicate dependency groups;
+- explicit deprecation and non-deprecated exact versions;
+- no invented unmaintained heuristic;
+- neutral health-signal content;
+- partial npm sources;
+- missing normalized metadata;
+- missing/mismatched bound sources;
+- cross-source/missing external evidence;
+- invalid registry comparison versions;
+- analyzer-core integration with test-only priority and insufficient-evidence scores.
 
 No live network access is used.
