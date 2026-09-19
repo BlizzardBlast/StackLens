@@ -81,9 +81,9 @@ function descriptorForPath(path: string): ConfigurationDescriptor | undefined {
 
   if (name === "biome.jsonc") {
     return {
-      kind: "biome_jsonc",
+      kind: "biome",
       displayName: "Biome JSONC configuration",
-      inspectionMode: "dynamic_code",
+      inspectionMode: "declarative_json",
     };
   }
 
