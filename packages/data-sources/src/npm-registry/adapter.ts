@@ -30,13 +30,25 @@ const NPM_REGISTRY_ACCEPT = "application/json";
 
 class NpmRegistryConfigurationError extends Error {}
 
+function containsControlCharacter(value: string): boolean {
+  for (const character of value) {
+    const code = character.charCodeAt(0);
+
+    if (code <= 0x1f || code === 0x7f) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function validatePackageName(value: unknown): value is string {
   return (
     typeof value === "string" &&
     value.length > 0 &&
     value.length <= 500 &&
     value.trim() === value &&
-    !/[\u0000-\u001f\u007f]/u.test(value)
+    !containsControlCharacter(value)
   );
 }
 
