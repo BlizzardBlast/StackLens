@@ -127,10 +127,7 @@ export const outdatedDependencyRule: FindingRule<
         continue;
       }
 
-      const comparisonVersionRecord = packageVersion(
-        resolved.observation.snapshot,
-        latest.version,
-      );
+      const comparisonVersionRecord = packageVersion(resolved.observation.snapshot, latest.version);
 
       if (comparisonVersionRecord === undefined) {
         limitations.push(
@@ -176,11 +173,7 @@ export const outdatedDependencyRule: FindingRule<
       ]);
 
       findings.push({
-        id: outdatedDependencyFindingId(
-          basis.packageName,
-          basis.declaredSpecifier,
-          latest.version,
-        ),
+        id: outdatedDependencyFindingId(basis.packageName, basis.declaredSpecifier, latest.version),
         category: "dependencies",
         classification: "fact",
         subject: {
