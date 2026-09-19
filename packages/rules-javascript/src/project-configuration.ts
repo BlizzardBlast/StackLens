@@ -106,7 +106,9 @@ function descriptorForPath(path: string): ConfigurationDescriptor | undefined {
   return undefined;
 }
 
-function inspectedConfigurations(project: JavaScriptProjectSnapshot): readonly InspectedConfiguration[] {
+function inspectedConfigurations(
+  project: JavaScriptProjectSnapshot,
+): readonly InspectedConfiguration[] {
   return (project.files ?? [])
     .flatMap((file) => {
       const descriptor = descriptorForPath(file.path);
@@ -473,7 +475,9 @@ export const projectConfigurationRule: FactRule<JavaScriptProjectSnapshot, unkno
         limitations.push(limitation);
       }
 
-      facts.push(createFact(inspected, inspection, limitation === undefined ? [] : [limitation.id]));
+      facts.push(
+        createFact(inspected, inspection, limitation === undefined ? [] : [limitation.id]),
+      );
     }
 
     return {
