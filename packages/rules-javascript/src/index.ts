@@ -11,3 +11,19 @@ export type {
   NormalizedPackageManifest,
   PackageDependencyGroup,
 } from "./manifest.js";
+
+
+export {
+  knownVulnerabilityFindingId,
+  knownVulnerabilityRule,
+} from "./known-vulnerability.js";
+
+export type {
+  JavaScriptAnalysisMetadata,
+  JavaScriptOsvAffectedPackage,
+  JavaScriptOsvQueryResult,
+  JavaScriptOsvSeverity,
+  JavaScriptOsvSnapshot,
+  JavaScriptOsvVulnerability,
+  JavaScriptOsvVulnerabilityMatch,
+} from "./analysis-metadata.js";
