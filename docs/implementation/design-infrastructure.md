@@ -1,9 +1,9 @@
 # Design Infrastructure Implementation
 
-> **Status:** Bootstrap implementation
-> **Date:** 2026-09-18
+> **Status:** Accepted implementation baseline
+> **Last reviewed:** 2026-09-19
 > **Architecture:** ADR-0006, ADR-0007
-> **Requirements:** FR-015–FR-021, DATA-004–DATA-005, SCORE-001–SCORE-003, NFR-002, NFR-006–NFR-007
+> **Requirements:** FR-015–FR-021, DATA-004–DATA-005, SCORE-001–SCORE-003, NFR-002, NFR-006–NFR-007, GOV-007
 
 ## Scope
 
@@ -23,7 +23,6 @@ packages/
    ├─ components.json       # shadcn/Base UI configuration
    ├─ src/components/       # generic primitives
    ├─ src/domain/           # StackLens semantic components
-   ├─ src/lib/
    ├─ src/styles/
    └─ test/
 ```
@@ -51,7 +50,7 @@ Rules:
 
 ## shadcn/Base UI workflow
 
-The package-level `components.json` is the shadcn configuration. It uses the Base UI `base-nova` style, Tailwind CSS v4, CSS variables, Lucide, and package `imports` aliases.
+The package-level `components.json` is the shadcn configuration. It uses the Base UI `base-nova` style, Tailwind CSS v4, CSS variables, Lucide, and package `imports` aliases. Components import `cn` directly from the `cn` package; StackLens does not maintain a local utility wrapper solely to re-export it.
 
 When a generic primitive is needed, use the repository-pinned shadcn CLI:
 
@@ -113,7 +112,7 @@ pnpm check
 pnpm ui:add -- <component>
 ```
 
-The bootstrap CI produced and committed the first `pnpm-lock.yaml`. Normal CI now uses `pnpm install --frozen-lockfile` with read-only repository permissions and pnpm caching.
+The bootstrap CI produced and committed the first `pnpm-lock.yaml`. Normal CI uses `pnpm install --frozen-lockfile` with read-only repository permissions and pnpm caching. Third-party GitHub Actions are pinned to immutable full commit SHAs.
 
 Generated token `dist/` output is intentionally not committed. `@stacklens/design-tokens` recreates it through `prepare` during install and through `build` in the task graph.
 
@@ -158,9 +157,26 @@ The test task does not declare coverage output because the current tests do not 
 
 The repository includes:
 
-- `.editorconfig` for line endings and indentation;
+- `.editorconfig` for LF endings, indentation, and the 100-column baseline;
 - `.vscode/extensions.json` recommending Oxc and Tailwind CSS IntelliSense;
 - `.vscode/settings.json` enabling Oxfmt/Oxlint integration and the workspace TypeScript SDK;
 - root `AGENTS.md` for Codex repository instructions.
 
 VS Code-compatible forks can consume the same workspace settings.
+
+
+## Dependency and configuration policy
+
+The repository favors the smallest durable configuration that expresses a real StackLens need:
+
+- Node is constrained to the selected 24.x LTS major rather than accepting arbitrary future majors.
+- `oxlint-tsgolint` is pinned to the mature TypeScript-7-compatible bridge release used by the repository; temporary release-age exceptions are not kept in pnpm configuration.
+- Oxlint warnings fail CI, unused suppression comments are errors, and type-aware rules remain enabled without replacing `tsc` as the compiler/typechecker.
+- The repository `.gitignore` lists artifacts this codebase actually produces instead of carrying a generic multi-framework template.
+- Design-token tests generate their own required output before assertions so the package test is independently runnable.
+
+## Documentation continuity
+
+Per **GOV-007**, implementation changes are incomplete until affected durable documentation and the project journey are updated.
+
+`docs/documentation-governance.md` defines the source-of-truth map. The root `AGENTS.md`, `CONTRIBUTING.md`, PR template, and CI journey check all reinforce that workflow.
