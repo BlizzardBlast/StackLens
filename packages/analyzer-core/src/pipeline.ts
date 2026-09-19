@@ -44,7 +44,17 @@ interface RuleFailureArtifacts {
 }
 
 function sortedRules<T extends RuleDefinition>(rules: readonly T[]): readonly T[] {
-  return rules.toSorted((left, right) => left.id.localeCompare(right.id, "en"));
+  return rules.toSorted((left, right) => {
+    if (left.id < right.id) {
+      return -1;
+    }
+
+    if (left.id > right.id) {
+      return 1;
+    }
+
+    return 0;
+  });
 }
 
 function assertDefinition(rule: RuleDefinition, seenIds: Set<string>) {
@@ -207,7 +217,7 @@ function assertNoDuplicateIds(
 }
 
 function assertEvidenceReferences(
-  values: readonly { readonly evidenceIds: readonly string[] }[],
+  values: readonly { readonly id: string; readonly evidenceIds: readonly string[] }[],
   evidenceIds: ReadonlySet<string>,
   label: string,
 ) {
@@ -215,7 +225,7 @@ function assertEvidenceReferences(
     for (const evidenceId of value.evidenceIds) {
       if (!evidenceIds.has(evidenceId)) {
         throw new AnalyzerInvariantError(
-          `${label} ${"id" in value ? String(value.id) : ""} references unknown evidence ${evidenceId}`,
+          `${label} ${value.id} references unknown evidence ${evidenceId}`,
         );
       }
     }
@@ -261,19 +271,41 @@ function assertFindingReferences(
 
 function assertRecommendationReferences(
   recommendations: readonly Recommendation[],
-  findingIds: ReadonlySet<string>,
+  findingsById: ReadonlyMap<string, Finding>,
   factIds: ReadonlySet<string>,
   evidenceIds: ReadonlySet<string>,
 ) {
   assertEvidenceReferences(recommendations, evidenceIds, "Recommendation");
 
   for (const recommendation of recommendations) {
-    for (const findingId of recommendation.findingIds) {
-      if (!findingIds.has(findingId)) {
+    const referencedFindings = recommendation.findingIds.map((findingId) => {
+      const finding = findingsById.get(findingId);
+
+      if (finding === undefined) {
         throw new AnalyzerInvariantError(
           `Recommendation ${recommendation.id} references unknown finding ${findingId}`,
         );
       }
+
+      return finding;
+    });
+
+    if (
+      recommendation.basis === "fact" &&
+      referencedFindings.some((finding) => finding.classification === "heuristic")
+    ) {
+      throw new AnalyzerInvariantError(
+        `Fact recommendation ${recommendation.id} references a heuristic finding`,
+      );
+    }
+
+    if (
+      recommendation.basis === "heuristic" &&
+      referencedFindings.every((finding) => finding.classification === "fact")
+    ) {
+      throw new AnalyzerInvariantError(
+        `Heuristic recommendation ${recommendation.id} requires a heuristic finding`,
+      );
     }
 
     if (recommendation.basis === "heuristic") {
@@ -307,6 +339,7 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
   const findingCandidateIds = new Set<string>();
   const findingIds = new Set<string>();
   const recommendationIds = new Set<string>();
+  const findingsById = new Map<string, Finding>();
   const limitationIds = new Set(limitations.map((limitation) => limitation.id));
   const partialFailureIds = new Set(partialFailures.map((failure) => failure.id));
 
@@ -346,7 +379,11 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
       const result = validateFindingRuleResult(rule, rule.evaluate(findingStageContext));
       assertNoDuplicateIds(findingCandidateIds, result.findings, "finding");
       assertNoDuplicateIds(limitationIds, result.limitations, "limitation");
-      assertFindingReferences(result.findings, factIds, evidenceIds, limitationIds);
+      const visibleLimitationIds = new Set([
+        ...limitationIds,
+        ...result.limitations.map((limitation) => limitation.id),
+      ]);
+      assertFindingReferences(result.findings, factIds, evidenceIds, visibleLimitationIds);
 
       findingCandidates.push(...result.findings);
       result.findings.forEach((finding) => findingCandidateIds.add(finding.id));
@@ -378,6 +415,7 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
 
       findings.push(finding);
       findingIds.add(finding.id);
+      findingsById.set(finding.id, finding);
     } catch (error) {
       const failure = createFailureArtifacts(
         ruleSet.prioritizer,
@@ -411,7 +449,7 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
       );
       assertNoDuplicateIds(recommendationIds, result.recommendations, "recommendation");
       assertNoDuplicateIds(limitationIds, result.limitations, "limitation");
-      assertRecommendationReferences(result.recommendations, findingIds, factIds, evidenceIds);
+      assertRecommendationReferences(result.recommendations, findingsById, factIds, evidenceIds);
 
       recommendations.push(...result.recommendations);
       result.recommendations.forEach((recommendation) =>
