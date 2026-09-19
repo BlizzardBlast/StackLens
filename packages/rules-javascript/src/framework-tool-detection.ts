@@ -17,7 +17,12 @@ interface ToolDescriptor {
 }
 
 const TOOL_DESCRIPTORS: readonly ToolDescriptor[] = [
-  { packageName: "@angular/core", displayName: "Angular", role: "framework", roleLabel: "framework" },
+  {
+    packageName: "@angular/core",
+    displayName: "Angular",
+    role: "framework",
+    roleLabel: "framework",
+  },
   {
     packageName: "@biomejs/biome",
     displayName: "Biome",
@@ -54,7 +59,12 @@ const TOOL_DESCRIPTORS: readonly ToolDescriptor[] = [
     role: "framework",
     roleLabel: "framework",
   },
-  { packageName: "cypress", displayName: "Cypress", role: "test_framework", roleLabel: "test framework" },
+  {
+    packageName: "cypress",
+    displayName: "Cypress",
+    role: "test_framework",
+    roleLabel: "test framework",
+  },
   {
     packageName: "dd-trace",
     displayName: "Datadog tracing",
@@ -76,7 +86,12 @@ const TOOL_DESCRIPTORS: readonly ToolDescriptor[] = [
     role: "state_management",
     roleLabel: "state-management library",
   },
-  { packageName: "mobx", displayName: "MobX", role: "state_management", roleLabel: "state-management library" },
+  {
+    packageName: "mobx",
+    displayName: "MobX",
+    role: "state_management",
+    roleLabel: "state-management library",
+  },
   { packageName: "next", displayName: "Next.js", role: "framework", roleLabel: "framework" },
   { packageName: "nuxt", displayName: "Nuxt", role: "framework", roleLabel: "framework" },
   { packageName: "prettier", displayName: "Prettier", role: "formatter", roleLabel: "formatter" },
@@ -88,7 +103,12 @@ const TOOL_DESCRIPTORS: readonly ToolDescriptor[] = [
     roleLabel: "language tool",
   },
   { packageName: "vite", displayName: "Vite", role: "build_tool", roleLabel: "build tool" },
-  { packageName: "vitest", displayName: "Vitest", role: "test_framework", roleLabel: "test framework" },
+  {
+    packageName: "vitest",
+    displayName: "Vitest",
+    role: "test_framework",
+    roleLabel: "test framework",
+  },
   { packageName: "webpack", displayName: "webpack", role: "build_tool", roleLabel: "build tool" },
   {
     packageName: "zustand",
