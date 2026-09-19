@@ -109,6 +109,26 @@ describe("normalizePackageManifest [FR-004, FR-005]", () => {
     ).toThrow(/devDependencies\.vitest must be a non-empty string/);
   });
 
+  it("rejects dependency names that would otherwise be silently trimmed by the report contract", () => {
+    expect(() =>
+      normalizePackageManifest({
+        dependencies: {
+          " react ": "^19.0.0",
+        },
+      }),
+    ).toThrow(/contains an invalid dependency name/);
+  });
+
+  it("rejects dependency specifiers that exceed the structured fact contract", () => {
+    expect(() =>
+      normalizePackageManifest({
+        dependencies: {
+          react: "x".repeat(2001),
+        },
+      }),
+    ).toThrow(/at most 2000 characters/);
+  });
+
   it("produces equivalent normalized output regardless of object insertion order", () => {
     const first = normalizePackageManifest({
       dependencies: {

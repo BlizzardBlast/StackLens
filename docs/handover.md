@@ -24,8 +24,10 @@ Before implementing anything:
    - `docs/adr/0009-deterministic-staged-analyzer-core.md`;
    - `docs/implementation/analysis-contracts.md`;
    - `docs/implementation/analyzer-core.md`;
+   - `docs/implementation/rules-javascript.md`;
    - `packages/contracts/README.md`;
    - `packages/analyzer-core/README.md`;
+   - `packages/rules-javascript/README.md`;
    - `AGENTS.md`;
    - `CONTRIBUTING.md`;
    - `docs/documentation-governance.md`.
@@ -45,13 +47,14 @@ The repository already has the following accepted foundations:
 - shared UI package;
 - Analysis Report Contract v1 in `@stacklens/contracts`;
 - deterministic analyzer execution in `@stacklens/analyzer-core`;
+- deterministic JavaScript dependency inventory in `@stacklens/rules-javascript`;
 - permanent read-only GitHub Actions quality gate;
 - pnpm workspace + Turborepo;
 - TypeScript 7 strict type checking;
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 
-The latest completed product architecture milestone is the deterministic analyzer core.
+The latest completed product implementation milestone is the **FR-005 dependency inventory** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
 
 The analyzer flow is:
 
@@ -81,7 +84,7 @@ scores
 AnalysisReport
 ```
 
-No JavaScript/TypeScript product-analysis rule package has been implemented yet.
+The first JavaScript/TypeScript product-analysis rule package is now implemented for **FR-005** only.
 
 No API, worker, web application, external npm/OSV/GitHub adapter, concrete priority policy, or concrete scoring policy has been implemented yet.
 
@@ -313,7 +316,7 @@ Do not move analyzer logic into React or Fastify.
 
 Avoid these tempting detours until their requirement slice is ready:
 
-- do not build the full dashboard before FR-005/domain output exists;
+- do not build the full dashboard before the quick-manifest orchestration boundary exists;
 - do not add Next.js/TanStack Start just because they are available;
 - do not introduce microservices;
 - do not add Redis/BullMQ;

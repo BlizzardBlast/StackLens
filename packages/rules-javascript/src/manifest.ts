@@ -31,8 +31,15 @@ function readPackageName(manifest: UnknownRecord): string | undefined {
     return undefined;
   }
 
-  if (typeof packageName !== "string" || packageName.trim().length === 0) {
-    throw new TypeError("package.json name must be a non-empty string when present");
+  if (
+    typeof packageName !== "string" ||
+    packageName.trim().length === 0 ||
+    packageName !== packageName.trim() ||
+    packageName.length > 500
+  ) {
+    throw new TypeError(
+      "package.json name must be a non-empty unpadded string of at most 500 characters when present",
+    );
   }
 
   return packageName;
@@ -57,13 +64,17 @@ function readDependencyGroup(
     .map((name) => {
       const declaredSpecifier = value[name];
 
-      if (name.trim().length === 0) {
-        throw new TypeError(`package.json ${group} contains an empty dependency name`);
+      if (name.trim().length === 0 || name !== name.trim() || name.length > 500) {
+        throw new TypeError(`package.json ${group} contains an invalid dependency name`);
       }
 
-      if (typeof declaredSpecifier !== "string" || declaredSpecifier.length === 0) {
+      if (
+        typeof declaredSpecifier !== "string" ||
+        declaredSpecifier.length === 0 ||
+        declaredSpecifier.length > 2000
+      ) {
         throw new TypeError(
-          `package.json ${group}.${name} must be a non-empty string dependency specifier`,
+          `package.json ${group}.${name} must be a non-empty string dependency specifier of at most 2000 characters`,
         );
       }
 
