@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, and Analysis Report Contract v1 are implemented. Analyzer rules and product screens are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, and the deterministic analyzer core are implemented. Ecosystem rules and product screens are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -84,6 +84,12 @@ The production design layer now lives in **`packages/design-tokens`** and **`pac
 The shared runtime-validatable analysis model lives in **`packages/contracts`**. It defines evidence, facts, factual/heuristic findings, separate recommendations, limitations, partial failures, and explainable score states for all future consumers.
 
 See [Analysis Contracts v1](docs/implementation/analysis-contracts.md) and **ADR-0008**.
+
+## Analyzer core
+
+The reusable deterministic execution layer lives in **`packages/analyzer-core`**. It provides staged fact/finding/recommendation rule interfaces, rule isolation, scoring dependency inversion, and contract-validated report assembly without provider or UI coupling.
+
+See [Analyzer Core](docs/implementation/analyzer-core.md) and **ADR-0009**.
 
 ## Requirement examples
 
