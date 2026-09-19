@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, and the first JavaScript dependency-inventory rule slice are implemented. Product screens and external metadata adapters are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, the first JavaScript dependency-inventory rule slice, and the framework-independent quick-manifest API service boundary are implemented. Fastify transport, product screens, and external metadata adapters are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -101,6 +101,19 @@ It currently implements deterministic `package.json` dependency normalization, e
 evidence, and the **FR-005** dependency-inventory fact rule without registry/network I/O.
 
 See [JavaScript Rules](docs/implementation/rules-javascript.md).
+
+## Quick manifest application boundary
+
+The first API-application slice lives in **`apps/api`**.
+
+It accepts pasted or uploaded `package.json` content through one authoritative in-process service,
+returns stable validation errors for invalid input, creates a deterministic content fingerprint,
+reuses the JavaScript manifest normalizer/evidence rule, and invokes analyzer-core without
+introducing persistence, authentication, provider I/O, or scoring policy.
+
+The Fastify REST/OpenAPI transport remains a later adapter over this service.
+
+See [Quick Manifest Analysis](docs/implementation/quick-manifest-analysis.md).
 
 ## Requirement examples
 
