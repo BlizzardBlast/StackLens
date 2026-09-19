@@ -14,13 +14,7 @@ import type {
   RecommendationRuleContext
 } from "./context.js";
 import { AnalyzerConfigurationError, AnalyzerInvariantError } from "./errors.js";
-import type {
-  AnalysisRuleSet,
-  FactRule,
-  FindingRule,
-  RecommendationRule,
-  RuleDefinition
-} from "./rules.js";
+import type { AnalysisRuleSet, RuleDefinition } from "./rules.js";
 import {
   validateFactRuleResult,
   validateFindingRuleResult,
@@ -41,7 +35,7 @@ interface RuleFailureArtifacts {
 }
 
 function sortedRules<T extends RuleDefinition>(rules: readonly T[]): readonly T[] {
-  return [...rules].sort((left, right) => {
+  return rules.toSorted((left, right) => {
     if (left.id < right.id) {
       return -1;
     }
