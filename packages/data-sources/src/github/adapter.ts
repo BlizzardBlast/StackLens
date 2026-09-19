@@ -460,10 +460,10 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
     const lfsPointerPaths: string[] = [];
     const failedPaths: string[] = [];
 
-    for (const entry of retainedCandidates) {
+    const acquireEntry = async (entry: CandidateEntry): Promise<void> => {
       if (entry.size !== undefined && entry.size > this.#maxFileBytes) {
         oversizedPaths.push(entry.path);
-        continue;
+        return;
       }
 
       if (
@@ -471,19 +471,15 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
         totalBytes + entry.size > this.#maxTotalFileBytes
       ) {
         aggregateLimitedPaths.push(entry.path);
-        continue;
+        return;
       }
 
       if (client.requestCount >= client.maxRequests) {
         aggregateLimitedPaths.push(entry.path);
-        continue;
+        return;
       }
 
-      const endpoint = githubBlobApiUrl(
-        repository.owner,
-        repository.name,
-        entry.sha,
-      );
+      const endpoint = githubBlobApiUrl(repository.owner, repository.name, entry.sha);
 
       try {
         const payload = await client.getJson(endpoint, "blob");
@@ -502,7 +498,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
         if (blob.size > this.#maxFileBytes) {
           oversizedPaths.push(entry.path);
-          continue;
+          return;
         }
 
         let decoded;
@@ -512,7 +508,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
         } catch (error) {
           if (error instanceof GitHubBinaryContentError) {
             binaryPaths.push(entry.path);
-            continue;
+            return;
           }
 
           throw new GitHubRequestError(
@@ -525,12 +521,12 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
         if (totalBytes + decoded.byteLength > this.#maxTotalFileBytes) {
           aggregateLimitedPaths.push(entry.path);
-          continue;
+          return;
         }
 
         if (decoded.text.startsWith("version https://git-lfs.github.com/spec/v1\n")) {
           lfsPointerPaths.push(entry.path);
-          continue;
+          return;
         }
 
         const acquiredFile: GitHubRepositoryFile = {
@@ -573,7 +569,20 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
           ),
         );
       }
-    }
+    };
+
+    const acquireSequentially = async (index: number): Promise<void> => {
+      const entry = retainedCandidates[index];
+
+      if (entry === undefined) {
+        return;
+      }
+
+      await acquireEntry(entry);
+      return acquireSequentially(index + 1);
+    };
+
+    await acquireSequentially(0);
 
     if (oversizedPaths.length > 0) {
       limitations.push(
