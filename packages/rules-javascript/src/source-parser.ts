@@ -51,9 +51,7 @@ function compareCodeUnits(left: string, right: string): number {
 
 function sourceExtension(path: string): string | undefined {
   const lowerPath = path.toLowerCase();
-  return SUPPORTED_JAVASCRIPT_SOURCE_EXTENSIONS.find((extension) =>
-    lowerPath.endsWith(extension),
-  );
+  return SUPPORTED_JAVASCRIPT_SOURCE_EXTENSIONS.find((extension) => lowerPath.endsWith(extension));
 }
 
 export function isSupportedJavaScriptSourcePath(path: string): boolean {
@@ -158,12 +156,7 @@ function parserPlugins(path: string): ("typescript" | "jsx")[] {
   const extension = sourceExtension(path);
   const plugins: ("typescript" | "jsx")[] = [];
 
-  if (
-    extension === ".ts" ||
-    extension === ".tsx" ||
-    extension === ".cts" ||
-    extension === ".mts"
-  ) {
+  if (extension === ".ts" || extension === ".tsx" || extension === ".cts" || extension === ".mts") {
     plugins.push("typescript");
   }
 
@@ -288,7 +281,8 @@ export const babelSourceReferenceParser: JavaScriptSourceReferenceParser = {
         issues: [
           {
             kind: "parse_failure",
-            message: "The source file could not be parsed as supported JavaScript/TypeScript syntax.",
+            message:
+              "The source file could not be parsed as supported JavaScript/TypeScript syntax.",
           },
         ],
       };
