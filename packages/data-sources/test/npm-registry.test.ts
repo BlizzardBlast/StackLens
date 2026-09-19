@@ -547,6 +547,43 @@ describe("NpmRegistryAdapter [FR-006, FR-007, FR-010, DATA-001, DATA-002]", () =
     });
   });
 
+  it("rejects package names longer than npm's 214-character limit before network access", async () => {
+    const fetchImpl = vi.fn<typeof fetch>();
+    const adapter = createAdapter(fetchImpl);
+
+    const result = await adapter.fetch({
+      packageName: "a".repeat(215),
+    });
+
+    expect(result.ok).toBe(false);
+    expect(fetchImpl).not.toHaveBeenCalled();
+
+    if (result.ok) {
+      throw new Error("Expected overlong package name to fail");
+    }
+
+    expect(result.failure.code).toBe("npm_invalid_package_name");
+  });
+
+  it("rejects names whose encoded registry reference would violate contract length", async () => {
+    const fetchImpl = vi.fn<typeof fetch>();
+    const adapter = createAdapter(fetchImpl);
+
+    const result = await adapter.fetch({
+      packageName: "😀".repeat(107),
+    });
+
+    expect(result.ok).toBe(false);
+    expect(fetchImpl).not.toHaveBeenCalled();
+
+    if (result.ok) {
+      throw new Error("Expected overlong encoded registry reference to fail");
+    }
+
+    expect(result.failure.code).toBe("npm_invalid_package_name");
+    expect(result.source).not.toHaveProperty("reference");
+  });
+
   it("rejects malformed request names before making a network request", async () => {
     const fetchImpl = vi.fn<typeof fetch>();
     const adapter = createAdapter(fetchImpl);
