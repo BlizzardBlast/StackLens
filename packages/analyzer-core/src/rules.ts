@@ -14,7 +14,7 @@ import type {
 
 import type { FactRuleContext, FindingRuleContext, RecommendationRuleContext } from "./context.js";
 import { AnalyzerInvariantError } from "./errors.js";
-import type { FindingCandidate } from "./priority.js";
+import type { FindingCandidate, FindingPrioritizer } from "./priority.js";
 import type { RuleDefinition } from "./rule-definition.js";
 
 const FactualFindingCandidateSchema = FactualFindingSchema.omit({ priority: true });
@@ -56,6 +56,7 @@ export interface AnalysisRuleSet<TProjectSnapshot, TMetadataSnapshot> {
   readonly version: string;
   readonly factRules: readonly FactRule<TProjectSnapshot, TMetadataSnapshot>[];
   readonly findingRules: readonly FindingRule<TProjectSnapshot, TMetadataSnapshot>[];
+  readonly prioritizer: FindingPrioritizer<TProjectSnapshot, TMetadataSnapshot>;
   readonly recommendationRules: readonly RecommendationRule<TProjectSnapshot, TMetadataSnapshot>[];
 }
 
