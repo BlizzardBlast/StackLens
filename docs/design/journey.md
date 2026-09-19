@@ -843,10 +843,12 @@ filesystem or network access.
 `JS-CONFIG-013@1` consumes that static snapshot. It identifies supported configuration files and
 creates path-only project evidence. Strict JSON TypeScript, legacy ESLint, Prettier, and Biome
 configuration can expose a bounded allowlist of high-level characteristics. Known JS/TS config
-families such as Vite/Vitest/webpack/Rollup/Jest/ESLint flat config/Next.js/Prettier/Tailwind are
-identified but never imported or executed. Dynamic values, JSONC/comments unsupported by strict JSON,
-unexpected field shapes, and configuration above the 512 Ki-character inspection bound remain
-partial/resource-limited instead of being guessed.
+families such as Vite/Vitest/webpack/Rollup/Jest/ESLint flat/legacy config/Next.js/Prettier/Tailwind
+are identified but never imported or executed. A later exact-head review tightened FR-013 so
+recognized config-family filenames with unsupported extensions are also reported as
+unsupported/partial rather than silently ignored. Dynamic values, JSONC/comments unsupported by
+strict JSON, unexpected field shapes, and configuration above the 512 Ki-character inspection bound
+remain partial/resource-limited instead of being guessed.
 
 The configuration evidence deliberately excludes source content, and executable-looking fixture
 content verifies that the rule has no evaluation path.
