@@ -188,7 +188,7 @@ describe("production analysis policy integration [FR-014–FR-021, SCORE-001–S
 
     expect(report.recommendations).toHaveLength(2);
     expect(report.recommendations.map((item) => item.basis).toSorted()).toEqual([
-      "heuristic",
+      "fact",
       "heuristic",
     ]);
     expect(
