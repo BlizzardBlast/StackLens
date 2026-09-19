@@ -317,6 +317,48 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     expect(RepositoryIdentitySchema.safeParse(result.data.repository).success).toBe(true);
   });
 
+  it("marks source coverage partial when relevant source evidence is skipped or unsupported", async () => {
+    const packageJson = JSON.stringify({
+      dependencies: {
+        react: "19.0.0",
+      },
+    });
+    const sourceText = "import React from 'react'; export const value = React.version;";
+    const generatedSource = "import unused from 'unused';";
+    const unsupportedSource = "<script>import hidden from 'hidden-package';</script>";
+    const tree = treePayload([
+      treeEntry("package.json", manifestSha, packageJson.length),
+      treeEntry("src/index.ts", sourceSha, sourceText.length),
+      treeEntry("dist/generated.js", ignoredSha, generatedSource.length),
+      treeEntry("src/App.vue", viteSha, unsupportedSource.length),
+    ]);
+    const fetchImpl = successfulBaseFetch(tree, [
+      blobPayload(manifestSha, packageJson),
+      blobPayload(sourceSha, sourceText),
+    ]);
+    const result = await createAdapter(fetchImpl).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+
+    expect(result.ok).toBe(true);
+
+    if (!result.ok) {
+      throw new Error("Expected conservative partial source acquisition");
+    }
+
+    expect(fetchImpl).toHaveBeenCalledTimes(5);
+    expect(result.data.sourceCoverage).toEqual({
+      status: "partial",
+      candidateFiles: 1,
+      acquiredFiles: 1,
+    });
+    expect(result.source.status).toBe("partial");
+
+    const messages = result.data.limitations.map((limitation) => limitation.message).join("\n");
+    expect(messages).toContain("generated/vendor");
+    expect(messages).toContain("unsupported first-slice formats");
+  });
+
   it("uses an explicit ref without silently replacing it with the default branch", async () => {
     const packageJson = "{}";
     const tree = treePayload([treeEntry("package.json", manifestSha, packageJson.length)]);
@@ -447,6 +489,7 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
 
     expect(fetchImpl).toHaveBeenCalledTimes(4);
     expect(result.source.status).toBe("partial");
+    expect(result.data.sourceCoverage.status).toBe("partial");
     expect(result.data.manifest?.content).toBe(packageJson);
     expect(result.data.files).toEqual([]);
     expect(result.data.limitations.map((limitation) => limitation.message).join("\n")).toContain(

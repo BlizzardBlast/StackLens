@@ -136,7 +136,8 @@ function prettierPluginReferences(
     issues.push({
       path: file.path,
       kind: "parse_failure",
-      message: "Prettier plugin references could not be inspected because the configuration is not supported strict JSON.",
+      message:
+        "Prettier plugin references could not be inspected because the configuration is not supported strict JSON.",
     });
     return [];
   }
@@ -145,7 +146,8 @@ function prettierPluginReferences(
     issues.push({
       path: file.path,
       kind: "parse_failure",
-      message: "Prettier plugin references could not be inspected because the configuration root is not an object.",
+      message:
+        "Prettier plugin references could not be inspected because the configuration root is not an object.",
     });
     return [];
   }
@@ -227,7 +229,8 @@ function eslintPluginReferences(
     issues.push({
       path: file.path,
       kind: "parse_failure",
-      message: "ESLint plugin references could not be inspected because the configuration is not valid strict JSON.",
+      message:
+        "ESLint plugin references could not be inspected because the configuration is not valid strict JSON.",
     });
     return [];
   }
@@ -236,7 +239,8 @@ function eslintPluginReferences(
     issues.push({
       path: file.path,
       kind: "parse_failure",
-      message: "ESLint plugin references could not be inspected because the configuration root is not an object.",
+      message:
+        "ESLint plugin references could not be inspected because the configuration root is not an object.",
     });
     return [];
   }
@@ -260,8 +264,7 @@ function eslintPluginReferences(
   const extensions =
     typeof parsed.extends === "string"
       ? [parsed.extends]
-      : Array.isArray(parsed.extends) &&
-          parsed.extends.every((entry) => typeof entry === "string")
+      : Array.isArray(parsed.extends) && parsed.extends.every((entry) => typeof entry === "string")
         ? parsed.extends
         : parsed.extends === undefined
           ? []

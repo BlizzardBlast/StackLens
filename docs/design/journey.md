@@ -943,9 +943,11 @@ PR #19 implements Milestone H for **FR-009**.
 
 Public GitHub acquisition now includes bounded supported JS/TS/JSX/TSX files from the already-resolved
 immutable commit. The adapter exposes explicit source coverage so later rules can distinguish a
-complete supported scan from tree/file/byte/request/source failures. Existing no-execution,
-generated/vendor, symlink/submodule, binary/LFS, content-retention, and provider-provenance boundaries
-remain intact.
+complete supported scan from tree/file/byte/request/source failures. A final semantic review tightened
+that boundary: skipped supported config/source evidence, generated/vendor supported analysis files,
+submodules, and known code-bearing but unsupported `.vue`/`.svelte`/`.astro`/`.mdx` files now
+keep absence-based coverage partial instead of silently becoming negative-use evidence. Existing
+no-execution, symlink, binary/LFS, content-retention, and provider-provenance boundaries remain intact.
 
 The JavaScript rules package adds a parser adapter rather than coupling finding rules to a concrete
 AST. ADR-0010 records a necessary implementation adjustment: the original typescript-estree choice

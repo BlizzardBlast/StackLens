@@ -493,9 +493,10 @@ performs network/filesystem I/O.
 
 Source usage has an explicit coverage state:
 
-- `complete` — bounded acquisition was complete and all supported source parsed without unsupported
-  dynamic references;
-- `partial` — acquisition was limited or parsing/dynamic-reference uncertainty exists;
+- `complete` — bounded acquisition provided the complete supported usage-evidence scope and all
+  supported source parsed without unsupported dynamic references;
+- `partial` — acquisition skipped relevant supported evidence, reported known unsupported
+  code-bearing source formats, or parsing/dynamic-reference uncertainty exists;
 - `unavailable` — repository source acquisition was not supplied.
 
 `JS-USAGE-009@1` emits positive `dependency.usage.static` facts only for declared dependencies and
@@ -517,6 +518,8 @@ Focused fixtures cover ESM import/export, static CommonJS require, static dynami
 subpath package normalization, local/builtin/protocol exclusion, parse failure, non-static dynamic
 references, deterministic configuration/script conventions, positive usage facts, a complete-coverage
 potentially-unnecessary finding, peer-only exclusion, and suppression of absence-based findings when
-coverage is partial.
+coverage is partial. Provider fixtures additionally verify that skipped supported config/source
+evidence and known unsupported source formats downgrade coverage instead of creating negative-use
+evidence.
 
 No analyzed source or configuration is executed.

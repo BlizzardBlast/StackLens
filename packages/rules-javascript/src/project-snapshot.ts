@@ -98,7 +98,9 @@ export function normalizePackageScripts(input: unknown): JavaScriptPackageScript
   }
 
   if (!isRecord(scripts)) {
-    throw new TypeError("package.json scripts must be an object when source-usage analysis reads them.");
+    throw new TypeError(
+      "package.json scripts must be an object when source-usage analysis reads them.",
+    );
   }
 
   return Object.entries(scripts)

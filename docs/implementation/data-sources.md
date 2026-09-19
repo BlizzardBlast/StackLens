@@ -516,12 +516,15 @@ The normalized GitHub snapshot exposes a source-coverage summary:
 - successfully acquired supported source-file count;
 - `complete` or `partial` status.
 
-Coverage becomes partial when GitHub tree truncation, unsafe returned paths, source-file count
-truncation, source symlinks, source size/aggregate/request limits, binary/LFS source content, or
-source blob acquisition failures could hide supported source usage.
+Coverage becomes partial when GitHub tree truncation, unsafe returned paths, supported
+configuration/source file-count truncation, generated/vendor supported analysis files, symlinks,
+submodules, size/aggregate/request limits, binary/LFS content, file acquisition failures, or known
+code-bearing source formats outside the first-slice parser support could hide dependency usage.
 
-Generated/vendor directories remain deliberately outside the supported project-source scope rather
-than being traversed merely to improve coverage.
+The first slice treats tracked `.vue`, `.svelte`, `.astro`, and `.mdx` files outside ignored
+generated/vendor directories as unsupported source evidence. They are not fetched or parsed, and
+their presence keeps absence-based FR-009 conclusions unavailable rather than being silently
+interpreted as non-use.
 
 The data-source package still performs no JavaScript parsing. Application/worker orchestration maps
 the transient selected files and source-coverage state into the rules-javascript source parser
