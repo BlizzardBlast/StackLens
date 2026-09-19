@@ -27,6 +27,8 @@ import type {
 } from "./types.js";
 
 const NPM_REGISTRY_ACCEPT = "application/json";
+const NPM_PACKAGE_NAME_MAX_LENGTH = 214;
+const CONTRACT_REFERENCE_MAX_LENGTH = 1_000;
 
 class NpmRegistryConfigurationError extends Error {}
 
@@ -46,7 +48,7 @@ function validatePackageName(value: unknown): value is string {
   return (
     typeof value === "string" &&
     value.length > 0 &&
-    value.length <= 500 &&
+    value.length <= NPM_PACKAGE_NAME_MAX_LENGTH &&
     value.trim() === value &&
     !containsControlCharacter(value)
   );
@@ -145,12 +147,23 @@ export class NpmRegistryAdapter implements EvidenceProvider<
         typeof packageName === "string" ? packageName : "invalid-package-name",
         attemptedAt,
         "npm_invalid_package_name",
-        "npm Registry package names must be non-empty, unpadded strings without control characters.",
+        "npm Registry package names must be non-empty, unpadded strings no longer than 214 characters and without control characters.",
         false,
       );
     }
 
     const endpoint = npmRegistryPackageUrl(packageName);
+
+    if (endpoint.length > CONTRACT_REFERENCE_MAX_LENGTH) {
+      return createSourceFailure(
+        packageName,
+        validateObservedAt(this.#now()),
+        "npm_invalid_package_name",
+        "npm Registry package names must produce a contract-safe registry reference.",
+        false,
+      );
+    }
+
     const controller = new AbortController();
     let timedOut = false;
     const timeout = setTimeout(() => {
