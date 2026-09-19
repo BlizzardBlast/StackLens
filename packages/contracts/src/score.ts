@@ -1,7 +1,7 @@
 import * as z from "zod";
 
+import { ScoreCategorySchema } from "./category.js";
 import { IdentifierSchema, RuleReferenceSchema } from "./identifiers.js";
-import { ScoreCategorySchema } from "./limitation.js";
 
 export const ScoreContributionDirectionSchema = z.enum(["addition", "deduction"]);
 
