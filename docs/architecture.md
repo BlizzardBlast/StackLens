@@ -2,9 +2,9 @@
 
 > **Status:** Accepted baseline  
 > **Architecture version:** 0.1.4  
-> **Date:** 2026-09-18  
+> **Date:** 2026-09-19  
 > **Requirements source:** [requirements.md](requirements.md)  
-> **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006
+> **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
 ## 1. Architecture summary
 
@@ -230,7 +230,7 @@ A finding contains, as applicable:
 - evidence references;
 - confidence for heuristics;
 - priority factors;
-- source timestamps;
+- provenance/timestamps through referenced evidence and data sources;
 - limitations.
 
 The frontend renders this model; it does not reinterpret raw metadata into independent product findings.
@@ -386,7 +386,7 @@ facts[]
 findings[]
 recommendations[]
 scores
-  overall?
+  overall
   categories
   contributions[]
 limitations[]
