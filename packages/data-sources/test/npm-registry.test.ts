@@ -155,6 +155,87 @@ describe("NpmRegistryAdapter [FR-006, FR-007, FR-010, DATA-001, DATA-002]", () =
     expect(EvidenceSchema.safeParse(result.evidence[0]).success).toBe(true);
   });
 
+  it("accepts metadata when optional time and repository fields are absent", async () => {
+    const adapter = createAdapter(
+      vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            name: "minimal-package",
+            "dist-tags": {
+              latest: "1.0.0",
+            },
+            versions: {
+              "1.0.0": {
+                name: "minimal-package",
+                version: "1.0.0",
+              },
+            },
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+
+    const result = await adapter.fetch({
+      packageName: "minimal-package",
+    });
+
+    expect(result.ok).toBe(true);
+
+    if (!result.ok) {
+      throw new Error("Expected minimal npm metadata to succeed");
+    }
+
+    expect(result.data).toEqual({
+      packageName: "minimal-package",
+      distTags: [
+        {
+          tag: "latest",
+          version: "1.0.0",
+        },
+      ],
+      versions: [
+        {
+          version: "1.0.0",
+        },
+      ],
+    });
+  });
+
+  it("treats an empty deprecation message as not deprecated", async () => {
+    const packument = createPackument();
+    const undeprecatedPackument = {
+      ...packument,
+      versions: {
+        ...packument.versions,
+        "2.0.0": {
+          ...packument.versions["2.0.0"],
+          deprecated: "   ",
+        },
+      },
+    };
+    const adapter = createAdapter(
+      vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(new Response(JSON.stringify(undeprecatedPackument), { status: 200 })),
+    );
+
+    const result = await adapter.fetch({
+      packageName: "@stacklens/example",
+    });
+
+    expect(result.ok).toBe(true);
+
+    if (!result.ok) {
+      throw new Error("Expected empty deprecation message to normalize successfully");
+    }
+
+    expect(result.data.versions.find((version) => version.version === "2.0.0")).toEqual({
+      version: "2.0.0",
+      publishedAt: "2026-09-18T12:00:00.000Z",
+    });
+  });
+
   it("normalizes equivalent provider objects deterministically", async () => {
     const first = createPackument();
     const second = {
