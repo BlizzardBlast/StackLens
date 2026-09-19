@@ -371,8 +371,9 @@ Accepted implementation:
   configuration families;
 - known JS/TS configuration families are identified by path but never imported, executed, or
   evaluated; partial inspection is recorded as a limitation;
-- JSONC/comments, malformed/unsupported field shapes, and oversized configuration remain detected
-  but limited rather than guessed;
+- recognized config-family filenames with unsupported formats/extensions, JSONC/comments,
+  malformed/unsupported field shapes, and oversized configuration remain detected but limited
+  rather than guessed;
 - configuration evidence retains path/summary only and does not copy source content into the report;
 - the static configuration inspection bound is 512 Ki characters;
 - no GitHub acquisition, source-usage analysis, production priority, recommendations, or scoring is
