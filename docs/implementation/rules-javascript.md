@@ -430,8 +430,8 @@ configuration limitation instead of coercion.
 
 Known JS/TS config families are identified by filename for ESLint flat config, Jest, Next.js,
 Prettier, Rollup, Tailwind, Vite, Vitest, and webpack. These files are never imported or executed.
-The fact records file detection and a linked rule-level limitation explains that dynamic values were
-not resolved.
+The fact records file detection, and a separate rule-level limitation explains that dynamic values
+were not resolved.
 
 JSONC/comments that strict JSON cannot parse remain file detections with an
 `unsupported_configuration` limitation. Static declarative content over 512 Ki characters remains
