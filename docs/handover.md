@@ -484,5 +484,5 @@ The next session can consider the overlap/framework/tool/configuration slice com
 8. the same PR completes journey/handover documentation before merge and the permanent CI gate is
    green.
 
-Continue with the smallest npm-metadata-backed vertical slice rather than combining unrelated
-analysis domains or scoring behavior.
+Continue with the smallest deterministic overlap/framework/tool/configuration vertical slice rather
+than combining repository acquisition, source usage, or scoring behavior.
