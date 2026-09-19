@@ -252,12 +252,13 @@ strictness/module/target, ESLint extends/plugins/rule counts, Prettier formattin
 Biome formatter/linter/assist enablement.
 
 Known JavaScript/TypeScript configuration files such as Vite, Vitest, webpack, Rollup, Jest, ESLint
-flat config, Next.js, Prettier, and Tailwind config are identified by path only. Their code is never
-imported, executed, or evaluated; a rule limitation records that inspection is partial.
+flat/legacy config, Next.js, Prettier, and Tailwind config are identified by path only. Their code is
+never imported, executed, or evaluated; a rule limitation records that inspection is partial.
 
-JSONC/comments, malformed/unsupported shapes, and configuration content above the 512 Ki-character
-inspection bound remain detected as files but produce unsupported/resource-limit limitations rather
-than guessed characteristics.
+Recognized config-family filenames with unsupported extensions/formats are still emitted as detected
+configuration facts with an `unsupported_configuration` limitation rather than being silently
+ignored. JSONC/comments, malformed/unsupported shapes, and configuration content above the
+512 Ki-character inspection bound likewise remain detected but limited rather than guessed.
 
 Project evidence stores only configuration path/summary metadata, never configuration source
 content.
