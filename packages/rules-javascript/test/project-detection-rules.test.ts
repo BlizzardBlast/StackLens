@@ -6,10 +6,7 @@ import {
   createDependencyInventoryEvidence,
   dependencyInventoryRule,
 } from "../src/dependency-inventory.js";
-import {
-  dependencyOverlapFindingId,
-  dependencyOverlapRule,
-} from "../src/dependency-overlap.js";
+import { dependencyOverlapFindingId, dependencyOverlapRule } from "../src/dependency-overlap.js";
 import {
   frameworkToolDetectionFactId,
   frameworkToolDetectionRule,
@@ -375,15 +372,15 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
       projectConfigurationFactId(".prettierrc.json", "prettier"),
       projectConfigurationFactId("tsconfig.json", "typescript"),
     ]);
-    expect(result.facts?.find((fact) => fact.subject.path === "tsconfig.json")?.statement).toContain(
-      "strict=true",
-    );
-    expect(result.facts?.find((fact) => fact.subject.path === "tsconfig.json")?.statement).toContain(
-      'jsx="react-jsx"',
-    );
-    expect(result.facts?.find((fact) => fact.subject.path === ".prettierrc.json")?.statement).toContain(
-      "printWidth=100",
-    );
+    expect(
+      result.facts?.find((fact) => fact.subject.path === "tsconfig.json")?.statement,
+    ).toContain("strict=true");
+    expect(
+      result.facts?.find((fact) => fact.subject.path === "tsconfig.json")?.statement,
+    ).toContain('jsx="react-jsx"');
+    expect(
+      result.facts?.find((fact) => fact.subject.path === ".prettierrc.json")?.statement,
+    ).toContain("printWidth=100");
     expect(evidence.every((item) => item.location?.startLine === undefined)).toBe(true);
   });
 
