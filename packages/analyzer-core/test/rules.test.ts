@@ -3,7 +3,12 @@ import { describe, expect, it } from "vitest";
 import type { AnalysisFact } from "@stacklens/contracts";
 
 import { validateFactRuleResult, validateFindingRuleResult } from "../src/rules.js";
-import { createFact, createFinding, createLimitation } from "./fixture.js";
+import {
+  createFact,
+  createFindingCandidate,
+  createLimitation,
+  createPriority,
+} from "./fixture.js";
 
 describe("rule output validation", () => {
   it("rejects requirements that the rule did not declare", () => {
@@ -38,9 +43,27 @@ describe("rule output validation", () => {
 
     expect(() =>
       validateFindingRuleResult(rule, {
-        findings: [createFinding("FINDING-A", "finding-a", "fact-a")],
+        findings: [createFindingCandidate("FINDING-A", "finding-a", "fact-a")],
         limitations: [limitation],
       }),
     ).toThrowError(/without referencing itself/);
+  });
+
+  it("rejects a finding rule that attempts to embed its own priority", () => {
+    const rule = {
+      id: "FINDING-A",
+      version: "1",
+      requirementIds: ["FR-017"] as const,
+    };
+    const candidateWithPriority = {
+      ...createFindingCandidate("FINDING-A", "finding-a", "fact-a"),
+      priority: createPriority(),
+    };
+
+    expect(() =>
+      validateFindingRuleResult(rule, {
+        findings: [candidateWithPriority],
+      }),
+    ).toThrowError(/schema-invalid factual finding candidate/);
   });
 });
