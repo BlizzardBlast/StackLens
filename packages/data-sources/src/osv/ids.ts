@@ -12,15 +12,15 @@ export function osvQueryKey(query: OsvPackageVersionQuery): string {
 }
 
 export function osvSourceId(queries: readonly OsvPackageVersionQuery[]): string {
-  const canonicalQueries = [...new Map(queries.map((query) => [osvQueryKey(query), query])).values()]
-    .toSorted((left, right) => {
+  const canonicalQueries = [
+    ...new Map(queries.map((query) => [osvQueryKey(query), query])).values(),
+  ].toSorted((left, right) => {
       if (left.packageName !== right.packageName) {
         return left.packageName < right.packageName ? -1 : 1;
       }
 
       return left.version < right.version ? -1 : left.version > right.version ? 1 : 0;
-    })
-    .map((query) => [query.packageName, query.version]);
+    }).map((query) => [query.packageName, query.version]);
   return `source-osv-${stableIdHash(JSON.stringify([OSV_PROVIDER_ID, canonicalQueries]))}`;
 }
 
@@ -41,10 +41,7 @@ export function osvVulnerabilityApiUrl(vulnerabilityId: string): string {
 }
 
 export function osvVulnerabilityPageUrl(vulnerabilityId: string): string {
-  return new URL(
-    encodeURIComponent(vulnerabilityId),
-    OSV_VULNERABILITY_PAGE_BASE_URL,
-  ).toString();
+  return new URL(encodeURIComponent(vulnerabilityId), OSV_VULNERABILITY_PAGE_BASE_URL).toString();
 }
 
 export { OSV_QUERY_BATCH_URL };
