@@ -9,6 +9,7 @@ import type {
   AnalysisFact,
   AnalysisLimitation,
   Recommendation,
+  RequirementId,
 } from "@stacklens/contracts";
 
 import type { FactRuleContext, FindingRuleContext, RecommendationRuleContext } from "./context.js";
@@ -60,13 +61,13 @@ export interface AnalysisRuleSet<TProjectSnapshot, TMetadataSnapshot> {
 
 function assertOwnedRequirements(
   rule: RuleDefinition,
-  requirementIds: readonly string[],
+  requirementIds: readonly RequirementId[],
   entityLabel: string,
 ) {
   const declared = new Set(rule.requirementIds);
 
   for (const requirementId of requirementIds) {
-    if (!declared.has(requirementId as never)) {
+    if (!declared.has(requirementId)) {
       throw new AnalyzerInvariantError(
         `Rule ${rule.id} emitted ${entityLabel} with undeclared requirement ${requirementId}`,
       );
