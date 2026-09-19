@@ -534,3 +534,16 @@ No provider/network I/O or analyzed-project execution was introduced.
 
 **Traceability:** FR-004, FR-005, FR-017, NFR-001, NFR-002, NFR-004, NFR-005, SEC-001, SEC-002,
 GOV-002, GOV-006, GOV-007.
+
+
+## 2026-09-19 — Step 32: Finalize the FR-005 handover baseline
+
+PR #9 was squash-merged to `main` as
+`7168467e458c63ed16cb7017fffe1ceae936da4f`, and the permanent post-merge quality workflow passed
+on that exact commit.
+
+The session handover now records that immutable merge commit as the completed FR-005 baseline
+instead of the temporary pre-merge placeholder. No product behavior, architecture, or requirements
+changed in this documentation-only continuity update.
+
+**Traceability:** GOV-002, GOV-007.
