@@ -14,15 +14,9 @@ import {
   deprecatedDependencyFindingId,
   deprecatedDependencyRule,
 } from "../src/deprecated-dependency.js";
-import {
-  npmRegistryHealthFactId,
-  npmRegistryHealthFactRule,
-} from "../src/npm-registry-health.js";
-import {
-  outdatedDependencyFindingId,
-  outdatedDependencyRule,
-} from "../src/outdated-dependency.js";
 import { normalizePackageManifest } from "../src/manifest.js";
+import { npmRegistryHealthFactId, npmRegistryHealthFactRule } from "../src/npm-registry-health.js";
+import { outdatedDependencyFindingId, outdatedDependencyRule } from "../src/outdated-dependency.js";
 import {
   compareSemanticVersions,
   newerVersionDifference,
@@ -343,41 +337,38 @@ describe("outdatedDependencyRule [FR-006, DATA-001, DATA-002, DATA-003, NFR-003]
     ["1.4.9", "1.5.0", "minor-version difference"],
     ["1.5.0", "1.5.1", "patch-version difference"],
     ["2.0.0-beta.1", "2.0.0", "prerelease-to-release semantic-version difference"],
-  ])(
-    "distinguishes %s -> %s as %s",
-    (declaredVersion, comparisonVersion, expectedDifference) => {
-      const fixture = createRuleContext({
-        manifest: {
-          dependencies: {
-            [packageName]: declaredVersion,
-          },
+  ])("distinguishes %s -> %s as %s", (declaredVersion, comparisonVersion, expectedDifference) => {
+    const fixture = createRuleContext({
+      manifest: {
+        dependencies: {
+          [packageName]: declaredVersion,
         },
-        metadata: createMetadata(
-          createSnapshot({
-            distTags: [
-              {
-                tag: "latest",
-                version: comparisonVersion,
-              },
-            ],
-            versions: [
-              {
-                version: declaredVersion,
-              },
-              {
-                version: comparisonVersion,
-              },
-            ],
-          }),
-        ),
-      });
+      },
+      metadata: createMetadata(
+        createSnapshot({
+          distTags: [
+            {
+              tag: "latest",
+              version: comparisonVersion,
+            },
+          ],
+          versions: [
+            {
+              version: declaredVersion,
+            },
+            {
+              version: comparisonVersion,
+            },
+          ],
+        }),
+      ),
+    });
 
-      const result = outdatedDependencyRule.evaluate(fixture.context);
+    const result = outdatedDependencyRule.evaluate(fixture.context);
 
-      expect(result.findings).toHaveLength(1);
-      expect(result.findings?.[0]?.description).toContain(expectedDifference);
-    },
-  );
+    expect(result.findings).toHaveLength(1);
+    expect(result.findings?.[0]?.description).toContain(expectedDifference);
+  });
 
   it("emits no outdated finding when latest is equal to or older than the exact declared version", () => {
     const equal = createRuleContext({
@@ -479,9 +470,9 @@ describe("outdatedDependencyRule [FR-006, DATA-001, DATA-002, DATA-003, NFR-003]
       ],
     });
     expect(outdatedDependencyRule.evaluate(crossSource.context).findings).toEqual([]);
-    expect(outdatedDependencyRule.evaluate(crossSource.context).limitations?.[0]?.message).toContain(
-      "exact bound data source",
-    );
+    expect(
+      outdatedDependencyRule.evaluate(crossSource.context).limitations?.[0]?.message,
+    ).toContain("exact bound data source");
 
     const missingDeclaredRecord = createRuleContext({
       metadata: createMetadata(
@@ -536,9 +527,9 @@ describe("outdatedDependencyRule [FR-006, DATA-001, DATA-002, DATA-003, NFR-003]
       ),
     });
     expect(outdatedDependencyRule.evaluate(invalidLatest.context).findings).toEqual([]);
-    expect(outdatedDependencyRule.evaluate(invalidLatest.context).limitations?.[0]?.message).toContain(
-      "not a supported exact semantic version",
-    );
+    expect(
+      outdatedDependencyRule.evaluate(invalidLatest.context).limitations?.[0]?.message,
+    ).toContain("not a supported exact semantic version");
   });
 });
 
