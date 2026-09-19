@@ -20,7 +20,7 @@ const baseFact = {
 
 describe("AnalysisFactSchema [FR-005]", () => {
   it("accepts structured dependency inventory details without changing generic subject semantics", () => {
-    const result = AnalysisFactSchema.safeParse({
+    const parsed = AnalysisFactSchema.parse({
       ...baseFact,
       details: {
         kind: "dependency_inventory",
@@ -29,15 +29,11 @@ describe("AnalysisFactSchema [FR-005]", () => {
       },
     });
 
-    expect(result.success).toBe(true);
-
-    if (result.success) {
-      expect(result.data.details).toEqual({
-        kind: "dependency_inventory",
-        dependencyGroup: "dependencies",
-        declaredSpecifier: "workspace:^ || https://example.com/pkg.tgz",
-      });
-    }
+    expect(parsed.details).toEqual({
+      kind: "dependency_inventory",
+      dependencyGroup: "dependencies",
+      declaredSpecifier: "workspace:^ || https://example.com/pkg.tgz",
+    });
   });
 
   it("keeps existing facts without details valid", () => {
