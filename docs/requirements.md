@@ -859,6 +859,7 @@ The report must satisfy the deterministic, evidence, scoring, security, and trac
 | Evidence model | FR-017, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, DATA-006 |
 | Health scoring | FR-018, FR-019, FR-020, SCORE-001, SCORE-002, SCORE-003 |
 | Limitations | FR-021, PRD-004 |
+| Documentation continuity | GOV-007 |
 | Analyzer design | NFR-001, NFR-002, NFR-004, NFR-005 |
 | Privacy/security | SEC-001, SEC-002, SEC-003, SEC-007, NFR-009 |
 | Future GitHub private access | FR-100, SEC-004, SEC-005 |
