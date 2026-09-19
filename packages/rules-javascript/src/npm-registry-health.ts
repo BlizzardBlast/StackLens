@@ -6,7 +6,7 @@ import { dependencyInventoryEvidenceId } from "./dependency-inventory.js";
 import type { NormalizedPackageManifest } from "./manifest.js";
 import { latestDistTag, packageVersion, resolveNpmObservation } from "./npm-rule-support.js";
 import {
-  createRuleLimitation,
+  createDependencyRuleLimitation,
   dependencyDeclarationBases,
   truncate,
   uniqueSorted,
@@ -51,7 +51,7 @@ export const npmRegistryHealthFactRule: FactRule<
 
       if (latest === undefined) {
         limitations.push(
-          createRuleLimitation(
+          createDependencyRuleLimitation(
             RULE_ID,
             "external_data",
             "npm-latest-tag-missing",
@@ -67,7 +67,7 @@ export const npmRegistryHealthFactRule: FactRule<
 
       if (latestVersion === undefined) {
         limitations.push(
-          createRuleLimitation(
+          createDependencyRuleLimitation(
             RULE_ID,
             "external_data",
             "npm-latest-version-missing",
