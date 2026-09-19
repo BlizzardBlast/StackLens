@@ -1,6 +1,6 @@
-# StackLens Design Journey
+# StackLens Project Journey
 
-This document is the chronological design log for StackLens. It records not only what was chosen, but the reasoning and requirement links behind each step.
+This document is the chronological project log for StackLens. The path is historical; the journey now covers requirements, architecture, product design, tooling, implementation, corrections, and verification. It records not only what was chosen, but why.
 
 ## 2026-09-18 — Step 1: Requirements before interface
 
@@ -257,3 +257,27 @@ The review found several improvements worth making before product implementation
 - the repository had no shared editor configuration or Codex project instructions.
 
 The production baseline was updated accordingly. The design intent and accepted product requirements did not change.
+
+
+## 2026-09-19 — Step 21: Full PR and configuration hardening
+
+Before merging the design-infrastructure bootstrap, the entire pull request was reviewed again for codebase-specific configuration, unnecessary abstraction, supply-chain hygiene, and future-agent continuity.
+
+The review produced these corrections:
+
+- removed `packages/ui/src/lib/utils.ts`; UI code now imports `cn` directly from the package;
+- removed the public UI `./lib/*` export and unused TypeScript extension options;
+- moved the shadcn CLI to development dependencies while retaining runtime UI dependencies where they are actually consumed;
+- constrained Node to the selected 24.x LTS major;
+- replaced the generic Node `.gitignore` with StackLens-specific generated/cache/environment entries;
+- pinned the mature TypeScript-aware Oxlint bridge release and removed temporary pnpm release-age exceptions;
+- made Oxlint warnings and unused suppression directives fail the quality gate;
+- made design-token tests independently generate the artifacts they inspect;
+- hardened GitHub Actions with immutable action SHAs and journey-continuity enforcement;
+- formalized documentation continuity as **GOV-007**;
+- added documentation governance and a requirements/documentation-aware pull-request template;
+- made `AGENTS.md` and `CONTRIBUTING.md` explicitly require affected-document and journey updates before work is considered complete.
+
+This step intentionally prefers small, direct configuration over abstractions or generic boilerplate that StackLens does not currently need.
+
+Verification continues on the real GitHub Actions runner after the lockfile and canonical formatting are refreshed.
