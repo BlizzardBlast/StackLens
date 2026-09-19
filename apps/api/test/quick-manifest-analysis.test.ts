@@ -234,43 +234,40 @@ describe("analyzeQuickManifest [FR-001, FR-002, FR-004, FR-022, SEC-003]", () =>
     );
   });
 
-  it(
-    "fingerprints equivalent paste and upload content identically without retaining source text",
-    () => {
-      const content = '{\n  "dependencies": { "react": "^19.0.0" }\n}';
-      const analyzer = createTestAnalyzer();
+  it("fingerprints equivalent paste and upload content identically without retaining source text", () => {
+    const content = '{\n  "dependencies": { "react": "^19.0.0" }\n}';
+    const analyzer = createTestAnalyzer();
 
-      const pasted = analyzeQuickManifest(
-        {
-          ...baseCommand,
-          input: {
-            kind: "paste",
-            content,
-          },
+    const pasted = analyzeQuickManifest(
+      {
+        ...baseCommand,
+        input: {
+          kind: "paste",
+          content,
         },
-        { analyzer },
-      );
-      const uploaded = analyzeQuickManifest(
-        {
-          ...baseCommand,
-          input: {
-            kind: "upload",
-            filename: "package.json",
-            content,
-          },
+      },
+      { analyzer },
+    );
+    const uploaded = analyzeQuickManifest(
+      {
+        ...baseCommand,
+        input: {
+          kind: "upload",
+          filename: "package.json",
+          content,
         },
-        { analyzer },
-      );
+      },
+      { analyzer },
+    );
 
-      expect(pasted.ok).toBe(true);
-      expect(uploaded.ok).toBe(true);
+    expect(pasted.ok).toBe(true);
+    expect(uploaded.ok).toBe(true);
 
-      if (!pasted.ok || !uploaded.ok) {
-        throw new Error("Expected both quick manifest inputs to succeed");
-      }
+    if (!pasted.ok || !uploaded.ok) {
+      throw new Error("Expected both quick manifest inputs to succeed");
+    }
 
-      expect(pasted.report.input.fingerprint).toBe(uploaded.report.input.fingerprint);
-      expect(pasted.report.facts).toEqual(uploaded.report.facts);
-    },
-  );
+    expect(pasted.report.input.fingerprint).toBe(uploaded.report.input.fingerprint);
+    expect(pasted.report.facts).toEqual(uploaded.report.facts);
+  });
 });
