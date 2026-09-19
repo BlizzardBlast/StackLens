@@ -49,8 +49,10 @@ jobs:
           node-version: 24
           cache: pnpm
 
-      - name: Refresh dependencies
-        run: pnpm install --no-frozen-lockfile
+      - name: Rebuild audited lockfile
+        run: |
+          pnpm clean --lockfile
+          pnpm install --no-frozen-lockfile
 
       - name: Build generated packages
         run: pnpm build
