@@ -275,7 +275,10 @@ export function parseOsvBatchResponse(
     for (const match of matches) {
       const existing = deduplicated.get(match.id);
 
-      if (existing === undefined || match.modifiedAt > existing.modifiedAt) {
+      if (
+        existing === undefined ||
+        Date.parse(match.modifiedAt) > Date.parse(existing.modifiedAt)
+      ) {
         deduplicated.set(match.id, match);
       }
     }
