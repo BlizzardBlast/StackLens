@@ -762,7 +762,7 @@ NFR-004, SEC-002, GOV-002, GOV-006, GOV-007.
 
 ## 2026-09-19 — Step 38: Add source-bound npm metadata dependency analysis
 
-The JavaScript/TypeScript rule package now consumes pre-acquired normalized npm Registry metadata for
+PR #16 adds the npm metadata dependency-analysis slice. The JavaScript/TypeScript rule package now consumes pre-acquired normalized npm Registry metadata for
 **FR-006**, **FR-007**, and **FR-010** without adding provider I/O to analyzer execution.
 
 `JavaScriptAnalysisMetadata.npmRegistry` carries minimal package snapshots bound to exact
