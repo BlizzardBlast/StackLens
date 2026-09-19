@@ -3,6 +3,7 @@ export type { AnalyzerDefinition, AnalyzerRunInput } from "./analyzer.js";
 
 export type {
   AnalysisContext,
+  DeepReadonly,
   FactRuleContext,
   FindingRuleContext,
   RecommendationRuleContext,
@@ -13,8 +14,19 @@ export { AnalyzerConfigurationError, AnalyzerInvariantError } from "./errors.js"
 export { runRulePipeline } from "./pipeline.js";
 export type { RulePipelineResult } from "./pipeline.js";
 
+export { applyFindingPriority } from "./priority.js";
+export type {
+  FactualFindingCandidate,
+  FindingCandidate,
+  FindingPrioritizer,
+  HeuristicFindingCandidate,
+  PrioritizationContext,
+} from "./priority.js";
+
 export { assembleAnalysisReport } from "./report.js";
 export type { AnalysisReportAssemblyInput } from "./report.js";
+
+export type { RuleDefinition } from "./rule-definition.js";
 
 export {
   validateFactRuleResult,
@@ -29,7 +41,6 @@ export type {
   FindingRuleResult,
   RecommendationRule,
   RecommendationRuleResult,
-  RuleDefinition,
 } from "./rules.js";
 
 export type { AnalysisScorer, ScoringContext } from "./scoring.js";
