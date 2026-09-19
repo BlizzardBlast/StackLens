@@ -3,9 +3,11 @@ import type {
   AnalysisLimitation,
   AnalysisScores,
   Evidence,
-  Finding,
+  FindingPriority,
   Recommendation,
 } from "@stacklens/contracts";
+
+import type { FindingCandidate } from "../src/priority.js";
 
 export const projectEvidence: Evidence = {
   id: "evidence-manifest",
@@ -36,7 +38,11 @@ export function createFact(ruleId: string, id: string): AnalysisFact {
   };
 }
 
-export function createFinding(ruleId: string, id: string, factId: string): Finding {
+export function createFindingCandidate(
+  ruleId: string,
+  id: string,
+  factId: string,
+): FindingCandidate {
   return {
     id,
     classification: "fact",
@@ -55,21 +61,27 @@ export function createFinding(ruleId: string, id: string, factId: string): Findi
     evidenceIds: [projectEvidence.id],
     factIds: [factId],
     limitationIds: [],
-    priority: {
-      level: "low",
-      rule: {
-        id: "PRIORITY-001",
-        version: "1",
-      },
-      rationale: "Fixture priority.",
-      factors: [
-        {
-          key: "fixture",
-          rationale: "Fixture priority factor.",
-          evidenceIds: [projectEvidence.id],
-        },
-      ],
+  };
+}
+
+export function createPriority(
+  ruleId = "PRIORITY-001",
+  level: FindingPriority["level"] = "low",
+): FindingPriority {
+  return {
+    level,
+    rule: {
+      id: ruleId,
+      version: "1",
     },
+    rationale: "Fixture priority.",
+    factors: [
+      {
+        key: "fixture",
+        rationale: "Fixture priority factor.",
+        evidenceIds: [projectEvidence.id],
+      },
+    ],
   };
 }
 
