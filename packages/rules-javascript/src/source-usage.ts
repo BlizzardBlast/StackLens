@@ -291,7 +291,9 @@ export function createJavaScriptSourceUsageSnapshot(
   return {
     coverage: acquisitionCoverage === "complete" && issues.length === 0 ? "complete" : "partial",
     parsedSourceFiles,
-    references: references.toSorted(referenceOrder),
+    references: references
+      .filter((reference) => declaredPackages.has(reference.packageName))
+      .toSorted(referenceOrder),
     issues,
   };
 }
@@ -348,11 +350,18 @@ export function createSourceUsageEvidence(project: JavaScriptProjectSnapshot): P
       " supported JavaScript/TypeScript source file(s) were parsed.",
   };
 
-  return [
-    coverageEvidence,
-    ...snapshot.references.map((reference) => ({
-      id: sourceUsageReferenceEvidenceId(reference),
-      kind: "project" as const,
+  const referenceEvidence = new Map<string, ProjectEvidence>();
+
+  for (const reference of snapshot.references) {
+    const id = sourceUsageReferenceEvidenceId(reference);
+
+    if (referenceEvidence.has(id)) {
+      continue;
+    }
+
+    referenceEvidence.set(id, {
+      id,
+      kind: "project",
       summary: truncate(
         reference.detail ??
           reference.packageName +
@@ -366,7 +375,12 @@ export function createSourceUsageEvidence(project: JavaScriptProjectSnapshot): P
         ...(reference.startLine === undefined ? {} : { startLine: reference.startLine }),
         ...(reference.endLine === undefined ? {} : { endLine: reference.endLine }),
       },
-    })),
+    });
+  }
+
+  return [
+    coverageEvidence,
+    ...[...referenceEvidence.values()].toSorted((left, right) => compareCodeUnits(left.id, right.id)),
   ];
 }
 
