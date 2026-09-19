@@ -10,10 +10,7 @@ const RULE_VERSION = "1";
 const MAX_STATIC_CONFIG_CONTENT_LENGTH = 512 * 1024;
 const DYNAMIC_EXTENSIONS = ["js", "cjs", "mjs", "ts", "cts", "mts"] as const;
 
-type ConfigurationInspectionMode =
-  | "declarative_json"
-  | "dynamic_code"
-  | "unsupported_format";
+type ConfigurationInspectionMode = "declarative_json" | "dynamic_code" | "unsupported_format";
 
 interface ConfigurationDescriptor {
   readonly kind: string;
