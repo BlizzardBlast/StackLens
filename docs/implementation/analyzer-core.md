@@ -7,20 +7,24 @@
 
 ## Package responsibility
 
-`packages/analyzer-core` orchestrates deterministic analysis but does not contain ecosystem-specific product rules.
+`packages/analyzer-core` orchestrates deterministic analysis but does not contain ecosystem-specific rules, priority policy, or score policy.
 
 It owns:
-- analysis context interfaces;
-- rule definitions;
-- stage execution;
-- rule-output validation;
-- rule failure isolation;
+- immutable context interfaces;
+- shared rule-definition metadata;
+- rule interfaces;
+- finding-candidate types;
+- prioritizer interface/orchestration;
+- deterministic stage execution;
+- output/reference validation;
+- failure isolation;
 - scoring abstraction;
 - report assembly.
 
 It does not own:
 - npm/OSV/GitHub requests;
 - JavaScript/TypeScript parsing rules;
+- priority formulas;
 - scoring formulas;
 - database/job state;
 - API/React code.
@@ -29,17 +33,19 @@ It does not own:
 
 ```text
 src/
-├─ context.ts    # immutable rule contexts and stage visibility
-├─ rules.ts      # rule interfaces + emitted-output validation
-├─ pipeline.ts   # deterministic staged execution and failure isolation
-├─ scoring.ts    # AnalysisScorer dependency-inversion boundary
-├─ report.ts     # contract-validated AnalysisReport assembly
-├─ analyzer.ts   # top-level orchestration
-├─ errors.ts     # configuration/invariant errors
-└─ index.ts      # explicit public surface
+├─ context.ts          # DeepReadonly analysis context + stage visibility
+├─ rule-definition.ts  # stable ID/version/requirement metadata
+├─ rules.ts            # fact/finding/recommendation interfaces + validation
+├─ priority.ts         # finding candidates + prioritizer abstraction
+├─ pipeline.ts         # staged execution/reference validation/failure isolation
+├─ scoring.ts          # AnalysisScorer dependency-inversion boundary
+├─ report.ts           # contract-validated AnalysisReport assembly
+├─ analyzer.ts         # top-level orchestration/config validation
+├─ errors.ts           # configuration/invariant errors
+└─ index.ts            # explicit public surface
 ```
 
-Each module has one primary responsibility. The package avoids generic utility/type dumping grounds.
+No generic `utils.ts` or catch-all `types.ts` module is used.
 
 ## Context boundary
 
@@ -51,60 +57,90 @@ The caller supplies:
 - evidence;
 - pre-existing limitations/partial failures.
 
-The project and metadata snapshot shapes remain generic so ecosystem packages can provide strongly typed normalized snapshots without putting JS/TS concepts into analyzer-core.
+Project and metadata snapshots stay generic so ecosystem packages can provide strongly typed normalized snapshots without leaking JS/TS concepts into analyzer-core.
 
-## Rule stages
+Rules see those generic snapshots through `DeepReadonly<T>`.
 
-### Fact rules
+## Deterministic stages
 
-```ts
-interface FactRule<Project, Metadata> {
-  readonly kind: "fact";
-  readonly id: string;
-  readonly version: string;
-  readonly requirementIds: readonly RequirementId[];
-  evaluate(context: FactRuleContext<Project, Metadata>): FactRuleResult;
-}
-```
+### 1. Fact rules
 
-### Finding rules
+Fact rules receive normalized context and emit facts plus optional limitations.
 
-Finding rules receive the complete fact-stage output.
+Same-stage fact rules cannot see sibling facts.
 
-They do not receive sibling finding output.
+### 2. Finding rules
 
-### Recommendation rules
+Finding rules receive the completed fact set and emit **finding candidates** without priority.
 
-Recommendation rules receive complete facts and complete findings.
+A finding candidate is the accepted public Finding shape minus `priority`.
 
-They do not receive sibling recommendation output.
+The candidate is runtime-validated against the corresponding factual/heuristic finding schema with `priority` omitted. Extra priority data is rejected.
 
-This is intentionally stricter than a mutable shared rule context.
+### 3. Priority
 
-## Output validation
+The versioned rule set contains one `FindingPrioritizer`.
 
-Each rule's returned entities are parsed using the corresponding `@stacklens/contracts` schema.
+The prioritizer receives:
+- completed facts;
+- all validated finding candidates;
+- prior-stage limitations/partial failures;
+- normalized project/metadata/source/evidence context.
 
-Analyzer-core additionally validates:
-- rule ownership;
-- declared requirement ownership;
-- limitation rule ownership.
+For each candidate it returns `FindingPriority`.
 
-Invalid output is handled as a failed rule, not silently normalized.
+Analyzer-core verifies that the priority's rule ID/version belongs to the configured prioritizer. A failure affects only that candidate; other candidates continue.
+
+### 4. Recommendation rules
+
+Recommendation rules receive completed facts plus successfully finalized findings.
+
+They cannot see sibling recommendation output.
+
+### 5. Scoring
+
+`AnalysisScorer` receives finalized findings and the completed evidence/failure state.
+
+Analyzer-core invokes it after recommendation execution. The scorer remains policy-free from analyzer-core's perspective.
+
+## Stable ordering
+
+Fact/finding/recommendation rules are sorted by stable rule ID using plain code-unit ordering.
+
+Registration order therefore does not alter execution or result ordering.
+
+## Output/reference validation
+
+Analyzer-core validates more than individual schemas.
+
+A rule result is isolated as invalid when it:
+- violates its contract schema;
+- claims another rule's identity/version;
+- cites requirements the rule did not declare;
+- duplicates an already-emitted entity ID;
+- references unknown evidence;
+- references facts/limitations not available to its stage;
+- emits a recommendation whose basis contradicts its referenced findings.
+
+Finding rules also cannot embed priority.
+
+These checks happen before final report assembly so one bad rule does not corrupt an otherwise valid analysis.
 
 ## Failure model
 
-Individual rule failures become deterministic rule-scoped partial failures and limitations.
+Rule failures and priority failures generate deterministic rule-scoped:
+- `PartialFailure`;
+- `partial_failure` limitation.
 
-The original exception text is not copied into the public analysis report. The report exposes a stable generic failure message instead.
+Original thrown exception text is not copied into the public report.
 
-Duplicate rule IDs or missing rule requirement declarations are analyzer configuration errors and stop execution before any rule runs.
+Generated failure identifiers are collision-safe within existing limitation/failure collections while staying inside contract length limits.
+
+Invalid analyzer configuration—such as duplicate rule IDs, invalid versions, or missing requirement declarations—fails before rule evaluation.
 
 ## Scoring
 
 `AnalysisScorer` is synchronous and deterministic by contract.
-
-Analyzer-core invokes it only after fact/finding/recommendation rule execution has completed.
 
 The scorer version is copied into `AnalysisReport.analyzer.scoringVersion`.
 
@@ -114,31 +150,35 @@ Analyzer-core never chooses score weights, bands, or deductions.
 
 `assembleAnalysisReport` builds the public v1 report and validates it through `AnalysisReportSchema`.
 
-Contract validation is the final integrity boundary before the report leaves analyzer-core.
+This remains the final integrity boundary before a report leaves analyzer-core.
 
 ## Testing strategy
 
-Tests verify:
-- stable ID-based rule ordering;
-- stage visibility;
+Tests cover:
+- code-unit rule ordering;
+- prior-stage visibility;
+- finding-candidate → priority → public-finding transition;
 - exception isolation;
-- invalid-output isolation;
-- duplicate rule rejection;
-- requirement traceability validation;
+- invalid schema/ownership/reference isolation;
+- priority failure isolation;
+- duplicate rule/prioritizer rejection;
+- requirement traceability;
+- analyzer/scorer configuration validation;
 - scorer dependency inversion;
 - caller ownership of timestamps/IDs;
 - full report-schema validation.
 
-Rule-package tests added later should test rule behavior directly against normalized fixtures.
+Rule packages added later should test domain behavior directly against normalized fixtures.
 
 ## Next milestone
 
 The next package should define the first JavaScript/TypeScript normalized project snapshot and deterministic rule package.
 
-A narrow first vertical slice is **FR-005 dependency inventory**:
+The narrow first vertical slice remains **FR-005 dependency inventory**:
 - normalize `package.json` dependency groups;
-- emit evidence/facts;
-- implement the first JS/TS fact rule;
-- validate output through analyzer-core.
+- create project evidence;
+- emit dependency facts;
+- run through analyzer-core;
+- use a minimal deterministic priority/scoring policy only where required to produce a valid report fixture.
 
-No external registry metadata is required for FR-005, making it a good first end-to-end deterministic rule.
+No registry/network metadata is required for FR-005.
