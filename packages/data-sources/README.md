@@ -7,7 +7,7 @@ Explicit external-provider adapters for StackLens analysis.
 This package owns network/provider acquisition and normalization that must happen before
 `@stacklens/analyzer-core`.
 
-Implemented providers are the public npm Registry and OSV.dev.
+Implemented providers are the public npm Registry, OSV.dev, and public GitHub REST API.
 
 It does not own:
 
@@ -117,3 +117,108 @@ the exact package/version evidence. It is not a statement that the dependency is
 Normal PR tests use synthetic provider responses only. They do not depend on live npm availability.
 
 **Traceability:** FR-006, FR-007, FR-010, FR-011, DATA-001, DATA-002, NFR-003, NFR-004, SEC-002, SEC-008.
+
+
+## Public GitHub repository adapter
+
+`GitHubRepositoryAdapter` implements the public-repository acquisition boundary accepted by
+ADR-0003.
+
+Input is a supported repository URL:
+
+```text
+https://github.com/<owner>/<repository>
+```
+
+An optional ref may be supplied separately. Clone-style `.git` suffixes and a trailing slash are
+normalized, but credentials, query parameters, fragments, non-HTTPS URLs, non-`github.com` hosts,
+and extra path segments are rejected before network access.
+
+Acquisition uses only the fixed `https://api.github.com/` origin:
+
+1. retrieve public repository metadata and default branch;
+2. resolve the requested/default ref to a commit;
+3. record the immutable 40-character commit SHA;
+4. request the commit's recursive Git tree;
+5. fetch selected regular files by immutable Git blob SHA.
+
+The adapter disables redirects. It does not call repository-supplied URLs.
+
+### Initial file-selection policy
+
+This milestone fetches only content required by rules that already exist:
+
+- root `package.json`;
+- TypeScript config names supported by FR-013;
+- legacy/flat ESLint config names supported by FR-013;
+- Prettier config names supported by FR-013;
+- Biome config names supported by FR-013;
+- supported Vite/Vitest/webpack/Rollup/Jest/Next.js/Tailwind config families.
+
+General JS/TS source files are deliberately **not** fetched yet. FR-009 source-reference acquisition
+belongs to the next milestone.
+
+Recognized analysis files under generated/vendor directories such as `node_modules`, `dist`,
+`build`, `coverage`, `.next`, and `.turbo` are skipped and disclosed.
+
+Symlinks are not followed. Git submodules are not traversed. Git LFS pointers are not dereferenced.
+
+### Resource bounds
+
+Default GitHub acquisition bounds are:
+
+- per-request timeout: 8 seconds;
+- maximum JSON response body: 8 MiB;
+- maximum retained selected files: 32;
+- maximum decoded bytes per file: 512 KiB;
+- maximum decoded bytes across retained files: 2 MiB;
+- maximum requests per acquisition: 40.
+
+`package.json` is always prioritized ahead of optional configuration candidates when file/request
+budgets are tight.
+
+The GitHub recursive-tree API itself can report a truncated tree. StackLens preserves the returned
+supported files but marks the source partial and records the truncation.
+
+### Snapshot handoff
+
+Successful data contains:
+
+- contract-valid repository identity with immutable commit SHA/ref;
+- optional root manifest content;
+- selected static files as `{ path, content, blobSha, byteLength }`;
+- acquisition limitations.
+
+The selected file `path/content` shape is intentionally compatible with
+`JavaScriptStaticProjectFile`. Application/worker orchestration can:
+
+1. parse and normalize the transient root manifest with `@stacklens/rules-javascript`;
+2. discard the raw manifest after normalization;
+3. pass the selected config `path/content` fields into `createJavaScriptProjectSnapshot`;
+4. run existing configuration rules without any further GitHub I/O.
+
+This adapter does not parse project semantics and does not execute repository content.
+
+### GitHub provenance and privacy
+
+The source/evidence URL is generated only from the validated `github.com` repository identity and
+resolved immutable commit.
+
+Full selected file content exists only in the transient adapter result required to build the project
+snapshot. It is not copied into `DataSource`, `ExternalEvidence`, limitations, or partial-failure
+messages.
+
+Private repository authentication and write access are outside this milestone.
+
+## GitHub tests
+
+Synthetic tests cover URL/ref validation, immutable commit resolution, fixed-host request behavior,
+deterministic file selection, source/evidence contract validation, file/request/byte limits, tree
+truncation, symlink/submodule/generated/vendor handling, binary/LFS handling, missing root manifests,
+partial blob failures, malformed provider payloads, timeout/rate-limit/network behavior, response
+limits, and source-content isolation from report provenance.
+
+No live GitHub request is required for normal PR correctness.
+
+**GitHub traceability:** FR-003, FR-004, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-006,
+NFR-001, NFR-003, NFR-004, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008.

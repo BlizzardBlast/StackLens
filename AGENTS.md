@@ -164,6 +164,10 @@ External provider integration lives in `packages/data-sources`.
 - Publisher-controlled URLs such as package repository/homepage values are metadata only until separately validated for presentation under **SEC-008**.
 - OSV npm queries require exact semantic version evidence. Never send a declared range/tag such as `^1.2.3` or `latest` as though it were an installed version.
 - Preserve OSV query completeness: incomplete pagination/detail acquisition is partial evidence, and an empty match set is never proof that a package is secure.
+- Public GitHub acquisition must validate github.com repository URLs, resolve an immutable commit before file reads, use fixed api.github.com endpoints, disable redirects, and read selected files by immutable blob SHA.
+- GitHub snapshot acquisition must enforce request/file-count/per-file/aggregate byte bounds. Root package.json is prioritized before optional config files.
+- Never follow repository symlinks, traverse submodules, dereference Git LFS, or fetch generated/vendor analysis files merely because their names match supported configs.
+- Keep GitHub full file bodies transient: do not copy source/config content into provider evidence, limitations, partial failures, or logs. Repository rules consume the already-acquired snapshot later.
 - PR tests use synthetic/recorded provider responses; normal PR correctness must not depend on live external services.
 
 ## API application boundary

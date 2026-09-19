@@ -1,4 +1,33 @@
 export {
+  GITHUB_API_BASE_URL,
+  GITHUB_DEFAULT_MAX_FILES,
+  GITHUB_DEFAULT_MAX_FILE_BYTES,
+  GITHUB_DEFAULT_MAX_REQUESTS,
+  GITHUB_DEFAULT_MAX_RESPONSE_BYTES,
+  GITHUB_DEFAULT_MAX_TOTAL_FILE_BYTES,
+  GITHUB_DEFAULT_TIMEOUT_MS,
+  GITHUB_PROVIDER_ID,
+  GITHUB_REST_API_VERSION,
+  GITHUB_WEB_BASE_URL,
+  GitHubRepositoryAdapter,
+  githubBlobApiUrl,
+  githubCommitApiUrl,
+  githubCommitTreeUrl,
+  githubEvidenceId,
+  githubRepositoryApiUrl,
+  githubRepositorySourceId,
+  githubTreeApiUrl,
+  parsePublicGitHubRepositoryUrl,
+} from "./github.js";
+export type {
+  GitHubAdapterOptions,
+  GitHubRepositoryFile,
+  GitHubRepositoryRequest,
+  GitHubRepositorySnapshot,
+  ParsedGitHubRepositoryUrl,
+} from "./github.js";
+
+export {
   OSV_API_BASE_URL,
   OSV_DEFAULT_MAX_ADVISORY_DETAILS,
   OSV_DEFAULT_MAX_PAGINATION_ROUNDS,

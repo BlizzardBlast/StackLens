@@ -5,8 +5,8 @@
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
 > **Architecture:** v0.1.6  
-> **Completed milestone:** overlap plus framework/tool/configuration detection — PR #17  
-> **Immediate milestone:** Milestone G — repository acquisition  
+> **Completed milestone:** public GitHub repository acquisition — PR #18  
+> **Immediate milestone:** Milestone H — static source usage analysis  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -60,13 +60,14 @@ The repository already has the following accepted foundations:
 - framework-independent quick manifest orchestration in `apps/api`;
 - bounded npm Registry metadata acquisition in `@stacklens/data-sources`;
 - bounded exact-version OSV vulnerability acquisition in `@stacklens/data-sources`;
+- bounded immutable public GitHub repository acquisition in `@stacklens/data-sources`;
 - permanent read-only GitHub Actions quality gate;
 - pnpm workspace + Turborepo;
 - TypeScript 7 strict type checking;
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 
-The latest completed product implementation milestone is the **FR-008/FR-012/FR-013 static project-detection** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
+The latest completed product implementation milestone is the **FR-003 bounded public GitHub repository acquisition** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
 
 The analyzer flow is:
 
@@ -100,7 +101,7 @@ The JavaScript/TypeScript rule package now implements **FR-005 dependency invent
 
 The API application now has a framework-independent quick-manifest service boundary, but no Fastify HTTP transport is implemented yet.
 
-The npm Registry and OSV adapters are implemented. No GitHub repository acquisition adapter, worker, web application, source-usage rule, concrete production priority policy, or concrete scoring policy has been implemented yet.
+The npm Registry, OSV, and public GitHub acquisition adapters are implemented. No repository-analysis worker orchestration, web application, source-usage rule, concrete production priority policy, or concrete scoring policy has been implemented yet.
 
 ## 3. Non-negotiable boundaries
 
@@ -385,45 +386,81 @@ Primary traceability:
 
 `FR-008, FR-012, FR-013, FR-017, FR-021, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-002, GOV-006, GOV-007`.
 
-## 11. Immediate next milestone: repository acquisition
+## 11. Completed milestone: public GitHub repository acquisition
 
-Implement public GitHub repository acquisition for **FR-003** using the already accepted
-worker/static-snapshot architecture and feed its output into `JavaScriptProjectSnapshot`.
+The bounded public GitHub REST acquisition adapter is implemented in
+`packages/data-sources` by PR #18.
 
-Required properties:
+Accepted implementation:
 
-- resolve and record an immutable Git commit SHA before analysis;
-- fetch only bounded static repository content required by supported rules;
-- do not execute repository code, package scripts, builds, tests, hooks, or configuration;
-- enforce file-count, per-file, aggregate-content, and request/time bounds;
-- skip/limit binary, generated, vendor, and unsupported content conservatively;
-- treat symlinks/submodules as metadata rather than following/executing them unless a later accepted
-  requirement changes that boundary;
-- normalize repository-relative POSIX paths and reject unsafe traversal forms;
-- preserve project evidence path provenance and repository identity;
-- record skipped/unsupported/resource-limited content as analysis limitations;
-- avoid retaining/logging full repository source by default;
-- keep GitHub I/O outside analyzer rules;
-- do not implement FR-009 source-usage conclusions, production scoring, private repositories, or
-  write access in the same PR.
+- `GitHubRepositoryAdapter` accepts only supported HTTPS `github.com/<owner>/<repo>` repository
+  URLs, with optional `.git` suffix/trailing slash normalization;
+- credentials, query strings, fragments, non-GitHub hosts, non-HTTPS schemes, extra repository path
+  segments, invalid refs, and private repositories fail safely;
+- repository metadata is fetched from fixed `api.github.com` endpoints with redirects disabled;
+- the requested/default ref is resolved to an immutable commit SHA before tree/file acquisition;
+- recursive tree enumeration uses the commit tree SHA;
+- selected files are fetched by immutable Git blob SHA rather than mutable branch-relative paths;
+- the source/evidence reference is generated from the validated repository identity plus immutable
+  commit SHA;
+- the initial allowlist retrieves only root `package.json` and configuration filename families
+  already consumed by FR-013;
+- general JS/TS source files remain outside this slice and are deferred to FR-009;
+- root `package.json` is prioritized before optional config files under tight budgets;
+- defaults enforce 8-second per-request timeout, 8 MiB provider-response bound, 32 selected files,
+  512 KiB decoded bytes/file, 2 MiB decoded bytes total, and 40 requests/acquisition;
+- recursive-tree truncation remains usable partial evidence and is explicitly disclosed;
+- generated/vendor recognized configs, unsafe paths, symlinks, submodules, non-UTF-8/binary files,
+  Git LFS pointers, missing root manifests, over-limit files, and file-level provider failures are
+  handled conservatively with limitations/partial failures;
+- symlinks are never followed, submodules are never traversed, and Git LFS objects are never
+  dereferenced;
+- selected source/config contents stay only in the transient provider result required to build the
+  project snapshot; they are not copied into `DataSource`, `ExternalEvidence`, limitations,
+  partial failures, or logs;
+- output carries contract-valid repository owner/name/ref/commit identity for reproducibility;
+- selected `{path, content}` file output is structurally compatible with
+  `JavaScriptStaticProjectFile`; orchestration can normalize/discard the raw manifest and pass
+  config files directly into `createJavaScriptProjectSnapshot`;
+- the adapter performs no project-code execution, package installation, build/test/script execution,
+  or JavaScript rule evaluation;
+- private repository auth/write access, worker/job orchestration, FR-009 source-usage conclusions,
+  priority/recommendations/scoring, and UI remain outside this PR;
+- normal PR tests are synthetic and use no live GitHub dependency.
 
-### Milestone H — Static source usage analysis
+Primary traceability:
 
-Implement supported static detection for FR-009:
+`FR-003, FR-004, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-006, NFR-001, NFR-003, NFR-004, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008, GOV-002, GOV-006, GOV-007`.
 
-- ESM static imports/exports;
-- CommonJS `require("...")`;
-- dynamic `import()` with static string;
-- supported config/plugin references;
-- package scripts/framework conventions where deterministic.
+## 12. Immediate next milestone: static source usage analysis
 
-Do not declare a package unnecessary merely because a basic import scan did not find it.
+Implement supported deterministic source-reference analysis for **FR-009** on top of the bounded
+repository snapshot/acquisition boundary.
 
-Quick manifest analysis must explicitly state that source-level necessity is unavailable.
+Required first-slice behavior:
+
+- extend the GitHub acquisition allowlist only as needed for bounded supported JS/TS/JSX/TSX source
+  analysis;
+- keep acquisition and parsing separate from finding rules;
+- introduce the accepted parser-adapter boundary rather than coupling rules directly to parser
+  implementation details;
+- detect supported ESM static imports/exports;
+- detect CommonJS `require("...")` with static string arguments;
+- detect dynamic `import("...")` with static string arguments;
+- account for supported config/plugin references and package scripts/framework conventions where
+  deterministic evidence exists;
+- never execute source or configuration;
+- never declare a dependency unnecessary merely because a basic import scan does not find it;
+- potential unnecessary-dependency findings must remain heuristic unless stronger direct evidence
+  exists and must expose their basis/confidence;
+- unsupported/dynamic references, skipped source due acquisition limits, parse failures, and missing
+  source evidence must remain limitations/insufficient evidence rather than negative-use claims;
+- quick manifest analysis must continue to state that source-level necessity is unavailable;
+- do not add production priority/recommendations/scoring or product UI in the same PR.
 
 ### Milestone I — Migration opportunities, recommendations, priority, scoring
 
-Once factual/finding coverage is meaningful, implement:
+Once source-usage evidence is meaningful, implement:
 
 - FR-014 migration opportunities;
 - FR-015 recommendations;
@@ -454,7 +491,7 @@ After the analysis domain is proven in vertical slices, finish:
 
 Do not move analyzer logic into React or Fastify.
 
-## 12. What not to do next
+## 13. What not to do next
 
 Avoid these tempting detours until their requirement slice is ready:
 
@@ -470,50 +507,48 @@ Avoid these tempting detours until their requirement slice is ready:
 - do not build one giant "analyze everything" rule;
 - do not add production scoring weights before evidence coverage is meaningful.
 
-## 13. Pull-request strategy for the next session
+## 14. Pull-request strategy for the next session
 
 Recommended next PR:
 
 **Title**
 
 ```text
-feat: add public GitHub repository acquisition
+feat: add static dependency usage analysis
 ```
 
 **Primary requirements**
 
 ```text
-FR-003, FR-004, FR-013, FR-017, FR-021,
-DATA-001, DATA-002, DATA-006,
-NFR-001, NFR-003, NFR-004, NFR-008, NFR-009,
-SEC-001, SEC-002, SEC-003, SEC-007, SEC-008,
+FR-003, FR-009, FR-013, FR-017, FR-021,
+DATA-001, DATA-003, DATA-004, DATA-005, DATA-006,
+NFR-001, NFR-002, NFR-003, NFR-004, NFR-005,
+SEC-001, SEC-002, SEC-003, SEC-007,
 GOV-002, GOV-006, GOV-007
 ```
 
-Keep the PR limited to immutable/bounded public GitHub snapshot acquisition, project evidence,
-typed limitations/failures, integration with the existing static project snapshot/config rules, and
-documentation.
+Keep the PR limited to bounded supported source acquisition, static parser/adapters, deterministic
+dependency-reference evidence, conservative FR-009 heuristic findings/limitations, analyzer
+integration, and documentation.
 
-Do not add private-repository authentication, repository writes, dependency installation, source
-usage/FR-009 conclusions, production priority/recommendations/scoring, or product UI in the same PR.
+Do not add source execution, private repository support, full architecture analysis, production
+priority/recommendations/scoring, worker/database job infrastructure, or UI in the same PR.
 
-## 14. Handover completion signal
+## 15. Handover completion signal
 
-The next session can consider repository acquisition complete when:
+The next session can consider static source-usage analysis complete when:
 
-1. public GitHub repository input resolves to an immutable commit SHA before content analysis;
-2. all network/filesystem work stays outside analyzer rules and no repository code/configuration is
-   executed;
-3. file-count/per-file/aggregate/time bounds are explicit and tested;
-4. path traversal, binary/generated/vendor content, symlinks/submodules, and unsupported content are
-   handled conservatively with limitations where material;
-5. acquired supported static files feed the existing `JavaScriptProjectSnapshot`/configuration
-   rule boundary without duplicating rule semantics;
-6. repository identity/evidence provenance is deterministic and contract-valid;
-7. secrets/full source are not retained or logged by default;
-8. focused synthetic acquisition/integration tests are green;
+1. bounded acquisition includes only supported source files required by the parser/rules;
+2. source/config files are parsed statically and never imported/executed;
+3. supported ESM/CommonJS/static dynamic-import references become deterministic evidence;
+4. parser/acquisition failures and unsupported dynamic references remain explicit limitations;
+5. no dependency is labeled unnecessary solely because an import scan returned no match;
+6. any FR-009 finding remains heuristic with explicit confidence/basis unless direct necessity can be
+   established;
+7. quick manifest mode still discloses source-level insufficiency;
+8. focused rule/parser/acquisition/analyzer integration tests are green;
 9. the same PR completes journey/handover documentation before merge and the permanent CI gate is
    green.
 
-Continue with the smallest bounded public-repository acquisition slice rather than combining
-source-usage findings, scoring, private access, or UI behavior.
+Continue with the smallest deterministic source-usage vertical slice rather than combining migration
+recommendations, scoring, worker/database orchestration, or UI behavior.

@@ -864,3 +864,74 @@ analysis behavior while preserving the existing modular-monolith/analyzer safety
 
 **Traceability:** FR-008, FR-012, FR-013, FR-017, FR-021, DATA-003, DATA-004, DATA-005, NFR-001,
 NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-002, GOV-006, GOV-007.
+
+
+## 2026-09-19 — Step 40: Add bounded immutable public GitHub acquisition
+
+PR #18 adds the **FR-003** public GitHub repository acquisition boundary in
+`@stacklens/data-sources`.
+
+The adapter accepts only validated HTTPS `github.com/<owner>/<repository>` URLs. Conventional
+`.git` suffixes/trailing slashes normalize, while credentials, query/fragment data, extra path
+segments, non-GitHub hosts, non-HTTPS schemes, invalid refs, and private repositories fail before
+analysis proceeds.
+
+Acquisition follows ADR-0003's immutable sequence:
+
+```text
+validated repository
+  → public repository metadata/default branch
+  → requested/default ref
+  → immutable commit SHA + tree SHA
+  → recursive tree
+  → selected immutable blob SHAs
+```
+
+All GitHub network requests use fixed `api.github.com` endpoints and redirects are disabled.
+Selected files are read from Git blobs by SHA rather than from mutable branch-relative content URLs.
+The resulting StackLens source/evidence reference is generated from the validated
+`github.com/<owner>/<repo>/tree/<commit-sha>` identity.
+
+The initial selection policy deliberately fetches only evidence required by rules already
+implemented: root `package.json` plus supported configuration filename families. General JS/TS
+source acquisition is deferred to FR-009 rather than downloading source before a source-analysis
+rule exists.
+
+Repository content is treated as untrusted. Tree modes are validated. Unsafe/noncanonical paths are
+skipped. Recognized configs under generated/vendor directories are skipped. Symlinks are never
+followed, submodules are never traversed, Git LFS objects are never dereferenced, and selected blobs
+must be valid bounded UTF-8 text.
+
+Default safety bounds are 8 seconds/request, 8 MiB provider response, 32 selected files, 512 KiB
+decoded bytes/file, 2 MiB decoded bytes total, and 40 requests. Root `package.json` is explicitly
+ordered before optional config candidates so resource pressure does not sacrifice the primary
+project manifest first.
+
+GitHub recursive-tree truncation and material file-level skips/failures preserve known useful content
+as a partial source with explicit limitations/partial failures. Missing root `package.json` is
+insufficient evidence for manifest-dependent JavaScript analysis, not a clean/negative result.
+
+The adapter output records contract-valid owner/name/ref/immutable commit identity. Root manifest
+content is separated from selected config files; downstream orchestration can normalize the
+manifest, discard its raw content, and pass file `path/content` pairs directly into the existing
+`JavaScriptProjectSnapshot` boundary without creating a package dependency from data sources to
+JavaScript rules.
+
+Selected source bodies are transient provider data only. They are not copied into provider evidence,
+limitations, partial failures, or logging. The adapter itself contains no logging or project-code
+execution path.
+
+Current GitHub REST documentation reviewed for this implementation documents public unauthenticated
+repository/tree/blob reads, recursive-tree truncation behavior, base64 Git blob responses, and REST
+rate limits. The adapter uses API version `2026-03-10`.
+
+Synthetic tests cover input validation, default/explicit ref resolution, immutable request ordering,
+fixed-host/version/redirect behavior, contract provenance, deterministic selection, all resource
+bounds, tree truncation, unsafe/generated/vendor paths, symlinks/submodules, binary/LFS handling,
+missing manifests, partial file failures, malformed payloads, timeout/rate-limit/network/response
+limits, and source-content isolation from public provenance.
+
+No live GitHub dependency is part of PR correctness.
+
+**Traceability:** FR-003, FR-004, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-006, NFR-001,
+NFR-003, NFR-004, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008, GOV-002, GOV-006, GOV-007.

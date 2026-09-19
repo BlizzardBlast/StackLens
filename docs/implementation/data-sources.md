@@ -2,7 +2,7 @@
 
 > **Status:** Accepted implementation baseline
 > **Date:** 2026-09-19
-> **Requirements:** FR-006, FR-007, FR-010, FR-011, DATA-001, DATA-002, NFR-003, NFR-004, SEC-002, SEC-008, GOV-007
+> **Requirements:** FR-003, FR-004, FR-006, FR-007, FR-010, FR-011, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-006, NFR-001, NFR-003, NFR-004, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008, GOV-007
 > **Decision:** ADR-0003
 
 ## Purpose
@@ -305,3 +305,198 @@ Synthetic tests cover:
 - explicit empty-match semantics.
 
 No live OSV request is required for the PR quality gate.
+
+
+## Public GitHub repository acquisition
+
+The third provider adapter implements the GitHub repository-acquisition boundary already accepted by
+ADR-0003.
+
+Official GitHub REST behavior reviewed for this implementation:
+
+- public repository metadata/commit/tree/blob endpoints can be read without authentication;
+- commit lookup resolves branch/tag/SHA refs to immutable commit identities;
+- recursive Git tree responses can report `truncated: true`;
+- recursive trees are bounded by GitHub at 100,000 entries / 7 MB;
+- Git blobs are returned as base64 content and support immutable blob-SHA reads;
+- public unauthenticated REST traffic is rate-limited, so StackLens also caps requests per analysis.
+
+References:
+
+- https://docs.github.com/en/rest/commits/commits
+- https://docs.github.com/en/rest/git/trees
+- https://docs.github.com/en/rest/git/blobs
+- https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api
+
+The adapter sends `X-GitHub-Api-Version: 2026-03-10`, matching the current documented REST version
+reviewed for this milestone.
+
+### Repository URL boundary
+
+Only HTTPS `github.com/<owner>/<repository>` URLs are accepted.
+
+The parser rejects before network access:
+
+- non-GitHub hosts/lookalikes;
+- non-HTTPS schemes;
+- userinfo/credentials;
+- query strings/fragments;
+- branch/tree/file path URLs;
+- invalid owner/repository path segments;
+- leading/trailing input whitespace.
+
+A trailing slash and conventional `.git` clone suffix are normalized.
+
+Refs are supplied separately and are length/control-character bounded. When absent, the provider's
+validated default branch is used.
+
+### Immutable resolution
+
+Acquisition is ordered:
+
+```text
+repository metadata
+  → requested/default ref
+  → commit SHA + tree SHA
+  → recursive tree
+  → selected immutable blob SHAs
+```
+
+All later file reads use blob SHAs from the commit tree, not branch-relative mutable paths.
+
+The normalized repository identity contains:
+
+- provider `github`;
+- canonical owner/name;
+- immutable commit SHA;
+- resolved requested/default ref.
+
+This identity is directly compatible with `RepositoryAnalysisInput.repository`.
+
+### Static file selection
+
+The current policy intentionally matches only already-implemented manifest/configuration analysis.
+It selects root `package.json` plus configuration filename families supported by FR-013.
+
+General JS/TS source acquisition is not implemented in this slice; that expansion belongs to FR-009.
+
+Selection excludes recognized files under generated/vendor directory segments.
+
+Git tree modes are validated. Regular files may be read. Symlink mode `120000` is never followed,
+and submodule mode/type is never traversed.
+
+### Blob handling
+
+Blob responses must:
+
+- match the requested immutable blob SHA;
+- use GitHub's base64 encoding;
+- report a non-negative safe integer byte size;
+- decode to the declared byte length;
+- decode as valid UTF-8 text;
+- stay inside configured per-file/aggregate bounds.
+
+NUL-containing/non-UTF-8 blobs are treated as binary and skipped.
+
+Git LFS pointer text is identified and retained only as an acquisition limitation; StackLens does not
+dereference LFS objects in this milestone.
+
+### Resource limits
+
+Defaults:
+
+- timeout per request: 8 seconds;
+- maximum provider JSON response: 8 MiB;
+- maximum retained selected files: 32;
+- maximum decoded bytes per selected file: 512 KiB;
+- maximum total decoded bytes: 2 MiB;
+- maximum network requests: 40.
+
+The root manifest is ordered before optional configuration files so a tight file/request budget does
+not accidentally sacrifice the primary JavaScript project identity first.
+
+Tree truncation, file-count limits, oversized files, aggregate/request exhaustion, generated/vendor
+skips, unsafe paths, symlinks/submodules, binary/LFS content, missing manifest, and file-level
+provider failures produce explicit acquisition limitations. Material provider errors after commit
+resolution preserve already acquired data when possible and yield a partial source.
+
+### Provenance and safe references
+
+Successful/partial acquisition creates one GitHub REST `DataSource` and one
+`ExternalEvidence` record.
+
+The evidence/reference URL is generated from the validated repository identity plus immutable commit:
+
+```text
+https://github.com/<owner>/<repository>/tree/<commit-sha>
+```
+
+No repository-controlled link is promoted into evidence.
+
+### Retention and secret exposure
+
+The adapter intentionally does not log.
+
+Raw selected content is returned only because downstream static normalization/rules require transient
+content. Source/evidence/limitation/partial-failure records contain repository/path metadata and
+bounded messages, not file bodies.
+
+The intended orchestration handoff is:
+
+```text
+GitHubRepositorySnapshot.manifest.content
+  → JSON parse + normalizePackageManifest(...)
+  → discard raw manifest
+
+GitHubRepositorySnapshot.files[{path, content}]
+  → createJavaScriptProjectSnapshot(...)
+  → existing FR-013 static configuration rule
+```
+
+The acquisition adapter therefore does not create a source-code warehouse and does not duplicate
+JavaScript rule semantics.
+
+### GitHub failure semantics
+
+Critical repository/ref/tree failures produce an unavailable source.
+
+File-level failures after the immutable commit/tree is known preserve unrelated successful files and
+produce a partial source.
+
+Stable failure families include:
+
+- invalid repository URL/ref;
+- private repository unsupported;
+- repository identity mismatch;
+- HTTP/rate-limit failures by operation;
+- request timeout/transport failure;
+- response-size/invalid-JSON failures;
+- invalid repository/commit/tree/blob provider shapes;
+- recursive tree truncation;
+- selected blob acquisition failure.
+
+HTTP 408/425/429 and 5xx statuses are retryable. Provider/schema/resource-policy failures are not
+silently retried or converted into empty evidence.
+
+### GitHub verification
+
+Synthetic tests cover:
+
+- accepted/rejected repository URLs;
+- explicit ref vs default branch;
+- immutable commit/tree/blob request sequence;
+- fixed API host/version and redirect disabling;
+- contract-valid repository identity/source/evidence;
+- root-manifest-first deterministic selection;
+- file-count/per-file/aggregate/request limits;
+- recursive tree truncation;
+- unsafe/generated/vendor path handling;
+- symlink and submodule non-traversal;
+- binary and Git LFS non-dereferencing;
+- missing root manifest;
+- file-level HTTP partial failure;
+- invalid provider shapes/base64;
+- rate-limit/network/timeout/response-size classification;
+- omission of selected source contents from public provenance/failure records.
+
+No live GitHub request is part of the PR quality gate.
