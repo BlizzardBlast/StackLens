@@ -15,6 +15,7 @@ import {
 } from "../src/dependency-inventory.js";
 import { normalizePackageManifest } from "../src/manifest.js";
 import { createJavaScriptProjectSnapshot } from "../src/project-snapshot.js";
+import type { JavaScriptProjectSnapshot } from "../src/project-snapshot.js";
 import {
   babelSourceReferenceParser,
   packageNameFromModuleSpecifier,
@@ -25,7 +26,6 @@ import {
   withJavaScriptSourceUsage,
 } from "../src/source-usage.js";
 import { potentiallyUnnecessaryDependencyRule } from "../src/unnecessary-dependency.js";
-import type { JavaScriptProjectSnapshot } from "../src/project-snapshot.js";
 
 const scoreLimitation: AnalysisLimitation = {
   id: "limitation-source-usage-score",
@@ -169,7 +169,8 @@ describe("static source usage and potentially unnecessary dependency analysis [F
       [
         {
           path: "src/App.tsx",
-          content: 'import React from "react"; export const App = () => <div>{React.version}</div>;',
+          content:
+            'import React from "react"; export const App = () => <div>{React.version}</div>;',
         },
         {
           path: "vite.config.ts",
@@ -245,7 +246,7 @@ describe("static source usage and potentially unnecessary dependency analysis [F
     const baseProject = createJavaScriptProjectSnapshot(manifest, [
       {
         path: "src/index.ts",
-        content: 'const packageName = process.env.PACKAGE; require(packageName);',
+        content: "const packageName = process.env.PACKAGE; require(packageName);",
       },
     ]);
     const project = withJavaScriptSourceUsage(baseProject, "complete");
