@@ -93,14 +93,24 @@ export function normalizePackageScripts(input: unknown): JavaScriptPackageScript
 
   const scripts = input.scripts;
 
-  if (scripts === undefined || !isRecord(scripts)) {
+  if (scripts === undefined) {
     return [];
   }
 
+  if (!isRecord(scripts)) {
+    throw new TypeError("package.json scripts must be an object when source-usage analysis reads them.");
+  }
+
   return Object.entries(scripts)
-    .flatMap(([name, command]) =>
-      typeof command === "string" ? [validatePackageScript({ name, command })] : [],
-    )
+    .map(([name, command]) => {
+      if (typeof command !== "string") {
+        throw new TypeError(
+          "package.json scripts." + name + " must be a string when source-usage analysis reads it.",
+        );
+      }
+
+      return validatePackageScript({ name, command });
+    })
     .toSorted((left, right) => compareCodeUnits(left.name, right.name));
 }
 
