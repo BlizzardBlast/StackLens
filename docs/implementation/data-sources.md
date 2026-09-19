@@ -80,6 +80,10 @@ Those remain later deterministic rule/policy responsibilities.
 
 All registry payloads are validated before normalization.
 
+Requested package names are bounded to npm's documented 214-character maximum, and the encoded
+registry endpoint must also fit the shared 1,000-character source/evidence reference contract before
+any network request is made.
+
 The adapter fails closed when:
 
 - the response package name differs from the requested package;
@@ -154,6 +158,7 @@ Synthetic tests cover:
 - 404 vs 429 retryability;
 - network failure redaction;
 - response-size limits;
-- invalid package names rejected before network access.
+- invalid/overlong package names and overlong encoded registry references rejected before network
+  access.
 
 No live provider request is required for the PR quality gate.
