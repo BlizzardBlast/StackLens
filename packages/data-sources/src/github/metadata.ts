@@ -38,6 +38,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function isTreeEntryType(value: unknown): value is TreeEntry["type"] {
+  return value === "blob" || value === "tree" || value === "commit";
+}
+
 function isValidTreeEntryMode(type: TreeEntry["type"], mode: string): boolean {
   if (type === "blob") {
     return mode === "100644" || mode === "100755" || mode === "120000";
@@ -125,13 +129,19 @@ export function parseTreePayload(value: unknown): TreePayload {
       !isRecord(item) ||
       typeof item.path !== "string" ||
       typeof item.mode !== "string" ||
-      typeof item.type !== "string" ||
-      !["blob", "tree", "commit"].includes(item.type) ||
+      !isTreeEntryType(item.type) ||
       typeof item.sha !== "string" ||
       !SHA_PATTERN.test(item.sha) ||
-      !isValidTreeEntryMode(item.type as TreeEntry["type"], item.mode) ||
-      (item.size !== undefined &&
-        (!Number.isSafeInteger(item.size) || (item.size as number) < 0))
+      !isValidTreeEntryMode(item.type, item.mode)
+    ) {
+      throw new TypeError("invalid tree payload");
+    }
+
+    const size = item.size;
+
+    if (
+      size !== undefined &&
+      (typeof size !== "number" || !Number.isSafeInteger(size) || size < 0)
     ) {
       throw new TypeError("invalid tree payload");
     }
@@ -139,9 +149,9 @@ export function parseTreePayload(value: unknown): TreePayload {
     entries.push({
       path: item.path,
       mode: item.mode,
-      type: item.type as TreeEntry["type"],
+      type: item.type,
       sha: item.sha.toLowerCase(),
-      ...(item.size === undefined ? {} : { size: item.size as number }),
+      ...(size === undefined ? {} : { size }),
     });
   }
 
