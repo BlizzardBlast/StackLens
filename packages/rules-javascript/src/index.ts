@@ -31,10 +31,7 @@ export {
   projectConfigurationRule,
 } from "./project-configuration.js";
 export { createJavaScriptProjectSnapshot } from "./project-snapshot.js";
-export type {
-  JavaScriptProjectSnapshot,
-  JavaScriptStaticProjectFile,
-} from "./project-snapshot.js";
+export type { JavaScriptProjectSnapshot, JavaScriptStaticProjectFile } from "./project-snapshot.js";
 
 export type {
   JavaScriptAnalysisMetadata,
