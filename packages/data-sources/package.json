@@ -8,6 +8,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./github": {
+      "types": "./dist/github.d.ts",
+      "default": "./dist/github.js"
+    },
     "./npm-registry": {
       "types": "./dist/npm-registry.d.ts",
       "default": "./dist/npm-registry.js"
