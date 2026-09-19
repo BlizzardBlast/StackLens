@@ -5,7 +5,7 @@
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
 > **Architecture:** v0.1.6  
-> **Completed milestone:** npm Registry package metadata adapter (this implementation PR)  
+> **Completed milestone:** npm Registry package metadata adapter — PR #13  
 > **Immediate milestone:** Milestone C — OSV vulnerability adapter  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
@@ -199,7 +199,7 @@ Primary traceability:
 
 ## 6. Completed milestone: npm Registry package metadata adapter
 
-The first external provider boundary is implemented in `packages/data-sources`.
+The first external provider boundary is implemented in `packages/data-sources` by PR #13.
 
 Accepted implementation:
 
