@@ -373,3 +373,36 @@ The resulting lockfile contains the new `packages/contracts` workspace importer 
 Temporary write permission was then removed. The workflow was restored to its normal read-only, frozen-lockfile configuration before merge.
 
 A normal repository-authored commit is used to trigger the permanent workflow again; that steady-state run is the final merge gate for PR #6.
+
+
+## 2026-09-19 — Step 26: Establish the deterministic analyzer core
+
+After merging Analysis Report Contract v1, implementation moved to the reusable analyzer execution layer rather than directly adding ecosystem rules or screens.
+
+A new `@stacklens/analyzer-core` package defines:
+- immutable normalized analysis context boundaries;
+- fact, finding, and recommendation rule interfaces;
+- deterministic stage execution;
+- stable rule-ID ordering;
+- runtime rule-output ownership/requirement validation;
+- per-rule failure isolation;
+- scoring dependency inversion;
+- contract-validated AnalysisReport assembly.
+
+The pipeline is intentionally staged:
+
+`normalized evidence/context → facts → findings → recommendations → scoring → report`
+
+Rules in one stage cannot see sibling outputs. Finding rules see the completed fact stage; recommendation rules see completed facts/findings. This prevents hidden registration-order coupling.
+
+Rule evaluation is synchronous so provider/network I/O cannot become an implicit rule behavior. External data must already be normalized before entering analyzer-core.
+
+If a single rule throws or emits invalid output, its output is omitted and a deterministic rule-scoped partial failure + limitation is recorded. Duplicate rule IDs or missing requirement declarations are configuration errors detected before rule execution.
+
+Analyzer-core defines `AnalysisScorer` but no score formulas. The future scoring package will implement that interface.
+
+Focused tests cover ordering, stage visibility, exception isolation, invalid output, duplicate IDs, traceability, scorer integration, and caller-owned IDs/timestamps.
+
+ADR-0009 and `docs/implementation/analyzer-core.md` document this boundary.
+
+The next implementation milestone is a narrow JavaScript/TypeScript vertical slice for **FR-005 dependency inventory**, using normalized package-manifest evidence without external registry metadata.
