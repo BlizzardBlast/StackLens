@@ -4,15 +4,35 @@ import { IdentifierSchema } from "./identifiers.js";
 
 export const IsoDateTimeSchema = z.string().datetime({ offset: true });
 
-export const DataSourceStatusSchema = z.enum(["available", "partial", "unavailable"]);
-
-export const DataSourceSchema = z.strictObject({
+export const AvailableDataSourceSchema = z.strictObject({
   id: IdentifierSchema,
   provider: IdentifierSchema,
-  status: DataSourceStatusSchema,
+  status: z.literal("available"),
   retrievedAt: IsoDateTimeSchema,
   reference: z.string().trim().min(1).max(1000).optional()
 });
+
+export const PartialDataSourceSchema = z.strictObject({
+  id: IdentifierSchema,
+  provider: IdentifierSchema,
+  status: z.literal("partial"),
+  retrievedAt: IsoDateTimeSchema,
+  reference: z.string().trim().min(1).max(1000).optional()
+});
+
+export const UnavailableDataSourceSchema = z.strictObject({
+  id: IdentifierSchema,
+  provider: IdentifierSchema,
+  status: z.literal("unavailable"),
+  attemptedAt: IsoDateTimeSchema,
+  reference: z.string().trim().min(1).max(1000).optional()
+});
+
+export const DataSourceSchema = z.discriminatedUnion("status", [
+  AvailableDataSourceSchema,
+  PartialDataSourceSchema,
+  UnavailableDataSourceSchema
+]);
 
 export const SourceLocationSchema = z
   .strictObject({
@@ -59,7 +79,9 @@ export const EvidenceSchema = z.discriminatedUnion("kind", [
   ExternalEvidenceSchema
 ]);
 
-export type DataSourceStatus = z.infer<typeof DataSourceStatusSchema>;
+export type AvailableDataSource = z.infer<typeof AvailableDataSourceSchema>;
+export type PartialDataSource = z.infer<typeof PartialDataSourceSchema>;
+export type UnavailableDataSource = z.infer<typeof UnavailableDataSourceSchema>;
 export type DataSource = z.infer<typeof DataSourceSchema>;
 export type ProjectEvidence = z.infer<typeof ProjectEvidenceSchema>;
 export type ExternalEvidence = z.infer<typeof ExternalEvidenceSchema>;
