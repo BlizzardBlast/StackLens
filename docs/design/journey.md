@@ -281,3 +281,23 @@ The review produced these corrections:
 This step intentionally prefers small, direct configuration over abstractions or generic boilerplate that StackLens does not currently need.
 
 Verification continues on the real GitHub Actions runner after the lockfile and canonical formatting are refreshed.
+
+
+## 2026-09-19 — Step 22: Close the hardening bootstrap
+
+The hardened dependency graph was resolved from a clean pnpm lockfile under the active minimum-release-age supply-chain policy.
+
+The rebuilt lockfile contains `oxlint-tsgolint@7.0.2001` and no longer contains the recently published `7.0.2002` entries that caused the policy rejection.
+
+The temporary write-enabled workflow completed successfully across:
+- journey-continuity verification;
+- clean dependency resolution;
+- generated-token build;
+- canonical formatting;
+- pinned shadcn project validation;
+- strict TypeScript;
+- component/token tests;
+- type-aware Oxlint;
+- Oxfmt verification.
+
+The temporary CI write permission is removed immediately after this step. The final steady-state workflow returns to read-only repository permissions and frozen-lockfile installation.
