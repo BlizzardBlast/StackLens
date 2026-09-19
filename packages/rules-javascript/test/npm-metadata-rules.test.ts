@@ -193,9 +193,14 @@ describe("npmRegistryHealthFactRule [FR-010, DATA-001, DATA-002, NFR-003]", () =
     });
 
     const result = npmRegistryHealthFactRule.evaluate({
-      ...fixture.context,
-      facts: undefined,
-    } as never);
+      input: fixture.context.input,
+      project: fixture.project,
+      metadata: fixture.context.metadata,
+      sources: fixture.context.sources,
+      evidence: fixture.context.evidence,
+      limitations: [],
+      partialFailures: [],
+    });
 
     expect(result.limitations).toEqual([]);
     expect(result.facts).toHaveLength(1);
@@ -442,7 +447,7 @@ describe("outdatedDependencyRule [FR-006, DATA-001, DATA-002, DATA-003, NFR-003]
     expect(result.findings?.[0]?.limitationIds).toEqual([result.limitations?.[0]?.id]);
   });
 
-  it("rejects missing metadata, missing bound sources, cross-source evidence, and invalid comparison versions", () => {
+  it("rejects missing metadata, missing bound sources, cross-source evidence, absent version records, and invalid comparison versions", () => {
     const missingMetadata = createRuleContext({
       metadata: {},
     });
@@ -477,6 +482,38 @@ describe("outdatedDependencyRule [FR-006, DATA-001, DATA-002, DATA-003, NFR-003]
     expect(outdatedDependencyRule.evaluate(crossSource.context).limitations?.[0]?.message).toContain(
       "exact bound data source",
     );
+
+    const missingDeclaredRecord = createRuleContext({
+      metadata: createMetadata(
+        createSnapshot({
+          versions: [
+            {
+              version: "2.0.0",
+            },
+          ],
+        }),
+      ),
+    });
+    expect(outdatedDependencyRule.evaluate(missingDeclaredRecord.context).findings).toEqual([]);
+    expect(
+      outdatedDependencyRule.evaluate(missingDeclaredRecord.context).limitations?.[0]?.message,
+    ).toContain("does not contain declared exact version");
+
+    const missingComparisonRecord = createRuleContext({
+      metadata: createMetadata(
+        createSnapshot({
+          versions: [
+            {
+              version: "1.0.0",
+            },
+          ],
+        }),
+      ),
+    });
+    expect(outdatedDependencyRule.evaluate(missingComparisonRecord.context).findings).toEqual([]);
+    expect(
+      outdatedDependencyRule.evaluate(missingComparisonRecord.context).limitations?.[0]?.message,
+    ).toContain("version record is unavailable");
 
     const invalidLatest = createRuleContext({
       metadata: createMetadata(
