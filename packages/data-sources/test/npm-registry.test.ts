@@ -290,11 +290,17 @@ describe("NpmRegistryAdapter [FR-006, FR-007, FR-010, DATA-001, DATA-002]", () =
 
   it("rejects dist-tags that point at absent versions", async () => {
     const packument = createPackument();
-    packument["dist-tags"].latest = "9.9.9";
+    const invalidPackument = {
+      ...packument,
+      "dist-tags": {
+        ...packument["dist-tags"],
+        latest: "9.9.9",
+      },
+    };
     const adapter = createAdapter(
       vi
         .fn<typeof fetch>()
-        .mockResolvedValue(new Response(JSON.stringify(packument), { status: 200 })),
+        .mockResolvedValue(new Response(JSON.stringify(invalidPackument), { status: 200 })),
     );
 
     const result = await adapter.fetch({
@@ -308,7 +314,65 @@ describe("NpmRegistryAdapter [FR-006, FR-007, FR-010, DATA-001, DATA-002]", () =
     }
 
     expect(result.failure.code).toBe("npm_invalid_response");
-    expect(result.failure.message).toContain("references unknown version 9.9.9");
+    expect(result.failure.message).toBe(
+      "npm Registry returned an unsupported metadata shape for @stacklens/example.",
+    );
+    expect(result.failure.message).not.toContain("9.9.9");
+  });
+
+  it("returns a non-retryable typed failure for invalid provider JSON", async () => {
+    const adapter = createAdapter(
+      vi.fn<typeof fetch>().mockResolvedValue(new Response("{invalid", { status: 200 })),
+    );
+
+    const result = await adapter.fetch({
+      packageName: "react",
+    });
+
+    expect(result.ok).toBe(false);
+
+    if (result.ok) {
+      throw new Error("Expected invalid provider JSON to fail");
+    }
+
+    expect(result.failure).toMatchObject({
+      code: "npm_invalid_json",
+      retryable: false,
+    });
+  });
+
+  it("returns a retryable typed timeout without exposing transport details", async () => {
+    const fetchImpl = vi.fn<typeof fetch>().mockImplementation(
+      (_input, init) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener(
+            "abort",
+            () => {
+              reject(new DOMException("internal timeout detail", "AbortError"));
+            },
+            { once: true },
+          );
+        }),
+    );
+    const adapter = createAdapter(fetchImpl, {
+      timeoutMs: 1,
+    });
+
+    const result = await adapter.fetch({
+      packageName: "react",
+    });
+
+    expect(result.ok).toBe(false);
+
+    if (result.ok) {
+      throw new Error("Expected timed-out provider request to fail");
+    }
+
+    expect(result.failure).toMatchObject({
+      code: "npm_request_timeout",
+      retryable: true,
+    });
+    expect(result.failure.message).not.toContain("internal timeout detail");
   });
 
   it("returns a non-retryable typed failure for a missing package", async () => {
