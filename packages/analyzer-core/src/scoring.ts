@@ -5,7 +5,7 @@ import type {
   DataSource,
   Evidence,
   Finding,
-  PartialFailure
+  PartialFailure,
 } from "@stacklens/contracts";
 
 export interface ScoringContext {

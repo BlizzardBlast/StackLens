@@ -5,13 +5,12 @@ import { AnalysisReportSchema } from "@stacklens/contracts";
 import { runAnalyzer } from "../src/analyzer.js";
 import type { AnalyzerDefinition } from "../src/analyzer.js";
 import type { AnalysisScorer } from "../src/scoring.js";
-
 import {
   createFact,
   createFinding,
   createRecommendation,
   createScores,
-  projectEvidence
+  projectEvidence,
 } from "./fixture.js";
 
 interface ProjectSnapshot {
@@ -26,19 +25,15 @@ describe("runAnalyzer", () => {
   it("assembles a validated report through the scorer abstraction", () => {
     const score = vi.fn<AnalysisScorer["score"]>((context) => {
       expect(context.facts.map((fact) => fact.id)).toEqual(["fact-dependency"]);
-      expect(context.findings.map((finding) => finding.id)).toEqual([
-        "finding-dependency"
-      ]);
-      expect(context.evidence.map((evidence) => evidence.id)).toEqual([
-        projectEvidence.id
-      ]);
+      expect(context.findings.map((finding) => finding.id)).toEqual(["finding-dependency"]);
+      expect(context.evidence.map((evidence) => evidence.id)).toEqual([projectEvidence.id]);
 
       return createScores("finding-dependency");
     });
 
     const scorer: AnalysisScorer = {
       version: "score-v1",
-      score
+      score,
     };
 
     const definition: AnalyzerDefinition<ProjectSnapshot, MetadataSnapshot> = {
@@ -54,10 +49,10 @@ describe("runAnalyzer", () => {
             requirementIds: ["FR-005"],
             evaluate() {
               return {
-                facts: [createFact("FACT-DEPENDENCY", "fact-dependency")]
+                facts: [createFact("FACT-DEPENDENCY", "fact-dependency")],
               };
-            }
-          }
+            },
+          },
         ],
         findingRules: [
           {
@@ -68,15 +63,11 @@ describe("runAnalyzer", () => {
             evaluate() {
               return {
                 findings: [
-                  createFinding(
-                    "FINDING-DEPENDENCY",
-                    "finding-dependency",
-                    "fact-dependency"
-                  )
-                ]
+                  createFinding("FINDING-DEPENDENCY", "finding-dependency", "fact-dependency"),
+                ],
               };
-            }
-          }
+            },
+          },
         ],
         recommendationRules: [
           {
@@ -90,14 +81,14 @@ describe("runAnalyzer", () => {
                   createRecommendation(
                     "RECOMMENDATION-DEPENDENCY",
                     "recommendation-dependency",
-                    "finding-dependency"
-                  )
-                ]
+                    "finding-dependency",
+                  ),
+                ],
               };
-            }
-          }
-        ]
-      }
+            },
+          },
+        ],
+      },
     };
 
     const report = runAnalyzer(definition, {
@@ -105,30 +96,30 @@ describe("runAnalyzer", () => {
       createdAt: "2026-09-19T03:00:00Z",
       input: {
         type: "manifest",
-        fingerprint: "sha256:fixture"
+        fingerprint: "sha256:fixture",
       },
       project: {
-        packageName: "fixture"
+        packageName: "fixture",
       },
       metadata: {
-        registryAvailable: true
+        registryAvailable: true,
       },
       sources: [],
-      evidence: [projectEvidence]
+      evidence: [projectEvidence],
     });
 
     expect(score).toHaveBeenCalledOnce();
     expect(report.analyzer).toEqual({
       version: "analyzer-v1",
       ruleSetVersion: "rules-v1",
-      scoringVersion: "score-v1"
+      scoringVersion: "score-v1",
     });
     expect(report.facts).toHaveLength(1);
     expect(report.findings).toHaveLength(1);
     expect(report.recommendations).toHaveLength(1);
     expect(report.scores.overall).toMatchObject({
       status: "available",
-      value: 95
+      value: 95,
     });
     expect(AnalysisReportSchema.safeParse(report).success).toBe(true);
   });
@@ -138,7 +129,7 @@ describe("runAnalyzer", () => {
       version: "score-v1",
       score() {
         return createScores();
-      }
+      },
     };
 
     const definition: AnalyzerDefinition<ProjectSnapshot, MetadataSnapshot> = {
@@ -148,8 +139,8 @@ describe("runAnalyzer", () => {
         version: "rules-v1",
         factRules: [],
         findingRules: [],
-        recommendationRules: []
-      }
+        recommendationRules: [],
+      },
     };
 
     const report = runAnalyzer(definition, {
@@ -157,16 +148,16 @@ describe("runAnalyzer", () => {
       createdAt: "2026-09-19T03:01:02Z",
       input: {
         type: "manifest",
-        fingerprint: "sha256:fixture"
+        fingerprint: "sha256:fixture",
       },
       project: {
-        packageName: "fixture"
+        packageName: "fixture",
       },
       metadata: {
-        registryAvailable: true
+        registryAvailable: true,
       },
       sources: [],
-      evidence: []
+      evidence: [],
     });
 
     expect(report.analysisId).toBe("caller-owned-id");

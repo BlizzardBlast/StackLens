@@ -1,14 +1,11 @@
-import {
-  ANALYSIS_REPORT_SCHEMA_VERSION,
-  AnalysisReportSchema
-} from "@stacklens/contracts";
+import { ANALYSIS_REPORT_SCHEMA_VERSION, AnalysisReportSchema } from "@stacklens/contracts";
 import type {
   AnalysisInput,
   AnalysisReport,
   AnalysisScores,
   AnalyzerMetadata,
   DataSource,
-  Evidence
+  Evidence,
 } from "@stacklens/contracts";
 
 import type { RulePipelineResult } from "./pipeline.js";
@@ -38,6 +35,6 @@ export function assembleAnalysisReport(input: AnalysisReportAssemblyInput): Anal
     recommendations: [...input.ruleResult.recommendations],
     scores: input.scores,
     limitations: [...input.ruleResult.limitations],
-    partialFailures: [...input.ruleResult.partialFailures]
+    partialFailures: [...input.ruleResult.partialFailures],
   });
 }

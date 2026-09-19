@@ -4,7 +4,7 @@ import type {
   AnalysisReport,
   DataSource,
   Evidence,
-  PartialFailure
+  PartialFailure,
 } from "@stacklens/contracts";
 
 import type { AnalysisContext } from "./context.js";
@@ -33,7 +33,7 @@ export interface AnalyzerRunInput<TProjectSnapshot, TMetadataSnapshot> {
 
 export function runAnalyzer<TProjectSnapshot, TMetadataSnapshot>(
   definition: AnalyzerDefinition<TProjectSnapshot, TMetadataSnapshot>,
-  runInput: AnalyzerRunInput<TProjectSnapshot, TMetadataSnapshot>
+  runInput: AnalyzerRunInput<TProjectSnapshot, TMetadataSnapshot>,
 ): AnalysisReport {
   const context: AnalysisContext<TProjectSnapshot, TMetadataSnapshot> = {
     input: runInput.input,
@@ -42,7 +42,7 @@ export function runAnalyzer<TProjectSnapshot, TMetadataSnapshot>(
     sources: [...runInput.sources],
     evidence: [...runInput.evidence],
     limitations: [...(runInput.limitations ?? [])],
-    partialFailures: [...(runInput.partialFailures ?? [])]
+    partialFailures: [...(runInput.partialFailures ?? [])],
   };
 
   const ruleResult = runRulePipeline(context, definition.ruleSet, runInput.createdAt);
@@ -53,7 +53,7 @@ export function runAnalyzer<TProjectSnapshot, TMetadataSnapshot>(
     facts: ruleResult.facts,
     findings: ruleResult.findings,
     limitations: ruleResult.limitations,
-    partialFailures: ruleResult.partialFailures
+    partialFailures: ruleResult.partialFailures,
   };
 
   const scores = definition.scorer.score(scoringContext);
@@ -65,11 +65,11 @@ export function runAnalyzer<TProjectSnapshot, TMetadataSnapshot>(
     analyzer: {
       version: definition.version,
       ruleSetVersion: definition.ruleSet.version,
-      scoringVersion: definition.scorer.version
+      scoringVersion: definition.scorer.version,
     },
     sources: context.sources,
     evidence: context.evidence,
     ruleResult,
-    scores
+    scores,
   });
 }

@@ -5,20 +5,16 @@ import type {
   Finding,
   PartialFailure,
   Recommendation,
-  RuleReference
+  RuleReference,
 } from "@stacklens/contracts";
 
-import type {
-  AnalysisContext,
-  FindingRuleContext,
-  RecommendationRuleContext
-} from "./context.js";
+import type { AnalysisContext, FindingRuleContext, RecommendationRuleContext } from "./context.js";
 import { AnalyzerConfigurationError, AnalyzerInvariantError } from "./errors.js";
 import type { AnalysisRuleSet, RuleDefinition } from "./rules.js";
 import {
   validateFactRuleResult,
   validateFindingRuleResult,
-  validateRecommendationRuleResult
+  validateRecommendationRuleResult,
 } from "./rules.js";
 
 export interface RulePipelineResult {
@@ -49,17 +45,13 @@ function sortedRules<T extends RuleDefinition>(rules: readonly T[]): readonly T[
 }
 
 function assertRuleSet<TProjectSnapshot, TMetadataSnapshot>(
-  ruleSet: AnalysisRuleSet<TProjectSnapshot, TMetadataSnapshot>
+  ruleSet: AnalysisRuleSet<TProjectSnapshot, TMetadataSnapshot>,
 ) {
   if (!IdentifierSchema.safeParse(ruleSet.version).success) {
     throw new AnalyzerConfigurationError("Rule-set version must be a valid identifier");
   }
 
-  const allRules = [
-    ...ruleSet.factRules,
-    ...ruleSet.findingRules,
-    ...ruleSet.recommendationRules
-  ];
+  const allRules = [...ruleSet.factRules, ...ruleSet.findingRules, ...ruleSet.recommendationRules];
   const seenIds = new Set<string>();
 
   for (const rule of allRules) {
@@ -73,14 +65,14 @@ function assertRuleSet<TProjectSnapshot, TMetadataSnapshot>(
 
     if (rule.requirementIds.length === 0) {
       throw new AnalyzerConfigurationError(
-        `Rule ${rule.id} must declare at least one requirement ID`
+        `Rule ${rule.id} must declare at least one requirement ID`,
       );
     }
 
     for (const requirementId of rule.requirementIds) {
       if (!RequirementIdSchema.safeParse(requirementId).success) {
         throw new AnalyzerConfigurationError(
-          `Rule ${rule.id} declares invalid requirement ID: ${requirementId}`
+          `Rule ${rule.id} declares invalid requirement ID: ${requirementId}`,
         );
       }
     }
@@ -96,11 +88,11 @@ function assertRuleSet<TProjectSnapshot, TMetadataSnapshot>(
 function createRuleFailureArtifacts(
   rule: RuleDefinition,
   occurredAt: string,
-  code: "rule_evaluation_failed" | "rule_output_invalid"
+  code: "rule_evaluation_failed" | "rule_output_invalid",
 ): RuleFailureArtifacts {
   const ruleReference: RuleReference = {
     id: rule.id,
-    version: rule.version
+    version: rule.version,
   };
 
   return {
@@ -110,7 +102,7 @@ function createRuleFailureArtifacts(
       message: `Rule ${rule.id} could not complete. Its outputs were omitted.`,
       affectedCategories: [],
       sourceIds: [],
-      ruleIds: [rule.id]
+      ruleIds: [rule.id],
     },
     partialFailure: {
       id: rule.id,
@@ -122,29 +114,29 @@ function createRuleFailureArtifacts(
           ? `Rule ${rule.id} emitted invalid analyzer output.`
           : `Rule ${rule.id} could not complete deterministic evaluation.`,
       retryable: false,
-      occurredAt
-    }
+      occurredAt,
+    },
   };
 }
 
 function createStageContext<TProjectSnapshot, TMetadataSnapshot>(
   context: AnalysisContext<TProjectSnapshot, TMetadataSnapshot>,
   limitations: readonly AnalysisLimitation[],
-  partialFailures: readonly PartialFailure[]
+  partialFailures: readonly PartialFailure[],
 ): AnalysisContext<TProjectSnapshot, TMetadataSnapshot> {
   return {
     ...context,
     sources: [...context.sources],
     evidence: [...context.evidence],
     limitations: [...limitations],
-    partialFailures: [...partialFailures]
+    partialFailures: [...partialFailures],
   };
 }
 
 export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
   context: AnalysisContext<TProjectSnapshot, TMetadataSnapshot>,
   ruleSet: AnalysisRuleSet<TProjectSnapshot, TMetadataSnapshot>,
-  occurredAt: string
+  occurredAt: string,
 ): RulePipelineResult {
   assertRuleSet(ruleSet);
 
@@ -165,9 +157,7 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
       const failure = createRuleFailureArtifacts(
         rule,
         occurredAt,
-        error instanceof AnalyzerInvariantError
-          ? "rule_output_invalid"
-          : "rule_evaluation_failed"
+        error instanceof AnalyzerInvariantError ? "rule_output_invalid" : "rule_evaluation_failed",
       );
       limitations.push(failure.limitation);
       partialFailures.push(failure.partialFailure);
@@ -176,7 +166,7 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
 
   const findingStageContext: FindingRuleContext<TProjectSnapshot, TMetadataSnapshot> = {
     ...createStageContext(context, limitations, partialFailures),
-    facts: [...facts]
+    facts: [...facts],
   };
 
   for (const rule of sortedRules(ruleSet.findingRules)) {
@@ -188,29 +178,25 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
       const failure = createRuleFailureArtifacts(
         rule,
         occurredAt,
-        error instanceof AnalyzerInvariantError
-          ? "rule_output_invalid"
-          : "rule_evaluation_failed"
+        error instanceof AnalyzerInvariantError ? "rule_output_invalid" : "rule_evaluation_failed",
       );
       limitations.push(failure.limitation);
       partialFailures.push(failure.partialFailure);
     }
   }
 
-  const recommendationStageContext: RecommendationRuleContext<
-    TProjectSnapshot,
-    TMetadataSnapshot
-  > = {
-    ...createStageContext(context, limitations, partialFailures),
-    facts: [...facts],
-    findings: [...findings]
-  };
+  const recommendationStageContext: RecommendationRuleContext<TProjectSnapshot, TMetadataSnapshot> =
+    {
+      ...createStageContext(context, limitations, partialFailures),
+      facts: [...facts],
+      findings: [...findings],
+    };
 
   for (const rule of sortedRules(ruleSet.recommendationRules)) {
     try {
       const result = validateRecommendationRuleResult(
         rule,
-        rule.evaluate(recommendationStageContext)
+        rule.evaluate(recommendationStageContext),
       );
       recommendations.push(...result.recommendations);
       limitations.push(...result.limitations);
@@ -218,9 +204,7 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
       const failure = createRuleFailureArtifacts(
         rule,
         occurredAt,
-        error instanceof AnalyzerInvariantError
-          ? "rule_output_invalid"
-          : "rule_evaluation_failed"
+        error instanceof AnalyzerInvariantError ? "rule_output_invalid" : "rule_evaluation_failed",
       );
       limitations.push(failure.limitation);
       partialFailures.push(failure.partialFailure);
@@ -232,6 +216,6 @@ export function runRulePipeline<TProjectSnapshot, TMetadataSnapshot>(
     findings,
     recommendations,
     limitations,
-    partialFailures
+    partialFailures,
   };
 }

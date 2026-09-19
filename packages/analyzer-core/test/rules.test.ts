@@ -1,11 +1,8 @@
-import type { AnalysisFact } from "@stacklens/contracts";
 import { describe, expect, it } from "vitest";
 
-import {
-  validateFactRuleResult,
-  validateFindingRuleResult
-} from "../src/rules.js";
+import type { AnalysisFact } from "@stacklens/contracts";
 
+import { validateFactRuleResult, validateFindingRuleResult } from "../src/rules.js";
 import { createFact, createFinding, createLimitation } from "./fixture.js";
 
 describe("rule output validation", () => {
@@ -13,18 +10,18 @@ describe("rule output validation", () => {
     const rule = {
       id: "FACT-A",
       version: "1",
-      requirementIds: ["FR-005"] as const
+      requirementIds: ["FR-005"] as const,
     };
 
     const fact: AnalysisFact = {
       ...createFact("FACT-A", "fact-a"),
-      requirementIds: ["FR-017"]
+      requirementIds: ["FR-017"],
     };
 
     expect(() =>
       validateFactRuleResult(rule, {
-        facts: [fact]
-      })
+        facts: [fact],
+      }),
     ).toThrowError(/undeclared requirement FR-017/);
   });
 
@@ -32,18 +29,18 @@ describe("rule output validation", () => {
     const rule = {
       id: "FINDING-A",
       version: "1",
-      requirementIds: ["FR-017"] as const
+      requirementIds: ["FR-017"] as const,
     };
 
     const limitation = {
-      ...createLimitation("OTHER-RULE", "limitation-a")
+      ...createLimitation("OTHER-RULE", "limitation-a"),
     };
 
     expect(() =>
       validateFindingRuleResult(rule, {
         findings: [createFinding("FINDING-A", "finding-a", "fact-a")],
-        limitations: [limitation]
-      })
+        limitations: [limitation],
+      }),
     ).toThrowError(/without referencing itself/);
   });
 });

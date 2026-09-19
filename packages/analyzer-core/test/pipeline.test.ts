@@ -4,13 +4,7 @@ import type { AnalysisContext } from "../src/context.js";
 import { AnalyzerConfigurationError } from "../src/errors.js";
 import { runRulePipeline } from "../src/pipeline.js";
 import type { AnalysisRuleSet } from "../src/rules.js";
-
-import {
-  createFact,
-  createFinding,
-  createRecommendation,
-  projectEvidence
-} from "./fixture.js";
+import { createFact, createFinding, createRecommendation, projectEvidence } from "./fixture.js";
 
 interface ProjectSnapshot {
   readonly packageName: string;
@@ -23,18 +17,18 @@ interface MetadataSnapshot {
 const context: AnalysisContext<ProjectSnapshot, MetadataSnapshot> = {
   input: {
     type: "manifest",
-    fingerprint: "sha256:fixture"
+    fingerprint: "sha256:fixture",
   },
   project: {
-    packageName: "fixture"
+    packageName: "fixture",
   },
   metadata: {
-    registryAvailable: true
+    registryAvailable: true,
   },
   sources: [],
   evidence: [projectEvidence],
   limitations: [],
-  partialFailures: []
+  partialFailures: [],
 };
 
 describe("runRulePipeline", () => {
@@ -54,9 +48,9 @@ describe("runRulePipeline", () => {
           evaluate() {
             executionOrder.push("FACT-Z");
             return {
-              facts: [createFact("FACT-Z", "fact-z")]
+              facts: [createFact("FACT-Z", "fact-z")],
             };
-          }
+          },
         },
         {
           kind: "fact",
@@ -66,10 +60,10 @@ describe("runRulePipeline", () => {
           evaluate() {
             executionOrder.push("FACT-A");
             return {
-              facts: [createFact("FACT-A", "fact-a")]
+              facts: [createFact("FACT-A", "fact-a")],
             };
-          }
-        }
+          },
+        },
       ],
       findingRules: [
         {
@@ -81,10 +75,10 @@ describe("runRulePipeline", () => {
             executionOrder.push("FINDING-A");
             visibleFactIds.push(ruleContext.facts.map((fact) => fact.id));
             return {
-              findings: [createFinding("FINDING-A", "finding-a", "fact-a")]
+              findings: [createFinding("FINDING-A", "finding-a", "fact-a")],
             };
-          }
-        }
+          },
+        },
       ],
       recommendationRules: [
         {
@@ -97,31 +91,22 @@ describe("runRulePipeline", () => {
             visibleFindingIds.push(ruleContext.findings.map((finding) => finding.id));
             return {
               recommendations: [
-                createRecommendation(
-                  "RECOMMENDATION-A",
-                  "recommendation-a",
-                  "finding-a"
-                )
-              ]
+                createRecommendation("RECOMMENDATION-A", "recommendation-a", "finding-a"),
+              ],
             };
-          }
-        }
-      ]
+          },
+        },
+      ],
     };
 
     const result = runRulePipeline(context, ruleSet, "2026-09-19T03:00:00Z");
 
-    expect(executionOrder).toEqual([
-      "FACT-A",
-      "FACT-Z",
-      "FINDING-A",
-      "RECOMMENDATION-A"
-    ]);
+    expect(executionOrder).toEqual(["FACT-A", "FACT-Z", "FINDING-A", "RECOMMENDATION-A"]);
     expect(result.facts.map((fact) => fact.id)).toEqual(["fact-a", "fact-z"]);
     expect(visibleFactIds).toEqual([["fact-a", "fact-z"]]);
     expect(visibleFindingIds).toEqual([["finding-a"]]);
     expect(result.recommendations.map((recommendation) => recommendation.id)).toEqual([
-      "recommendation-a"
+      "recommendation-a",
     ]);
   });
 
@@ -136,9 +121,9 @@ describe("runRulePipeline", () => {
           requirementIds: ["FR-005"],
           evaluate() {
             return {
-              facts: [createFact("FACT-A", "fact-a")]
+              facts: [createFact("FACT-A", "fact-a")],
             };
-          }
+          },
         },
         {
           kind: "fact",
@@ -147,11 +132,11 @@ describe("runRulePipeline", () => {
           requirementIds: ["FR-005"],
           evaluate() {
             throw new Error("fixture failure");
-          }
-        }
+          },
+        },
       ],
       findingRules: [],
-      recommendationRules: []
+      recommendationRules: [],
     };
 
     const result = runRulePipeline(context, ruleSet, "2026-09-19T03:00:00Z");
@@ -163,13 +148,13 @@ describe("runRulePipeline", () => {
         scope: "rule",
         rule: {
           id: "FACT-BROKEN",
-          version: "1"
+          version: "1",
         },
         code: "rule_evaluation_failed",
         message: "Rule FACT-BROKEN could not complete deterministic evaluation.",
         retryable: false,
-        occurredAt: "2026-09-19T03:00:00Z"
-      }
+        occurredAt: "2026-09-19T03:00:00Z",
+      },
     ]);
     expect(result.limitations[0]?.ruleIds).toEqual(["FACT-BROKEN"]);
   });
@@ -185,13 +170,13 @@ describe("runRulePipeline", () => {
           requirementIds: ["FR-005"],
           evaluate() {
             return {
-              facts: [createFact("OTHER-RULE", "fact-invalid")]
+              facts: [createFact("OTHER-RULE", "fact-invalid")],
             };
-          }
-        }
+          },
+        },
       ],
       findingRules: [],
-      recommendationRules: []
+      recommendationRules: [],
     };
 
     const result = runRulePipeline(context, ruleSet, "2026-09-19T03:00:00Z");
@@ -216,8 +201,8 @@ describe("runRulePipeline", () => {
           evaluate() {
             evaluations += 1;
             return {};
-          }
-        }
+          },
+        },
       ],
       findingRules: [
         {
@@ -228,15 +213,15 @@ describe("runRulePipeline", () => {
           evaluate() {
             evaluations += 1;
             return {};
-          }
-        }
+          },
+        },
       ],
-      recommendationRules: []
+      recommendationRules: [],
     };
 
-    expect(() =>
-      runRulePipeline(context, ruleSet, "2026-09-19T03:00:00Z")
-    ).toThrowError(AnalyzerConfigurationError);
+    expect(() => runRulePipeline(context, ruleSet, "2026-09-19T03:00:00Z")).toThrowError(
+      AnalyzerConfigurationError,
+    );
     expect(evaluations).toBe(0);
   });
 
@@ -251,15 +236,15 @@ describe("runRulePipeline", () => {
           requirementIds: [],
           evaluate() {
             return {};
-          }
-        }
+          },
+        },
       ],
       findingRules: [],
-      recommendationRules: []
+      recommendationRules: [],
     };
 
-    expect(() =>
-      runRulePipeline(context, ruleSet, "2026-09-19T03:00:00Z")
-    ).toThrowError(/must declare at least one requirement ID/);
+    expect(() => runRulePipeline(context, ruleSet, "2026-09-19T03:00:00Z")).toThrowError(
+      /must declare at least one requirement ID/,
+    );
   });
 });

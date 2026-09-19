@@ -5,7 +5,7 @@ import type {
   DataSource,
   Evidence,
   Finding,
-  PartialFailure
+  PartialFailure,
 } from "@stacklens/contracts";
 
 export interface AnalysisContext<TProjectSnapshot, TMetadataSnapshot> {
@@ -23,12 +23,16 @@ export type FactRuleContext<TProjectSnapshot, TMetadataSnapshot> = AnalysisConte
   TMetadataSnapshot
 >;
 
-export interface FindingRuleContext<TProjectSnapshot, TMetadataSnapshot>
-  extends AnalysisContext<TProjectSnapshot, TMetadataSnapshot> {
+export interface FindingRuleContext<TProjectSnapshot, TMetadataSnapshot> extends AnalysisContext<
+  TProjectSnapshot,
+  TMetadataSnapshot
+> {
   readonly facts: readonly AnalysisFact[];
 }
 
-export interface RecommendationRuleContext<TProjectSnapshot, TMetadataSnapshot>
-  extends FindingRuleContext<TProjectSnapshot, TMetadataSnapshot> {
+export interface RecommendationRuleContext<
+  TProjectSnapshot,
+  TMetadataSnapshot,
+> extends FindingRuleContext<TProjectSnapshot, TMetadataSnapshot> {
   readonly findings: readonly Finding[];
 }

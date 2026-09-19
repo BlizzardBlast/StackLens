@@ -5,13 +5,10 @@ export type {
   AnalysisContext,
   FactRuleContext,
   FindingRuleContext,
-  RecommendationRuleContext
+  RecommendationRuleContext,
 } from "./context.js";
 
-export {
-  AnalyzerConfigurationError,
-  AnalyzerInvariantError
-} from "./errors.js";
+export { AnalyzerConfigurationError, AnalyzerInvariantError } from "./errors.js";
 
 export { runRulePipeline } from "./pipeline.js";
 export type { RulePipelineResult } from "./pipeline.js";
@@ -22,7 +19,7 @@ export type { AnalysisReportAssemblyInput } from "./report.js";
 export {
   validateFactRuleResult,
   validateFindingRuleResult,
-  validateRecommendationRuleResult
+  validateRecommendationRuleResult,
 } from "./rules.js";
 export type {
   AnalysisRuleSet,
@@ -32,7 +29,7 @@ export type {
   FindingRuleResult,
   RecommendationRule,
   RecommendationRuleResult,
-  RuleDefinition
+  RuleDefinition,
 } from "./rules.js";
 
 export type { AnalysisScorer, ScoringContext } from "./scoring.js";

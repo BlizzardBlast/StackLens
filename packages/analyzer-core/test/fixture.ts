@@ -4,7 +4,7 @@ import type {
   AnalysisScores,
   Evidence,
   Finding,
-  Recommendation
+  Recommendation,
 } from "@stacklens/contracts";
 
 export const projectEvidence: Evidence = {
@@ -14,8 +14,8 @@ export const projectEvidence: Evidence = {
   location: {
     path: "package.json",
     startLine: 10,
-    endLine: 10
-  }
+    endLine: 10,
+  },
 };
 
 export function createFact(ruleId: string, id: string): AnalysisFact {
@@ -24,15 +24,15 @@ export function createFact(ruleId: string, id: string): AnalysisFact {
     type: "dependency.declared",
     subject: {
       type: "dependency",
-      name: "legacy-tool"
+      name: "legacy-tool",
     },
     statement: "legacy-tool is declared by the analyzed project.",
     rule: {
       id: ruleId,
-      version: "1"
+      version: "1",
     },
     requirementIds: ["FR-005"],
-    evidenceIds: [projectEvidence.id]
+    evidenceIds: [projectEvidence.id],
   };
 }
 
@@ -43,13 +43,13 @@ export function createFinding(ruleId: string, id: string, factId: string): Findi
     category: "dependencies",
     subject: {
       type: "dependency",
-      name: "legacy-tool"
+      name: "legacy-tool",
     },
     title: "Declared dependency",
     description: "A dependency declaration was observed.",
     rule: {
       id: ruleId,
-      version: "1"
+      version: "1",
     },
     requirementIds: ["FR-017"],
     evidenceIds: [projectEvidence.id],
@@ -59,24 +59,24 @@ export function createFinding(ruleId: string, id: string, factId: string): Findi
       level: "low",
       rule: {
         id: "PRIORITY-001",
-        version: "1"
+        version: "1",
       },
       rationale: "Fixture priority.",
       factors: [
         {
           key: "fixture",
           rationale: "Fixture priority factor.",
-          evidenceIds: [projectEvidence.id]
-        }
-      ]
-    }
+          evidenceIds: [projectEvidence.id],
+        },
+      ],
+    },
   };
 }
 
 export function createRecommendation(
   ruleId: string,
   id: string,
-  findingId: string
+  findingId: string,
 ): Recommendation {
   return {
     id,
@@ -87,11 +87,11 @@ export function createRecommendation(
     impact: "Keeps the dependency list intentional.",
     rule: {
       id: ruleId,
-      version: "1"
+      version: "1",
     },
     requirementIds: ["FR-015"],
     findingIds: [findingId],
-    evidenceIds: [projectEvidence.id]
+    evidenceIds: [projectEvidence.id],
   };
 }
 
@@ -102,7 +102,7 @@ export function createLimitation(ruleId: string, id: string): AnalysisLimitation
     message: "The fixture intentionally lacks some evidence.",
     affectedCategories: ["security"],
     sourceIds: [],
-    ruleIds: [ruleId]
+    ruleIds: [ruleId],
   };
 }
 
@@ -117,12 +117,12 @@ export function createScores(findingId?: string): AnalysisScores {
           rationale: "Fixture deduction.",
           rule: {
             id: "SCORE-DEP-001",
-            version: "1"
+            version: "1",
           },
           findingIds: [findingId],
           factIds: [],
-          evidenceIds: [projectEvidence.id]
-        }
+          evidenceIds: [projectEvidence.id],
+        },
       ]
     : [];
 
@@ -133,40 +133,40 @@ export function createScores(findingId?: string): AnalysisScores {
       status: "available",
       value: findingId ? 95 : 100,
       evidenceCoverage: 100,
-      contributionIds
+      contributionIds,
     },
     categories: {
       dependencies: {
         status: "available",
         value: findingId ? 95 : 100,
         evidenceCoverage: 100,
-        contributionIds
+        contributionIds,
       },
       security: {
         status: "available",
         value: 100,
         evidenceCoverage: 100,
-        contributionIds: []
+        contributionIds: [],
       },
       maintainability: {
         status: "available",
         value: 100,
         evidenceCoverage: 100,
-        contributionIds: []
+        contributionIds: [],
       },
       testing: {
         status: "available",
         value: 100,
         evidenceCoverage: 100,
-        contributionIds: []
+        contributionIds: [],
       },
       tooling: {
         status: "available",
         value: 100,
         evidenceCoverage: 100,
-        contributionIds: []
-      }
+        contributionIds: [],
+      },
     },
-    contributions
+    contributions,
   };
 }
