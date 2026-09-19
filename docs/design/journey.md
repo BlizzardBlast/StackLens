@@ -868,7 +868,7 @@ NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-002, GOV-006, GOV-007.
 
 ## 2026-09-19 — Step 40: Add bounded immutable public GitHub acquisition
 
-This implementation PR adds the **FR-003** public GitHub repository acquisition boundary in
+PR #18 adds the **FR-003** public GitHub repository acquisition boundary in
 `@stacklens/data-sources`.
 
 The adapter accepts only validated HTTPS `github.com/<owner>/<repository>` URLs. Conventional
