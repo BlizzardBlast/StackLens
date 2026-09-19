@@ -278,9 +278,14 @@ OSV defaults in this slice:
 - maximum query entries: 100;
 - request timeout: 8 seconds;
 - maximum response body: 16 MiB;
-- maximum pagination rounds: 20.
+- maximum pagination rounds: 20;
+- maximum full advisory-detail lookups: 500.
 
 All are adapter options so deployment boundaries can be tightened without changing rule semantics.
+
+If the advisory-detail lookup bound is reached, all exact-version batch matches and their known OSV
+evidence links remain available, but the source is marked partial and only the bounded subset receives
+full normalized advisory details.
 
 ### OSV verification
 
@@ -296,7 +301,7 @@ Synthetic tests cover:
 - authoritative match retention when detail retrieval fails;
 - unsafe advisory-reference rejection without unsafe evidence links;
 - initial provider failure and malformed batch response behavior;
-- query-count and response-size safety bounds;
+- query-count, response-size, and advisory-detail request safety bounds;
 - explicit empty-match semantics.
 
 No live OSV request is required for the PR quality gate.
