@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, the first JavaScript dependency-inventory rule slice, the framework-independent quick-manifest API service boundary, and the first npm Registry metadata adapter are implemented. Fastify transport, product screens, OSV/GitHub adapters, dependency findings, and production scoring are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, the first JavaScript dependency-inventory rule slice, the framework-independent quick-manifest API service boundary, the npm Registry metadata adapter, and the OSV vulnerability-data adapter are implemented. Fastify transport, product screens, GitHub acquisition, provider-backed dependency findings, and production scoring are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -119,13 +119,14 @@ See [Quick Manifest Analysis](docs/implementation/quick-manifest-analysis.md).
 
 The first provider package lives in **`packages/data-sources`**.
 
-Its npm Registry adapter performs bounded server-side metadata acquisition, validates and normalizes
-package/version/dist-tag/deprecation/publication/repository metadata, associates every successful
-observation with explicit provenance and retrieval time, and converts provider/network failures into
-typed source failures.
+Its npm Registry adapter performs bounded server-side package-metadata acquisition. Its OSV adapter
+performs bounded exact-version npm vulnerability queries, follows OSV pagination, normalizes advisory
+detail/severity/reference metadata, and preserves partial-source state when detail acquisition is
+incomplete.
 
-JavaScript rules do not call npm directly. The adapter does not create dependency findings yet; it
-only establishes trusted normalized input for later rules.
+Both adapters associate external observations with explicit provenance/retrieval time and convert
+provider/network/schema failures into typed source failures. JavaScript rules call neither provider
+directly, and no provider-backed dependency finding rule is implemented yet.
 
 See [External Data Sources](docs/implementation/data-sources.md).
 
