@@ -125,7 +125,7 @@ export class NpmRegistryAdapter implements EvidenceProvider<
         typeof packageName === "string" ? packageName : "invalid-package-name",
         attemptedAt,
         "npm_invalid_package_name",
-        "npm Registry package names must be non-empty, unpadded strings no longer than 214 characters and without control characters.",
+        `npm Registry package names must be non-empty, unpadded strings no longer than ${NPM_PACKAGE_NAME_MAX_LENGTH} characters and without control characters.`,
         false,
       );
     }
