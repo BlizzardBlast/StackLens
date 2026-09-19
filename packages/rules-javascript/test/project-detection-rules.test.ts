@@ -322,6 +322,9 @@ describe("createJavaScriptProjectSnapshot [FR-013, SEC-002]", () => {
     expect(() =>
       createJavaScriptProjectSnapshot(manifest, [{ path: "\\vite.config.ts", content: "" }]),
     ).toThrow("relative POSIX paths");
+    expect(() =>
+      createJavaScriptProjectSnapshot(manifest, [{ path: "vite\nconfig.ts", content: "" }]),
+    ).toThrow("relative POSIX paths");
   });
 });
 
