@@ -39,6 +39,26 @@ describe("AnalysisReportSchema", () => {
     );
   });
 
+  it("rejects external evidence from a source marked unavailable", () => {
+    const report = createValidAnalysisReport();
+    report.sources[0] = {
+      id: "source-npm",
+      provider: "npm",
+      status: "unavailable",
+      attemptedAt: "2026-09-19T02:00:00Z",
+      reference: "legacy-tool"
+    };
+
+    const result = AnalysisReportSchema.safeParse(report);
+
+    expect(result.success).toBe(false);
+    expect(
+      result.error?.issues.some((issue) =>
+        issue.message.includes("External evidence cannot reference unavailable source")
+      )
+    ).toBe(true);
+  });
+
   it("rejects unresolved recommendation finding references", () => {
     const report = createValidAnalysisReport();
     report.recommendations[0]!.findingIds = ["missing-finding"];
