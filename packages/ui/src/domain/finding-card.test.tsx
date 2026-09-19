@@ -15,7 +15,7 @@ describe("FindingCard", () => {
         subject="legacy-tool"
         title="Package may be unmaintained"
         description="Multiple maintenance signals support this heuristic."
-        category="Maintainability"
+        category="maintainability"
         ruleId="JS-MNT-004"
         onViewEvidence={onViewEvidence}
       />,
@@ -24,6 +24,7 @@ describe("FindingCard", () => {
     expect(screen.getByText("Heuristic")).toBeInTheDocument();
     expect(screen.getByText("Medium")).toBeInTheDocument();
     expect(screen.getByText("High confidence")).toBeInTheDocument();
+    expect(screen.getByText(/Maintainability · Rule/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /view evidence/i })).toBeInTheDocument();
   });
 });
