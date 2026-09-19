@@ -6,20 +6,24 @@ export {
 export type { AnalysisReport, AnalyzerMetadata } from "./analysis-report.js";
 
 export {
+  AvailableDataSourceSchema,
   DataSourceSchema,
-  DataSourceStatusSchema,
   EvidenceSchema,
   ExternalEvidenceSchema,
   IsoDateTimeSchema,
+  PartialDataSourceSchema,
   ProjectEvidenceSchema,
-  SourceLocationSchema
+  SourceLocationSchema,
+  UnavailableDataSourceSchema
 } from "./evidence.js";
 export type {
+  AvailableDataSource,
   DataSource,
-  DataSourceStatus,
   Evidence,
   ExternalEvidence,
-  ProjectEvidence
+  PartialDataSource,
+  ProjectEvidence,
+  UnavailableDataSource
 } from "./evidence.js";
 
 export { AnalysisFactSchema } from "./fact.js";
