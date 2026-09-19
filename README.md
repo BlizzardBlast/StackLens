@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, the first JavaScript dependency-inventory rule slice, and the framework-independent quick-manifest API service boundary are implemented. Fastify transport, product screens, and external metadata adapters are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, the first JavaScript dependency-inventory rule slice, the framework-independent quick-manifest API service boundary, and the first npm Registry metadata adapter are implemented. Fastify transport, product screens, OSV/GitHub adapters, dependency findings, and production scoring are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -114,6 +114,20 @@ introducing persistence, authentication, provider I/O, or scoring policy.
 The Fastify REST/OpenAPI transport remains a later adapter over this service.
 
 See [Quick Manifest Analysis](docs/implementation/quick-manifest-analysis.md).
+
+## External data sources
+
+The first provider package lives in **`packages/data-sources`**.
+
+Its npm Registry adapter performs bounded server-side metadata acquisition, validates and normalizes
+package/version/dist-tag/deprecation/publication/repository metadata, associates every successful
+observation with explicit provenance and retrieval time, and converts provider/network failures into
+typed source failures.
+
+JavaScript rules do not call npm directly. The adapter does not create dependency findings yet; it
+only establishes trusted normalized input for later rules.
+
+See [External Data Sources](docs/implementation/data-sources.md).
 
 ## Requirement examples
 
