@@ -35,6 +35,14 @@
     "./scoring": {
       "types": "./dist/scoring.d.ts",
       "default": "./dist/scoring.js"
+    },
+    "./priority": {
+      "types": "./dist/priority.d.ts",
+      "default": "./dist/priority.js"
+    },
+    "./rule-definition": {
+      "types": "./dist/rule-definition.d.ts",
+      "default": "./dist/rule-definition.js"
     }
   },
   "scripts": {
