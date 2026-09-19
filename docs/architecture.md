@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.3  
+> **Architecture version:** 0.1.4  
 > **Date:** 2026-09-18  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006
@@ -217,12 +217,14 @@ Rule IDs are product data and must remain stable once published (**DATA-003**, *
 
 Findings use a stable structured contract.
 
+Facts, findings, and recommendations are separate report entities. Findings represent attention-worthy conclusions and are classified only as factual or heuristic. Recommendations are separate advice entities so advice cannot be serialized as raw observation (**DATA-005**).
+
 A finding contains, as applicable:
 
 - finding ID;
 - stable rule ID and rule version;
 - requirement IDs;
-- classification: fact / heuristic / recommendation;
+- classification: fact / heuristic;
 - title and structured description;
 - affected package/tool/configuration;
 - evidence references;
@@ -379,6 +381,7 @@ analyzer
   ruleSetVersion
   scoringVersion
 sources[]
+evidence[]
 facts[]
 findings[]
 recommendations[]
@@ -390,7 +393,7 @@ limitations[]
 partialFailures[]
 ```
 
-The report schema is versioned independently of the application release so stored/exported reports can remain interpretable (**DATA-006**, **SCORE-004**, **NFR-005**).
+The report schema is versioned independently of the application release so stored/exported reports can remain interpretable (**DATA-006**, **SCORE-004**, **NFR-005**). The accepted v1 shape and invariants are defined by [ADR-0008](adr/0008-analysis-report-contract-v1.md) and implemented in `@stacklens/contracts`.
 
 ## 10. Workspace structure
 
@@ -428,6 +431,7 @@ rules-javascript -> analyzer-core + contracts
 scoring -> analyzer-core + contracts
 data-sources -> contracts
 analyzer-core -> contracts
+ui -> contracts
 
 analyzer-core MUST NOT depend on apps/*
 rules-javascript MUST NOT depend on database/web framework code
@@ -710,5 +714,6 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0005 — Web framework and frontend-tooling review](adr/0005-web-framework-and-tooling-review.md)
 - [ADR-0006 — Design system and prototyping strategy](adr/0006-design-system-and-prototyping.md)
 - [ADR-0007 — Design infrastructure bootstrap](adr/0007-design-infrastructure-bootstrap.md)
+- [ADR-0008 — Analysis report contract v1](adr/0008-analysis-report-contract-v1.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).
