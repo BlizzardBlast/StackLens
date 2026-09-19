@@ -760,6 +760,98 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
     expect(result.failure.message).not.toContain("rate limited");
   });
 
+  it("returns a non-retryable typed failure for invalid OSV JSON", async () => {
+    const adapter = createAdapter(
+      vi.fn<typeof fetch>().mockResolvedValue(new Response("{invalid", { status: 200 })),
+    );
+
+    const result = await adapter.fetch({
+      queries: [
+        {
+          packageName: "example-package",
+          version: "1.0.0",
+        },
+      ],
+    });
+
+    expect(result.ok).toBe(false);
+
+    if (result.ok) {
+      throw new Error("Expected invalid OSV JSON to fail");
+    }
+
+    expect(result.failure).toMatchObject({
+      code: "osv_query_invalid_json",
+      retryable: false,
+    });
+  });
+
+  it("returns a retryable typed failure when the OSV request throws", async () => {
+    const adapter = createAdapter(
+      vi.fn<typeof fetch>().mockRejectedValue(new Error("transport details should not leak")),
+    );
+
+    const result = await adapter.fetch({
+      queries: [
+        {
+          packageName: "example-package",
+          version: "1.0.0",
+        },
+      ],
+    });
+
+    expect(result.ok).toBe(false);
+
+    if (result.ok) {
+      throw new Error("Expected OSV transport failure");
+    }
+
+    expect(result.failure).toMatchObject({
+      code: "osv_query_request_failed",
+      retryable: true,
+    });
+    expect(result.failure.message).not.toContain("transport details");
+  });
+
+  it("returns a retryable typed failure when the OSV request times out", async () => {
+    const fetchImpl = vi.fn<typeof fetch>().mockImplementation(
+      (_input, init) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener(
+            "abort",
+            () => {
+              reject(new DOMException("internal timeout detail", "AbortError"));
+            },
+            { once: true },
+          );
+        }),
+    );
+    const adapter = createAdapter(fetchImpl, {
+      timeoutMs: 1,
+    });
+
+    const result = await adapter.fetch({
+      queries: [
+        {
+          packageName: "example-package",
+          version: "1.0.0",
+        },
+      ],
+    });
+
+    expect(result.ok).toBe(false);
+
+    if (result.ok) {
+      throw new Error("Expected OSV timeout");
+    }
+
+    expect(result.failure).toMatchObject({
+      code: "osv_query_timeout",
+      retryable: true,
+    });
+    expect(result.failure.message).not.toContain("internal timeout detail");
+  });
+
   it("fails closed when the initial batch response shape is invalid", async () => {
     const adapter = createAdapter(
       vi.fn<typeof fetch>().mockResolvedValue(
