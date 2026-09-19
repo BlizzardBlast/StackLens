@@ -509,6 +509,10 @@ fact exists. Peer-only declarations are excluded. Development/peer-involved decl
 confidence than ordinary runtime/optional declarations. The description explicitly states that
 static non-observation is not proof that removal is safe.
 
+A potentially-unnecessary finding also fails closed when FR-013 reports a configuration limitation,
+because an unsupported/dynamic configuration may contain plugin or tool references that the supported
+source/configuration catalog cannot prove absent.
+
 Quick-manifest analysis remains source-insufficient and therefore cannot produce FR-009 non-use
 findings.
 

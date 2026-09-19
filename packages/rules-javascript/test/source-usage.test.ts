@@ -300,6 +300,60 @@ describe("static source usage and potentially unnecessary dependency analysis [F
     expect(AnalysisReportSchema.safeParse(report).success).toBe(true);
   });
 
+  it("suppresses absence-based findings when configuration evidence is limited", () => {
+    const manifest = normalizePackageManifest({
+      dependencies: {
+        unused: "1.0.0",
+      },
+    });
+    const baseProject = createJavaScriptProjectSnapshot(manifest, [
+      {
+        path: "src/index.ts",
+        content: "export const value = 1;",
+      },
+    ]);
+    const project = withJavaScriptSourceUsage(baseProject, "complete");
+    const evidence = [
+      ...createDependencyInventoryEvidence(project),
+      ...createSourceUsageEvidence(project),
+    ];
+    const report = runAnalyzer(analyzer, {
+      analysisId: "analysis-source-usage-config-limited",
+      createdAt: "2026-09-19T15:00:00Z",
+      input: {
+        type: "repository",
+        fingerprint: "github:fixture:source-usage-config-limited",
+        repository: {
+          provider: "github",
+          owner: "stacklens-fixture",
+          name: "source-usage-config-limited",
+          commitSha: "c".repeat(40),
+          ref: "main",
+        },
+      },
+      project,
+      metadata: {},
+      sources: [],
+      evidence,
+      limitations: [
+        scoreLimitation,
+        {
+          id: "limitation-source-usage-config",
+          kind: "unsupported_configuration",
+          message:
+            "A recognized configuration file could not be interpreted statically for plugin usage.",
+          affectedCategories: ["tooling"],
+          sourceIds: [],
+          ruleIds: ["JS-CONFIG-013"],
+        },
+      ],
+    });
+
+    expect(project.sourceUsage?.coverage).toBe("complete");
+    expect(report.findings).toEqual([]);
+    expect(AnalysisReportSchema.safeParse(report).success).toBe(true);
+  });
+
   it("suppresses absence-based findings when acquisition or parsing is incomplete", () => {
     const manifest = normalizePackageManifest({
       dependencies: {

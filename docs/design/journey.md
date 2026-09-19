@@ -970,7 +970,10 @@ usage claims.
 `JS-UNNECESSARY-009@1` emits a potentially-unnecessary dependency finding only when supported
 source coverage is complete and no supported source/config/script usage exists. Findings are
 heuristic, peer-only declarations are excluded, development/peer-involved declarations receive lower
-confidence, and descriptions explicitly state that removal safety is not established.
+confidence, and descriptions explicitly state that removal safety is not established. The final
+semantic review also makes the finding rule fail closed when FR-013 reports unsupported/dynamic
+configuration evidence, preventing hidden plugin/config references from being interpreted as
+dependency non-use.
 
 Focused synthetic tests cover supported syntax forms, package/subpath normalization, dynamic/parse
 uncertainty, configuration/script conventions, positive facts, complete-coverage heuristics, peer

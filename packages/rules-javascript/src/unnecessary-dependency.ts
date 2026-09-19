@@ -8,6 +8,7 @@ import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-UNNECESSARY-009";
 const RULE_VERSION = "1";
+const PROJECT_CONFIGURATION_RULE_ID = "JS-CONFIG-013";
 
 function inventoryFactsByPackage(
   facts: readonly AnalysisFact[],
@@ -121,7 +122,14 @@ export const potentiallyUnnecessaryDependencyRule: FindingRule<JavaScriptProject
       "SEC-002",
     ],
     evaluate(context) {
-      if (context.project.sourceUsage?.coverage !== "complete") {
+      const configurationEvidenceLimited = context.limitations.some((limitation) =>
+        limitation.ruleIds.includes(PROJECT_CONFIGURATION_RULE_ID),
+      );
+
+      if (
+        context.project.sourceUsage?.coverage !== "complete" ||
+        configurationEvidenceLimited
+      ) {
         return {};
       }
 
