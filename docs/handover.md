@@ -5,8 +5,8 @@
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
 > **Architecture:** v0.1.6  
-> **Completed milestone:** OSV vulnerability-data adapter — PR #14  
-> **Immediate milestone:** Milestone D — Known-vulnerability finding rule  
+> **Completed milestone:** Known-vulnerability finding rule — PR #15  
+> **Immediate milestone:** Milestone E — npm metadata dependency findings  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -53,6 +53,7 @@ The repository already has the following accepted foundations:
 - Analysis Report Contract v1 in `@stacklens/contracts`;
 - deterministic analyzer execution in `@stacklens/analyzer-core`;
 - deterministic JavaScript dependency inventory in `@stacklens/rules-javascript`;
+- provider-backed factual known-vulnerability detection in `@stacklens/rules-javascript`;
 - framework-independent quick manifest orchestration in `apps/api`;
 - bounded npm Registry metadata acquisition in `@stacklens/data-sources`;
 - bounded exact-version OSV vulnerability acquisition in `@stacklens/data-sources`;
@@ -62,7 +63,7 @@ The repository already has the following accepted foundations:
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 
-The latest completed product implementation milestone is the **OSV vulnerability-data adapter** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
+The latest completed product implementation milestone is the **FR-011 known-vulnerability finding rule** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
 
 The analyzer flow is:
 
@@ -92,11 +93,11 @@ scores
 AnalysisReport
 ```
 
-The first JavaScript/TypeScript product-analysis rule package is now implemented for **FR-005** only.
+The JavaScript/TypeScript rule package now implements **FR-005 dependency inventory** and the first **FR-011 known-vulnerability factual finding rule**.
 
 The API application now has a framework-independent quick-manifest service boundary, but no Fastify HTTP transport is implemented yet.
 
-The npm Registry and OSV adapters are implemented. No GitHub acquisition adapter, worker, web application, provider-backed dependency finding rule, concrete priority policy, or concrete scoring policy has been implemented yet.
+The npm Registry and OSV adapters are implemented. No GitHub acquisition adapter, worker, web application, npm outdated/deprecation/health finding rule, concrete priority policy, or concrete scoring policy has been implemented yet.
 
 ## 3. Non-negotiable boundaries
 
@@ -260,39 +261,67 @@ Primary traceability:
 
 `FR-011, DATA-001, DATA-002, NFR-003, NFR-004, SEC-002, SEC-008, GOV-002, GOV-006, GOV-007`.
 
-## 8. Immediate next milestone: Known-vulnerability finding rule
+## 8. Completed milestone: Known-vulnerability finding rule
 
-Implement the first provider-backed JavaScript/TypeScript finding vertical slice for **FR-011**.
+The first provider-backed finding rule is implemented in `packages/rules-javascript` by PR #15.
 
-Keep acquisition separate: rules consume an already-normalized OSV snapshot through analyzer metadata
-and remain synchronous.
+Accepted implementation:
 
-Required behavior:
+- `JS-VULN-011@1` is a synchronous factual finding rule;
+- the rule consumes source-bound `JavaScriptAnalysisMetadata.osv` metadata containing one exact
+  report-level OSV `sourceId` plus a minimal snapshot and has no
+  `rules-javascript -> data-sources` dependency;
+- OSV/provider I/O remains entirely outside rule evaluation;
+- the rule correlates OSV query results only when package name and queried version exactly equal a
+  dependency-inventory fact's package name and preserved declared specifier;
+- declared ranges/tags without an exact query result remain insufficient evidence;
+- duplicate manifest declarations of the same package/version contribute to one finding basis;
+- one stable finding candidate is emitted per package/version/advisory match;
+- each finding identifies the dependency, advisory reference, stable rule identity, project
+  declaration evidence, and OSV external evidence from the exact source bound to the normalized
+  snapshot; the source carries retrieval-time provenance;
+- source-provided severity is surfaced only as attributed metadata and is not converted into a
+  StackLens severity label or score effect;
+- batch matches remain factual findings even when optional advisory detail is unavailable;
+- withdrawn advisories are not emitted as active known-vulnerability findings;
+- incomplete OSV query coverage produces an insufficient-evidence limitation while retaining known
+  matches;
+- unavailable/mismatched OSV sources, missing snapshots, missing exact-version query results, and
+  missing advisory evidence from the exact bound source produce conservative limitations rather
+  than clean/secure conclusions;
+- complete empty OSV results emit no vulnerability finding and no "secure" fact;
+- finding priority, recommendations, and production scoring remain separate/unimplemented;
+- focused rule-level and analyzer-core integration tests are synthetic and network-free.
 
-- an exact package/version OSV batch match may establish a factual known-vulnerability candidate;
-- every emitted finding must identify the package and OSV advisory/vulnerability reference;
-- severity may be surfaced only when it is present in normalized OSV metadata and must remain
-  attributed to the source;
-- a withdrawn advisory must not be silently treated as an active vulnerability without an explicit
-  accepted rule for doing so;
-- incomplete OSV query results or unavailable provider data must produce limitation/insufficient
-  evidence behavior rather than a clean/secure conclusion;
-- an empty **complete** query result means only that OSV returned no matching known vulnerability for
-  that exact evidence; do not emit a "secure" fact/finding;
+Primary traceability:
+
+`FR-011, DATA-001, DATA-002, DATA-003, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, SEC-002, GOV-002, GOV-006, GOV-007`.
+
+## 9. Immediate next milestone: npm metadata dependency findings
+
+Implement focused JavaScript/TypeScript rules using the already-normalized npm Registry snapshot for:
+
+- **FR-006** outdated dependency detection;
+- **FR-007** explicit deprecation plus carefully bounded unmaintained heuristics;
+- **FR-010** dependency health signals.
+
+Keep provider acquisition separate and keep the first npm finding slice narrow.
+
+Required boundaries:
+
+- rules consume normalized registry metadata through analyzer metadata and remain synchronous;
+- declared ranges/tags are not installed versions and must not be compared as exact installed
+  versions unless the rule has explicit resolved-version evidence;
+- outdated findings must identify the declared/comparison version basis and distinguish
+  major/minor/patch difference when that basis is sufficient;
+- explicit npm deprecation metadata is factual evidence;
+- "unmaintained" must remain heuristic unless an authoritative provider fact exists, with explicit
+  basis and confidence;
+- every health signal must identify its data source;
+- no missing registry evidence path may become a positive or negative package-health claim;
 - keep detection separate from priority, recommendations, and scoring;
-- do not add npm outdated/deprecation/health findings in the same PR.
-
-### Milestone E — npm metadata dependency findings
-
-After the FR-011 vertical slice, implement focused JS/TS rules for:
-
-- FR-006 outdated;
-- FR-007 explicit deprecation/unmaintained heuristics;
-- FR-010 health signals.
-
-Keep authoritative facts separate from heuristics.
-
-Do not implement a generic "unmaintained" claim without explicit deterministic evidence and confidence.
+- do not add overlap/redundancy, repository acquisition, source-usage analysis, or production score
+  policy in the same PR.
 
 ### Milestone F — Overlap plus framework/tool/configuration detection
 
@@ -372,7 +401,7 @@ After the analysis domain is proven in vertical slices, finish:
 
 Do not move analyzer logic into React or Fastify.
 
-## 9. What not to do next
+## 10. What not to do next
 
 Avoid these tempting detours until their requirement slice is ready:
 
@@ -388,47 +417,48 @@ Avoid these tempting detours until their requirement slice is ready:
 - do not build one giant "analyze everything" rule;
 - do not add production scoring weights before evidence coverage is meaningful.
 
-## 10. Pull-request strategy for the next session
+## 11. Pull-request strategy for the next session
 
 Recommended next PR:
 
 **Title**
 
 ```text
-feat: add known vulnerability rule
+feat: add npm metadata dependency findings
 ```
 
 **Primary requirements**
 
 ```text
-FR-011,
-DATA-001, DATA-002, DATA-003, DATA-005,
+FR-006, FR-007, FR-010,
+DATA-001, DATA-002, DATA-003, DATA-004, DATA-005,
 NFR-001, NFR-002, NFR-003, NFR-004,
 SEC-002,
 GOV-002, GOV-006, GOV-007
 ```
 
-Keep the PR limited to a synchronous provider-backed FR-011 rule slice, the normalized metadata
-shape needed by that rule, focused positive/negative/insufficient-evidence fixtures, analyzer-core
+Keep the PR limited to synchronous npm-metadata-backed dependency findings, the minimal analyzer
+metadata shape they need, focused factual/heuristic/insufficient-evidence fixtures, analyzer-core
 integration, and documentation.
 
-Do not add provider I/O to JavaScript rules. Do not add scoring, recommendations, npm outdated
-findings, or Fastify transport in the same PR.
+Do not add provider I/O to JavaScript rules. Do not add overlap/redundancy, source usage, production
+priority, recommendations, scoring, GitHub acquisition, or Fastify transport in the same PR.
 
-## 11. Handover completion signal
+## 12. Handover completion signal
 
-The next session can consider the FR-011 finding slice complete when:
+The next session can consider the npm metadata finding slice complete when:
 
-1. the rule consumes normalized OSV metadata without network I/O;
-2. exact package/version advisory matches can produce factual finding candidates with stable rule
-   identity and evidence references;
-3. severity is surfaced only when supplied by OSV and remains source-attributed;
-4. withdrawn, incomplete, unavailable, and empty-result cases have explicit conservative behavior;
-5. no missing/empty evidence path produces a "secure" finding;
+1. npm Registry metadata is consumed through analyzer metadata without network I/O;
+2. outdated/deprecation/health outputs identify their exact evidence basis and stable rule identity;
+3. explicit provider facts remain factual while maintenance judgments remain heuristic with
+   confidence when required;
+4. declared ranges/tags are not silently treated as installed versions;
+5. missing/partial registry evidence produces limitations rather than clean or negative health
+   conclusions;
 6. detection remains separate from priority, recommendations, and scoring;
 7. focused rule/analyzer integration tests are green;
 8. the same PR completes journey/handover documentation before merge and the permanent CI gate is
    green.
 
-Continue with the smallest provider-backed vertical slice rather than combining vulnerability,
-outdated/deprecation, and scoring behavior.
+Continue with the smallest npm-metadata-backed vertical slice rather than combining unrelated
+analysis domains or scoring behavior.

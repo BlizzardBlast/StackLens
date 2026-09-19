@@ -7,14 +7,16 @@ Deterministic JavaScript/TypeScript normalization and analysis rules for StackLe
 This package owns ecosystem-specific static interpretation that does not belong in
 `@stacklens/analyzer-core`.
 
-The first implemented vertical slice is **FR-005 dependency inventory**.
+Implemented vertical slices are **FR-005 dependency inventory** and **FR-011 known vulnerability detection**.
 
 It currently owns:
 
 - validation and normalization of supported `package.json` dependency groups;
 - deterministic dependency declaration ordering;
 - explicit project evidence for manifest declarations;
-- the `JS-DEP-005@1` fact rule.
+- the `JS-DEP-005@1` fact rule;
+- the minimal provider-free `JavaScriptAnalysisMetadata` shape consumed by JS/TS rules;
+- the `JS-VULN-011@1` factual finding rule for exact-version OSV matches.
 
 It does not own:
 
@@ -60,9 +62,40 @@ The `JS-DEP-005@1` fact rule emits `dependency.inventory` facts whose:
 
 The rule emits no finding, priority, recommendation, or scoring policy.
 
+## Known vulnerability rule
+
+`JS-VULN-011@1` is a finding rule. It does not call OSV.
+
+The rule consumes source-bound OSV metadata that acquisition/orchestration has already placed in
+`JavaScriptAnalysisMetadata.osv`. The wrapper contains the report-level OSV `sourceId` plus a
+minimal `snapshot`; that inner snapshot intentionally contains only the fields the rule needs and is
+structurally compatible with the corresponding normalized OSV adapter data without creating a
+`rules-javascript -> data-sources` dependency.
+
+For each dependency inventory fact set, the rule:
+
+- correlates only a query result whose package name and exact queried version equal the inventory
+  fact's package name and preserved declared specifier;
+- combines duplicate declarations of the same package/version into one finding basis;
+- emits one factual security finding per package/version/advisory match;
+- requires the metadata's bound `sourceId` to resolve to the exact usable report-level OSV
+  `DataSource`;
+- references both project declaration evidence and OSV external evidence from that exact source;
+- preserves stable `JS-VULN-011@1` rule identity and deterministic finding IDs;
+- surfaces OSV severity only when normalized advisory metadata supplies it, attributing each record
+  to its supplied severity source or OSV when no more-specific source is supplied;
+- retains a known batch match even when advisory-detail metadata is unavailable;
+- does not present a withdrawn advisory as an active finding;
+- attaches an insufficient-evidence limitation when the OSV query result is incomplete;
+- emits an insufficient/external-data limitation when exact-version query evidence, an OSV snapshot,
+  a usable OSV source, or advisory evidence is unavailable;
+- emits nothing for a complete empty OSV match set and never turns that state into a "secure" fact.
+
+The rule does not define finding priority, recommendations, or score effects.
+
 ## Safety
 
 This package performs static in-memory normalization only. It does not install dependencies,
 execute package scripts, import project configuration, or perform provider/network I/O.
 
-**Traceability:** FR-004, FR-005, FR-017, NFR-001, NFR-002, NFR-004, NFR-005, SEC-001, SEC-002.
+**Traceability:** FR-004, FR-005, FR-011, FR-017, DATA-001, DATA-002, DATA-003, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002.

@@ -696,3 +696,65 @@ existing OSV decision.
 
 **Traceability:** FR-011, DATA-001, DATA-002, NFR-003, NFR-004, SEC-002, SEC-008, GOV-002, GOV-006,
 GOV-007.
+
+
+## 2026-09-19 — Step 37: Establish the first provider-backed finding rule
+
+PR #15 adds the first provider-backed finding rule. The JavaScript/TypeScript rule package now consumes pre-acquired normalized OSV metadata to implement
+the first **FR-011** known-vulnerability finding slice without introducing provider I/O into analyzer
+execution.
+
+A new `JavaScriptAnalysisMetadata` interface defines only the OSV fields the rule needs. Its
+`JavaScriptOsvMetadata` wrapper binds one exact report-level OSV `sourceId` to a minimal snapshot;
+the inner snapshot is structurally compatible with the normalized OSV adapter data while preserving
+the accepted package direction:
+
+```text
+rules-javascript -> analyzer-core + contracts
+```
+
+No `rules-javascript -> data-sources` dependency was added.
+
+`JS-VULN-011@1` runs after dependency inventory facts and:
+
+- correlates only package/version OSV query results that exactly equal a dependency fact's package
+  name and preserved declared specifier;
+- therefore leaves manifest ranges/tags without exact query evidence as insufficient evidence rather
+  than silently treating them as installed versions;
+- groups duplicate declarations of the same package/version into one finding basis;
+- emits one deterministic factual security finding per package/version/advisory;
+- references all matching project declaration evidence plus OSV external evidence from the exact
+  report source bound to the snapshot;
+- rejects cross-source advisory evidence even when another OSV source is otherwise usable;
+- identifies stable rule/requirement provenance;
+- surfaces only source-provided severity metadata, explicitly attributing it to the provider-supplied
+  source or OSV;
+- preserves an authoritative batch match when optional advisory detail is absent;
+- excludes advisories marked withdrawn from active findings and records that state as a limitation;
+- retains known matches while attaching an insufficient-evidence limitation when a query result is
+  incomplete;
+- produces conservative limitations for missing/unavailable OSV source, snapshot, exact-version
+  query, or advisory evidence;
+- emits no finding for a complete empty match set and never creates a "secure" fact.
+
+Finding priority and health scoring remain outside this rule. The analyzer integration fixture uses
+only a test prioritizer and explicit insufficient-evidence scores to prove report-contract
+compatibility without introducing production policy.
+
+The pre-implementation architecture review confirmed that the accepted report contract already
+contains the required package subject, advisory evidence reference, source retrieval-time
+association, limitation references, and stable rule identity, so no shared contract/schema version
+change or ADR amendment is required.
+
+A later exact-head review tightened provenance further: normalized OSV metadata is now explicitly
+bound to its report-level `DataSource.id`, and advisory evidence must reference that exact source.
+This prevents a caller with multiple valid OSV sources from accidentally satisfying one snapshot
+with another source's evidence.
+
+Focused tests cover active findings, duplicate declarations, severity attribution, detail-unavailable
+matches, withdrawn advisories, incomplete query coverage, complete empty results, range declarations,
+unavailable/missing OSV data, missing or cross-source external advisory evidence, source-binding
+mismatches, unrelated query results, deterministic ordering, and analyzer-core integration.
+
+**Traceability:** FR-011, DATA-001, DATA-002, DATA-003, DATA-005, NFR-001, NFR-002, NFR-003,
+NFR-004, SEC-002, GOV-002, GOV-006, GOV-007.

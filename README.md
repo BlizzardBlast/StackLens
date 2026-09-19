@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, the first JavaScript dependency-inventory rule slice, the framework-independent quick-manifest API service boundary, the npm Registry metadata adapter, and the OSV vulnerability-data adapter are implemented. Fastify transport, product screens, GitHub acquisition, provider-backed dependency findings, and production scoring are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory plus the first provider-backed known-vulnerability finding rule, the framework-independent quick-manifest API service boundary, the npm Registry metadata adapter, and the OSV vulnerability-data adapter are implemented. Fastify transport, product screens, GitHub acquisition, npm metadata dependency findings, and production scoring are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -98,7 +98,9 @@ See [Analyzer Core](docs/implementation/analyzer-core.md) and **ADR-0009**.
 The first ecosystem-specific analysis package lives in **`packages/rules-javascript`**.
 
 It currently implements deterministic `package.json` dependency normalization, explicit project
-evidence, and the **FR-005** dependency-inventory fact rule without registry/network I/O.
+evidence, the **FR-005** dependency-inventory fact rule, and the first **FR-011** factual
+known-vulnerability finding rule. The vulnerability rule consumes a pre-acquired normalized OSV
+snapshot through analyzer metadata and performs no provider/network I/O.
 
 See [JavaScript Rules](docs/implementation/rules-javascript.md).
 
@@ -126,7 +128,7 @@ incomplete.
 
 Both adapters associate external observations with explicit provenance/retrieval time and convert
 provider/network/schema failures into typed source failures. JavaScript rules call neither provider
-directly, and no provider-backed dependency finding rule is implemented yet.
+directly. The FR-011 rule consumes the normalized OSV snapshot only after acquisition has completed.
 
 See [External Data Sources](docs/implementation/data-sources.md).
 

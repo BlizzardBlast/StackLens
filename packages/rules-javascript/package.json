@@ -15,6 +15,14 @@
     "./manifest": {
       "types": "./dist/manifest.d.ts",
       "default": "./dist/manifest.js"
+    },
+    "./analysis-metadata": {
+      "types": "./dist/analysis-metadata.d.ts",
+      "default": "./dist/analysis-metadata.js"
+    },
+    "./known-vulnerability": {
+      "types": "./dist/known-vulnerability.d.ts",
+      "default": "./dist/known-vulnerability.js"
     }
   },
   "scripts": {
