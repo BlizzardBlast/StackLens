@@ -17,6 +17,7 @@ export { knownVulnerabilityFindingId, knownVulnerabilityRule } from "./known-vul
 export type {
   JavaScriptAnalysisMetadata,
   JavaScriptOsvAffectedPackage,
+  JavaScriptOsvMetadata,
   JavaScriptOsvQueryResult,
   JavaScriptOsvSeverity,
   JavaScriptOsvSnapshot,
