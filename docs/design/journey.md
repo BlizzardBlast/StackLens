@@ -431,3 +431,31 @@ The successful bootstrap run then passed:
 The generated lockfile now contains the `packages/analyzer-core` workspace importer.
 
 Temporary CI write permission is removed immediately after this step. The final merge gate is the normal read-only workflow with `pnpm install --frozen-lockfile`.
+
+
+## 2026-09-19 — Step 28: Separate finding detection from priority policy
+
+A full pre-merge SOLID/architecture review of PR #7 found one important mismatch: finding rules were emitting final `Finding` objects including priority, even though the accepted architecture defines priority as a separate deterministic stage.
+
+The analyzer core was hardened before merge:
+
+- finding rules now emit `FindingCandidate` without priority;
+- a versioned `FindingPrioritizer` is part of the rule set;
+- the prioritizer alone creates `FindingPriority`;
+- priority output is validated for schema and rule ownership;
+- a priority failure omits only the affected finding and records a partial failure/limitation;
+- recommendation rules see only successfully finalized findings;
+- project/metadata context is recursively `DeepReadonly` at the type boundary;
+- analyzer/scorer versions are validated before rule execution;
+- duplicate emitted IDs and invalid evidence/fact/limitation/finding references are isolated at the emitting rule;
+- recommendation basis is checked against referenced finding classifications before report assembly;
+- generated failure identifiers are deterministic and collision-safe within report collections;
+- rule metadata moved to a shared `rule-definition.ts` abstraction so priority and detector rules do not depend on one another.
+
+The architecture was bumped to v0.1.6 and ADR-0009/implementation/agent documentation were updated to match the executable pipeline.
+
+This correction keeps detector logic, priority policy, scoring policy, and presentation as separate reasons to change, and restores the documented:
+
+`facts → finding candidates → priority → finalized findings → recommendations → scoring → report`
+
+flow.
