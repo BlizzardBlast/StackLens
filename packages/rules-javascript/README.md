@@ -7,7 +7,7 @@ Deterministic JavaScript/TypeScript normalization and analysis rules for StackLe
 This package owns ecosystem-specific static interpretation that does not belong in
 `@stacklens/analyzer-core`.
 
-Implemented vertical slices are **FR-005 dependency inventory**, **FR-006 outdated dependency detection**, **FR-007 explicit deprecation detection**, **FR-008 dependency overlap**, **FR-010 npm Registry health signals**, **FR-011 known vulnerability detection**, **FR-012 framework/tool detection**, and **FR-013 project configuration detection**.
+Implemented vertical slices are **FR-005 dependency inventory**, **FR-006 outdated dependency detection**, **FR-007 explicit deprecation detection**, **FR-008 dependency overlap**, **FR-009 static source usage/potentially unnecessary dependency detection**, **FR-010 npm Registry health signals**, **FR-011 known vulnerability detection**, **FR-012 framework/tool detection**, and **FR-013 project configuration detection**.
 
 It currently owns:
 
@@ -23,7 +23,10 @@ It currently owns:
 - `JS-OVERLAP-008@1` curated medium-confidence dependency-overlap heuristics;
 - `JS-TOOL-012@1` manifest-backed framework/tool facts;
 - `JS-CONFIG-013@1` repository-only static configuration facts/limitations;
-- a small `JavaScriptProjectSnapshot` abstraction for already-acquired static repository files.
+- a parser-adapter boundary for bounded JS/TS/JSX/TSX syntax inspection;
+- `JS-USAGE-009@1` static dependency-usage facts and conservative coverage limitations;
+- `JS-UNNECESSARY-009@1` potentially-unnecessary dependency heuristics;
+- a `JavaScriptProjectSnapshot` abstraction for already-acquired static repository files, package scripts, and normalized source-usage coverage.
 
 It does not own:
 
@@ -208,6 +211,34 @@ Each finding:
 The rule does not recommend removing either dependency and does not set production priority/score
 policy.
 
+## Static source usage and potentially unnecessary dependencies
+
+FR-009 is split across parsing, deterministic facts, and a heuristic finding rule.
+
+The parser adapter currently uses `@babel/parser` under ADR-0010 because the accepted TypeScript 7
+baseline is incompatible with the current `typescript-estree` release line. Parser-specific AST
+types do not escape the adapter.
+
+Supported static source references are ESM imports/re-exports, static-string CommonJS
+`require()`, and static-string dynamic `import()`. Relative, Node built-in, URL/protocol, and
+package-import-map specifiers are not treated as external dependency references. Scoped and subpath
+imports normalize to their declared package identity.
+
+The normalized usage snapshot also recognizes a bounded catalog of deterministic configuration-file
+conventions, exact Prettier plugin strings, and supported package-script executable conventions.
+No scripts or configuration are executed.
+
+`JS-USAGE-009@1` emits positive dependency-usage facts. Parse failures, non-static dynamic
+references, unavailable acquisition, or partial acquisition make coverage partial and produce
+insufficient-evidence limitations.
+
+`JS-UNNECESSARY-009@1` emits a potential/heuristic finding only when source-usage coverage is
+complete and no supported source/configuration/script reference exists for a declared package.
+Peer-only declarations are not flagged. Development/peer-involved declarations receive lower
+confidence. The finding explicitly does not claim that removal is safe because unsupported runtime,
+generated-code, external-tooling, and convention-based usage can exist outside the supported static
+scope.
+
 ## Framework and tool detection
 
 `JS-TOOL-012@1` implements **FR-012** from deterministic manifest evidence.
@@ -233,8 +264,7 @@ with optional already-acquired static files.
 - sorts files deterministically;
 - performs no filesystem or network I/O.
 
-This helper is not a GitHub acquisition adapter; Milestone G will provide bounded repository
-acquisition separately.
+This helper is not a GitHub acquisition adapter. GitHub acquisition is supplied by `@stacklens/data-sources`; repository orchestration passes its bounded files and source-coverage state into the source-usage adapter without introducing provider I/O into rules.
 
 ## Project configuration detection
 
@@ -268,4 +298,4 @@ content.
 This package performs static in-memory normalization only. It does not install dependencies,
 execute package scripts, import project configuration, or perform provider/network I/O.
 
-**Traceability:** FR-004, FR-005, FR-006, FR-007, FR-008, FR-010, FR-011, FR-012, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002.
+**Traceability:** FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002.
