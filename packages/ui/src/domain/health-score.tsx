@@ -1,5 +1,5 @@
 import { EvidenceCoverage } from "#domain/evidence-coverage";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 export type HealthScoreState = "excellent" | "good" | "watch" | "poor" | "unknown";
 
