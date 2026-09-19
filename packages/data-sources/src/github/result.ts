@@ -84,7 +84,6 @@ export function createLimitation(
 export function samplePaths(paths: readonly string[]): string {
   const sorted = [...paths].toSorted(compareCodeUnits);
   const samples = sorted.slice(0, MAX_LIMITATION_PATH_SAMPLES).map((path) => JSON.stringify(path));
-  const suffix =
-    sorted.length > samples.length ? ` (+${sorted.length - samples.length} more)` : "";
+  const suffix = sorted.length > samples.length ? ` (+${sorted.length - samples.length} more)` : "";
   return `${samples.join(", ")}${suffix}`;
 }
