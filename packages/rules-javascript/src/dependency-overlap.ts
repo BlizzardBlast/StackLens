@@ -47,7 +47,9 @@ const OVERLAP_DESCRIPTORS: readonly OverlapDescriptor[] = [
   },
 ];
 
-function factsByPackage(facts: readonly AnalysisFact[]): ReadonlyMap<string, readonly AnalysisFact[]> {
+function factsByPackage(
+  facts: readonly AnalysisFact[],
+): ReadonlyMap<string, readonly AnalysisFact[]> {
   const grouped = new Map<string, AnalysisFact[]>();
 
   for (const fact of facts) {
