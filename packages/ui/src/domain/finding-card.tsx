@@ -3,7 +3,7 @@ import type {
   FindingClassification,
   PriorityLevel
 } from "@stacklens/contracts/finding";
-import type { ScoreCategory } from "@stacklens/contracts/limitation";
+import type { ScoreCategory } from "@stacklens/contracts/category";
 import type { RuleReference } from "@stacklens/contracts";
 import { cn } from "cn";
 import type { ReactNode } from "react";
