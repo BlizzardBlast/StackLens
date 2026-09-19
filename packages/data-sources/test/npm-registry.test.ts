@@ -255,11 +255,20 @@ describe("NpmRegistryAdapter [FR-006, FR-007, FR-010, DATA-001, DATA-002]", () =
 
   it("rejects malformed deprecation metadata rather than coercing it", async () => {
     const packument = createPackument();
-    packument.versions["2.0.0"].deprecated = 123 as never;
+    const malformedPackument = {
+      ...packument,
+      versions: {
+        ...packument.versions,
+        "2.0.0": {
+          ...packument.versions["2.0.0"],
+          deprecated: 123,
+        },
+      },
+    };
     const adapter = createAdapter(
       vi
         .fn<typeof fetch>()
-        .mockResolvedValue(new Response(JSON.stringify(packument), { status: 200 })),
+        .mockResolvedValue(new Response(JSON.stringify(malformedPackument), { status: 200 })),
     );
 
     const result = await adapter.fetch({
@@ -273,7 +282,10 @@ describe("NpmRegistryAdapter [FR-006, FR-007, FR-010, DATA-001, DATA-002]", () =
     }
 
     expect(result.failure.code).toBe("npm_invalid_response");
-    expect(result.failure.message).toContain("deprecated must be a string");
+    expect(result.failure.message).toBe(
+      "npm Registry returned an unsupported metadata shape for @stacklens/example.",
+    );
+    expect(result.failure.message).not.toContain("deprecated");
   });
 
   it("rejects dist-tags that point at absent versions", async () => {
