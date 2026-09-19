@@ -10,6 +10,8 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
+For the current implementation sequence and fresh-session handover, see **[docs/handover.md](docs/handover.md)**.
+
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 
 ## MVP
