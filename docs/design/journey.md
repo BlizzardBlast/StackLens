@@ -643,7 +643,7 @@ GOV-002, GOV-006, GOV-007.
 
 ## 2026-09-19 — Step 36: Establish the OSV vulnerability-data provider boundary
 
-The second `@stacklens/data-sources` provider implements the accepted **FR-011** OSV acquisition
+PR #14 adds the second `@stacklens/data-sources` provider and implements the accepted **FR-011** OSV acquisition
 boundary without introducing vulnerability finding rules or provider I/O inside analyzer execution.
 
 The implementation follows the current OSV API split:
