@@ -399,7 +399,7 @@ function createFact(
   const partial =
     limitationIds.length === 0
       ? ""
-      : " Inspection is partial; see the linked configuration limitation.";
+      : " Inspection is partial; a rule limitation records the unsupported configuration detail.";
 
   return {
     id: projectConfigurationFactId(file.path, descriptor.kind),
