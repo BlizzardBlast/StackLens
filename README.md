@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, provider-backed npm metadata rules, the known-vulnerability finding rule, the framework-independent quick-manifest API service boundary, the npm Registry metadata adapter, and the OSV vulnerability-data adapter are implemented. Fastify transport, product screens, GitHub acquisition, overlap/source-analysis rules, and production priority/scoring are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, framework/tool detection, static project-configuration inspection, the framework-independent quick-manifest API boundary, and npm/OSV data adapters are implemented. Fastify transport, product screens, GitHub acquisition, source-usage analysis, and production priority/scoring are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -99,9 +99,11 @@ The first ecosystem-specific analysis package lives in **`packages/rules-javascr
 
 It currently implements deterministic `package.json` dependency normalization, explicit project
 evidence, **FR-005** dependency inventory, **FR-006** exact-version outdated detection, **FR-007**
-explicit npm deprecation detection, neutral **FR-010** npm Registry health facts, and **FR-011**
-known-vulnerability detection. Provider-backed rules consume source-bound normalized analyzer
-metadata and perform no provider/network I/O.
+explicit npm deprecation detection, **FR-008** curated dependency-overlap heuristics, neutral
+**FR-010** npm Registry health facts, **FR-011** known-vulnerability detection, **FR-012**
+framework/tool detection, and **FR-013** static configuration detection. Provider-backed rules
+consume source-bound normalized analyzer metadata, and project configuration is inspected without
+executing configuration code.
 
 See [JavaScript Rules](docs/implementation/rules-javascript.md).
 
