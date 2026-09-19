@@ -33,11 +33,7 @@ export {
   AnalysisFactSchema,
   DependencyInventoryFactDetailsSchema,
 } from "./fact.js";
-export type {
-  AnalysisFact,
-  AnalysisFactDetails,
-  DependencyInventoryFactDetails,
-} from "./fact.js";
+export type { AnalysisFact, AnalysisFactDetails, DependencyInventoryFactDetails } from "./fact.js";
 
 export {
   ConfidenceLevelSchema,

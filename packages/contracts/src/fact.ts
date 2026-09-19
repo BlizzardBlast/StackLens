@@ -22,8 +22,6 @@ export const AnalysisFactSchema = z.strictObject({
   evidenceIds: z.array(IdentifierSchema).min(1),
 });
 
-export type DependencyInventoryFactDetails = z.infer<
-  typeof DependencyInventoryFactDetailsSchema
->;
+export type DependencyInventoryFactDetails = z.infer<typeof DependencyInventoryFactDetailsSchema>;
 export type AnalysisFactDetails = z.infer<typeof AnalysisFactDetailsSchema>;
 export type AnalysisFact = z.infer<typeof AnalysisFactSchema>;

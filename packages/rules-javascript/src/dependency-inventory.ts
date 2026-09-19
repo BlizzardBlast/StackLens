@@ -1,10 +1,7 @@
 import type { FactRule } from "@stacklens/analyzer-core";
 import type { AnalysisFact, ProjectEvidence } from "@stacklens/contracts";
 
-import type {
-  NormalizedDependencyDeclaration,
-  NormalizedPackageManifest,
-} from "./manifest.js";
+import type { NormalizedDependencyDeclaration, NormalizedPackageManifest } from "./manifest.js";
 
 const FNV_OFFSET_BASIS_64 = 0xcbf29ce484222325n;
 const FNV_PRIME_64 = 0x100000001b3n;
@@ -31,9 +28,7 @@ export function dependencyInventoryEvidenceId(
   return `evidence-js-dependency-${stableHash(declarationIdentity(declaration))}`;
 }
 
-export function dependencyInventoryFactId(
-  declaration: NormalizedDependencyDeclaration,
-): string {
+export function dependencyInventoryFactId(declaration: NormalizedDependencyDeclaration): string {
   return `fact-js-dependency-${stableHash(declarationIdentity(declaration))}`;
 }
 
@@ -56,9 +51,7 @@ export function createDependencyInventoryEvidence(
   }));
 }
 
-function createDependencyInventoryFact(
-  declaration: NormalizedDependencyDeclaration,
-): AnalysisFact {
+function createDependencyInventoryFact(declaration: NormalizedDependencyDeclaration): AnalysisFact {
   return {
     id: dependencyInventoryFactId(declaration),
     type: "dependency.inventory",

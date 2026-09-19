@@ -20,13 +20,7 @@ const scoreLimitation: AnalysisLimitation = {
   id: "limitation-fr-005-score",
   kind: "insufficient_evidence",
   message: "Dependency inventory alone is not sufficient to claim StackLens health scores.",
-  affectedCategories: [
-    "dependencies",
-    "security",
-    "maintainability",
-    "testing",
-    "tooling",
-  ],
+  affectedCategories: ["dependencies", "security", "maintainability", "testing", "tooling"],
   sourceIds: [],
   ruleIds: [],
 };
