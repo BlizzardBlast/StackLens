@@ -19,11 +19,7 @@ import {
   osvVulnerabilityApiUrl,
   osvVulnerabilityPageUrl,
 } from "./ids.js";
-import {
-  OsvPayloadError,
-  parseOsvBatchResponse,
-  parseOsvVulnerability,
-} from "./metadata.js";
+import { OsvPayloadError, parseOsvBatchResponse, parseOsvVulnerability } from "./metadata.js";
 import type { ParsedBatchResult } from "./metadata.js";
 import {
   OSV_DEFAULT_MAX_PAGINATION_ROUNDS,
@@ -207,9 +203,10 @@ function isRetryableStatus(status: number): boolean {
   return status === 408 || status === 425 || status === 429 || status >= 500;
 }
 
-export class OsvVulnerabilityAdapter
-  implements EvidenceProvider<OsvVulnerabilityRequest, OsvVulnerabilitySnapshot>
-{
+export class OsvVulnerabilityAdapter implements EvidenceProvider<
+  OsvVulnerabilityRequest,
+  OsvVulnerabilitySnapshot
+> {
   readonly id = OSV_PROVIDER_ID;
 
   readonly #fetchImpl: typeof fetch;
@@ -240,9 +237,7 @@ export class OsvVulnerabilityAdapter
     );
   }
 
-  async fetch(
-    request: OsvVulnerabilityRequest,
-  ): Promise<ProviderResult<OsvVulnerabilitySnapshot>> {
+  async fetch(request: OsvVulnerabilityRequest): Promise<ProviderResult<OsvVulnerabilitySnapshot>> {
     const queries = normalizeQueries(request, this.#maxQueries);
 
     if (queries === null) {
