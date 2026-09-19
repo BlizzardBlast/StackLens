@@ -111,16 +111,20 @@ function safeInvalidRequestKey(request: OsvVulnerabilityRequest): string {
       const version =
         "version" in query && typeof query.version === "string" ? query.version : "invalid-version";
 
-      return `${packageName}\\0${version}`;
+      return JSON.stringify([packageName, version]);
     })
-    .join("\\n");
+    .join("\n");
 }
 
 function normalizeQueries(
   request: OsvVulnerabilityRequest,
   maxQueries: number,
 ): readonly OsvPackageVersionQuery[] | null {
-  if (!Array.isArray(request.queries) || request.queries.length === 0 || request.queries.length > maxQueries) {
+  if (
+    !Array.isArray(request.queries) ||
+    request.queries.length === 0 ||
+    request.queries.length > maxQueries
+  ) {
     return null;
   }
 
@@ -283,14 +287,18 @@ export class OsvVulnerabilityAdapter
           ...(entry.pageToken === undefined ? {} : { page_token: entry.pageToken }),
         })),
       };
-      const batchResult = await this.#requestJson(OSV_QUERY_BATCH_URL, {
-        method: "POST",
-        headers: {
-          accept: OSV_ACCEPT,
-          "content-type": OSV_CONTENT_TYPE,
+      const batchResult = await this.#requestJson(
+        OSV_QUERY_BATCH_URL,
+        {
+          method: "POST",
+          headers: {
+            accept: OSV_ACCEPT,
+            "content-type": OSV_CONTENT_TYPE,
+          },
+          body: JSON.stringify(body),
         },
-        body: JSON.stringify(body),
-      }, "osv_query");
+        "osv_query",
+      );
 
       if (!batchResult.ok) {
         const occurredAt = validateObservedAt(this.#now());
@@ -452,7 +460,9 @@ export class OsvVulnerabilityAdapter
 
     const vulnerabilities: OsvVulnerabilityRecord[] = [];
 
-    for (const vulnerabilityId of [...matchedPackagesByVulnerability.keys()].toSorted(compareCodeUnits)) {
+    for (const vulnerabilityId of [...matchedPackagesByVulnerability.keys()].toSorted(
+      compareCodeUnits,
+    )) {
       const detailResult = await this.#requestJson(
         osvVulnerabilityApiUrl(vulnerabilityId),
         {
@@ -470,7 +480,7 @@ export class OsvVulnerabilityAdapter
             sourceId,
             validateObservedAt(this.#now()),
             detailResult.failure.code,
-            detailResult.failure.message,
+            `OSV advisory detail acquisition failed for ${vulnerabilityId}.`,
             detailResult.failure.retryable,
             vulnerabilityId,
           ),
