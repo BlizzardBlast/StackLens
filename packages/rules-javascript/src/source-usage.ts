@@ -89,6 +89,10 @@ function baseName(path: string): string {
   return path.slice(path.lastIndexOf("/") + 1);
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function configurationConvention(file: JavaScriptStaticProjectFile): JavaScriptDependencyReference[] {
   const name = baseName(file.path);
   const descriptor = CONFIGURATION_CONVENTIONS.find(({ prefix }) => name.startsWith(prefix));
@@ -127,11 +131,11 @@ function prettierPluginReferences(file: JavaScriptStaticProjectFile): JavaScript
     return [];
   }
 
-  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+  if (!isRecord(parsed)) {
     return [];
   }
 
-  const plugins = (parsed as Record<string, unknown>).plugins;
+  const plugins = parsed.plugins;
 
   if (!Array.isArray(plugins)) {
     return [];
