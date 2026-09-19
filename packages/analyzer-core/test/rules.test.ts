@@ -1,3 +1,4 @@
+import type { AnalysisFact } from "@stacklens/contracts";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -15,9 +16,9 @@ describe("rule output validation", () => {
       requirementIds: ["FR-005"] as const
     };
 
-    const fact = {
+    const fact: AnalysisFact = {
       ...createFact("FACT-A", "fact-a"),
-      requirementIds: ["FR-017"] as const
+      requirementIds: ["FR-017"]
     };
 
     expect(() =>
