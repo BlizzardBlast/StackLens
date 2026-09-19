@@ -9,7 +9,7 @@ import {
   type FindingConfidence,
   type FindingPriority,
 } from "#domain/finding-badges";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 export interface FindingCardProps {
   classification: FindingClassification;
