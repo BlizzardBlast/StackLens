@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  FactualFindingSchema,
-  HeuristicFindingSchema,
-  FindingSchema
-} from "../src/finding.js";
-
+import { FactualFindingSchema, HeuristicFindingSchema, FindingSchema } from "../src/finding.js";
 import { createValidAnalysisReport } from "./fixture.js";
 
 describe("finding contracts", () => {
@@ -16,8 +11,8 @@ describe("finding contracts", () => {
       confidence: {
         level: "high",
         rationale: "Should not be accepted on a factual finding.",
-        factIds: ["fact-dependency-deprecated"]
-      }
+        factIds: ["fact-dependency-deprecated"],
+      },
     });
 
     expect(result.success).toBe(false);
@@ -31,8 +26,8 @@ describe("finding contracts", () => {
       confidence: {
         level: "high",
         rationale: "Multiple deterministic maintenance signals agree.",
-        factIds: ["fact-dependency-deprecated"]
-      }
+        factIds: ["fact-dependency-deprecated"],
+      },
     } as const;
 
     expect(HeuristicFindingSchema.safeParse(heuristic).success).toBe(true);

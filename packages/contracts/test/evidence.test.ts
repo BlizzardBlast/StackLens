@@ -8,8 +8,8 @@ describe("evidence and identifier contracts", () => {
     expect(
       SourceLocationSchema.safeParse({
         path: "package.json",
-        endLine: 10
-      }).success
+        endLine: 10,
+      }).success,
     ).toBe(false);
   });
 
@@ -18,8 +18,8 @@ describe("evidence and identifier contracts", () => {
       SourceLocationSchema.safeParse({
         path: "package.json",
         startLine: 20,
-        endLine: 10
-      }).success
+        endLine: 10,
+      }).success,
     ).toBe(false);
   });
 

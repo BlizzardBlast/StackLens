@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   InsufficientEvidenceScoreSchema,
   ScoreContributionSchema,
-  ScoreResultSchema
+  ScoreResultSchema,
 } from "../src/score.js";
 
 describe("score contracts", () => {
@@ -12,8 +12,8 @@ describe("score contracts", () => {
       InsufficientEvidenceScoreSchema.safeParse({
         status: "insufficient_evidence",
         evidenceCoverage: 0,
-        limitationIds: ["limitation-testing"]
-      }).success
+        limitationIds: ["limitation-testing"],
+      }).success,
     ).toBe(true);
 
     expect(
@@ -21,8 +21,8 @@ describe("score contracts", () => {
         status: "insufficient_evidence",
         value: 0,
         evidenceCoverage: 0,
-        limitationIds: ["limitation-testing"]
-      }).success
+        limitationIds: ["limitation-testing"],
+      }).success,
     ).toBe(false);
   });
 
@@ -35,11 +35,11 @@ describe("score contracts", () => {
       rationale: "Example contribution.",
       rule: {
         id: "SCORE-DEP-001",
-        version: "1"
+        version: "1",
       },
       findingIds: [],
       factIds: [],
-      evidenceIds: ["evidence-001"]
+      evidenceIds: ["evidence-001"],
     });
 
     expect(result.success).toBe(false);

@@ -11,20 +11,20 @@ export const PriorityLevelSchema = z.enum(["critical", "high", "medium", "low"])
 export const HeuristicConfidenceSchema = z.strictObject({
   level: ConfidenceLevelSchema,
   rationale: z.string().trim().min(1).max(4000),
-  factIds: z.array(IdentifierSchema).min(1)
+  factIds: z.array(IdentifierSchema).min(1),
 });
 
 export const PriorityFactorSchema = z.strictObject({
   key: IdentifierSchema,
   rationale: z.string().trim().min(1).max(2000),
-  evidenceIds: z.array(IdentifierSchema).default([])
+  evidenceIds: z.array(IdentifierSchema).default([]),
 });
 
 export const FindingPrioritySchema = z.strictObject({
   level: PriorityLevelSchema,
   rule: RuleReferenceSchema,
   rationale: z.string().trim().min(1).max(4000),
-  factors: z.array(PriorityFactorSchema).min(1)
+  factors: z.array(PriorityFactorSchema).min(1),
 });
 
 const FindingBaseShape = {
@@ -38,23 +38,23 @@ const FindingBaseShape = {
   evidenceIds: z.array(IdentifierSchema).min(1),
   factIds: z.array(IdentifierSchema).default([]),
   limitationIds: z.array(IdentifierSchema).default([]),
-  priority: FindingPrioritySchema
+  priority: FindingPrioritySchema,
 } as const;
 
 export const FactualFindingSchema = z.strictObject({
   ...FindingBaseShape,
-  classification: z.literal("fact")
+  classification: z.literal("fact"),
 });
 
 export const HeuristicFindingSchema = z.strictObject({
   ...FindingBaseShape,
   classification: z.literal("heuristic"),
-  confidence: HeuristicConfidenceSchema
+  confidence: HeuristicConfidenceSchema,
 });
 
 export const FindingSchema = z.discriminatedUnion("classification", [
   FactualFindingSchema,
-  HeuristicFindingSchema
+  HeuristicFindingSchema,
 ]);
 
 export type FindingClassification = z.infer<typeof FindingClassificationSchema>;

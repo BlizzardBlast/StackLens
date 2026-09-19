@@ -1,11 +1,7 @@
 import * as z from "zod";
 
-import {
-  IdentifierSchema,
-  RequirementIdSchema,
-  RuleReferenceSchema
-} from "./identifiers.js";
 import { HeuristicConfidenceSchema } from "./finding.js";
+import { IdentifierSchema, RequirementIdSchema, RuleReferenceSchema } from "./identifiers.js";
 
 const RecommendationBaseShape = {
   id: IdentifierSchema,
@@ -16,23 +12,23 @@ const RecommendationBaseShape = {
   rule: RuleReferenceSchema,
   requirementIds: z.array(RequirementIdSchema).min(1),
   findingIds: z.array(IdentifierSchema).min(1),
-  evidenceIds: z.array(IdentifierSchema).min(1)
+  evidenceIds: z.array(IdentifierSchema).min(1),
 } as const;
 
 export const FactualRecommendationSchema = z.strictObject({
   ...RecommendationBaseShape,
-  basis: z.literal("fact")
+  basis: z.literal("fact"),
 });
 
 export const HeuristicRecommendationSchema = z.strictObject({
   ...RecommendationBaseShape,
   basis: z.literal("heuristic"),
-  confidence: HeuristicConfidenceSchema
+  confidence: HeuristicConfidenceSchema,
 });
 
 export const RecommendationSchema = z.discriminatedUnion("basis", [
   FactualRecommendationSchema,
-  HeuristicRecommendationSchema
+  HeuristicRecommendationSchema,
 ]);
 
 export type FactualRecommendation = z.infer<typeof FactualRecommendationSchema>;

@@ -1,7 +1,7 @@
 export {
   ANALYSIS_REPORT_SCHEMA_VERSION,
   AnalysisReportSchema,
-  AnalyzerMetadataSchema
+  AnalyzerMetadataSchema,
 } from "./analysis-report.js";
 export type { AnalysisReport, AnalyzerMetadata } from "./analysis-report.js";
 
@@ -16,7 +16,7 @@ export {
   PartialDataSourceSchema,
   ProjectEvidenceSchema,
   SourceLocationSchema,
-  UnavailableDataSourceSchema
+  UnavailableDataSourceSchema,
 } from "./evidence.js";
 export type {
   AvailableDataSource,
@@ -25,7 +25,7 @@ export type {
   ExternalEvidence,
   PartialDataSource,
   ProjectEvidence,
-  UnavailableDataSource
+  UnavailableDataSource,
 } from "./evidence.js";
 
 export { AnalysisFactSchema } from "./fact.js";
@@ -40,7 +40,7 @@ export {
   HeuristicConfidenceSchema,
   HeuristicFindingSchema,
   PriorityFactorSchema,
-  PriorityLevelSchema
+  PriorityLevelSchema,
 } from "./finding.js";
 export type {
   ConfidenceLevel,
@@ -50,27 +50,23 @@ export type {
   FindingPriority,
   HeuristicConfidence,
   HeuristicFinding,
-  PriorityLevel
+  PriorityLevel,
 } from "./finding.js";
 
-export {
-  IdentifierSchema,
-  RequirementIdSchema,
-  RuleReferenceSchema
-} from "./identifiers.js";
+export { IdentifierSchema, RequirementIdSchema, RuleReferenceSchema } from "./identifiers.js";
 export type { RequirementId, RuleReference } from "./identifiers.js";
 
 export {
   AnalysisInputSchema,
   ManifestAnalysisInputSchema,
   RepositoryAnalysisInputSchema,
-  RepositoryIdentitySchema
+  RepositoryIdentitySchema,
 } from "./input.js";
 export type {
   AnalysisInput,
   ManifestAnalysisInput,
   RepositoryAnalysisInput,
-  RepositoryIdentity
+  RepositoryIdentity,
 } from "./input.js";
 
 export {
@@ -79,23 +75,19 @@ export {
   AnalysisLimitationSchema,
   PartialFailureSchema,
   RulePartialFailureSchema,
-  SourcePartialFailureSchema
+  SourcePartialFailureSchema,
 } from "./limitation.js";
-export type {
-  AnalysisLimitation,
-  AnalysisLimitationKind,
-  PartialFailure
-} from "./limitation.js";
+export type { AnalysisLimitation, AnalysisLimitationKind, PartialFailure } from "./limitation.js";
 
 export {
   FactualRecommendationSchema,
   HeuristicRecommendationSchema,
-  RecommendationSchema
+  RecommendationSchema,
 } from "./recommendation.js";
 export type {
   FactualRecommendation,
   HeuristicRecommendation,
-  Recommendation
+  Recommendation,
 } from "./recommendation.js";
 
 export {
@@ -105,7 +97,7 @@ export {
   InsufficientEvidenceScoreSchema,
   ScoreContributionDirectionSchema,
   ScoreContributionSchema,
-  ScoreResultSchema
+  ScoreResultSchema,
 } from "./score.js";
 export type {
   AnalysisScores,
@@ -114,7 +106,7 @@ export type {
   InsufficientEvidenceScore,
   ScoreContribution,
   ScoreContributionDirection,
-  ScoreResult
+  ScoreResult,
 } from "./score.js";
 
 export { AnalysisSubjectSchema } from "./subject.js";

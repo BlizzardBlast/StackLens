@@ -15,38 +15,38 @@ export const ScoreContributionSchema = z
     rule: RuleReferenceSchema,
     findingIds: z.array(IdentifierSchema).default([]),
     factIds: z.array(IdentifierSchema).default([]),
-    evidenceIds: z.array(IdentifierSchema).min(1)
+    evidenceIds: z.array(IdentifierSchema).min(1),
   })
   .superRefine((contribution, ctx) => {
     if (contribution.findingIds.length === 0 && contribution.factIds.length === 0) {
       ctx.addIssue({
         code: "custom",
         path: ["findingIds"],
-        message: "A score contribution must reference at least one finding or fact"
+        message: "A score contribution must reference at least one finding or fact",
       });
     }
   });
 
 const ScoreBaseShape = {
-  evidenceCoverage: z.number().finite().min(0).max(100)
+  evidenceCoverage: z.number().finite().min(0).max(100),
 } as const;
 
 export const AvailableScoreSchema = z.strictObject({
   ...ScoreBaseShape,
   status: z.literal("available"),
   value: z.number().finite().min(0).max(100),
-  contributionIds: z.array(IdentifierSchema)
+  contributionIds: z.array(IdentifierSchema),
 });
 
 export const InsufficientEvidenceScoreSchema = z.strictObject({
   ...ScoreBaseShape,
   status: z.literal("insufficient_evidence"),
-  limitationIds: z.array(IdentifierSchema).min(1)
+  limitationIds: z.array(IdentifierSchema).min(1),
 });
 
 export const ScoreResultSchema = z.discriminatedUnion("status", [
   AvailableScoreSchema,
-  InsufficientEvidenceScoreSchema
+  InsufficientEvidenceScoreSchema,
 ]);
 
 export const CategoryScoresSchema = z.strictObject({
@@ -54,13 +54,13 @@ export const CategoryScoresSchema = z.strictObject({
   security: ScoreResultSchema,
   maintainability: ScoreResultSchema,
   testing: ScoreResultSchema,
-  tooling: ScoreResultSchema
+  tooling: ScoreResultSchema,
 });
 
 export const AnalysisScoresSchema = z.strictObject({
   overall: ScoreResultSchema,
   categories: CategoryScoresSchema,
-  contributions: z.array(ScoreContributionSchema)
+  contributions: z.array(ScoreContributionSchema),
 });
 
 export type ScoreContributionDirection = z.infer<typeof ScoreContributionDirectionSchema>;

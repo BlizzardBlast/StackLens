@@ -5,7 +5,7 @@ export const ScoreCategorySchema = z.enum([
   "security",
   "maintainability",
   "testing",
-  "tooling"
+  "tooling",
 ]);
 
 export type ScoreCategory = z.infer<typeof ScoreCategorySchema>;

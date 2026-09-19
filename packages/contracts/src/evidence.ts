@@ -8,7 +8,7 @@ export const AvailableDataSourceSchema = z.strictObject({
   provider: IdentifierSchema,
   status: z.literal("available"),
   retrievedAt: IsoDateTimeSchema,
-  reference: z.string().trim().min(1).max(1000).optional()
+  reference: z.string().trim().min(1).max(1000).optional(),
 });
 
 export const PartialDataSourceSchema = z.strictObject({
@@ -16,7 +16,7 @@ export const PartialDataSourceSchema = z.strictObject({
   provider: IdentifierSchema,
   status: z.literal("partial"),
   retrievedAt: IsoDateTimeSchema,
-  reference: z.string().trim().min(1).max(1000).optional()
+  reference: z.string().trim().min(1).max(1000).optional(),
 });
 
 export const UnavailableDataSourceSchema = z.strictObject({
@@ -24,27 +24,27 @@ export const UnavailableDataSourceSchema = z.strictObject({
   provider: IdentifierSchema,
   status: z.literal("unavailable"),
   attemptedAt: IsoDateTimeSchema,
-  reference: z.string().trim().min(1).max(1000).optional()
+  reference: z.string().trim().min(1).max(1000).optional(),
 });
 
 export const DataSourceSchema = z.discriminatedUnion("status", [
   AvailableDataSourceSchema,
   PartialDataSourceSchema,
-  UnavailableDataSourceSchema
+  UnavailableDataSourceSchema,
 ]);
 
 export const SourceLocationSchema = z
   .strictObject({
     path: z.string().trim().min(1).max(1000),
     startLine: z.number().int().positive().optional(),
-    endLine: z.number().int().positive().optional()
+    endLine: z.number().int().positive().optional(),
   })
   .superRefine((location, ctx) => {
     if (location.endLine !== undefined && location.startLine === undefined) {
       ctx.addIssue({
         code: "custom",
         path: ["endLine"],
-        message: "endLine requires startLine"
+        message: "endLine requires startLine",
       });
     }
 
@@ -56,20 +56,20 @@ export const SourceLocationSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["endLine"],
-        message: "endLine must be greater than or equal to startLine"
+        message: "endLine must be greater than or equal to startLine",
       });
     }
   });
 
 const EvidenceBaseShape = {
   id: IdentifierSchema,
-  summary: z.string().trim().min(1).max(2000)
+  summary: z.string().trim().min(1).max(2000),
 } as const;
 
 export const ProjectEvidenceSchema = z.strictObject({
   ...EvidenceBaseShape,
   kind: z.literal("project"),
-  location: SourceLocationSchema.optional()
+  location: SourceLocationSchema.optional(),
 });
 
 export const ExternalEvidenceSchema = z.strictObject({
@@ -78,12 +78,12 @@ export const ExternalEvidenceSchema = z.strictObject({
   sourceId: IdentifierSchema,
   reference: z.string().trim().min(1).max(1000),
   url: z.string().url().optional(),
-  publishedAt: IsoDateTimeSchema.optional()
+  publishedAt: IsoDateTimeSchema.optional(),
 });
 
 export const EvidenceSchema = z.discriminatedUnion("kind", [
   ProjectEvidenceSchema,
-  ExternalEvidenceSchema
+  ExternalEvidenceSchema,
 ]);
 
 export type AvailableDataSource = z.infer<typeof AvailableDataSourceSchema>;

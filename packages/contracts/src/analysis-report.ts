@@ -15,7 +15,7 @@ export const ANALYSIS_REPORT_SCHEMA_VERSION = "1.0.0" as const;
 export const AnalyzerMetadataSchema = z.strictObject({
   version: IdentifierSchema,
   ruleSetVersion: IdentifierSchema,
-  scoringVersion: IdentifierSchema
+  scoringVersion: IdentifierSchema,
 });
 
 const AnalysisReportBaseSchema = z.strictObject({
@@ -31,7 +31,7 @@ const AnalysisReportBaseSchema = z.strictObject({
   recommendations: z.array(RecommendationSchema),
   scores: AnalysisScoresSchema,
   limitations: z.array(AnalysisLimitationSchema),
-  partialFailures: z.array(PartialFailureSchema)
+  partialFailures: z.array(PartialFailureSchema),
 });
 
 function idsOf(items: readonly { id: string }[]) {
@@ -42,19 +42,19 @@ function addMissingReferenceIssue(
   ctx: z.RefinementCtx,
   path: PropertyKey[],
   referenceType: string,
-  id: string
+  id: string,
 ) {
   ctx.addIssue({
     code: "custom",
     path,
-    message: `Unknown ${referenceType} reference: ${id}`
+    message: `Unknown ${referenceType} reference: ${id}`,
   });
 }
 
 function validateUniqueIds(
   ctx: z.RefinementCtx,
   collectionName: string,
-  items: readonly { id: string }[]
+  items: readonly { id: string }[],
 ) {
   const seen = new Set<string>();
 
@@ -63,7 +63,7 @@ function validateUniqueIds(
       ctx.addIssue({
         code: "custom",
         path: [collectionName, index, "id"],
-        message: `Duplicate ${collectionName} id: ${item.id}`
+        message: `Duplicate ${collectionName} id: ${item.id}`,
       });
     }
 
@@ -105,7 +105,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
       ctx.addIssue({
         code: "custom",
         path: ["evidence", index, "sourceId"],
-        message: `External evidence cannot reference unavailable source: ${evidence.sourceId}`
+        message: `External evidence cannot reference unavailable source: ${evidence.sourceId}`,
       });
     }
   });
@@ -117,7 +117,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           ctx,
           ["facts", factIndex, "evidenceIds", referenceIndex],
           "evidence",
-          evidenceId
+          evidenceId,
         );
       }
     });
@@ -130,7 +130,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           ctx,
           ["findings", findingIndex, "evidenceIds", referenceIndex],
           "evidence",
-          evidenceId
+          evidenceId,
         );
       }
     });
@@ -141,7 +141,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           ctx,
           ["findings", findingIndex, "factIds", referenceIndex],
           "fact",
-          factId
+          factId,
         );
       }
     });
@@ -152,7 +152,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           ctx,
           ["findings", findingIndex, "limitationIds", referenceIndex],
           "limitation",
-          limitationId
+          limitationId,
         );
       }
     });
@@ -169,10 +169,10 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
               "factors",
               factorIndex,
               "evidenceIds",
-              referenceIndex
+              referenceIndex,
             ],
             "evidence",
-            evidenceId
+            evidenceId,
           );
         }
       });
@@ -185,7 +185,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
             ctx,
             ["findings", findingIndex, "confidence", "factIds", referenceIndex],
             "fact",
-            factId
+            factId,
           );
           return;
         }
@@ -194,7 +194,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           ctx.addIssue({
             code: "custom",
             path: ["findings", findingIndex, "confidence", "factIds", referenceIndex],
-            message: `Confidence fact must also be listed in finding.factIds: ${factId}`
+            message: `Confidence fact must also be listed in finding.factIds: ${factId}`,
           });
         }
       });
@@ -212,7 +212,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           ctx,
           ["recommendations", recommendationIndex, "findingIds", referenceIndex],
           "finding",
-          findingId
+          findingId,
         );
         return [];
       }
@@ -227,7 +227,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
       ctx.addIssue({
         code: "custom",
         path: ["recommendations", recommendationIndex, "basis"],
-        message: "A fact-based recommendation cannot reference heuristic findings"
+        message: "A fact-based recommendation cannot reference heuristic findings",
       });
     }
 
@@ -239,7 +239,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
       ctx.addIssue({
         code: "custom",
         path: ["recommendations", recommendationIndex, "basis"],
-        message: "A heuristic recommendation must reference at least one heuristic finding"
+        message: "A heuristic recommendation must reference at least one heuristic finding",
       });
     }
 
@@ -249,7 +249,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           ctx,
           ["recommendations", recommendationIndex, "evidenceIds", referenceIndex],
           "evidence",
-          evidenceId
+          evidenceId,
         );
       }
     });
@@ -261,7 +261,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
             ctx,
             ["recommendations", recommendationIndex, "confidence", "factIds", referenceIndex],
             "fact",
-            factId
+            factId,
           );
         }
       });
@@ -275,7 +275,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           ctx,
           ["scores", "contributions", contributionIndex, "evidenceIds", referenceIndex],
           "evidence",
-          evidenceId
+          evidenceId,
         );
       }
     });
@@ -286,7 +286,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           ctx,
           ["scores", "contributions", contributionIndex, "findingIds", referenceIndex],
           "finding",
-          findingId
+          findingId,
         );
       }
     });
@@ -297,7 +297,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           ctx,
           ["scores", "contributions", contributionIndex, "factIds", referenceIndex],
           "fact",
-          factId
+          factId,
         );
       }
     });
@@ -307,8 +307,8 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
     { path: ["scores", "overall"], score: report.scores.overall },
     ...Object.entries(report.scores.categories).map(([category, score]) => ({
       path: ["scores", "categories", category],
-      score
-    }))
+      score,
+    })),
   ] as const;
 
   scoreEntries.forEach(({ path, score }) => {
@@ -319,7 +319,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
             ctx,
             [...path, "contributionIds", referenceIndex],
             "score contribution",
-            contributionId
+            contributionId,
           );
         }
       });
@@ -330,7 +330,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
             ctx,
             [...path, "limitationIds", referenceIndex],
             "limitation",
-            limitationId
+            limitationId,
           );
         }
       });
@@ -344,7 +344,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           ctx,
           ["limitations", limitationIndex, "sourceIds", referenceIndex],
           "source",
-          sourceId
+          sourceId,
         );
       }
     });
@@ -356,7 +356,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
         ctx,
         ["partialFailures", failureIndex, "sourceId"],
         "source",
-        failure.sourceId
+        failure.sourceId,
       );
     }
   });

@@ -13,13 +13,13 @@ export function createValidAnalysisReport(): AnalysisReport {
         owner: "BlizzardBlast",
         name: "StackLens",
         commitSha: "0123456789abcdef0123456789abcdef01234567",
-        ref: "main"
-      }
+        ref: "main",
+      },
     },
     analyzer: {
       version: "0.1.0",
       ruleSetVersion: "0.1.0",
-      scoringVersion: "0.1.0"
+      scoringVersion: "0.1.0",
     },
     sources: [
       {
@@ -27,8 +27,8 @@ export function createValidAnalysisReport(): AnalysisReport {
         provider: "npm",
         status: "available",
         retrievedAt: "2026-09-19T02:00:00Z",
-        reference: "legacy-tool"
-      }
+        reference: "legacy-tool",
+      },
     ],
     evidence: [
       {
@@ -38,8 +38,8 @@ export function createValidAnalysisReport(): AnalysisReport {
         location: {
           path: "package.json",
           startLine: 10,
-          endLine: 10
-        }
+          endLine: 10,
+        },
       },
       {
         id: "evidence-npm",
@@ -47,8 +47,8 @@ export function createValidAnalysisReport(): AnalysisReport {
         summary: "npm marks legacy-tool as deprecated.",
         sourceId: "source-npm",
         reference: "legacy-tool",
-        url: "https://www.npmjs.com/package/legacy-tool"
-      }
+        url: "https://www.npmjs.com/package/legacy-tool",
+      },
     ],
     facts: [
       {
@@ -56,31 +56,31 @@ export function createValidAnalysisReport(): AnalysisReport {
         type: "dependency.declared",
         subject: {
           type: "dependency",
-          name: "legacy-tool"
+          name: "legacy-tool",
         },
         statement: "legacy-tool is declared by the analyzed project.",
         rule: {
           id: "JS-DEP-001",
-          version: "1"
+          version: "1",
         },
         requirementIds: ["FR-005", "DATA-003"],
-        evidenceIds: ["evidence-manifest"]
+        evidenceIds: ["evidence-manifest"],
       },
       {
         id: "fact-dependency-deprecated",
         type: "dependency.deprecated",
         subject: {
           type: "dependency",
-          name: "legacy-tool"
+          name: "legacy-tool",
         },
         statement: "The package is explicitly deprecated by its registry metadata.",
         rule: {
           id: "JS-DEP-007",
-          version: "1"
+          version: "1",
         },
         requirementIds: ["FR-007", "DATA-001", "DATA-003"],
-        evidenceIds: ["evidence-npm"]
-      }
+        evidenceIds: ["evidence-npm"],
+      },
     ],
     findings: [
       {
@@ -89,13 +89,13 @@ export function createValidAnalysisReport(): AnalysisReport {
         category: "dependencies",
         subject: {
           type: "dependency",
-          name: "legacy-tool"
+          name: "legacy-tool",
         },
         title: "A declared dependency is deprecated",
         description: "The package registry explicitly marks legacy-tool as deprecated.",
         rule: {
           id: "JS-DEP-007",
-          version: "1"
+          version: "1",
         },
         requirementIds: ["FR-007", "FR-017", "DATA-003"],
         evidenceIds: ["evidence-npm"],
@@ -105,18 +105,18 @@ export function createValidAnalysisReport(): AnalysisReport {
           level: "high",
           rule: {
             id: "PRIORITY-001",
-            version: "1"
+            version: "1",
           },
           rationale: "Explicit deprecation can create upgrade and maintenance risk.",
           factors: [
             {
               key: "explicit-deprecation",
               rationale: "The package registry explicitly declares the package deprecated.",
-              evidenceIds: ["evidence-npm"]
-            }
-          ]
-        }
-      }
+              evidenceIds: ["evidence-npm"],
+            },
+          ],
+        },
+      },
     ],
     recommendations: [
       {
@@ -128,49 +128,49 @@ export function createValidAnalysisReport(): AnalysisReport {
         impact: "Reducing reliance on deprecated packages lowers maintenance risk.",
         rule: {
           id: "JS-REC-007",
-          version: "1"
+          version: "1",
         },
         requirementIds: ["FR-015", "DATA-005"],
         findingIds: ["finding-deprecated-package"],
-        evidenceIds: ["evidence-npm"]
-      }
+        evidenceIds: ["evidence-npm"],
+      },
     ],
     scores: {
       overall: {
         status: "available",
         value: 90,
         evidenceCoverage: 80,
-        contributionIds: ["score-contribution-deprecation"]
+        contributionIds: ["score-contribution-deprecation"],
       },
       categories: {
         dependencies: {
           status: "available",
           value: 90,
           evidenceCoverage: 100,
-          contributionIds: ["score-contribution-deprecation"]
+          contributionIds: ["score-contribution-deprecation"],
         },
         security: {
           status: "insufficient_evidence",
           evidenceCoverage: 0,
-          limitationIds: ["limitation-security"]
+          limitationIds: ["limitation-security"],
         },
         maintainability: {
           status: "available",
           value: 100,
           evidenceCoverage: 100,
-          contributionIds: []
+          contributionIds: [],
         },
         testing: {
           status: "insufficient_evidence",
           evidenceCoverage: 0,
-          limitationIds: ["limitation-testing"]
+          limitationIds: ["limitation-testing"],
         },
         tooling: {
           status: "available",
           value: 100,
           evidenceCoverage: 100,
-          contributionIds: []
-        }
+          contributionIds: [],
+        },
       },
       contributions: [
         {
@@ -181,13 +181,13 @@ export function createValidAnalysisReport(): AnalysisReport {
           rationale: "Explicit package deprecation affects dependency health.",
           rule: {
             id: "SCORE-DEP-001",
-            version: "1"
+            version: "1",
           },
           findingIds: ["finding-deprecated-package"],
           factIds: ["fact-dependency-deprecated"],
-          evidenceIds: ["evidence-npm"]
-        }
-      ]
+          evidenceIds: ["evidence-npm"],
+        },
+      ],
     },
     limitations: [
       {
@@ -196,7 +196,7 @@ export function createValidAnalysisReport(): AnalysisReport {
         message: "This fixture does not provide supported vulnerability evidence.",
         affectedCategories: ["security"],
         sourceIds: [],
-        ruleIds: []
+        ruleIds: [],
       },
       {
         id: "limitation-testing",
@@ -204,9 +204,9 @@ export function createValidAnalysisReport(): AnalysisReport {
         message: "This fixture does not provide supported testing evidence.",
         affectedCategories: ["testing"],
         sourceIds: [],
-        ruleIds: []
-      }
+        ruleIds: [],
+      },
     ],
-    partialFailures: []
+    partialFailures: [],
   };
 }

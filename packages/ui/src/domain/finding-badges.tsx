@@ -1,24 +1,24 @@
-import type {
-  ConfidenceLevel,
-  FindingClassification,
-  PriorityLevel
-} from "@stacklens/contracts/finding";
 import { cn } from "cn";
 
 import { Badge } from "#components/badge";
+import type {
+  ConfidenceLevel,
+  FindingClassification,
+  PriorityLevel,
+} from "@stacklens/contracts/finding";
 
 const classificationLabel: Record<FindingClassification, string> = {
   fact: "Fact",
-  heuristic: "Heuristic"
+  heuristic: "Heuristic",
 };
 
 const classificationMark: Record<FindingClassification, string> = {
   fact: "●",
-  heuristic: "◆"
+  heuristic: "◆",
 };
 
 export function FindingTypeBadge({
-  classification
+  classification,
 }: Readonly<{ classification: FindingClassification }>) {
   return (
     <Badge variant={classification}>
@@ -39,7 +39,7 @@ export function ConfidenceIndicator({ confidence }: Readonly<{ confidence: Confi
       className={cn(
         confidence === "high" && "text-confidence-high",
         confidence === "medium" && "text-confidence-medium",
-        confidence === "low" && "text-confidence-low"
+        confidence === "low" && "text-confidence-low",
       )}
     >
       {confidence.charAt(0).toUpperCase() + confidence.slice(1)} confidence

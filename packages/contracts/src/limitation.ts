@@ -10,7 +10,7 @@ export const AnalysisLimitationKindSchema = z.enum([
   "external_data",
   "insufficient_evidence",
   "resource_limit",
-  "partial_failure"
+  "partial_failure",
 ]);
 
 export const AnalysisLimitationSchema = z.strictObject({
@@ -19,7 +19,7 @@ export const AnalysisLimitationSchema = z.strictObject({
   message: z.string().trim().min(1).max(4000),
   affectedCategories: z.array(ScoreCategorySchema).default([]),
   sourceIds: z.array(IdentifierSchema).default([]),
-  ruleIds: z.array(IdentifierSchema).default([])
+  ruleIds: z.array(IdentifierSchema).default([]),
 });
 
 export const SourcePartialFailureSchema = z.strictObject({
@@ -29,7 +29,7 @@ export const SourcePartialFailureSchema = z.strictObject({
   code: IdentifierSchema,
   message: z.string().trim().min(1).max(4000),
   retryable: z.boolean(),
-  occurredAt: IsoDateTimeSchema
+  occurredAt: IsoDateTimeSchema,
 });
 
 export const RulePartialFailureSchema = z.strictObject({
@@ -39,7 +39,7 @@ export const RulePartialFailureSchema = z.strictObject({
   code: IdentifierSchema,
   message: z.string().trim().min(1).max(4000),
   retryable: z.boolean(),
-  occurredAt: IsoDateTimeSchema
+  occurredAt: IsoDateTimeSchema,
 });
 
 export const AcquisitionPartialFailureSchema = z.strictObject({
@@ -48,13 +48,13 @@ export const AcquisitionPartialFailureSchema = z.strictObject({
   code: IdentifierSchema,
   message: z.string().trim().min(1).max(4000),
   retryable: z.boolean(),
-  occurredAt: IsoDateTimeSchema
+  occurredAt: IsoDateTimeSchema,
 });
 
 export const PartialFailureSchema = z.discriminatedUnion("scope", [
   SourcePartialFailureSchema,
   RulePartialFailureSchema,
-  AcquisitionPartialFailureSchema
+  AcquisitionPartialFailureSchema,
 ]);
 
 export type AnalysisLimitationKind = z.infer<typeof AnalysisLimitationKindSchema>;

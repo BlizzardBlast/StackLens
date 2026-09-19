@@ -1,22 +1,22 @@
-import type {
-  ConfidenceLevel,
-  FindingClassification,
-  PriorityLevel
-} from "@stacklens/contracts/finding";
-import type { ScoreCategory } from "@stacklens/contracts/category";
-import type { RuleReference } from "@stacklens/contracts";
 import { cn } from "cn";
 import type { ReactNode } from "react";
 
 import { Button } from "#components/button";
 import { ConfidenceIndicator, FindingTypeBadge, SeverityBadge } from "#domain/finding-badges";
+import type { RuleReference } from "@stacklens/contracts";
+import type { ScoreCategory } from "@stacklens/contracts/category";
+import type {
+  ConfidenceLevel,
+  FindingClassification,
+  PriorityLevel,
+} from "@stacklens/contracts/finding";
 
 const categoryLabel: Record<ScoreCategory, string> = {
   dependencies: "Dependencies",
   security: "Security",
   maintainability: "Maintainability",
   testing: "Testing",
-  tooling: "Tooling"
+  tooling: "Tooling",
 };
 
 export interface FindingCardProps {
@@ -42,7 +42,7 @@ export function FindingCard({
   category,
   ruleId,
   onViewEvidence,
-  className
+  className,
 }: Readonly<FindingCardProps>) {
   return (
     <article className={cn("rounded-xl border bg-card p-5 text-card-foreground", className)}>

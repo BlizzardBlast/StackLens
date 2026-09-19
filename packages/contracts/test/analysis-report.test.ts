@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import { AnalysisReportSchema } from "../src/analysis-report.js";
-
 import { createValidAnalysisReport } from "./fixture.js";
 
 describe("AnalysisReportSchema", () => {
@@ -17,7 +16,7 @@ describe("AnalysisReportSchema", () => {
       status: "available",
       value: 0,
       evidenceCoverage: 80,
-      contributionIds: ["score-contribution-deprecation"]
+      contributionIds: ["score-contribution-deprecation"],
     };
 
     expect(AnalysisReportSchema.safeParse(report).success).toBe(true);
@@ -34,9 +33,9 @@ describe("AnalysisReportSchema", () => {
     const result = AnalysisReportSchema.safeParse(report);
 
     expect(result.success).toBe(false);
-    expect(result.error?.issues.some((issue) => issue.message.includes("Unknown source reference"))).toBe(
-      true
-    );
+    expect(
+      result.error?.issues.some((issue) => issue.message.includes("Unknown source reference")),
+    ).toBe(true);
   });
 
   it("rejects external evidence from a source marked unavailable", () => {
@@ -46,7 +45,7 @@ describe("AnalysisReportSchema", () => {
       provider: "npm",
       status: "unavailable",
       attemptedAt: "2026-09-19T02:00:00Z",
-      reference: "legacy-tool"
+      reference: "legacy-tool",
     };
 
     const result = AnalysisReportSchema.safeParse(report);
@@ -54,8 +53,8 @@ describe("AnalysisReportSchema", () => {
     expect(result.success).toBe(false);
     expect(
       result.error?.issues.some((issue) =>
-        issue.message.includes("External evidence cannot reference unavailable source")
-      )
+        issue.message.includes("External evidence cannot reference unavailable source"),
+      ),
     ).toBe(true);
   });
 
@@ -67,7 +66,7 @@ describe("AnalysisReportSchema", () => {
 
     expect(result.success).toBe(false);
     expect(
-      result.error?.issues.some((issue) => issue.message.includes("Unknown finding reference"))
+      result.error?.issues.some((issue) => issue.message.includes("Unknown finding reference")),
     ).toBe(true);
   });
 
@@ -78,8 +77,8 @@ describe("AnalysisReportSchema", () => {
     const result = AnalysisReportSchema.safeParse(report);
 
     expect(result.success).toBe(false);
-    expect(result.error?.issues.some((issue) => issue.message.includes("Duplicate evidence id"))).toBe(
-      true
-    );
+    expect(
+      result.error?.issues.some((issue) => issue.message.includes("Duplicate evidence id")),
+    ).toBe(true);
   });
 });
