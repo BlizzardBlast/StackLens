@@ -6,6 +6,7 @@ import type {
   JavaScriptProjectSnapshot,
   JavaScriptStaticProjectFile,
 } from "./project-snapshot.js";
+import { compareCodeUnits, truncate, uniqueSorted } from "./rule-support.js";
 import {
   babelSourceReferenceParser,
   isSupportedJavaScriptSourcePath,
@@ -15,7 +16,6 @@ import type {
   JavaScriptSourceReferenceKind,
   JavaScriptSourceReferenceParser,
 } from "./source-parser.js";
-import { compareCodeUnits, truncate, uniqueSorted } from "./rule-support.js";
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-USAGE-009";
@@ -93,7 +93,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function configurationConvention(file: JavaScriptStaticProjectFile): JavaScriptDependencyReference[] {
+function configurationConvention(
+  file: JavaScriptStaticProjectFile,
+): JavaScriptDependencyReference[] {
   const name = baseName(file.path);
   const descriptor = CONFIGURATION_CONVENTIONS.find(({ prefix }) => name.startsWith(prefix));
 
@@ -116,7 +118,9 @@ function configurationConvention(file: JavaScriptStaticProjectFile): JavaScriptD
   ];
 }
 
-function prettierPluginReferences(file: JavaScriptStaticProjectFile): JavaScriptDependencyReference[] {
+function prettierPluginReferences(
+  file: JavaScriptStaticProjectFile,
+): JavaScriptDependencyReference[] {
   const name = baseName(file.path);
 
   if (name !== ".prettierrc" && name !== ".prettierrc.json") {
@@ -316,7 +320,9 @@ export function withJavaScriptSourceUsage(
 export function sourceUsageCoverageEvidenceId(snapshot: JavaScriptSourceUsageSnapshot): string {
   return (
     "evidence-js-source-coverage-" +
-    stableHash(JSON.stringify([snapshot.coverage, snapshot.parsedSourceFiles, snapshot.issues.length]))
+    stableHash(
+      JSON.stringify([snapshot.coverage, snapshot.parsedSourceFiles, snapshot.issues.length]),
+    )
   );
 }
 
@@ -384,7 +390,9 @@ export function createSourceUsageEvidence(project: JavaScriptProjectSnapshot): P
 
   return [
     coverageEvidence,
-    ...[...referenceEvidence.values()].toSorted((left, right) => compareCodeUnits(left.id, right.id)),
+    ...[...referenceEvidence.values()].toSorted((left, right) =>
+      compareCodeUnits(left.id, right.id),
+    ),
   ];
 }
 
@@ -396,7 +404,9 @@ function limitationId(code: string): string {
   return "limitation-js-source-usage-" + stableHash(code);
 }
 
-function coverageLimitation(snapshot: JavaScriptSourceUsageSnapshot): AnalysisLimitation | undefined {
+function coverageLimitation(
+  snapshot: JavaScriptSourceUsageSnapshot,
+): AnalysisLimitation | undefined {
   if (snapshot.coverage === "complete") {
     return undefined;
   }
