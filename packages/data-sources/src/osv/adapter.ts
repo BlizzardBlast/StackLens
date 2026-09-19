@@ -474,7 +474,9 @@ export class OsvVulnerabilityAdapter implements EvidenceProvider<
     }
 
     const vulnerabilities: OsvVulnerabilityRecord[] = [];
-    const allVulnerabilityIds = [...matchedPackagesByVulnerability.keys()].toSorted(compareCodeUnits);
+    const allVulnerabilityIds = [...matchedPackagesByVulnerability.keys()].toSorted(
+      compareCodeUnits,
+    );
     const vulnerabilityIds = allVulnerabilityIds.slice(0, this.#maxAdvisoryDetails);
 
     if (allVulnerabilityIds.length > vulnerabilityIds.length) {
