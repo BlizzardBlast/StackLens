@@ -7,7 +7,7 @@ Deterministic JavaScript/TypeScript normalization and analysis rules for StackLe
 This package owns ecosystem-specific static interpretation that does not belong in
 `@stacklens/analyzer-core`.
 
-Implemented vertical slices are **FR-005 dependency inventory**, **FR-006 outdated dependency detection**, **FR-007 explicit deprecation detection**, **FR-010 npm Registry health signals**, and **FR-011 known vulnerability detection**.
+Implemented vertical slices are **FR-005 dependency inventory**, **FR-006 outdated dependency detection**, **FR-007 explicit deprecation detection**, **FR-008 dependency overlap**, **FR-010 npm Registry health signals**, **FR-011 known vulnerability detection**, **FR-012 framework/tool detection**, and **FR-013 project configuration detection**.
 
 It currently owns:
 
@@ -19,7 +19,11 @@ It currently owns:
 - `JS-NPM-006@1` factual outdated-dependency findings for exact SemVer declarations;
 - `JS-NPM-007@1` factual explicit npm deprecation findings;
 - `JS-NPM-010@1` neutral npm Registry health-signal facts;
-- the `JS-VULN-011@1` factual finding rule for exact-version OSV matches.
+- the `JS-VULN-011@1` factual finding rule for exact-version OSV matches;
+- `JS-OVERLAP-008@1` curated medium-confidence dependency-overlap heuristics;
+- `JS-TOOL-012@1` manifest-backed framework/tool facts;
+- `JS-CONFIG-013@1` repository-only static configuration facts/limitations;
+- a small `JavaScriptProjectSnapshot` abstraction for already-acquired static repository files.
 
 It does not own:
 
@@ -177,9 +181,91 @@ All npm-backed rules are conservative:
 
 Absence of a finding is not promoted into a generic package-health conclusion.
 
+## Dependency overlap
+
+`JS-OVERLAP-008@1` implements **FR-008** as a heuristic finding rule over dependency-inventory
+facts.
+
+The first supported overlap catalog is intentionally explicit and narrow:
+
+- Biome + ESLint for linting;
+- Biome + Prettier for formatting;
+- Axios + Ky for HTTP-client responsibilities;
+- Day.js + Moment for date/time utilities;
+- Jest + Vitest for test-runner responsibilities.
+
+A match requires both exact package identities to be declared. The rule does not infer overlap from
+a broad category or package-name similarity.
+
+Each finding:
+
+- names both packages and the specific overlapping capability;
+- explains why parallel ownership can matter;
+- preserves every contributing dependency fact/evidence record;
+- is classified as a medium-confidence heuristic;
+- explicitly states that co-declaration does not establish that either package is unnecessary.
+
+The rule does not recommend removing either dependency and does not set production priority/score
+policy.
+
+## Framework and tool detection
+
+`JS-TOOL-012@1` implements **FR-012** from deterministic manifest evidence.
+
+A curated package catalog identifies supported frameworks/tools such as Next.js, Angular, SvelteKit,
+Vite, webpack, Rollup, esbuild, Vitest, Jest, Playwright, Cypress, ESLint, Prettier, Biome,
+TypeScript, selected state-management libraries, and selected observability SDKs.
+
+Detection requires an exact supported package name in a normalized dependency group. Unknown
+packages are not guessed from names or broad categories. Duplicate declarations produce one tool
+fact while preserving all declaration evidence.
+
+## Static project snapshot
+
+Repository-oriented rules use `JavaScriptProjectSnapshot`, which extends the normalized manifest
+with optional already-acquired static files.
+
+`createJavaScriptProjectSnapshot`:
+
+- accepts file content already supplied by an acquisition layer;
+- validates canonical relative POSIX paths;
+- rejects absolute/backslash/control-character/dot-segment paths and duplicate paths;
+- sorts files deterministically;
+- performs no filesystem or network I/O.
+
+This helper is not a GitHub acquisition adapter; Milestone G will provide bounded repository
+acquisition separately.
+
+## Project configuration detection
+
+`JS-CONFIG-013@1` implements the static rule layer for **FR-013**.
+
+Supported declarative files currently include:
+
+- `tsconfig.json` and simple `tsconfig.*.json` names;
+- `.eslintrc.json`;
+- `.prettierrc` / `.prettierrc.json`;
+- `biome.json` / `biome.jsonc`.
+
+Strict JSON inputs can expose a bounded allowlist of high-level characteristics such as TypeScript
+strictness/module/target, ESLint extends/plugins/rule counts, Prettier formatting options, and
+Biome formatter/linter/assist enablement.
+
+Known JavaScript/TypeScript configuration files such as Vite, Vitest, webpack, Rollup, Jest, ESLint
+flat/legacy config, Next.js, Prettier, and Tailwind config are identified by path only. Their code is
+never imported, executed, or evaluated; a rule limitation records that inspection is partial.
+
+Recognized config-family filenames with unsupported extensions/formats are still emitted as detected
+configuration facts with an `unsupported_configuration` limitation rather than being silently
+ignored. JSONC/comments, malformed/unsupported shapes, and configuration content above the
+512 Ki-character inspection bound likewise remain detected but limited rather than guessed.
+
+Project evidence stores only configuration path/summary metadata, never configuration source
+content.
+
 ## Safety
 
 This package performs static in-memory normalization only. It does not install dependencies,
 execute package scripts, import project configuration, or perform provider/network I/O.
 
-**Traceability:** FR-004, FR-005, FR-006, FR-007, FR-010, FR-011, FR-017, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002.
+**Traceability:** FR-004, FR-005, FR-006, FR-007, FR-008, FR-010, FR-011, FR-012, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002.

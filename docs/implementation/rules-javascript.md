@@ -2,7 +2,7 @@
 
 > **Status:** Accepted implementation baseline
 > **Date:** 2026-09-19
-> **Requirements:** FR-004, FR-005, FR-006, FR-007, FR-010, FR-011, FR-017, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-007
+> **Requirements:** FR-004, FR-005, FR-006, FR-007, FR-008, FR-010, FR-011, FR-012, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-007
 > **Related decisions:** ADR-0008, ADR-0009
 
 ## Package responsibility
@@ -359,3 +359,107 @@ Focused fixtures cover:
 - analyzer-core integration with test-only priority and insufficient-evidence scores.
 
 No live network access is used.
+
+
+## FR-008 dependency overlap
+
+`JS-OVERLAP-008@1` is a finding-stage heuristic. It consumes dependency inventory facts rather than
+re-reading provider data or depending on sibling finding output.
+
+The rule uses a versioned-in-code curated catalog of explicit package pairs/capabilities. Initial
+cases cover Biome/ESLint, Biome/Prettier, Axios/Ky, Day.js/Moment, and Jest/Vitest.
+
+A supported pair produces one deterministic finding with:
+
+- both package identities;
+- the specific overlapping capability;
+- all dependency-inventory fact/evidence references;
+- medium confidence with a rationale tied to the curated rule and manifest-only evidence;
+- explanatory text about duplicated configuration/API/workflow surface;
+- an explicit statement that the finding does not establish that either dependency is unnecessary.
+
+Pairs that merely share a broad ecosystem category are ignored unless they are in the explicit
+catalog. This is deliberately narrower than FR-009 source-usage analysis.
+
+## FR-012 framework/tool facts
+
+`JS-TOOL-012@1` is a fact-stage rule that operates directly on the normalized manifest. It does not
+depend on `JS-DEP-005` output, preserving same-stage independence.
+
+A curated exact-package catalog covers supported frameworks, build tools, test frameworks,
+linters/formatters, TypeScript, selected state-management libraries, and selected observability
+tools.
+
+One fact is emitted per supported package/role. Duplicate declarations across dependency groups
+share one fact but preserve all declaration evidence. Unknown packages are not classified by fuzzy
+name/category inference.
+
+## Static repository project snapshot
+
+`JavaScriptProjectSnapshot` extends the normalized package manifest with optional
+`JavaScriptStaticProjectFile[]`.
+
+`createJavaScriptProjectSnapshot` is a pure normalizer for files that have already been acquired. It:
+
+- performs no filesystem/network access;
+- validates canonical relative POSIX paths;
+- rejects absolute paths, backslashes, control characters, dot/dot-dot/empty segments, and duplicate
+  paths;
+- clones dependency declarations/file records;
+- sorts files with code-unit ordering.
+
+This establishes the rule input shape needed by FR-013 without implementing FR-003 repository
+acquisition early.
+
+## FR-013 static project configuration
+
+`JS-CONFIG-013@1` is a repository-oriented fact rule.
+
+Supported configuration paths are identified statically. `createProjectConfigurationEvidence`
+creates path-only `ProjectEvidence`; source content is not copied into evidence/report output.
+
+Declarative strict-JSON inspection currently supports:
+
+- TypeScript `tsconfig.json` / simple `tsconfig.*.json`;
+- legacy ESLint `.eslintrc.json`;
+- Prettier `.prettierrc` / `.prettierrc.json`;
+- Biome `biome.json` and strict-JSON-compatible `biome.jsonc`.
+
+Only an allowlisted set of high-level fields is surfaced. Unsupported value shapes produce a
+configuration limitation instead of coercion.
+
+Known JS/TS config families are identified by filename for ESLint flat/legacy config, Jest, Next.js,
+Prettier, Rollup, Tailwind, Vite, Vitest, and webpack. Supported JS/CJS/MJS/TS/CTS/MTS variants are
+never imported or executed; a separate rule-level limitation explains that dynamic values were not
+resolved.
+
+Recognized config-family filenames with unsupported extensions/formats still become configuration
+facts plus `unsupported_configuration` limitations instead of being silently ignored. JSONC/comments
+that strict JSON cannot parse remain file detections with an `unsupported_configuration`
+limitation. Static declarative content over 512 Ki characters remains detected with a
+`resource_limit` limitation and is not parsed.
+
+This slice intentionally does not acquire repository files. Milestone G will supply bounded static
+files from an immutable GitHub commit into this already-defined snapshot/rule boundary.
+
+## Verification
+
+Synthetic fixtures cover:
+
+- exact supported framework/tool package detection;
+- unknown packages not being guessed;
+- duplicate declaration evidence preservation;
+- every initial curated overlap pair mechanism and deterministic ordering;
+- no broad-category overlap inference;
+- medium-confidence overlap rationale and non-redundancy wording;
+- deterministic static file ordering/path validation;
+- supported TypeScript/Prettier characteristics;
+- executable-looking dynamic config proving no code evaluation path exists;
+- JSONC/comment partial inspection;
+- recognized config families with unsupported formats/extensions;
+- malformed supported configuration shapes;
+- static configuration content limits;
+- unrelated source files being ignored;
+- analyzer-core integration with test-only priority and insufficient-evidence scoring.
+
+No live repository/network access is used.
