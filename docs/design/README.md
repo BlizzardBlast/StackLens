@@ -5,11 +5,11 @@
 > **Date:** 2026-09-18  
 > **Requirements source:** [../requirements.md](../requirements.md)
 
-This directory records the StackLens product-design journey. Design decisions are subordinate to the accepted product requirements and system architecture.
+This directory records StackLens product-design artifacts. Design decisions are subordinate to the accepted product requirements and system architecture. The historical `journey.md` path is now the project-wide chronological journey, including design, architecture, tooling, and implementation steps.
 
 ## Design artifacts
 
-1. [Journey log](journey.md) — chronological record of design decisions and why they were made.
+1. [Journey log](journey.md) — project-wide chronological record of material changes, decisions, corrections, and verification.
 2. [Design principles](principles.md) — UX and visual principles derived from product requirements.
 3. [Information architecture](information-architecture.md) — MVP content hierarchy and report structure.
 4. [User flows](user-flows.md) — primary tasks and state transitions.
