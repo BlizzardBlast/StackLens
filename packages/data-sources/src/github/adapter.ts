@@ -91,9 +91,7 @@ function safeFailureReference(reference: string, fallback: string): string {
 }
 
 function usageEvidencePathWasAffected(paths: readonly string[]): boolean {
-  return paths.some(
-    (path) => path !== "package.json" && isInitialSupportedSnapshotPath(path),
-  );
+  return paths.some((path) => path !== "package.json" && isInitialSupportedSnapshotPath(path));
 }
 
 export class GitHubRepositoryAdapter implements EvidenceProvider<

@@ -126,10 +126,7 @@ export const potentiallyUnnecessaryDependencyRule: FindingRule<JavaScriptProject
         limitation.ruleIds.includes(PROJECT_CONFIGURATION_RULE_ID),
       );
 
-      if (
-        context.project.sourceUsage?.coverage !== "complete" ||
-        configurationEvidenceLimited
-      ) {
+      if (context.project.sourceUsage?.coverage !== "complete" || configurationEvidenceLimited) {
         return {};
       }
 
