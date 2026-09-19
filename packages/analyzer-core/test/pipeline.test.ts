@@ -199,6 +199,7 @@ describe("runRulePipeline", () => {
     expect(result.facts).toEqual([]);
     expect(result.partialFailures).toHaveLength(1);
     expect(result.partialFailures[0]?.scope).toBe("rule");
+    expect(result.partialFailures[0]?.code).toBe("rule_output_invalid");
   });
 
   it("rejects duplicate rule IDs before any rule evaluates", () => {
