@@ -1,18 +1,19 @@
 import { stableIdHash } from "../stable-id.js";
 import type { OsvPackageVersionQuery } from "./types.js";
 import {
+  OSV_API_BASE_URL,
   OSV_PROVIDER_ID,
   OSV_QUERY_BATCH_URL,
   OSV_VULNERABILITY_PAGE_BASE_URL,
 } from "./types.js";
 
 export function osvQueryKey(query: OsvPackageVersionQuery): string {
-  return `${query.packageName}\\0${query.version}`;
+  return JSON.stringify([query.packageName, query.version]);
 }
 
 export function osvSourceId(queries: readonly OsvPackageVersionQuery[]): string {
-  const canonical = queries.map(osvQueryKey).join("\\n");
-  return `source-osv-${stableIdHash(`${OSV_PROVIDER_ID}\\0${canonical}`)}`;
+  const canonical = JSON.stringify(queries.map((query) => [query.packageName, query.version]));
+  return `source-osv-${stableIdHash(JSON.stringify([OSV_PROVIDER_ID, canonical]))}`;
 }
 
 export function osvInvalidRequestSourceId(requestKey: string): string {
@@ -20,15 +21,15 @@ export function osvInvalidRequestSourceId(requestKey: string): string {
 }
 
 export function osvEvidenceId(sourceId: string, vulnerabilityId: string): string {
-  return `evidence-osv-${stableIdHash(`${sourceId}\\0${vulnerabilityId}`)}`;
+  return `evidence-osv-${stableIdHash(JSON.stringify([sourceId, vulnerabilityId]))}`;
 }
 
 export function osvFailureId(sourceId: string, code: string, context = ""): string {
-  return `failure-osv-${stableIdHash(`${sourceId}\\0${code}\\0${context}`)}`;
+  return `failure-osv-${stableIdHash(JSON.stringify([sourceId, code, context]))}`;
 }
 
 export function osvVulnerabilityApiUrl(vulnerabilityId: string): string {
-  return new URL(`v1/vulns/${encodeURIComponent(vulnerabilityId)}`, "https://api.osv.dev/").toString();
+  return new URL(`v1/vulns/${encodeURIComponent(vulnerabilityId)}`, OSV_API_BASE_URL).toString();
 }
 
 export function osvVulnerabilityPageUrl(vulnerabilityId: string): string {
