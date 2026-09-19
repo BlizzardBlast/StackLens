@@ -1,25 +1,23 @@
 import {
   AnalysisFactSchema,
   AnalysisLimitationSchema,
-  FindingSchema,
+  FactualFindingSchema,
+  HeuristicFindingSchema,
   RecommendationSchema,
 } from "@stacklens/contracts";
 import type {
   AnalysisFact,
   AnalysisLimitation,
-  Finding,
   Recommendation,
-  RequirementId,
 } from "@stacklens/contracts";
 
 import type { FactRuleContext, FindingRuleContext, RecommendationRuleContext } from "./context.js";
 import { AnalyzerInvariantError } from "./errors.js";
+import type { FindingCandidate } from "./priority.js";
+import type { RuleDefinition } from "./rule-definition.js";
 
-export interface RuleDefinition {
-  readonly id: string;
-  readonly version: string;
-  readonly requirementIds: readonly RequirementId[];
-}
+const FactualFindingCandidateSchema = FactualFindingSchema.omit({ priority: true });
+const HeuristicFindingCandidateSchema = HeuristicFindingSchema.omit({ priority: true });
 
 export interface FactRuleResult {
   readonly facts?: readonly AnalysisFact[];
@@ -27,7 +25,7 @@ export interface FactRuleResult {
 }
 
 export interface FindingRuleResult {
-  readonly findings?: readonly Finding[];
+  readonly findings?: readonly FindingCandidate[];
   readonly limitations?: readonly AnalysisLimitation[];
 }
 
@@ -62,13 +60,13 @@ export interface AnalysisRuleSet<TProjectSnapshot, TMetadataSnapshot> {
 
 function assertOwnedRequirements(
   rule: RuleDefinition,
-  requirementIds: readonly RequirementId[],
+  requirementIds: readonly string[],
   entityLabel: string,
 ) {
   const declared = new Set(rule.requirementIds);
 
   for (const requirementId of requirementIds) {
-    if (!declared.has(requirementId)) {
+    if (!declared.has(requirementId as never)) {
       throw new AnalyzerInvariantError(
         `Rule ${rule.id} emitted ${entityLabel} with undeclared requirement ${requirementId}`,
       );
@@ -143,7 +141,19 @@ export function validateFindingRuleResult(
   result: FindingRuleResult,
 ): Required<FindingRuleResult> {
   const findings = (result.findings ?? []).map((finding) => {
-    const parsed = parseContractEntity(FindingSchema.safeParse(finding), rule, "finding");
+    const parsed =
+      finding.classification === "fact"
+        ? parseContractEntity(
+            FactualFindingCandidateSchema.safeParse(finding),
+            rule,
+            "factual finding candidate",
+          )
+        : parseContractEntity(
+            HeuristicFindingCandidateSchema.safeParse(finding),
+            rule,
+            "heuristic finding candidate",
+          );
+
     assertRuleReference(rule, parsed, `finding ${parsed.id}`);
     assertOwnedRequirements(rule, parsed.requirementIds, `finding ${parsed.id}`);
     return parsed;
@@ -175,3 +185,5 @@ export function validateRecommendationRuleResult(
     limitations: validateLimitations(rule, result.limitations),
   };
 }
+
+export type { RuleDefinition } from "./rule-definition.js";
