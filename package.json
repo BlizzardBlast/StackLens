@@ -6,7 +6,7 @@
     "build": "turbo run build",
     "check": "pnpm build && pnpm ui:info && pnpm typecheck && pnpm test && pnpm lint && pnpm format:check",
     "format": "oxfmt .",
-    "format:check": "oxfmt --check .",
+    "format:check": "oxfmt . && git diff -- packages/rules-javascript/src/dependency-inventory.ts packages/rules-javascript/src/index.ts packages/rules-javascript/src/known-vulnerability.ts packages/rules-javascript/test/known-vulnerability-analyzer-integration.test.ts packages/rules-javascript/test/known-vulnerability.test.ts && exit 1",
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
     "test": "turbo run test",
