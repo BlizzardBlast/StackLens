@@ -1,9 +1,5 @@
 import { stableIdHash } from "../stable-id.js";
-import {
-  GITHUB_API_BASE_URL,
-  GITHUB_PROVIDER_ID,
-  GITHUB_WEB_BASE_URL,
-} from "./types.js";
+import { GITHUB_API_BASE_URL, GITHUB_PROVIDER_ID, GITHUB_WEB_BASE_URL } from "./types.js";
 
 function apiRepositoryPath(owner: string, name: string): string {
   return `repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`;
@@ -43,11 +39,7 @@ export function githubCommitTreeUrl(owner: string, name: string, commitSha: stri
   ).toString();
 }
 
-export function githubRepositorySourceId(
-  owner: string,
-  name: string,
-  commitSha: string,
-): string {
+export function githubRepositorySourceId(owner: string, name: string, commitSha: string): string {
   return `source-github-${stableIdHash(
     JSON.stringify([GITHUB_PROVIDER_ID, owner.toLowerCase(), name.toLowerCase(), commitSha]),
   )}`;
