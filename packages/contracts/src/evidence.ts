@@ -1,8 +1,7 @@
 import * as z from "zod";
 
 import { IdentifierSchema } from "./identifiers.js";
-
-export const IsoDateTimeSchema = z.string().datetime({ offset: true });
+import { IsoDateTimeSchema } from "./time.js";
 
 export const AvailableDataSourceSchema = z.strictObject({
   id: IdentifierSchema,
@@ -41,6 +40,14 @@ export const SourceLocationSchema = z
     endLine: z.number().int().positive().optional()
   })
   .superRefine((location, ctx) => {
+    if (location.endLine !== undefined && location.startLine === undefined) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["endLine"],
+        message: "endLine requires startLine"
+      });
+    }
+
     if (
       location.startLine !== undefined &&
       location.endLine !== undefined &&
