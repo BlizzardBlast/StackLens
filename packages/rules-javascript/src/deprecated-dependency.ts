@@ -5,7 +5,7 @@ import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
 import type { NormalizedPackageManifest } from "./manifest.js";
 import { packageVersion, resolveNpmObservation } from "./npm-rule-support.js";
 import {
-  createRuleLimitation,
+  createDependencyRuleLimitation,
   dependencyFactBases,
   truncate,
   uniqueSorted,
@@ -51,7 +51,7 @@ export const deprecatedDependencyRule: FindingRule<
     for (const basis of dependencyFactBases(context.facts)) {
       if (parseExactSemanticVersion(basis.declaredSpecifier) === undefined) {
         limitations.push(
-          createRuleLimitation(
+          createDependencyRuleLimitation(
             RULE_ID,
             "insufficient_evidence",
             "npm-exact-version-required",
@@ -83,7 +83,7 @@ export const deprecatedDependencyRule: FindingRule<
 
       if (version === undefined) {
         limitations.push(
-          createRuleLimitation(
+          createDependencyRuleLimitation(
             RULE_ID,
             "external_data",
             "npm-declared-version-missing",
