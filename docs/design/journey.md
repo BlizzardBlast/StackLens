@@ -547,3 +547,36 @@ instead of the temporary pre-merge placeholder. No product behavior, architectur
 changed in this documentation-only continuity update.
 
 **Traceability:** GOV-002, GOV-007.
+
+
+## 2026-09-19 — Step 33: Establish the quick manifest application boundary
+
+Implementation moved from rule-level FR-005 coverage to the first hosted-application orchestration
+slice.
+
+A new `apps/api` workspace application now exposes a framework-independent quick-manifest service
+that:
+
+- accepts both pasted and uploaded `package.json` content through one authoritative path;
+- rejects empty input, invalid JSON, unsupported upload filenames, and malformed manifest shapes
+  before analyzer execution (**FR-001**, **FR-002**, **FR-004**);
+- reuses `@stacklens/rules-javascript` normalization and dependency evidence instead of duplicating
+  ecosystem logic (**NFR-004**);
+- creates a deterministic versioned content fingerprint and does not copy irrelevant manifest fields
+  into the report (**SEC-003**);
+- invokes analyzer-core in-process using caller-supplied analysis identity/time and an injected
+  analyzer definition;
+- remains anonymous and persistence-free (**FR-022**, **SEC-003**);
+- records quick-input and missing-external-data limitations rather than treating unavailable evidence
+  as negative evidence (**FR-021**, **PRD-004**).
+
+The service deliberately does not introduce Fastify, multipart handling, authentication, database
+persistence, npm/OSV/GitHub access, production priority policy, or production scoring formulas.
+Those remain separate reasons to change under the accepted architecture.
+
+Focused tests cover paste success, upload success, invalid JSON, unsupported files, invalid manifest
+values, deterministic fingerprint parity across input modes, contract-valid report assembly, and
+minimum-retention behavior for ignored manifest fields.
+
+**Traceability:** FR-001, FR-002, FR-004, FR-005, FR-021, FR-022, NFR-001, NFR-004, SEC-001,
+SEC-002, SEC-003, GOV-002, GOV-006, GOV-007.

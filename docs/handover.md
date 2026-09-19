@@ -3,9 +3,9 @@
 > **Status:** Active implementation handover  
 > **Prepared:** 2026-09-19  
 > **Baseline branch:** `main`  
-> **Baseline commit:** `7168467e458c63ed16cb7017fffe1ceae936da4f`  
+> **Baseline commit:** Quick-manifest merge commit (set after merge)  
 > **Architecture:** v0.1.6  
-> **Immediate milestone:** Milestone A — Quick manifest input/orchestration  
+> **Immediate milestone:** Milestone B — External package metadata adapters  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -25,9 +25,11 @@ Before implementing anything:
    - `docs/implementation/analysis-contracts.md`;
    - `docs/implementation/analyzer-core.md`;
    - `docs/implementation/rules-javascript.md`;
+   - `docs/implementation/quick-manifest-analysis.md`;
    - `packages/contracts/README.md`;
    - `packages/analyzer-core/README.md`;
    - `packages/rules-javascript/README.md`;
+   - `apps/api/README.md`;
    - `AGENTS.md`;
    - `CONTRIBUTING.md`;
    - `docs/documentation-governance.md`.
@@ -48,13 +50,14 @@ The repository already has the following accepted foundations:
 - Analysis Report Contract v1 in `@stacklens/contracts`;
 - deterministic analyzer execution in `@stacklens/analyzer-core`;
 - deterministic JavaScript dependency inventory in `@stacklens/rules-javascript`;
+- framework-independent quick manifest orchestration in `apps/api`;
 - permanent read-only GitHub Actions quality gate;
 - pnpm workspace + Turborepo;
 - TypeScript 7 strict type checking;
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 
-The latest completed product implementation milestone is the **FR-005 dependency inventory** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
+The latest completed product implementation milestone is the **quick manifest input/orchestration** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
 
 The analyzer flow is:
 
@@ -86,7 +89,9 @@ AnalysisReport
 
 The first JavaScript/TypeScript product-analysis rule package is now implemented for **FR-005** only.
 
-No API, worker, web application, external npm/OSV/GitHub adapter, concrete priority policy, or concrete scoring policy has been implemented yet.
+The API application now has a framework-independent quick-manifest service boundary, but no Fastify HTTP transport is implemented yet.
+
+No worker, web application, external npm/OSV/GitHub adapter, concrete priority policy, or concrete scoring policy has been implemented yet.
 
 ## 3. Non-negotiable boundaries
 
@@ -167,37 +172,30 @@ Primary traceability:
 
 `FR-004, FR-005, FR-017, NFR-001, NFR-002, NFR-004, NFR-005, SEC-001, SEC-002`.
 
-## 5. Immediate next milestone: Quick manifest input/orchestration
+## 5. Completed milestone: Quick manifest input/orchestration
 
-The next PR should implement the smallest application/service boundary for:
+The first API-application boundary is implemented in `apps/api`.
 
-- **FR-001** pasted package manifests;
-- **FR-002** uploaded package manifests;
-- **FR-004** input validation;
-- **FR-022** anonymous quick analysis;
-- **SEC-003** input/data handling requirements.
+Accepted implementation:
 
-Keep the boundary thin:
+- pasted and uploaded manifests use one authoritative service path;
+- uploaded quick-analysis files must be named `package.json`;
+- empty input, invalid JSON, unsupported uploads, and invalid manifest shapes return stable actionable errors;
+- manifest normalization is delegated to `@stacklens/rules-javascript` rather than duplicated;
+- the service creates deterministic input fingerprints without persisting raw manifest content;
+- dependency project evidence is created before analyzer execution;
+- analyzer-core is invoked in-process with caller-supplied analysis identity/time and an injected analyzer definition;
+- quick-analysis limitations explicitly disclose unavailable source/configuration and external metadata evidence;
+- no authentication, persistence, provider I/O, Fastify transport, priority policy, or production scoring formula is introduced;
+- ignored manifest fields are not copied into the report, supporting minimum-retention behavior.
 
-1. accept manifest text/file input;
-2. parse JSON safely;
-3. create a stable input fingerprint;
-4. call `normalizePackageManifest`;
-5. create dependency inventory evidence;
-6. invoke analyzer-core with the JavaScript rule set;
-7. return the contract-valid report or actionable validation errors.
+Primary traceability:
 
-Do not add npm/OSV/GitHub metadata in this milestone.
+`FR-001, FR-002, FR-004, FR-005, FR-021, FR-022, NFR-001, NFR-004, SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007`.
 
-Do not build the full dashboard first. A narrow service/API orchestration seam with focused tests is the priority.
-
-## 6. Suggested implementation sequence after the quick-manifest boundary
+## 6. Immediate next milestone: External package metadata adapters
 
 Do not attempt all MVP requirements in one pull request.
-
-Use small vertical slices in roughly this order.
-
-### Milestone B — External package metadata adapters
 
 Create `packages/data-sources` with explicit provider adapters.
 
@@ -316,7 +314,7 @@ Do not move analyzer logic into React or Fastify.
 
 Avoid these tempting detours until their requirement slice is ready:
 
-- do not build the full dashboard before the quick-manifest orchestration boundary exists;
+- do not build the full dashboard before the analysis domain and provider boundaries are sufficiently complete;
 - do not add Next.js/TanStack Start just because they are available;
 - do not introduce microservices;
 - do not add Redis/BullMQ;
@@ -335,35 +333,36 @@ Recommended next PR:
 **Title**
 
 ```text
-feat: add quick manifest analysis boundary
+feat: add npm package metadata adapter
 ```
 
 **Primary requirements**
 
 ```text
-FR-001, FR-002, FR-004, FR-022,
-NFR-001, NFR-002, NFR-004,
-SEC-001, SEC-002, SEC-003,
+FR-006, FR-007, FR-010,
+DATA-001, DATA-002,
+NFR-003, NFR-004,
+SEC-002, SEC-008,
 GOV-002, GOV-006, GOV-007
 ```
 
-Keep the PR limited to safe manifest acquisition/parsing, validation, fingerprinting, orchestration,
-focused tests, and documentation. Reuse `@stacklens/rules-javascript`; do not duplicate manifest
-normalization or dependency inventory logic.
+Keep the first provider PR limited to an explicit npm Registry adapter, normalized provider records,
+provenance/retrieval timestamps, deterministic parsing tests, partial-failure behavior, and
+documentation.
 
-Do not bundle npm/OSV/GitHub metadata adapters or product-dashboard construction into that PR.
+Do not let JavaScript rules call npm directly. Do not add OSV or GitHub acquisition in the same PR.
 
 ## 9. Handover completion signal
 
-The next session can consider the quick-manifest boundary complete when:
+The next session can consider the first npm metadata adapter complete when:
 
-1. pasted/uploaded manifest input reaches one shared safe parsing/validation boundary;
-2. invalid JSON and invalid manifest shapes return actionable errors;
-3. a stable manifest fingerprint is created without persisting unnecessary source data;
-4. orchestration reuses `normalizePackageManifest`, FR-005 evidence creation, and analyzer-core;
-5. anonymous quick analysis is supported at the service boundary;
-6. no analyzed project code is executed;
-7. focused tests and the permanent CI gate are green;
-8. the journey and this handover advance to external package metadata adapters.
+1. npm Registry access exists only behind an explicit provider adapter;
+2. normalized package/version/deprecation/repository metadata has typed provenance and retrieval time;
+3. malformed provider payloads fail safely without becoming false facts;
+4. provider failures are represented as typed partial failures rather than negative evidence;
+5. JavaScript rules remain synchronous and provider-free;
+6. focused recorded/synthetic adapter tests are green with no live-network PR dependency;
+7. the permanent CI gate is green;
+8. the journey and this handover advance to the OSV vulnerability adapter.
 
-Continue with the smallest next vertical slice rather than jumping directly to the full application.
+Continue with the smallest next vertical slice rather than combining providers or findings prematurely.

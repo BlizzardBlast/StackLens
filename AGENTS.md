@@ -137,6 +137,18 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
 - Reuse `@stacklens/contracts` structured fact details rather than encoding required machine-readable
   dependency inventory only in prose.
 
+## API application boundary
+
+The API application layer lives in `apps/api`.
+
+- Keep authoritative request/input validation at this boundary; client-side checks are advisory.
+- Reuse `packages/rules-javascript` normalization/evidence helpers instead of duplicating manifest semantics.
+- Keep analyzer construction/policy injectable. Do not define production scoring weights or priority formulas in the API.
+- Quick manifest analysis must not require authentication or persistence.
+- Do not retain or log full manifest content by default. Keep only data needed for the report plus the input fingerprint.
+- Stable validation errors should be transport-agnostic so Fastify can map them without changing analyzer behavior.
+- Provider/network collection happens before analyzer-core and must remain outside rule evaluation.
+
 ## Analyzer safety
 
 Analyzed repositories are untrusted input.
