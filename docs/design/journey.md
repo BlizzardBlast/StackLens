@@ -406,3 +406,28 @@ Focused tests cover ordering, stage visibility, exception isolation, invalid out
 ADR-0009 and `docs/implementation/analyzer-core.md` document this boundary.
 
 The next implementation milestone is a narrow JavaScript/TypeScript vertical slice for **FR-005 dependency inventory**, using normalized package-manifest evidence without external registry metadata.
+
+
+## 2026-09-19 — Step 27: Validate and close the analyzer-core bootstrap
+
+The new analyzer-core workspace package was exercised on the real GitHub Actions runner before merge.
+
+The bootstrap validation surfaced two implementation-quality issues and corrected them without weakening repository rules:
+
+- strict TypeScript found a negative-test fixture that had accidentally changed a serialized mutable array into a readonly tuple; the fixture was corrected to remain a valid `AnalysisFact` while testing only requirement-ownership behavior;
+- type-aware Oxlint rejected redundant error constructors, unused imports, mutable `Array#sort()`, and an unsafe type assertion used only to bypass the contract in a test. The production/runtime validation remained, while the unsafe test escape was removed.
+
+The successful bootstrap run then passed:
+- journey continuity;
+- dependency resolution;
+- all workspace builds;
+- canonical Oxfmt formatting;
+- shadcn project validation;
+- strict TypeScript;
+- analyzer-core and existing test suites;
+- type-aware Oxlint with warnings denied;
+- Oxfmt verification.
+
+The generated lockfile now contains the `packages/analyzer-core` workspace importer.
+
+Temporary CI write permission is removed immediately after this step. The final merge gate is the normal read-only workflow with `pnpm install --frozen-lockfile`.
