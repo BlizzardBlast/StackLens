@@ -18,6 +18,7 @@ export type FindingCandidate = FactualFindingCandidate | HeuristicFindingCandida
 export interface PrioritizationContext<TProjectSnapshot, TMetadataSnapshot>
   extends AnalysisContext<TProjectSnapshot, TMetadataSnapshot> {
   readonly facts: readonly AnalysisFact[];
+  readonly findings: readonly FindingCandidate[];
 }
 
 export interface FindingPrioritizer<TProjectSnapshot, TMetadataSnapshot> extends RuleDefinition {
