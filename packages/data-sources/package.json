@@ -1,0 +1,31 @@
+{
+  "name": "@stacklens/data-sources",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./npm-registry": {
+      "types": "./dist/npm-registry.d.ts",
+      "default": "./dist/npm-registry.js"
+    },
+    "./provider": {
+      "types": "./dist/provider.d.ts",
+      "default": "./dist/provider.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@stacklens/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.1"
+  }
+}

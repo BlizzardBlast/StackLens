@@ -131,6 +131,12 @@ The implementation pins mature Zod `4.4.3` rather than adopting a just-published
 
 `packages/analyzer-core` consumes these contracts for deterministic orchestration.
 
-`packages/rules-javascript` now consumes the fact/evidence contracts for the FR-005 dependency
-inventory slice. Ecosystem packages must continue to reuse these public shapes rather than define
-parallel report entities.
+`packages/rules-javascript` consumes the fact/evidence contracts for the FR-005 dependency
+inventory slice.
+
+`packages/data-sources` consumes data-source, external-evidence, timestamp, and partial-failure
+contracts so provider observations can enter the analyzer with the same provenance vocabulary used
+by reports.
+
+Ecosystem/provider packages must continue to reuse these public shapes rather than define parallel
+report entities.

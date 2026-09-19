@@ -3,9 +3,10 @@
 > **Status:** Active implementation handover  
 > **Prepared:** 2026-09-19  
 > **Baseline branch:** `main`  
-> **Baseline commit:** `29643a66d36c295067e1907fb07620502a014ffa`  
+> **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
 > **Architecture:** v0.1.6  
-> **Immediate milestone:** Milestone B — External package metadata adapters  
+> **Completed milestone:** npm Registry package metadata adapter — PR #13  
+> **Immediate milestone:** Milestone C — OSV vulnerability adapter  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -26,9 +27,11 @@ Before implementing anything:
    - `docs/implementation/analyzer-core.md`;
    - `docs/implementation/rules-javascript.md`;
    - `docs/implementation/quick-manifest-analysis.md`;
+   - `docs/implementation/data-sources.md`;
    - `packages/contracts/README.md`;
    - `packages/analyzer-core/README.md`;
    - `packages/rules-javascript/README.md`;
+   - `packages/data-sources/README.md`;
    - `apps/api/README.md`;
    - `AGENTS.md`;
    - `CONTRIBUTING.md`;
@@ -51,13 +54,14 @@ The repository already has the following accepted foundations:
 - deterministic analyzer execution in `@stacklens/analyzer-core`;
 - deterministic JavaScript dependency inventory in `@stacklens/rules-javascript`;
 - framework-independent quick manifest orchestration in `apps/api`;
+- bounded npm Registry metadata acquisition in `@stacklens/data-sources`;
 - permanent read-only GitHub Actions quality gate;
 - pnpm workspace + Turborepo;
 - TypeScript 7 strict type checking;
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 
-The latest completed product implementation milestone is the **quick manifest input/orchestration** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
+The latest completed product implementation milestone is the **npm Registry package metadata adapter** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
 
 The analyzer flow is:
 
@@ -91,7 +95,7 @@ The first JavaScript/TypeScript product-analysis rule package is now implemented
 
 The API application now has a framework-independent quick-manifest service boundary, but no Fastify HTTP transport is implemented yet.
 
-No worker, web application, external npm/OSV/GitHub adapter, concrete priority policy, or concrete scoring policy has been implemented yet.
+The npm Registry adapter is implemented. No OSV/GitHub adapter, worker, web application, concrete dependency finding rules beyond FR-005 inventory, concrete priority policy, or concrete scoring policy has been implemented yet.
 
 ## 3. Non-negotiable boundaries
 
@@ -193,35 +197,51 @@ Primary traceability:
 
 `FR-001, FR-002, FR-004, FR-005, FR-021, FR-022, NFR-001, NFR-004, SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007`.
 
-## 6. Immediate next milestone: External package metadata adapters
+## 6. Completed milestone: npm Registry package metadata adapter
 
-Do not attempt all MVP requirements in one pull request.
+The first external provider boundary is implemented in `packages/data-sources` by PR #13.
 
-Create `packages/data-sources` with explicit provider adapters.
+Accepted implementation:
 
-Start with npm registry data required by:
+- `NpmRegistryAdapter` is the only npm Registry network boundary;
+- the adapter uses the fixed `https://registry.npmjs.org/` host and percent-encodes package names;
+- full package metadata is requested so versions, dist-tags, explicit per-version deprecation,
+  repository metadata, and publication timestamps can be normalized for later rules;
+- response bytes and request duration are bounded;
+- requested package identity must match the returned package identity;
+- dist-tags must reference versions contained in the normalized response;
+- malformed deprecation/timestamp/repository/version metadata fails closed instead of being coerced;
+- equivalent provider objects normalize deterministically regardless object insertion order;
+- successful observations produce contract-valid external source/evidence with retrieval time;
+- 404/non-retryable, throttling/server/retryable, network, timeout, invalid JSON/schema, and
+  over-limit failures remain typed source failures rather than empty/negative evidence;
+- raw provider bodies and low-level network errors are not exposed in public failure messages;
+- publisher-controlled repository URLs remain normalized metadata and are not promoted into
+  `ExternalEvidence.url`; evidence links are generated only from the fixed npm Registry host;
+- PR tests are synthetic and do not depend on live npm availability.
 
-- FR-006 outdated dependencies;
-- FR-007 explicit deprecation;
-- FR-010 dependency-health signals.
+Primary traceability:
 
-Provider results must include provenance and retrieval timestamps (**DATA-001**, **DATA-002**).
+`FR-006, FR-007, FR-010, DATA-001, DATA-002, NFR-003, NFR-004, SEC-002, SEC-008, GOV-002, GOV-006, GOV-007`.
 
-Do not let rules call providers directly.
+## 7. Immediate next milestone: OSV vulnerability adapter
 
-### Milestone C — Vulnerability adapter
+Add OSV integration for **FR-011** inside `packages/data-sources`.
 
-Add OSV integration for **FR-011**.
+Keep the first OSV slice focused on provider acquisition/normalization:
 
-Version applicability must be evidence-driven.
+- use the accepted OSV batch package/version API where practical;
+- preserve OSV/advisory IDs, affected package/version evidence, severity when supplied, references,
+  published/modified timestamps, and retrieval timestamp;
+- exact declared versions may support direct quick-analysis queries;
+- semver ranges are not installed versions and must not be queried as if they were exact;
+- missing resolved/exact version evidence must remain insufficient evidence;
+- an empty OSV result means no matching known vulnerability was returned for the supplied version
+  evidence, not proof of security;
+- provider/network/schema failures remain typed partial failures;
+- keep OSV I/O outside JavaScript rules.
 
-For quick manifest analysis:
-
-- an exact declared version can support stronger conclusions;
-- a semver range is not automatically the installed/resolved version;
-- missing resolved version can mean insufficient evidence.
-
-Never translate unavailable/no-match vulnerability data into "secure."
+Do not add dependency findings, scoring, GitHub acquisition, or Fastify transport in the same PR.
 
 ### Milestone D — Dependency findings
 
@@ -310,7 +330,7 @@ After the analysis domain is proven in vertical slices, finish:
 
 Do not move analyzer logic into React or Fastify.
 
-## 7. What not to do next
+## 8. What not to do next
 
 Avoid these tempting detours until their requirement slice is ready:
 
@@ -326,43 +346,47 @@ Avoid these tempting detours until their requirement slice is ready:
 - do not build one giant "analyze everything" rule;
 - do not add production scoring weights before evidence coverage is meaningful.
 
-## 8. Pull-request strategy for the next session
+## 9. Pull-request strategy for the next session
 
 Recommended next PR:
 
 **Title**
 
 ```text
-feat: add npm package metadata adapter
+feat: add OSV vulnerability adapter
 ```
 
 **Primary requirements**
 
 ```text
-FR-006, FR-007, FR-010,
+FR-011,
 DATA-001, DATA-002,
 NFR-003, NFR-004,
 SEC-002, SEC-008,
 GOV-002, GOV-006, GOV-007
 ```
 
-Keep the first provider PR limited to an explicit npm Registry adapter, normalized provider records,
-provenance/retrieval timestamps, deterministic parsing tests, partial-failure behavior, and
-documentation.
+Keep the PR limited to explicit OSV acquisition, normalized advisory/version records,
+provenance/retrieval timestamps, conservative version applicability, typed provider failures,
+focused synthetic/recorded tests, and documentation.
 
-Do not let JavaScript rules call npm directly. Do not add OSV or GitHub acquisition in the same PR.
+Do not let JavaScript rules call OSV directly. Do not add vulnerability finding rules or scoring in
+the same PR.
 
-## 9. Handover completion signal
+## 10. Handover completion signal
 
-The next session can consider the first npm metadata adapter complete when:
+The next session can consider the OSV adapter complete when:
 
-1. npm Registry access exists only behind an explicit provider adapter;
-2. normalized package/version/deprecation/repository metadata has typed provenance and retrieval time;
-3. malformed provider payloads fail safely without becoming false facts;
-4. provider failures are represented as typed partial failures rather than negative evidence;
-5. JavaScript rules remain synchronous and provider-free;
-6. focused recorded/synthetic adapter tests are green with no live-network PR dependency;
-7. the permanent CI gate is green;
-8. the journey and this handover advance to the OSV vulnerability adapter.
+1. OSV access exists only behind an explicit provider adapter;
+2. normalized vulnerability records preserve advisory/package/version/severity/reference timestamps
+   with source provenance and retrieval time;
+3. exact-version evidence is distinguished from ranges or unavailable resolved versions;
+4. empty OSV results are not translated into a "secure" fact;
+5. provider/network/schema failures remain typed partial failures;
+6. JavaScript rules remain synchronous and provider-free;
+7. focused recorded/synthetic tests are green with no live-network PR dependency;
+8. the same PR finishes its own journey/handover state before merge and the permanent CI gate is
+   green.
 
-Continue with the smallest next vertical slice rather than combining providers or findings prematurely.
+Continue with the smallest next vertical slice rather than combining provider acquisition and
+vulnerability findings prematurely.

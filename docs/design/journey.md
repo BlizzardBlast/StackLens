@@ -596,3 +596,46 @@ No product behavior, requirements, architecture, or tooling changed in this docu
 continuity update.
 
 **Traceability:** GOV-002, GOV-007.
+
+
+## 2026-09-19 — Step 35: Establish the first external package-metadata provider boundary
+
+PR #13 introduces the first `@stacklens/data-sources` package and implements the accepted npm
+Registry adapter boundary without moving provider I/O into analyzer rules.
+
+The adapter:
+
+- fetches only from the fixed public npm Registry host;
+- bounds npm package names to the documented 214-character maximum and verifies the generated
+  registry reference also fits StackLens's source/evidence contract before network access;
+- applies request timeout and response-size limits before provider data enters analysis;
+- validates the returned package identity, version records, dist-tags, timestamps, deprecation
+  values, and repository metadata as untrusted input;
+- normalizes versions/dist-tags deterministically;
+- preserves explicit per-version deprecation messages and publication timestamps needed by later
+  **FR-006**, **FR-007**, and **FR-010** rules;
+- emits contract-valid source/evidence provenance with retrieval time (**DATA-001**, **DATA-002**);
+- converts HTTP, throttling/server, network, timeout, oversized-body, invalid JSON, and invalid
+  provider-shape cases into typed source failures instead of treating missing data as a clean result
+  (**NFR-003**, **PRD-004**);
+- never exposes raw provider bodies or underlying network-error text in public failure messages;
+- keeps publisher-controlled repository URLs as metadata only while evidence URLs are generated from
+  the fixed npm Registry origin (**SEC-008**).
+
+The package also formalizes the reusable `EvidenceProvider<TRequest, TData>` /
+`ProviderResult<TData>` seam anticipated by ADR-0003 so OSV and later providers can reuse the same
+success/failure vocabulary without coupling analyzer-core to network clients.
+
+Tests use only synthetic responses. They cover scoped package URL encoding, provenance, deterministic
+normalization, optional metadata, empty deprecation semantics, explicit deprecation, publication
+times, repository metadata isolation, identity mismatch, malformed provider data, missing packages,
+throttling, invalid JSON, request timeout, network failure, response limits, and pre-network request
+validation.
+
+The handover workflow is also corrected: implementation PRs must finish their own handover state
+before merge and must not leave a squash-SHA placeholder that forces a second documentation PR.
+Future handovers reference the milestone PR and require the next session to resolve and verify
+current `main`.
+
+**Traceability:** FR-006, FR-007, FR-010, DATA-001, DATA-002, NFR-003, NFR-004, SEC-002, SEC-008,
+GOV-002, GOV-006, GOV-007.

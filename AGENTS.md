@@ -137,6 +137,20 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
 - Reuse `@stacklens/contracts` structured fact details rather than encoding required machine-readable
   dependency inventory only in prose.
 
+## External data-source adapters
+
+External provider integration lives in `packages/data-sources`.
+
+- Provider/network I/O must stay outside analyzer rules.
+- Treat every provider payload as untrusted and validate package identity plus required metadata before exposing normalized data.
+- Use fixed/allowlisted provider hosts; do not turn analyzed package fields into arbitrary fetch targets.
+- Enforce explicit request timeout and response-size limits.
+- Preserve provenance and retrieval timestamps with `@stacklens/contracts` data-source/evidence shapes.
+- Provider/network/schema failures must become typed partial failures, never false facts or silent empty data.
+- Do not include raw provider bodies or low-level network error details in public failure messages/logging.
+- Publisher-controlled URLs such as package repository/homepage values are metadata only until separately validated for presentation under **SEC-008**.
+- PR tests use synthetic/recorded provider responses; normal PR correctness must not depend on live external services.
+
 ## API application boundary
 
 The API application layer lives in `apps/api`.
@@ -180,6 +194,10 @@ For **every pull request**:
 - update `README.md` when its public status or guidance would become stale.
 
 Do not finish with knowingly stale documentation. Do not rewrite historical journey entries to hide earlier decisions; append corrections as new steps.
+
+Before merging, complete the handover inside the same PR. Do not leave a placeholder that requires a
+second post-merge documentation PR merely to insert an unknowable squash-merge SHA. Reference the
+milestone PR and require the next session to resolve/verify the current `main` HEAD instead.
 
 ## Generated and historical artifacts
 
