@@ -454,6 +454,57 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
     ]);
   });
 
+  it("reports recognized configuration families with unsupported formats instead of ignoring them", () => {
+    const project = createJavaScriptProjectSnapshot(normalizePackageManifest({}), [
+      {
+        path: "vite.config.coffee",
+        content: "module.exports = {}",
+      },
+      {
+        path: ".eslintrc.cjs",
+        content: 'throw new Error("MUST NOT EXECUTE"); module.exports = {};',
+      },
+      {
+        path: ".prettierrc.yaml",
+        content: "semi: true",
+      },
+    ]);
+    const evidence = createProjectConfigurationEvidence(project);
+    const result = projectConfigurationRule.evaluate({
+      input: repositoryInput("commit:unsupported-config-formats"),
+      project,
+      metadata: {},
+      sources: [],
+      evidence,
+      limitations: [],
+      partialFailures: [],
+    });
+
+    expect(result.facts).toHaveLength(3);
+    expect(result.facts?.find((fact) => fact.subject.path === ".eslintrc.cjs")?.statement).toContain(
+      "was not executed or evaluated",
+    );
+    expect(
+      result.facts?.find((fact) => fact.subject.path === ".prettierrc.yaml")?.statement,
+    ).toContain("file format is not supported");
+    expect(
+      result.facts?.find((fact) => fact.subject.path === "vite.config.coffee")?.statement,
+    ).toContain("file format is not supported");
+    expect(result.limitations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          kind: "unsupported_configuration",
+          message: expect.stringContaining("did not import, execute, or resolve dynamic values"),
+        }),
+        expect.objectContaining({
+          kind: "unsupported_configuration",
+          message: expect.stringContaining("recognized configuration filename"),
+        }),
+      ]),
+    );
+    expect(evidence).toHaveLength(3);
+  });
+
   it("preserves file detection while limiting malformed shapes and oversized configuration", () => {
     const oversized = JSON.stringify({
       compilerOptions: {
