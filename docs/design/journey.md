@@ -818,7 +818,7 @@ NFR-002, NFR-003, NFR-004, SEC-002, GOV-002, GOV-006, GOV-007.
 
 ## 2026-09-19 — Step 39: Add static overlap, tool, and configuration detection
 
-This implementation PR adds the next deterministic JavaScript/TypeScript analysis slice for
+PR #17 adds the next deterministic JavaScript/TypeScript analysis slice for
 **FR-008**, **FR-012**, and **FR-013**.
 
 `JS-OVERLAP-008@1` introduces an intentionally narrow curated overlap catalog. The first supported
