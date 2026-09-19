@@ -20,10 +20,10 @@ import {
   dependencyInventoryRule,
 } from "../src/dependency-inventory.js";
 import { deprecatedDependencyRule } from "../src/deprecated-dependency.js";
-import { npmRegistryHealthFactRule } from "../src/npm-registry-health.js";
-import { outdatedDependencyRule } from "../src/outdated-dependency.js";
 import { normalizePackageManifest } from "../src/manifest.js";
 import type { NormalizedPackageManifest } from "../src/manifest.js";
+import { npmRegistryHealthFactRule } from "../src/npm-registry-health.js";
+import { outdatedDependencyRule } from "../src/outdated-dependency.js";
 
 const scoreLimitation: AnalysisLimitation = {
   id: "limitation-npm-metadata-score",
