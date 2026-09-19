@@ -53,7 +53,7 @@ Per **GOV-002**, every product issue, implementation task, pull request, and acc
 
 If proposed behavior is not covered by an accepted requirement, update the requirement before or in the same pull request as the implementation (**GOV-003**).
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and [documentation governance](docs/documentation-governance.md) for the required documentation/journey update rules (**GOV-007**).
 
 ## Architecture
 
@@ -72,7 +72,7 @@ The repository contains:
 - the StackLens design-system specification;
 - DTCG-style platform-neutral design tokens;
 - an accepted Design v1 review and disposable coded prototype at `design/prototype/`;
-- a chronological design journey in `docs/design/journey.md`.
+- a chronological project journey in `docs/design/journey.md`.
 
 StackLens owns its visual language and domain components. shadcn/ui + Base UI are selected only as the implementation foundation for generic accessible primitives; they do not define the product's visual identity (**ADR-0006**).
 
