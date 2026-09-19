@@ -1,11 +1,7 @@
 import * as z from "zod";
 
-import {
-  AnalysisSubjectSchema,
-  IdentifierSchema,
-  RequirementIdSchema,
-  RuleReferenceSchema
-} from "./identifiers.js";
+import { IdentifierSchema, RequirementIdSchema, RuleReferenceSchema } from "./identifiers.js";
+import { AnalysisSubjectSchema } from "./subject.js";
 
 export const AnalysisFactSchema = z.strictObject({
   id: IdentifierSchema,
