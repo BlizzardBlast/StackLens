@@ -3,7 +3,7 @@ import type { AnalysisLimitation } from "@stacklens/contracts";
 
 import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
 import type { NormalizedPackageManifest } from "./manifest.js";
-import { latestDistTag, resolveNpmObservation } from "./npm-rule-support.js";
+import { latestDistTag, packageVersion, resolveNpmObservation } from "./npm-rule-support.js";
 import {
   createRuleLimitation,
   dependencyFactBases,
@@ -92,6 +92,25 @@ export const outdatedDependencyRule: FindingRule<
         continue;
       }
 
+      const declaredVersionRecord = packageVersion(
+        resolved.observation.snapshot,
+        basis.declaredSpecifier,
+      );
+
+      if (declaredVersionRecord === undefined) {
+        limitations.push(
+          createRuleLimitation(
+            RULE_ID,
+            "external_data",
+            "npm-declared-version-missing",
+            JSON.stringify([basis.packageName, basis.declaredSpecifier]),
+            `npm Registry metadata for ${basis.packageName} does not contain declared exact version ${basis.declaredSpecifier}, so an outdated comparison is not supported.`,
+            [resolved.observation.source.id],
+          ),
+        );
+        continue;
+      }
+
       const latest = latestDistTag(resolved.observation.snapshot);
 
       if (latest === undefined) {
@@ -102,6 +121,25 @@ export const outdatedDependencyRule: FindingRule<
             "npm-latest-tag-missing",
             basis.packageName,
             `npm Registry metadata for ${basis.packageName} does not contain the latest dist-tag required for comparison.`,
+            [resolved.observation.source.id],
+          ),
+        );
+        continue;
+      }
+
+      const comparisonVersionRecord = packageVersion(
+        resolved.observation.snapshot,
+        latest.version,
+      );
+
+      if (comparisonVersionRecord === undefined) {
+        limitations.push(
+          createRuleLimitation(
+            RULE_ID,
+            "external_data",
+            "npm-comparison-version-missing",
+            JSON.stringify([basis.packageName, latest.version]),
+            `npm Registry latest dist-tag for ${basis.packageName} points to ${latest.version}, but that version record is unavailable.`,
             [resolved.observation.source.id],
           ),
         );
