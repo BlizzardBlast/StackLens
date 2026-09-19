@@ -5,7 +5,7 @@ import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
 import type { NormalizedPackageManifest } from "./manifest.js";
 import { latestDistTag, packageVersion, resolveNpmObservation } from "./npm-rule-support.js";
 import {
-  createRuleLimitation,
+  createDependencyRuleLimitation,
   dependencyFactBases,
   truncate,
   uniqueSorted,
@@ -64,7 +64,7 @@ export const outdatedDependencyRule: FindingRule<
 
       if (declared === undefined) {
         limitations.push(
-          createRuleLimitation(
+          createDependencyRuleLimitation(
             RULE_ID,
             "insufficient_evidence",
             "npm-exact-version-required",
@@ -99,7 +99,7 @@ export const outdatedDependencyRule: FindingRule<
 
       if (declaredVersionRecord === undefined) {
         limitations.push(
-          createRuleLimitation(
+          createDependencyRuleLimitation(
             RULE_ID,
             "external_data",
             "npm-declared-version-missing",
@@ -115,7 +115,7 @@ export const outdatedDependencyRule: FindingRule<
 
       if (latest === undefined) {
         limitations.push(
-          createRuleLimitation(
+          createDependencyRuleLimitation(
             RULE_ID,
             "external_data",
             "npm-latest-tag-missing",
@@ -134,7 +134,7 @@ export const outdatedDependencyRule: FindingRule<
 
       if (comparisonVersionRecord === undefined) {
         limitations.push(
-          createRuleLimitation(
+          createDependencyRuleLimitation(
             RULE_ID,
             "external_data",
             "npm-comparison-version-missing",
@@ -150,7 +150,7 @@ export const outdatedDependencyRule: FindingRule<
 
       if (comparison === undefined) {
         limitations.push(
-          createRuleLimitation(
+          createDependencyRuleLimitation(
             RULE_ID,
             "external_data",
             "npm-comparison-version-invalid",
