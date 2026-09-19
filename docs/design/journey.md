@@ -688,8 +688,8 @@ helper.
 
 Synthetic tests cover deterministic query normalization, exact-version boundaries, batch provenance,
 advisory/severity/reference parsing, withdrawal metadata, pagination, partial detail failures, unsafe
-reference rejection, unavailable provider behavior, response/query safety limits, and explicit
-empty-match semantics. No live OSV request is needed for PR correctness.
+reference rejection, HTTP/invalid-JSON/transport/timeout provider failures, response/query/detail
+safety limits, and explicit empty-match semantics. No live OSV request is needed for PR correctness.
 
 The accepted requirements and architecture/ADR do not change; this step implements ADR-0003's
 existing OSV decision.
