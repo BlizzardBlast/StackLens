@@ -301,3 +301,16 @@ The temporary write-enabled workflow completed successfully across:
 - Oxfmt verification.
 
 The temporary CI write permission is removed immediately after this step. The final steady-state workflow returns to read-only repository permissions and frozen-lockfile installation.
+
+
+## 2026-09-19 — Step 23: Remove CI runtime-version duplication
+
+The final configuration review found that GitHub Actions repeated the pnpm and Node versions already declared in `package.json`.
+
+To reduce drift:
+- `pnpm/action-setup` now reads the exact pnpm version from `packageManager`;
+- `actions/setup-node` now reads the Node 24.x range from `engines.node`.
+
+The GitHub Actions themselves remain pinned to immutable full commit SHAs.
+
+The steady-state quality workflow is run again after this change so the single-source configuration is verified rather than assumed.
