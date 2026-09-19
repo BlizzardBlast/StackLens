@@ -1,15 +1,15 @@
 import { FindingPrioritySchema } from "@stacklens/contracts";
 import type {
+  AnalysisFact,
   FactualFinding,
   Finding,
   FindingPriority,
   HeuristicFinding,
-  RequirementId,
 } from "@stacklens/contracts";
 
 import type { AnalysisContext } from "./context.js";
 import { AnalyzerInvariantError } from "./errors.js";
-import type { RuleDefinition } from "./rules.js";
+import type { RuleDefinition } from "./rule-definition.js";
 
 export type FactualFindingCandidate = Omit<FactualFinding, "priority">;
 export type HeuristicFindingCandidate = Omit<HeuristicFinding, "priority">;
@@ -17,7 +17,7 @@ export type FindingCandidate = FactualFindingCandidate | HeuristicFindingCandida
 
 export interface PrioritizationContext<TProjectSnapshot, TMetadataSnapshot>
   extends AnalysisContext<TProjectSnapshot, TMetadataSnapshot> {
-  readonly facts: readonly import("@stacklens/contracts").AnalysisFact[];
+  readonly facts: readonly AnalysisFact[];
 }
 
 export interface FindingPrioritizer<TProjectSnapshot, TMetadataSnapshot> extends RuleDefinition {
@@ -55,5 +55,3 @@ export function applyFindingPriority<TProjectSnapshot, TMetadataSnapshot>(
     priority: parsedPriority.data,
   } as Finding;
 }
-
-export type { RequirementId };
