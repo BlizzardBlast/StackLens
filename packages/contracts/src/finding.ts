@@ -1,12 +1,8 @@
 import * as z from "zod";
 
-import {
-  AnalysisSubjectSchema,
-  IdentifierSchema,
-  RequirementIdSchema,
-  RuleReferenceSchema
-} from "./identifiers.js";
-import { ScoreCategorySchema } from "./limitation.js";
+import { ScoreCategorySchema } from "./category.js";
+import { IdentifierSchema, RequirementIdSchema, RuleReferenceSchema } from "./identifiers.js";
+import { AnalysisSubjectSchema } from "./subject.js";
 
 export const FindingClassificationSchema = z.enum(["fact", "heuristic"]);
 export const ConfidenceLevelSchema = z.enum(["high", "medium", "low"]);
