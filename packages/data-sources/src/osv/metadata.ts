@@ -36,11 +36,7 @@ function requireString(value: unknown, label: string, maxLength = 4_000): string
   return value;
 }
 
-function optionalString(
-  value: unknown,
-  label: string,
-  maxLength = 4_000,
-): string | undefined {
+function optionalString(value: unknown, label: string, maxLength = 4_000): string | undefined {
   if (value === undefined) {
     return undefined;
   }
@@ -85,8 +81,9 @@ function parseStringArray(value: unknown, label: string): readonly string[] {
     throw new OsvPayloadError(`${label} must be an array when provided`);
   }
 
-  return [...new Set(value.map((item, index) => requireString(item, `${label}[${index}]`, 500)))]
-    .toSorted(compareCodeUnits);
+  return [
+    ...new Set(value.map((item, index) => requireString(item, `${label}[${index}]`, 500))),
+  ].toSorted(compareCodeUnits);
 }
 
 function parseSeverity(value: unknown, label: string): readonly OsvSeverity[] {
@@ -186,11 +183,7 @@ function parseAffected(value: unknown): readonly OsvAffectedPackage[] {
         throw new OsvPayloadError(`affected[${index}].package must be an object`);
       }
 
-      const packageName = requireString(
-        item.package.name,
-        `affected[${index}].package.name`,
-        500,
-      );
+      const packageName = requireString(item.package.name, `affected[${index}].package.name`, 500);
       const ecosystem = requireString(
         item.package.ecosystem,
         `affected[${index}].package.ecosystem`,
