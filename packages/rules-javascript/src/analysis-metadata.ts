@@ -33,6 +33,11 @@ export interface JavaScriptOsvSnapshot {
   readonly vulnerabilities: readonly JavaScriptOsvVulnerability[];
 }
 
+export interface JavaScriptOsvMetadata {
+  readonly sourceId: string;
+  readonly snapshot: JavaScriptOsvSnapshot;
+}
+
 export interface JavaScriptAnalysisMetadata {
-  readonly osv?: JavaScriptOsvSnapshot;
+  readonly osv?: JavaScriptOsvMetadata;
 }
