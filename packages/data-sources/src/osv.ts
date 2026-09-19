@@ -7,6 +7,7 @@ export {
 export { OsvVulnerabilityAdapter } from "./osv/adapter.js";
 export {
   OSV_API_BASE_URL,
+  OSV_DEFAULT_MAX_ADVISORY_DETAILS,
   OSV_DEFAULT_MAX_PAGINATION_ROUNDS,
   OSV_DEFAULT_MAX_QUERIES,
   OSV_DEFAULT_MAX_RESPONSE_BYTES,
