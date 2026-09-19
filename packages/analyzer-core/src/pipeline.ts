@@ -40,7 +40,17 @@ interface RuleFailureArtifacts {
 }
 
 function sortedRules<T extends RuleDefinition>(rules: readonly T[]): readonly T[] {
-  return [...rules].sort((left, right) => left.id.localeCompare(right.id));
+  return [...rules].sort((left, right) => {
+    if (left.id < right.id) {
+      return -1;
+    }
+
+    if (left.id > right.id) {
+      return 1;
+    }
+
+    return 0;
+  });
 }
 
 function assertRuleSet<TProjectSnapshot, TMetadataSnapshot>(
@@ -91,7 +101,7 @@ function createRuleFailureArtifacts(
 
   return {
     limitation: {
-      id: `analyzer-core.rule-failure.${rule.id}`,
+      id: rule.id,
       kind: "partial_failure",
       message: `Rule ${rule.id} could not complete. Its outputs were omitted.`,
       affectedCategories: [],
@@ -99,7 +109,7 @@ function createRuleFailureArtifacts(
       ruleIds: [rule.id]
     },
     partialFailure: {
-      id: `analyzer-core.rule-failure.${rule.id}`,
+      id: rule.id,
       scope: "rule",
       rule: ruleReference,
       code: "rule_evaluation_failed",
