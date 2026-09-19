@@ -439,8 +439,9 @@ that strict JSON cannot parse remain file detections with an `unsupported_config
 limitation. Static declarative content over 512 Ki characters remains detected with a
 `resource_limit` limitation and is not parsed.
 
-This slice intentionally does not acquire repository files. Milestone G will supply bounded static
-files from an immutable GitHub commit into this already-defined snapshot/rule boundary.
+The rule package still does not acquire repository files itself. Milestone G supplies bounded static
+files from an immutable GitHub commit into this snapshot/rule boundary, and Milestone H reuses that
+boundary for static source-usage analysis.
 
 ## Verification
 
