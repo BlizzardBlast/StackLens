@@ -457,10 +457,6 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
     const sourceCandidateCount = candidates.filter(
       (candidate) => candidate.kind === "source",
     ).length;
-    const retainedSourceCount = retainedCandidates.filter(
-      (candidate) => candidate.kind === "source",
-    ).length;
-
     if (orderedCandidates.length > retainedCandidates.length) {
       limitations.push(
         createLimitation(
