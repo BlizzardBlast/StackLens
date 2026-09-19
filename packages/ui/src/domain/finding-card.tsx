@@ -11,6 +11,14 @@ import type { ReactNode } from "react";
 import { Button } from "#components/button";
 import { ConfidenceIndicator, FindingTypeBadge, SeverityBadge } from "#domain/finding-badges";
 
+const categoryLabel: Record<ScoreCategory, string> = {
+  dependencies: "Dependencies",
+  security: "Security",
+  maintainability: "Maintainability",
+  testing: "Testing",
+  tooling: "Tooling"
+};
+
 export interface FindingCardProps {
   classification: FindingClassification;
   priority: PriorityLevel;
@@ -52,7 +60,7 @@ export function FindingCard({
 
       <footer className="mt-4 flex flex-col gap-3 border-t pt-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <span>
-          {category} · Rule <code>{ruleId}</code>
+          {categoryLabel[category]} · Rule <code>{ruleId}</code>
         </span>
         {onViewEvidence ? (
           <Button variant="link" size="sm" onClick={onViewEvidence}>
