@@ -89,11 +89,7 @@ const analyzer: AnalyzerDefinition<JavaScriptProjectSnapshot, unknown> = {
   version: "test-analyzer-project-detection",
   ruleSet: {
     version: "rules-javascript-project-detection",
-    factRules: [
-      dependencyInventoryRule,
-      frameworkToolDetectionRule,
-      projectConfigurationRule,
-    ],
+    factRules: [dependencyInventoryRule, frameworkToolDetectionRule, projectConfigurationRule],
     findingRules: [dependencyOverlapRule],
     prioritizer: testPrioritizer,
     recommendationRules: [],
@@ -153,9 +149,9 @@ describe("project detection analyzer integration [FR-008, FR-012, FR-013]", () =
 
     expect(report.facts.filter((fact) => fact.type === "dependency.inventory")).toHaveLength(3);
     expect(report.facts.filter((fact) => fact.type.startsWith("project.tool."))).toHaveLength(3);
-    expect(report.facts.filter((fact) => fact.type.startsWith("project.configuration."))).toHaveLength(
-      2,
-    );
+    expect(
+      report.facts.filter((fact) => fact.type.startsWith("project.configuration.")),
+    ).toHaveLength(2);
     expect(report.findings).toHaveLength(1);
     expect(report.findings[0]).toMatchObject({
       classification: "heuristic",
