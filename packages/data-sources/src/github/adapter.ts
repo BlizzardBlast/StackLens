@@ -89,6 +89,10 @@ function safeFailureReference(reference: string, fallback: string): string {
   return reference.length <= CONTRACT_REFERENCE_MAX_LENGTH ? reference : fallback;
 }
 
+function sourcePathWasAffected(paths: readonly string[]): boolean {
+  return paths.some((path) => isSupportedJavaScriptSourcePath(path));
+}
+
 export class GitHubRepositoryAdapter implements EvidenceProvider<
   GitHubRepositoryRequest,
   GitHubRepositorySnapshot
@@ -645,8 +649,6 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
     const acquiredSourceCount = files.filter((file) =>
       isSupportedJavaScriptSourcePath(file.path),
     ).length;
-    const sourcePathWasAffected = (paths: readonly string[]) =>
-      paths.some((path) => isSupportedJavaScriptSourcePath(path));
     const sourceCoveragePartial =
       tree.truncated ||
       unsafePaths.length > 0 ||
