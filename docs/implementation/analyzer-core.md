@@ -170,15 +170,15 @@ Tests cover:
 
 Rule packages added later should test domain behavior directly against normalized fixtures.
 
-## Next milestone
+## First ecosystem consumer
 
-The next package should define the first JavaScript/TypeScript normalized project snapshot and deterministic rule package.
+`packages/rules-javascript` is now the first ecosystem-specific consumer of analyzer-core.
 
-The narrow first vertical slice remains **FR-005 dependency inventory**:
-- normalize `package.json` dependency groups;
-- create project evidence;
-- emit dependency facts;
-- run through analyzer-core;
-- use a minimal deterministic priority/scoring policy only where required to produce a valid report fixture.
+Its FR-005 integration fixture proves:
+- normalized `package.json` declarations enter as the project snapshot;
+- local project evidence is supplied before analyzer execution;
+- `JS-DEP-005@1` emits facts only;
+- the prioritizer is not invoked because no finding candidates exist;
+- score output remains explicit insufficient evidence rather than manufacturing a perfect score.
 
-No registry/network metadata is required for FR-005.
+Registry/network metadata remains outside both analyzer-core and the rule package.

@@ -1,0 +1,32 @@
+{
+  "name": "@stacklens/rules-javascript",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./dependency-inventory": {
+      "types": "./dist/dependency-inventory.d.ts",
+      "default": "./dist/dependency-inventory.js"
+    },
+    "./manifest": {
+      "types": "./dist/manifest.d.ts",
+      "default": "./dist/manifest.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@stacklens/analyzer-core": "workspace:*",
+    "@stacklens/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.1"
+  }
+}

@@ -69,6 +69,17 @@ Facts are normalized deterministic observations. They carry:
 
 Facts are not recommendations.
 
+For **FR-005**, facts may additionally carry optional structured dependency-inventory details:
+- `kind: "dependency_inventory"`;
+- dependency group;
+- exact declared dependency specifier.
+
+The generic subject continues to own dependency identity. The structured detail shape is
+ecosystem-neutral and does not parse or interpret JavaScript manifests.
+
+This is an additive v1 contract extension: existing reports without `details` remain valid under
+the current schema, so `ANALYSIS_REPORT_SCHEMA_VERSION` remains `1.0.0`.
+
 ### Findings
 
 Findings are attention-worthy analyzer conclusions and have exactly two classifications:

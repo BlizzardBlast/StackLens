@@ -500,3 +500,37 @@ After merging the deterministic analyzer core, the next implementation sequence 
 The README now links directly to the handover.
 
 This is documentation-only and does not change accepted product behavior or architecture. It exists to preserve **GOV-002**, **GOV-003**, **GOV-006**, and **GOV-007** across session boundaries.
+
+
+## 2026-09-19 — Step 31: Implement the first JavaScript dependency inventory slice
+
+The first ecosystem-specific analyzer slice implements **FR-005** without expanding into external
+metadata, findings, priority policy, recommendations, or production scoring.
+
+The Analysis Report v1 fact contract gained optional structured dependency-inventory details for the
+dependency group and exact declared specifier. The generic subject still owns dependency identity,
+and existing facts without details remain valid, so the additive extension keeps schema version
+`1.0.0`.
+
+A new `@stacklens/rules-javascript` package now:
+
+- validates supported parsed `package.json` shapes without coercion (**FR-004**);
+- normalizes dependencies, devDependencies, peerDependencies, and optionalDependencies in a stable
+  order;
+- keeps the same package in multiple groups as separate declarations;
+- preserves exact version/range/tag/file/workspace/URL specifier strings;
+- creates deterministic local project evidence without fabricated line numbers;
+- emits one structured `dependency.inventory` fact per declaration through `JS-DEP-005@1`.
+
+Focused fixtures cover all supported groups, empty groups, multi-group manifests, duplicate package
+names across groups, scoped packages, complex specifiers, malformed groups, non-string values, and
+insertion-order determinism.
+
+An analyzer-core integration fixture uses an inert test prioritizer and explicit
+insufficient-evidence scores, proving that FR-005 can produce a contract-valid report without
+inventing findings or a perfect health score.
+
+No provider/network I/O or analyzed-project execution was introduced.
+
+**Traceability:** FR-004, FR-005, FR-017, NFR-001, NFR-002, NFR-004, NFR-005, SEC-001, SEC-002,
+GOV-002, GOV-006, GOV-007.

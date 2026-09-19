@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, and the deterministic analyzer core are implemented. Ecosystem rules and product screens are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, and the first JavaScript dependency-inventory rule slice are implemented. Product screens and external metadata adapters are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -92,6 +92,15 @@ See [Analysis Contracts v1](docs/implementation/analysis-contracts.md) and **ADR
 The reusable deterministic execution layer lives in **`packages/analyzer-core`**. It provides staged fact → finding-candidate → priority → recommendation orchestration, rule/reference isolation, priority and scoring dependency inversion, and contract-validated report assembly without provider or UI coupling.
 
 See [Analyzer Core](docs/implementation/analyzer-core.md) and **ADR-0009**.
+
+## JavaScript analysis rules
+
+The first ecosystem-specific analysis package lives in **`packages/rules-javascript`**.
+
+It currently implements deterministic `package.json` dependency normalization, explicit project
+evidence, and the **FR-005** dependency-inventory fact rule without registry/network I/O.
+
+See [JavaScript Rules](docs/implementation/rules-javascript.md).
 
 ## Requirement examples
 

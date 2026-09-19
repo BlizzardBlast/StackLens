@@ -47,7 +47,7 @@ This separation protects **DATA-005**: advice is not represented as observed fac
 - normalized input identity;
 - external data-source observations;
 - project/external evidence;
-- normalized facts;
+- normalized facts, including optional structured dependency-inventory details;
 - factual or heuristic findings;
 - separate recommendations;
 - explainable scores;
@@ -66,12 +66,17 @@ Report-level validation also checks reference integrity and duplicate IDs.
 - Insufficient-evidence scores use `status: "insufficient_evidence"` with limitation IDs; they never encode N/A as zero (**SCORE-003**).
 - Score contributions reference evidence plus at least one fact or finding (**SCORE-002**).
 - Report references must resolve to entities contained in the same report (**NFR-005**).
+- FR-005 dependency inventory facts can carry structured group + exact declared-specifier details
+  without moving JavaScript parsing logic into this package.
 
 ## Versioning
 
 `ANALYSIS_REPORT_SCHEMA_VERSION` is independent from the application package version.
 
 Breaking changes to the serialized report shape require a schema-version change and corresponding architecture/ADR review.
+
+The FR-005 dependency-inventory `details` field is optional. Existing v1 reports remain valid under
+the evolved schema, so this additive extension does not change `ANALYSIS_REPORT_SCHEMA_VERSION`.
 
 **Traceability:** FR-015–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-001–NFR-005.
 
