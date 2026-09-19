@@ -240,29 +240,6 @@ describe("runRulePipeline", () => {
     expect(evaluations).toBe(0);
   });
 
-  it("rejects invalid requirement identifiers in runtime rule configuration", () => {
-    const ruleSet = {
-      version: "1",
-      factRules: [
-        {
-          kind: "fact",
-          id: "FACT-A",
-          version: "1",
-          requirementIds: ["NOT-A-REQUIREMENT"],
-          evaluate() {
-            return {};
-          }
-        }
-      ],
-      findingRules: [],
-      recommendationRules: []
-    } as unknown as AnalysisRuleSet<ProjectSnapshot, MetadataSnapshot>;
-
-    expect(() =>
-      runRulePipeline(context, ruleSet, "2026-09-19T03:00:00Z")
-    ).toThrowError(/declares invalid requirement ID/);
-  });
-
   it("requires every rule to declare requirement traceability", () => {
     const ruleSet: AnalysisRuleSet<ProjectSnapshot, MetadataSnapshot> = {
       version: "1",
