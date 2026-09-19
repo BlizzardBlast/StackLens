@@ -72,6 +72,7 @@ function validateUniqueIds(
 
 export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report, ctx) => {
   const sourceIds = idsOf(report.sources);
+  const sourcesById = new Map(report.sources.map((source) => [source.id, source]));
   const evidenceIds = idsOf(report.evidence);
   const factIds = idsOf(report.facts);
   const findingIds = idsOf(report.findings);
@@ -88,8 +89,23 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
   validateUniqueIds(ctx, "contributions", report.scores.contributions);
 
   report.evidence.forEach((evidence, index) => {
-    if (evidence.kind === "external" && !sourceIds.has(evidence.sourceId)) {
+    if (evidence.kind !== "external") {
+      return;
+    }
+
+    const source = sourcesById.get(evidence.sourceId);
+
+    if (source === undefined) {
       addMissingReferenceIssue(ctx, ["evidence", index, "sourceId"], "source", evidence.sourceId);
+      return;
+    }
+
+    if (source.status === "unavailable") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["evidence", index, "sourceId"],
+        message: `External evidence cannot reference unavailable source: ${evidence.sourceId}`
+      });
     }
   });
 
@@ -170,22 +186,61 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
             "fact",
             factId
           );
+          return;
+        }
+
+        if (!finding.factIds.includes(factId)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["findings", findingIndex, "confidence", "factIds", referenceIndex],
+            message: `Confidence fact must also be listed in finding.factIds: ${factId}`
+          });
         }
       });
     }
   });
 
+  const findingsById = new Map(report.findings.map((finding) => [finding.id, finding]));
+
   report.recommendations.forEach((recommendation, recommendationIndex) => {
-    recommendation.findingIds.forEach((findingId, referenceIndex) => {
-      if (!findingIds.has(findingId)) {
+    const referencedFindings = recommendation.findingIds.flatMap((findingId, referenceIndex) => {
+      const finding = findingsById.get(findingId);
+
+      if (finding === undefined) {
         addMissingReferenceIssue(
           ctx,
           ["recommendations", recommendationIndex, "findingIds", referenceIndex],
           "finding",
           findingId
         );
+        return [];
       }
+
+      return [finding];
     });
+
+    if (
+      recommendation.basis === "fact" &&
+      referencedFindings.some((finding) => finding.classification === "heuristic")
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["recommendations", recommendationIndex, "basis"],
+        message: "A fact-based recommendation cannot reference heuristic findings"
+      });
+    }
+
+    if (
+      recommendation.basis === "heuristic" &&
+      referencedFindings.length > 0 &&
+      referencedFindings.every((finding) => finding.classification === "fact")
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["recommendations", recommendationIndex, "basis"],
+        message: "A heuristic recommendation must reference at least one heuristic finding"
+      });
+    }
 
     recommendation.evidenceIds.forEach((evidenceId, referenceIndex) => {
       if (!evidenceIds.has(evidenceId)) {
