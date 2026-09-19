@@ -625,9 +625,10 @@ The package also formalizes the reusable `EvidenceProvider<TRequest, TData>` /
 success/failure vocabulary without coupling analyzer-core to network clients.
 
 Tests use only synthetic responses. They cover scoped package URL encoding, provenance, deterministic
-normalization, explicit deprecation, publication times, repository metadata isolation, identity
-mismatch, malformed provider data, missing packages, throttling, network failure, response limits,
-and pre-network request validation.
+normalization, optional metadata, empty deprecation semantics, explicit deprecation, publication
+times, repository metadata isolation, identity mismatch, malformed provider data, missing packages,
+throttling, invalid JSON, request timeout, network failure, response limits, and pre-network request
+validation.
 
 The handover workflow is also corrected: implementation PRs must finish their own handover state
 before merge and must not leave a squash-SHA placeholder that forces a second documentation PR.
