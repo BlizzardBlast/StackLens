@@ -132,7 +132,7 @@ export const migrationOpportunityRule: FindingRule<
           500,
         ),
         description: truncate(
-          `${basis.packageName} is declared at exact version ${basis.declaredSpecifier}, while the npm Registry latest dist-tag resolves to ${latest.version}. The major version differs, so StackLens identifies a migration-review opportunity rather than a routine update. This does not make the migration mandatory; compatibility, release notes, and project-specific behavior still require review.`,
+          `${basis.packageName} is declared at exact version ${basis.declaredSpecifier}, while the npm Registry latest dist-tag resolves to ${latest.version}. The major version differs, so StackLens identifies a migration-review opportunity rather than a routine update. Reviewing the migration can reduce long-term version drift and make breaking compatibility work explicit before it becomes urgent. This does not make the migration mandatory; compatibility, release notes, and project-specific behavior still require review.`,
           4_000,
         ),
         rule: {

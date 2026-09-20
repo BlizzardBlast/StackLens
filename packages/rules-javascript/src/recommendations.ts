@@ -77,7 +77,7 @@ function recommendationFor(finding: Finding): Recommendation | undefined {
       id: RULE_ID,
       version: RULE_VERSION,
     },
-    requirementIds: ["FR-015", "FR-017", "DATA-005"] as const,
+    requirementIds: ["FR-015", "FR-017", "DATA-005"],
     findingIds: [finding.id],
     evidenceIds: [...finding.evidenceIds],
   };
