@@ -41,7 +41,7 @@ export function createRepositoryAnalysisTask(
   const analyze = dependencies.analyze ?? analyzePublicGitHubRepository;
   const now = dependencies.now ?? (() => new Date().toISOString());
 
-  return async (rawPayload) => {
+  return async (rawPayload, helpers) => {
     const payload = parseRepositoryAnalysisJobPayload(rawPayload);
     const existing = await dependencies.repository.findAnalysis(payload.analysisId);
 
@@ -53,6 +53,7 @@ export function createRepositoryAnalysisTask(
       const completedAt = now();
       await dependencies.repository.fail({
         id: existing.id,
+        jobId: helpers.job.id,
         failureSummary: failureSummary(
           "job_input_mismatch",
           "Repository analysis job input does not match its persisted analysis.",
@@ -69,8 +70,17 @@ export function createRepositoryAnalysisTask(
     }
 
     const startedAt = now();
-    await dependencies.repository.markRunning(existing.id, existing.startedAt ?? startedAt);
+    const claimed = await dependencies.repository.claimForExecution(
+      existing.id,
+      helpers.job.id,
+      existing.startedAt ?? startedAt,
+    );
 
+    if (!claimed) {
+      return;
+    }
+
+    const finalAttempt = helpers.job.attempts >= helpers.job.max_attempts;
     let result: RepositoryAnalysisResult;
 
     try {
@@ -87,20 +97,39 @@ export function createRepositoryAnalysisTask(
             const stage = durableStageForProgress(progress);
 
             if (stage !== undefined) {
-              await dependencies.repository.updateProgress(existing.id, stage, now());
+              await dependencies.repository.updateProgress(
+                existing.id,
+                helpers.job.id,
+                stage,
+                now(),
+              );
             }
           },
         },
       );
     } catch {
       const updatedAt = now();
+      const summary = failureSummary(
+        "repository_analysis_unexpected_failure",
+        "Repository analysis failed unexpectedly.",
+        true,
+      );
+
+      if (finalAttempt) {
+        await dependencies.repository.fail({
+          id: existing.id,
+          jobId: helpers.job.id,
+          failureSummary: summary,
+          updatedAt,
+          completedAt: updatedAt,
+        });
+        return;
+      }
+
       await dependencies.repository.markRetryPending({
         id: existing.id,
-        failureSummary: failureSummary(
-          "repository_analysis_unexpected_failure",
-          "Repository analysis failed unexpectedly and may be retried.",
-          true,
-        ),
+        jobId: helpers.job.id,
+        failureSummary: summary,
         updatedAt,
       });
       throw new Error("Repository analysis failed unexpectedly.");
@@ -110,9 +139,10 @@ export function createRepositoryAnalysisTask(
       const summary = failureSummary(result.error.code, result.error.message, result.error.retryable);
       const updatedAt = now();
 
-      if (result.error.retryable) {
+      if (result.error.retryable && !finalAttempt) {
         await dependencies.repository.markRetryPending({
           id: existing.id,
+          jobId: helpers.job.id,
           failureSummary: summary,
           updatedAt,
         });
@@ -121,6 +151,7 @@ export function createRepositoryAnalysisTask(
 
       await dependencies.repository.fail({
         id: existing.id,
+        jobId: helpers.job.id,
         failureSummary: summary,
         updatedAt,
         completedAt: updatedAt,
@@ -128,7 +159,12 @@ export function createRepositoryAnalysisTask(
       return;
     }
 
-    await dependencies.repository.updateProgress(existing.id, "scoring", now());
+    await dependencies.repository.updateProgress(
+      existing.id,
+      helpers.job.id,
+      "scoring",
+      now(),
+    );
 
     const completedAt = now();
     const completedWithLimitations =
