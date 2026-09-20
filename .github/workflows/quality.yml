@@ -64,5 +64,10 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Capture formatter diff
+        run: |
+          pnpm exec oxfmt .
+          git diff -- packages/analysis-orchestration/src/production-javascript-analyzer.ts packages/analysis-orchestration/src/repository-analysis.ts packages/analysis-orchestration/test/repository-analysis.test.ts
+
       - name: Format check
         run: pnpm format:check
