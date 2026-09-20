@@ -117,9 +117,25 @@ export const evidenceBackedRecommendationRule: RecommendationRule<
     "NFR-005",
   ],
   evaluate(context) {
+    const migrationPackages = new Set(
+      context.findings
+        .filter(
+          (finding) =>
+            finding.rule.id === "JS-MIGRATION-014" && finding.subject.type === "dependency",
+        )
+        .map((finding) => finding.subject.name),
+    );
     const recommendations = context.findings
       .toSorted((left, right) => compareCodeUnits(left.id, right.id))
       .flatMap((finding) => {
+        if (
+          finding.rule.id === "JS-NPM-006" &&
+          finding.subject.type === "dependency" &&
+          migrationPackages.has(finding.subject.name)
+        ) {
+          return [];
+        }
+
         const recommendation = recommendationFor(finding);
         return recommendation === undefined ? [] : [recommendation];
       });

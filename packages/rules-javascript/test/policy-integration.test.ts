@@ -186,14 +186,10 @@ describe("production analysis policy integration [FR-014–FR-021, SCORE-001–S
     expect(migration?.title).toContain("2.0.0");
     expect(report.findings.some((finding) => finding.rule.id === "JS-MIGRATION-014" && finding.subject.name === "react")).toBe(false);
 
-    expect(report.recommendations).toHaveLength(2);
-    expect(report.recommendations.map((item) => item.basis).toSorted()).toEqual([
-      "fact",
-      "heuristic",
-    ]);
-    expect(
-      report.recommendations.some((item) => item.findingIds.includes(migration?.id ?? "")),
-    ).toBe(true);
+    expect(report.recommendations).toHaveLength(1);
+    expect(report.recommendations[0]?.basis).toBe("heuristic");
+    expect(report.recommendations[0]?.findingIds).toContain(migration?.id ?? "");
+    expect(report.recommendations[0]?.suggestion).toContain("major-version migration");
 
     expect(report.scores.categories.dependencies).toEqual({
       status: "available",
