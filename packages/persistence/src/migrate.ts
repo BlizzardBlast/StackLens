@@ -26,6 +26,7 @@ export async function migrateStackLensDatabase(database: StackLensDatabase): Pro
             'failed'
           )
         ),
+        active_job_id text,
         repository_owner text,
         repository_name text,
         commit_sha text,
