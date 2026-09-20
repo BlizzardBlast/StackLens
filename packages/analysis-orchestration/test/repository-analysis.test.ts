@@ -13,7 +13,11 @@ import type {
   ProviderResult,
 } from "@stacklens/data-sources";
 
-import { analyzePublicGitHubRepository, REPOSITORY_METADATA_LIMITATION_ID } from "../src/index.js";
+import {
+  analyzePublicGitHubRepository,
+  REPOSITORY_METADATA_LIMITATION_ID,
+  REPOSITORY_OSV_LIMITATION_ID,
+} from "../src/index.js";
 
 const createdAt = "2026-09-20T01:30:00Z";
 const commitSha = "a".repeat(40);
@@ -589,10 +593,126 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
   });
 });
 
-describe("repository metadata resource bound [NFR-003, SEC-003, SEC-007]", () => {
-  it("exports a stable limitation identifier for metadata truncation", () => {
-    expect(REPOSITORY_METADATA_LIMITATION_ID).toBe(
-      "limitation-repository-analysis-metadata-package-limit",
+describe("repository metadata resource bounds [NFR-003, SEC-003, SEC-007]", () => {
+  it("caps npm metadata enrichment at 100 unique packages and makes affected scores N/A", async () => {
+    const peerDependencies = Object.fromEntries(
+      Array.from({ length: 101 }, (_, index) => [
+        `pkg-${index.toString().padStart(3, "0")}`,
+        "1.0.0",
+      ]),
     );
+    const githubRepositoryProvider = provider<GitHubRepositoryRequest, GitHubRepositorySnapshot>(
+      "github-rest",
+      async () =>
+        repositorySuccess({
+          manifest: JSON.stringify({ peerDependencies }),
+          sourceContent: "export const value = 1;",
+        }),
+    );
+    const npmRegistryProvider = provider<NpmPackageMetadataRequest, NpmPackageMetadata>(
+      "npm-registry",
+      async ({ packageName }) => npmSuccess(packageName, "1.0.0"),
+    );
+    const osvProvider = provider<OsvVulnerabilityRequest, OsvVulnerabilitySnapshot>(
+      "osv",
+      async (request) => osvSuccess(request),
+    );
+
+    const result = await analyzePublicGitHubRepository(baseCommand, {
+      githubRepositoryProvider,
+      npmRegistryProvider,
+      osvProvider,
+    });
+
+    expect(result.ok).toBe(true);
+
+    if (!result.ok) {
+      throw new Error("Expected bounded repository analysis to succeed");
+    }
+
+    expect(npmRegistryProvider.fetchMock).toHaveBeenCalledTimes(100);
+    expect(npmRegistryProvider.fetchMock).not.toHaveBeenCalledWith({
+      packageName: "pkg-100",
+    });
+    expect(osvProvider.fetchMock).toHaveBeenCalledOnce();
+    expect(osvProvider.fetchMock.mock.calls[0]?.[0].queries).toHaveLength(100);
+    expect(result.report.limitations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: REPOSITORY_METADATA_LIMITATION_ID,
+          kind: "resource_limit",
+          affectedCategories: ["dependencies", "security", "maintainability"],
+        }),
+      ]),
+    );
+    expect(result.report.scores.categories.dependencies.status).toBe("insufficient_evidence");
+    expect(result.report.scores.categories.security.status).toBe("insufficient_evidence");
+    expect(result.report.scores.overall.status).toBe("insufficient_evidence");
+  });
+
+  it("caps OSV acquisition at 100 exact package-version queries and discloses the gap", async () => {
+    const packageNames = Array.from(
+      { length: 51 },
+      (_, index) => `pkg-${index.toString().padStart(3, "0")}`,
+    );
+    const dependencies = Object.fromEntries(packageNames.map((name) => [name, "1.0.0"]));
+    const devDependencies = Object.fromEntries(packageNames.map((name) => [name, "2.0.0"]));
+    const githubRepositoryProvider = provider<GitHubRepositoryRequest, GitHubRepositorySnapshot>(
+      "github-rest",
+      async () =>
+        repositorySuccess({
+          manifest: JSON.stringify({ dependencies, devDependencies }),
+          sourceContent: "export const value = 1;",
+        }),
+    );
+    const npmRegistryProvider = provider<NpmPackageMetadataRequest, NpmPackageMetadata>(
+      "npm-registry",
+      async ({ packageName }) => npmSuccess(packageName, "1.0.0", "2.0.0"),
+    );
+    const osvProvider = provider<OsvVulnerabilityRequest, OsvVulnerabilitySnapshot>(
+      "osv",
+      async (request) => osvSuccess(request),
+    );
+
+    const result = await analyzePublicGitHubRepository(baseCommand, {
+      githubRepositoryProvider,
+      npmRegistryProvider,
+      osvProvider,
+    });
+
+    expect(result.ok).toBe(true);
+
+    if (!result.ok) {
+      throw new Error("Expected OSV-bounded repository analysis to succeed");
+    }
+
+    expect(npmRegistryProvider.fetchMock).toHaveBeenCalledTimes(51);
+    expect(osvProvider.fetchMock).toHaveBeenCalledOnce();
+
+    const osvRequest = osvProvider.fetchMock.mock.calls[0]?.[0];
+    expect(osvRequest?.queries).toHaveLength(100);
+    expect(osvRequest?.queries).not.toEqual(
+      expect.arrayContaining([
+        {
+          packageName: "pkg-050",
+          version: "1.0.0",
+        },
+        {
+          packageName: "pkg-050",
+          version: "2.0.0",
+        },
+      ]),
+    );
+    expect(result.report.limitations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: REPOSITORY_OSV_LIMITATION_ID,
+          kind: "resource_limit",
+          affectedCategories: ["security"],
+        }),
+      ]),
+    );
+    expect(result.report.scores.categories.security.status).toBe("insufficient_evidence");
+    expect(result.report.scores.overall.status).toBe("insufficient_evidence");
   });
 });
