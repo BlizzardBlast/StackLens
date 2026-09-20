@@ -80,6 +80,7 @@ export interface AnalysisFailureUpdate extends AnalysisRetryUpdate {
 
 export interface AnalysisCompletion {
   readonly id: string;
+  readonly jobId: string;
   readonly report: AnalysisReport;
   readonly completedAt: string;
   readonly status: "completed" | "completed_with_limitations";
