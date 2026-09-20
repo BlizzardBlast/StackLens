@@ -1068,8 +1068,8 @@ GOV-006, GOV-007.
 
 ## 2026-09-21 — Step 44: Persist repository analysis jobs and progress
 
-Milestone J2 adds the accepted PostgreSQL/Graphile Worker delivery model around the repository
-orchestration introduced in PR #21.
+PR #22 implements Milestone J2 by adding the accepted PostgreSQL/Graphile Worker delivery model
+around the repository orchestration introduced in PR #21.
 
 The implementation deliberately avoids API → Worker coupling. `@stacklens/persistence` owns the
 Drizzle/PostgreSQL analysis and report state, while `@stacklens/repository-jobs` owns the minimal
