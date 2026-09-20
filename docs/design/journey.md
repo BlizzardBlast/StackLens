@@ -982,3 +982,47 @@ dependency or analyzed-project execution is used.
 
 **Traceability:** FR-003, FR-009, FR-017, FR-021, DATA-003, DATA-004, DATA-005, DATA-006, NFR-001,
 NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.
+
+## 2026-09-20 — Step 42: Add deterministic migration, recommendation, priority, and scoring policy
+
+PR #20 implements Milestone I across the existing staged analyzer boundaries.
+
+The JavaScript/TypeScript rule package adds `JS-MIGRATION-014@1`, a deliberately narrow FR-014 rule
+for exact-version dependencies whose source-bound npm `latest` target crosses a semantic major
+boundary. The current/target versions and evidence are explicit, and the finding remains a
+medium-confidence review opportunity rather than a mandatory upgrade.
+
+Production priority is now concrete through `JS-PRIORITY-016@1` without moving urgency into detector
+rules. Known vulnerabilities and explicit deprecations are high, major migrations/outdated/curated
+overlap findings are medium, and potentially-unnecessary findings are low. Heuristic confidence can
+only cap/reduce urgency.
+
+`JS-RECOMMEND-015@1` runs after final priority and emits bounded evidence-backed actions for the
+currently supported finding families. It preserves factual vs heuristic basis and never executes or
+automatically applies repository changes.
+
+Scoring required one additional evidence boundary: a clean security category cannot be justified by
+the absence of vulnerability findings alone. The OSV adapter therefore emits source-bound query
+provenance for every exact package/version query, including complete zero-match results, while still
+avoiding any "secure" claim.
+
+`JS-COVERAGE-018@1` now makes category scoreability explicit. Dependencies require complete project,
+source/config/script, and npm latest metadata coverage. Security requires exact versions plus complete
+OSV query coverage/provenance. Maintainability, Testing, and Tooling remain intentionally N/A under
+policy v1.
+
+The new `@stacklens/scoring` package implements `stack-health-v1` behind analyzer-core's existing
+`AnalysisScorer` interface. Numeric categories start at 100 and use versioned priority deductions
+(critical 40, high 25, medium 12, low 5). Any material category limitation yields N/A instead of a
+penalty. The overall score is the mean of Dependencies and Security only when both are available and
+reports 40% evidence coverage because only two of five accepted category families are numeric.
+
+ADR-0011 records the policy, including the meaning and limits of a 100 Security score. Focused tests
+cover priority ordering, migration detection, recommendation basis, score contributions, N/A
+behavior, OSV query provenance, and the full analyzer → priority → recommendation → scoring report
+flow.
+
+**Traceability:** FR-014, FR-015, FR-016, FR-017, FR-018, FR-019, FR-020, FR-021, DATA-001,
+DATA-002, DATA-003, DATA-004, DATA-005, DATA-006, SCORE-001, SCORE-002, SCORE-003, SCORE-004,
+NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-002, GOV-006, GOV-007.
+

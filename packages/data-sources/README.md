@@ -224,3 +224,14 @@ No live GitHub request is required for normal PR correctness.
 
 **GitHub traceability:** FR-003, FR-004, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-006,
 NFR-001, NFR-003, NFR-004, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008.
+
+## OSV query evidence
+
+OSV acquisition now emits provenance evidence for each exact package/version query as well as
+advisory evidence for matches. Query references use `npm:<package>@<version>`.
+
+This allows downstream scoring coverage to distinguish "OSV queried this exact version and returned
+zero supported matches" from "no OSV evidence was available." It must never be presented as proof
+that the dependency/project is secure.
+
+See [External Data Sources](../../docs/implementation/data-sources.md) and ADR-0011.

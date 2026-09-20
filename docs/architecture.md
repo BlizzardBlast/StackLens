@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.7  
+> **Architecture version:** 0.1.8  
 > **Date:** 2026-09-19  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
@@ -283,6 +283,8 @@ Analyzer-core owns only the `FindingPrioritizer` abstraction and orchestration. 
 
 The prioritizer belongs to the versioned rule set and returns a contract-valid `FindingPriority` identifying its own rule ID/version. This keeps priority policy independently replaceable while preserving reproducibility through the rule-set version.
 
+The first production JavaScript/TypeScript policy is `JS-PRIORITY-016@1` under ADR-0011. It maps supported finding families to deterministic urgency and allows heuristic confidence only to cap/reduce urgency; uncertainty cannot raise priority.
+
 ### 5.7 Scoring
 
 Scoring is a separate pure deterministic step.
@@ -302,6 +304,8 @@ Outputs:
 - contribution ledger explaining every deduction/addition;
 - N/A states for insufficient evidence;
 - scoring rule version.
+
+The concrete `@stacklens/scoring` package now implements scoring policy v1 under ADR-0011. Numeric scoring is gated by explicit ecosystem coverage facts plus the absence of material category limitations. Dependencies and Security are the only numeric categories in v1; Maintainability, Testing, and Tooling remain N/A until accepted complete-coverage policy exists. The overall score is the mean of Dependencies and Security only when both are available. Missing evidence never becomes a deduction.
 
 This directly implements **FR-018–FR-020** and **SCORE-001–SCORE-004**.
 
@@ -457,10 +461,10 @@ StackLens/
 │  └─ worker/              # background analysis worker
 ├─ packages/
 │  ├─ analyzer-core/       # pipeline, finding model, rule interfaces
-│  ├─ rules-javascript/    # JS/TS-specific deterministic rules
+│  ├─ rules-javascript/    # JS/TS rules + priority/recommendation/coverage policy
 │  ├─ contracts/           # Zod schemas + public domain/API contracts
 │  ├─ data-sources/        # npm, OSV, GitHub adapters
-│  ├─ scoring/             # deterministic score engine/configuration
+│  ├─ scoring/             # deterministic score engine/configuration (implemented v1)
 │  ├─ database/            # schema/repositories/migrations
 │  ├─ design-tokens/       # generated semantic design tokens
 │  ├─ ui/                  # generic primitives + StackLens domain components

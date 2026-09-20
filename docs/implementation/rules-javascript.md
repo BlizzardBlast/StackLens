@@ -528,3 +528,83 @@ evidence and known unsupported source formats downgrade coverage instead of crea
 evidence.
 
 No analyzed source or configuration is executed.
+
+## FR-014 migration opportunities
+
+`JS-MIGRATION-014@1` consumes completed dependency-inventory facts plus source-bound npm Registry
+metadata.
+
+The first supported migration path is intentionally narrow: an exact declared semantic version whose
+npm `latest` target crosses a semantic major-version boundary. The finding identifies both current
+and target versions, preserves npm/project evidence, and remains a medium-confidence heuristic.
+
+Minor, patch, and prerelease-to-release differences remain FR-006 outdated findings. A migration
+finding never states that adoption is mandatory; release notes, compatibility, and project-specific
+behavior still require review.
+
+## FR-015 evidence-backed recommendations
+
+`JS-RECOMMEND-015@1` runs after priority and consumes finalized findings.
+
+It currently maps supported vulnerability, deprecation, outdated-version, major migration, overlap,
+and potentially-unnecessary findings into bounded actions. It:
+
+- reuses finding/evidence references;
+- preserves factual vs heuristic basis;
+- carries confidence for heuristic recommendations;
+- explains the intended impact;
+- recommends review/testing/verification instead of automatic project modification.
+
+Recommendation output remains separate from facts/findings under DATA-005.
+
+## FR-016 production priority
+
+`JS-PRIORITY-016@1` is the production JavaScript/TypeScript prioritizer.
+
+Initial mapping:
+
+- known vulnerability → high;
+- explicit npm deprecation → high;
+- major-version migration → medium;
+- exact-version outdated dependency → medium;
+- curated overlap → medium;
+- potentially unnecessary dependency → low;
+- unmapped security finding → high;
+- other supported fallback → low.
+
+Heuristic confidence only caps/reduces urgency. Evidence uncertainty cannot raise a finding's
+priority. Each priority contains explicit factors and finding evidence references.
+
+## FR-018–FR-021 scoring coverage
+
+`JS-COVERAGE-018@1` is a fact rule that determines whether the generic scorer has sufficient
+JavaScript/TypeScript evidence for a category.
+
+Dependency coverage requires complete project declaration evidence, complete source/config/script
+usage coverage, and complete usable npm latest metadata for every declared package.
+
+Security coverage requires exact supported dependency versions, one available bound OSV source,
+complete exact-version query results for every dependency, and query-level OSV provenance evidence.
+
+The rule explicitly marks Maintainability, Testing, and Tooling insufficient in scoring policy v1.
+Findings in those categories remain visible/prioritized/recommendable but do not create numeric score
+deductions.
+
+Any material configuration limitation from FR-013 now affects both Tooling and Dependencies because
+unsupported/dynamic configuration may hide dependency/plugin usage.
+
+The concrete score formula lives in `@stacklens/scoring`, not this ecosystem package. See
+`docs/implementation/scoring.md` and ADR-0011.
+
+### Milestone I verification
+
+Focused fixtures cover:
+
+- major-version migration detection without minor/patch duplication;
+- priority ordering and heuristic confidence caps;
+- factual vs heuristic recommendation basis;
+- complete vs incomplete scoring coverage;
+- end-to-end analyzer flow through priority, recommendation, scoring, and report validation;
+- N/A behavior for unsupported/missing evidence;
+- complete zero-match OSV query provenance without a "secure" claim.
+

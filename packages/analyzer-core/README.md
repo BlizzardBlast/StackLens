@@ -102,7 +102,7 @@ It returns a contract `FindingPriority` for one candidate at a time.
 
 `AnalysisScorer` is also an interface only. Analyzer-core does not implement score formulas.
 
-The future `packages/scoring` package will implement this interface and receive readonly:
+The concrete `packages/scoring` package now implements this interface while analyzer-core remains policy-free. A scorer receives readonly:
 - sources;
 - evidence;
 - facts;
@@ -133,3 +133,14 @@ Given equivalent inputs, rule set, prioritizer, scorer, and analyzer versions/im
 ## Traceability
 
 **PRD-001–PRD-004, FR-015–FR-021, DATA-003–DATA-006, SCORE-001–SCORE-004, NFR-001–NFR-005, SEC-001–SEC-002.**
+
+
+## Production policy consumer
+
+Milestone I adds the first production implementations behind the existing abstractions:
+
+- `JS-PRIORITY-016@1` in `@stacklens/rules-javascript`;
+- `JS-RECOMMEND-015@1` in `@stacklens/rules-javascript`;
+- `stackHealthScorer` / `stack-health-v1` in `@stacklens/scoring`.
+
+Analyzer-core still contains none of their mappings, weights, or category coverage decisions. See ADR-0011.

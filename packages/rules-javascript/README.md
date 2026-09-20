@@ -299,3 +299,19 @@ This package performs static in-memory normalization only. It does not install d
 execute package scripts, import project configuration, or perform provider/network I/O.
 
 **Traceability:** FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002.
+
+## Migration, recommendation, priority, and scoring coverage
+
+Milestone I adds the first production policy slice:
+
+- `JS-MIGRATION-014@1` — heuristic major-version migration opportunity from exact project/npm evidence;
+- `JS-PRIORITY-016@1` — deterministic production priority policy;
+- `JS-RECOMMEND-015@1` — evidence-backed actions from finalized supported findings;
+- `JS-COVERAGE-018@1` — category evidence-coverage facts/limitations for scoring.
+
+The package still does not calculate numeric score values; that belongs to `@stacklens/scoring`.
+Missing evidence never becomes a negative score. Migration/recommendation rules do not modify the
+analyzed project.
+
+See [JavaScript Rules implementation](../../docs/implementation/rules-javascript.md),
+[Scoring Policy v1](../../docs/implementation/scoring.md), and ADR-0011.

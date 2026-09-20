@@ -138,7 +138,7 @@ A scorer receives readonly:
 - limitations;
 - partial failures.
 
-The future `packages/scoring` package implements this interface.
+`packages/scoring` implements this interface with the first production policy in ADR-0011; analyzer-core remains formula-free.
 
 ### Caller-owned nondeterministic values
 
