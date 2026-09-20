@@ -41,8 +41,7 @@ export const REPOSITORY_ANALYSIS_MAX_OSV_QUERIES = 100;
 const REPOSITORY_ANALYSIS_METADATA_CONCURRENCY = 4;
 export const REPOSITORY_METADATA_LIMITATION_ID =
   "limitation-repository-analysis-metadata-package-limit";
-export const REPOSITORY_OSV_LIMITATION_ID =
-  "limitation-repository-analysis-osv-query-limit";
+export const REPOSITORY_OSV_LIMITATION_ID = "limitation-repository-analysis-osv-query-limit";
 
 export type RepositoryAnalysisProgressPhase =
   | "repository"
@@ -124,12 +123,12 @@ function repositoryFingerprint(repository: RepositoryIdentity): string {
 function uniquePackageNames(
   declarations: readonly NormalizedDependencyDeclaration[],
 ): readonly string[] {
-  return [...new Set(declarations.map((declaration) => declaration.name))].toSorted(compareCodeUnits);
+  return [...new Set(declarations.map((declaration) => declaration.name))].toSorted(
+    compareCodeUnits,
+  );
 }
 
-function providerArtifacts<TData>(
-  result: ProviderResult<TData>,
-): {
+function providerArtifacts<TData>(result: ProviderResult<TData>): {
   readonly sources: readonly DataSource[];
   readonly evidence: readonly Evidence[];
   readonly partialFailures: readonly PartialFailure[];
@@ -211,7 +210,9 @@ function exactOsvQueries(
   });
 }
 
-function parseRepositoryManifest(snapshot: GitHubRepositorySnapshot): ParsedRepositoryManifest | undefined {
+function parseRepositoryManifest(
+  snapshot: GitHubRepositorySnapshot,
+): ParsedRepositoryManifest | undefined {
   if (snapshot.manifest === undefined) {
     return undefined;
   }
