@@ -1,4 +1,4 @@
-import pg from "pg";
+import { Pool } from "pg";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import type { AnalysisReport } from "@stacklens/contracts";
@@ -13,7 +13,6 @@ import {
 
 const databaseUrl = process.env.TEST_DATABASE_URL ?? "";
 const describeWithDatabase = databaseUrl.length > 0 ? describe : describe.skip;
-const { Pool } = pg;
 
 function availableScore() {
   return {
