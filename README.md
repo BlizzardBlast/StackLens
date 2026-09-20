@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest API boundary, bounded npm/OSV/public-GitHub data adapters, and transport-independent public-repository analysis orchestration are implemented. Persistent Graphile Worker/PostgreSQL repository jobs, Fastify REST/OpenAPI transport, and product screens are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest API boundary, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, and persistent PostgreSQL/Graphile Worker repository jobs are implemented. Fastify REST/OpenAPI transport and product screens are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -148,6 +148,20 @@ This package deliberately contains no Fastify routes, Graphile Worker registrati
 persistence, or React behavior, so API and Worker processes can reuse the same application workflow.
 
 See [Repository Analysis Orchestration](docs/implementation/repository-analysis.md).
+
+## Persistent repository jobs
+
+The hosted repository-analysis delivery boundary now spans **`packages/persistence`**,
+**`packages/repository-jobs`**, and **`apps/worker`**.
+
+PostgreSQL stores only durable analysis/report metadata, while Graphile Worker executes the existing
+shared repository orchestration. Durable progress is coarse and source-free, execution is protected
+against stale/duplicate jobs by an active job ownership claim, and final reports preserve the
+existing contract/version metadata.
+
+The permanent quality workflow provisions PostgreSQL 18 for persistence integration coverage.
+
+See [Persistent Repository Analysis Jobs](docs/implementation/repository-jobs.md) and **ADR-0004**.
 
 ## External data sources
 
