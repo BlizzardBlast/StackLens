@@ -250,18 +250,32 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
       async (request) => osvSuccess(request),
     );
     const observedProgress: unknown[] = [];
+    let releaseFirstProgress!: () => void;
+    const firstProgressGate = new Promise<void>((resolve) => {
+      releaseFirstProgress = resolve;
+    });
+    let firstProgressObserved = false;
 
-    const result = await analyzePublicGitHubRepository(baseCommand, {
+    const analysisPromise = analyzePublicGitHubRepository(baseCommand, {
       githubRepositoryProvider,
       npmRegistryProvider,
       osvProvider,
       async onProgress(progress) {
-        await new Promise<void>((resolve) => {
-          setTimeout(resolve, 0);
-        });
+        if (!firstProgressObserved) {
+          firstProgressObserved = true;
+          await firstProgressGate;
+        }
+
         observedProgress.push(progress);
       },
     });
+
+    expect(firstProgressObserved).toBe(true);
+    expect(githubRepositoryProvider.fetchMock).not.toHaveBeenCalled();
+
+    releaseFirstProgress();
+
+    const result = await analysisPromise;
 
     expect(result.ok).toBe(true);
 
