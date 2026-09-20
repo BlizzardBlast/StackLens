@@ -38,6 +38,7 @@ import { productionJavaScriptAnalyzer } from "./production-javascript-analyzer.j
 
 export const REPOSITORY_ANALYSIS_MAX_METADATA_PACKAGES = 100;
 export const REPOSITORY_ANALYSIS_MAX_OSV_QUERIES = 100;
+const REPOSITORY_ANALYSIS_METADATA_CONCURRENCY = 4;
 export const REPOSITORY_METADATA_LIMITATION_ID =
   "limitation-repository-analysis-metadata-package-limit";
 export const REPOSITORY_OSV_LIMITATION_ID =
@@ -370,30 +371,47 @@ export async function analyzePublicGitHubRepository(
 
   let npmFailures = 0;
 
-  for (const [index, packageName] of selectedPackageNames.entries()) {
-    const result = await dependencies.npmRegistryProvider.fetch({ packageName });
-    const artifacts = providerArtifacts(result);
-    sources.push(...artifacts.sources);
-    evidence.push(...artifacts.evidence);
-    partialFailures.push(...artifacts.partialFailures);
-
-    if (result.ok) {
-      npmMetadata.push({
-        sourceId: result.source.id,
-        snapshot: result.data,
-      });
-    } else {
-      npmFailures += 1;
+  const acquireNpmBatch = async (offset: number): Promise<void> => {
+    if (offset >= selectedPackageNames.length) {
+      return;
     }
 
-    recordProgress({
-      phase: "package_metadata",
-      status: "progress",
-      completed: index + 1,
-      total: selectedPackageNames.length,
-      failed: npmFailures,
-    });
-  }
+    const batch = selectedPackageNames.slice(
+      offset,
+      offset + REPOSITORY_ANALYSIS_METADATA_CONCURRENCY,
+    );
+    const results = await Promise.all(
+      batch.map((packageName) => dependencies.npmRegistryProvider.fetch({ packageName })),
+    );
+
+    for (const [batchIndex, result] of results.entries()) {
+      const artifacts = providerArtifacts(result);
+      sources.push(...artifacts.sources);
+      evidence.push(...artifacts.evidence);
+      partialFailures.push(...artifacts.partialFailures);
+
+      if (result.ok) {
+        npmMetadata.push({
+          sourceId: result.source.id,
+          snapshot: result.data,
+        });
+      } else {
+        npmFailures += 1;
+      }
+
+      recordProgress({
+        phase: "package_metadata",
+        status: "progress",
+        completed: offset + batchIndex + 1,
+        total: selectedPackageNames.length,
+        failed: npmFailures,
+      });
+    }
+
+    await acquireNpmBatch(offset + batch.length);
+  };
+
+  await acquireNpmBatch(0);
 
   recordProgress({
     phase: "package_metadata",
