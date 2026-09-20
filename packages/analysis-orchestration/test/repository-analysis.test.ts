@@ -1,11 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { AnalysisReportSchema } from "@stacklens/contracts";
-import type {
-  AvailableDataSource,
-  ExternalEvidence,
-  PartialFailure,
-} from "@stacklens/contracts";
+import type { AvailableDataSource, ExternalEvidence, PartialFailure } from "@stacklens/contracts";
 import type {
   EvidenceProvider,
   GitHubRepositoryRequest,
@@ -17,10 +13,7 @@ import type {
   ProviderResult,
 } from "@stacklens/data-sources";
 
-import {
-  analyzePublicGitHubRepository,
-  REPOSITORY_METADATA_LIMITATION_ID,
-} from "../src/index.js";
+import { analyzePublicGitHubRepository, REPOSITORY_METADATA_LIMITATION_ID } from "../src/index.js";
 
 const createdAt = "2026-09-20T01:30:00Z";
 const commitSha = "a".repeat(40);
@@ -76,10 +69,12 @@ function externalEvidence(
   };
 }
 
-function repositorySuccess(options: {
-  readonly manifest?: string;
-  readonly sourceContent?: string;
-} = {}): ProviderResult<GitHubRepositorySnapshot> {
+function repositorySuccess(
+  options: {
+    readonly manifest?: string;
+    readonly sourceContent?: string;
+  } = {},
+): ProviderResult<GitHubRepositorySnapshot> {
   const source = availableSource(
     "source-github-demo",
     "github-rest",
@@ -90,12 +85,7 @@ function repositorySuccess(options: {
     ok: true,
     source,
     evidence: [
-      externalEvidence(
-        "evidence-github-demo",
-        source.id,
-        source.reference,
-        source.reference,
-      ),
+      externalEvidence("evidence-github-demo", source.id, source.reference, source.reference),
     ],
     partialFailures: [],
     data: {
@@ -194,14 +184,8 @@ function npmFailure(packageName: string): ProviderResult<NpmPackageMetadata> {
   };
 }
 
-function osvSuccess(
-  request: OsvVulnerabilityRequest,
-): ProviderResult<OsvVulnerabilitySnapshot> {
-  const source = availableSource(
-    "source-osv-demo",
-    "osv",
-    "https://api.osv.dev/v1/querybatch",
-  );
+function osvSuccess(request: OsvVulnerabilityRequest): ProviderResult<OsvVulnerabilitySnapshot> {
+  const source = availableSource("source-osv-demo", "osv", "https://api.osv.dev/v1/querybatch");
 
   return {
     ok: true,
@@ -297,8 +281,7 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
 
     const migration = result.report.findings.find(
       (finding) =>
-        finding.rule.id === "JS-MIGRATION-014" &&
-        finding.subject.name === "legacy-package",
+        finding.rule.id === "JS-MIGRATION-014" && finding.subject.name === "legacy-package",
     );
     expect(migration).toMatchObject({
       classification: "heuristic",
@@ -403,9 +386,7 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
         }),
       ]),
     );
-    expect(result.report.scores.categories.dependencies.status).toBe(
-      "insufficient_evidence",
-    );
+    expect(result.report.scores.categories.dependencies.status).toBe("insufficient_evidence");
     expect(result.report.scores.categories.security).toMatchObject({
       status: "available",
       value: 100,
@@ -468,9 +449,7 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
       total: 0,
       failed: 0,
     });
-    expect(result.report.scores.categories.security.status).toBe(
-      "insufficient_evidence",
-    );
+    expect(result.report.scores.categories.security.status).toBe("insufficient_evidence");
     expect(
       result.report.limitations.some((limitation) =>
         limitation.message.includes("not an exact supported semantic version"),
