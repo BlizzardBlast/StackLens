@@ -172,6 +172,7 @@ export function createRepositoryAnalysisTask(
 
     await dependencies.repository.complete({
       id: existing.id,
+      jobId: helpers.job.id,
       report: result.report,
       completedAt,
       status: completedWithLimitations ? "completed_with_limitations" : "completed",
