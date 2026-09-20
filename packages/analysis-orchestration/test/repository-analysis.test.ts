@@ -25,13 +25,24 @@ import {
 const createdAt = "2026-09-20T01:30:00Z";
 const commitSha = "a".repeat(40);
 
+interface TestProvider<TRequest, TData> extends EvidenceProvider<TRequest, TData> {
+  readonly fetchMock: ReturnType<
+    typeof vi.fn<(request: TRequest) => Promise<ProviderResult<TData>>>
+  >;
+}
+
 function provider<TRequest, TData>(
   id: string,
   handler: (request: TRequest) => Promise<ProviderResult<TData>>,
-): EvidenceProvider<TRequest, TData> {
+): TestProvider<TRequest, TData> {
+  const fetchMock = vi.fn<(request: TRequest) => Promise<ProviderResult<TData>>>(handler);
+
   return {
     id,
-    fetch: vi.fn(handler),
+    fetch(request) {
+      return fetchMock(request);
+    },
+    fetchMock,
   };
 }
 
@@ -316,7 +327,7 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
       value: 94,
       evidenceCoverage: 40,
     });
-    expect(osvProvider.fetch).toHaveBeenCalledWith({
+    expect(osvProvider.fetchMock).toHaveBeenCalledWith({
       queries: [
         {
           packageName: "legacy-package",
@@ -449,7 +460,7 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
       throw new Error("Expected range-based repository analysis to succeed with limitations");
     }
 
-    expect(osvProvider.fetch).not.toHaveBeenCalled();
+    expect(osvProvider.fetchMock).not.toHaveBeenCalled();
     expect(result.progress).toContainEqual({
       phase: "vulnerability_data",
       status: "skipped",
@@ -525,8 +536,8 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
         },
       ],
     });
-    expect(npmRegistryProvider.fetch).not.toHaveBeenCalled();
-    expect(osvProvider.fetch).not.toHaveBeenCalled();
+    expect(npmRegistryProvider.fetchMock).not.toHaveBeenCalled();
+    expect(osvProvider.fetchMock).not.toHaveBeenCalled();
   });
 
   it("fails safely when the resolved repository has no root package.json", async () => {
@@ -561,8 +572,8 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
       retryable: false,
       requirementIds: ["FR-003", "FR-004"],
     });
-    expect(npmRegistryProvider.fetch).not.toHaveBeenCalled();
-    expect(osvProvider.fetch).not.toHaveBeenCalled();
+    expect(npmRegistryProvider.fetchMock).not.toHaveBeenCalled();
+    expect(osvProvider.fetchMock).not.toHaveBeenCalled();
   });
 
   it("fails safely on malformed repository package.json without exposing its content", async () => {
@@ -588,8 +599,8 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
 
     expect(result.ok).toBe(false);
     expect(JSON.stringify(result)).not.toContain(malformedManifest);
-    expect(npmRegistryProvider.fetch).not.toHaveBeenCalled();
-    expect(osvProvider.fetch).not.toHaveBeenCalled();
+    expect(npmRegistryProvider.fetchMock).not.toHaveBeenCalled();
+    expect(osvProvider.fetchMock).not.toHaveBeenCalled();
 
     if (result.ok) {
       throw new Error("Expected malformed repository manifest to fail");
