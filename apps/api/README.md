@@ -84,7 +84,10 @@ Use `@stacklens/analysis-orchestration` for the transport-independent repository
 performs bounded GitHub/npm/OSV acquisition, builds the normalized JavaScript project/metadata
 snapshot, invokes the production analyzer, and returns progress plus a contract-valid report.
 
-A later Fastify endpoint should create/read persistent repository-analysis jobs rather than copying
-that orchestration into route handlers.
+The persistent job boundary now exists outside this app. A Fastify endpoint should create/enqueue
+work through `@stacklens/repository-jobs` and read status/report state through
+`@stacklens/persistence`; it must not import `apps/worker` or copy repository orchestration into
+route handlers.
 
-See [Repository Analysis Orchestration](../../docs/implementation/repository-analysis.md).
+See [Repository Analysis Orchestration](../../docs/implementation/repository-analysis.md) and
+[Persistent Repository Analysis Jobs](../../docs/implementation/repository-jobs.md).
