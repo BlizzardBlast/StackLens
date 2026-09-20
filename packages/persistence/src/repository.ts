@@ -1,4 +1,4 @@
-import { and, eq, notInArray, or } from "drizzle-orm";
+import { and, eq, isNull, notInArray, or } from "drizzle-orm";
 
 import type { StackLensDatabase } from "./database.js";
 import { analysisReports, analyses } from "./schema.js";
@@ -174,24 +174,7 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
       update.report.input.type === "repository" ? update.report.input.repository : undefined;
 
     await this.database.transaction(async (transaction) => {
-      await transaction
-        .insert(analysisReports)
-        .values({
-          analysisId: update.id,
-          reportSchemaVersion: update.report.schemaVersion,
-          report: update.report,
-          createdAt: update.completedAt,
-        })
-        .onConflictDoUpdate({
-          target: analysisReports.analysisId,
-          set: {
-            reportSchemaVersion: update.report.schemaVersion,
-            report: update.report,
-            createdAt: update.completedAt,
-          },
-        });
-
-      await transaction
+      const [claimed] = await transaction
         .update(analyses)
         .set({
           status: update.status,
@@ -212,7 +195,35 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
           updatedAt: update.completedAt,
           failureSummary: null,
         })
-        .where(eq(analyses.id, update.id));
+        .where(
+          and(
+            eq(analyses.id, update.id),
+            eq(analyses.activeJobId, update.jobId),
+            notInArray(analyses.status, [...TERMINAL_STATUSES]),
+          ),
+        )
+        .returning({ id: analyses.id });
+
+      if (claimed === undefined) {
+        return;
+      }
+
+      await transaction
+        .insert(analysisReports)
+        .values({
+          analysisId: update.id,
+          reportSchemaVersion: update.report.schemaVersion,
+          report: update.report,
+          createdAt: update.completedAt,
+        })
+        .onConflictDoUpdate({
+          target: analysisReports.analysisId,
+          set: {
+            reportSchemaVersion: update.report.schemaVersion,
+            report: update.report,
+            createdAt: update.completedAt,
+          },
+        });
     });
   }
 
@@ -227,6 +238,12 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
         completedAt: update.completedAt,
         updatedAt: update.completedAt,
       })
-      .where(and(eq(analyses.id, update.id), notInArray(analyses.status, [...TERMINAL_STATUSES])));
+      .where(
+        and(
+          eq(analyses.id, update.id),
+          or(isNull(analyses.activeJobId), eq(analyses.activeJobId, update.jobId)),
+          notInArray(analyses.status, [...TERMINAL_STATUSES]),
+        ),
+      );
   }
 }
