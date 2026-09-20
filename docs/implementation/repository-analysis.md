@@ -78,6 +78,10 @@ The first orchestration baseline enriches at most:
 - 100 unique package identities through npm Registry metadata;
 - 100 unique exact package/version OSV queries.
 
+npm Registry work runs in deterministic batches of at most four concurrent requests. Results and
+progress are folded back in stable package order, avoiding both a fully serial 100-request path and
+unbounded fan-out.
+
 Selection is deterministic. Input beyond either bound remains analyzable but gains an explicit
 `resource_limit` limitation; unacquired metadata never becomes negative evidence.
 
