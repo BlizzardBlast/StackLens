@@ -9,7 +9,10 @@ import {
   migrateStackLensDatabase,
 } from "@stacklens/persistence";
 import { run, runMigrations, type Runner } from "graphile-worker";
-import { Pool } from "pg";
+import pg from "pg";
+import type { Pool as PgPool } from "pg";
+
+const { Pool } = pg;
 
 import { createRepositoryAnalysisTaskList } from "./task.js";
 
@@ -19,7 +22,7 @@ export interface WorkerRuntimeOptions {
 }
 
 export interface StackLensWorkerRuntime {
-  readonly pool: Pool;
+  readonly pool: PgPool;
   readonly runner: Runner;
   stop(): Promise<void>;
 }
