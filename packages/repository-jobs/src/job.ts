@@ -36,10 +36,7 @@ export function parseRepositoryAnalysisJobPayload(value: unknown): RepositoryAna
     throw new Error("Repository analysis job payload has an invalid repositoryUrl.");
   }
 
-  if (
-    ref !== undefined &&
-    (typeof ref !== "string" || ref.length === 0 || ref.length > 500)
-  ) {
+  if (ref !== undefined && (typeof ref !== "string" || ref.length === 0 || ref.length > 500)) {
     throw new Error("Repository analysis job payload has an invalid ref.");
   }
 

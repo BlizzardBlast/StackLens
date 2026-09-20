@@ -1,3 +1,6 @@
+import { run, runMigrations, type Runner } from "graphile-worker";
+import { Pool } from "pg";
+
 import {
   GitHubRepositoryAdapter,
   NpmRegistryAdapter,
@@ -8,8 +11,6 @@ import {
   DrizzleAnalysisRepository,
   migrateStackLensDatabase,
 } from "@stacklens/persistence";
-import { run, runMigrations, type Runner } from "graphile-worker";
-import { Pool } from "pg";
 
 import { createRepositoryAnalysisTaskList } from "./task.js";
 

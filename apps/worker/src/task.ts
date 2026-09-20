@@ -1,3 +1,5 @@
+import type { Task } from "graphile-worker";
+
 import {
   analyzePublicGitHubRepository,
   type RepositoryAnalysisDependencies,
@@ -13,7 +15,6 @@ import {
   parseRepositoryAnalysisJobPayload,
   REPOSITORY_ANALYSIS_TASK_IDENTIFIER,
 } from "@stacklens/repository-jobs";
-import type { Task } from "graphile-worker";
 
 export type RepositoryAnalyzer = (
   command: Parameters<typeof analyzePublicGitHubRepository>[0],
@@ -33,11 +34,7 @@ export interface RepositoryJobExecution {
   readonly maxAttempts: number;
 }
 
-function failureSummary(
-  code: string,
-  message: string,
-  retryable: boolean,
-): AnalysisFailureSummary {
+function failureSummary(code: string, message: string, retryable: boolean): AnalysisFailureSummary {
   return { code, message, retryable };
 }
 

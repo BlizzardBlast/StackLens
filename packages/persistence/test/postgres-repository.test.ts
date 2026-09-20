@@ -119,19 +119,11 @@ describeWithDatabase("PostgreSQL analysis persistence [FR-003, FR-021, DATA-006,
     ).rejects.toThrow("different repository input");
 
     await expect(
-      repository.claimForExecution(
-        "analysis-001",
-        "graphile-job-1",
-        "2026-09-21T00:00:01.000Z",
-      ),
+      repository.claimForExecution("analysis-001", "graphile-job-1", "2026-09-21T00:00:01.000Z"),
     ).resolves.toBe(true);
 
     await expect(
-      repository.claimForExecution(
-        "analysis-001",
-        "graphile-job-2",
-        "2026-09-21T00:00:02.000Z",
-      ),
+      repository.claimForExecution("analysis-001", "graphile-job-2", "2026-09-21T00:00:02.000Z"),
     ).resolves.toBe(false);
 
     await repository.updateProgress(
@@ -232,11 +224,7 @@ describeWithDatabase("PostgreSQL analysis persistence [FR-003, FR-021, DATA-006,
       createdAt: "2026-09-21T00:00:05.000Z",
     });
     await expect(
-      repository.claimForExecution(
-        "analysis-001",
-        "graphile-job-3",
-        "2026-09-21T00:00:06.000Z",
-      ),
+      repository.claimForExecution("analysis-001", "graphile-job-3", "2026-09-21T00:00:06.000Z"),
     ).resolves.toBe(false);
   });
 

@@ -11,10 +11,7 @@ import type {
   OsvVulnerabilitySnapshot,
   ProviderResult,
 } from "@stacklens/data-sources";
-import type {
-  AnalysisRepository,
-  RepositoryAnalysisRecord,
-} from "@stacklens/persistence";
+import type { AnalysisRepository, RepositoryAnalysisRecord } from "@stacklens/persistence";
 
 import {
   executeRepositoryAnalysisJob,
@@ -24,9 +21,7 @@ import {
 
 const createdAt = "2026-09-21T00:00:00.000Z";
 
-function record(
-  overrides: Partial<RepositoryAnalysisRecord> = {},
-): RepositoryAnalysisRecord {
+function record(overrides: Partial<RepositoryAnalysisRecord> = {}): RepositoryAnalysisRecord {
   return {
     id: "analysis-001",
     inputType: "repository",
@@ -40,22 +35,15 @@ function record(
   };
 }
 
-function repositoryHarness(
-  analysis = record(),
-  claimResult = true,
-) {
+function repositoryHarness(analysis = record(), claimResult = true) {
   const createQueuedRepositoryAnalysis = vi.fn<
     AnalysisRepository["createQueuedRepositoryAnalysis"]
   >(async () => analysis);
   const findAnalysis = vi.fn<AnalysisRepository["findAnalysis"]>(async () => analysis);
   const findReport = vi.fn<AnalysisRepository["findReport"]>(async () => undefined);
-  const claimForExecution = vi.fn<AnalysisRepository["claimForExecution"]>(
-    async () => claimResult,
-  );
+  const claimForExecution = vi.fn<AnalysisRepository["claimForExecution"]>(async () => claimResult);
   const updateProgress = vi.fn<AnalysisRepository["updateProgress"]>(async () => undefined);
-  const markRetryPending = vi.fn<AnalysisRepository["markRetryPending"]>(
-    async () => undefined,
-  );
+  const markRetryPending = vi.fn<AnalysisRepository["markRetryPending"]>(async () => undefined);
   const complete = vi.fn<AnalysisRepository["complete"]>(async () => undefined);
   const fail = vi.fn<AnalysisRepository["fail"]>(async () => undefined);
 
@@ -82,9 +70,7 @@ function repositoryHarness(
   };
 }
 
-function unusedProvider<TRequest, TData>(
-  id: string,
-): EvidenceProvider<TRequest, TData> {
+function unusedProvider<TRequest, TData>(id: string): EvidenceProvider<TRequest, TData> {
   return {
     id,
     async fetch(_request: TRequest): Promise<ProviderResult<TData>> {
@@ -94,14 +80,12 @@ function unusedProvider<TRequest, TData>(
 }
 
 const analysisDependencies = {
-  githubRepositoryProvider: unusedProvider<
-    GitHubRepositoryRequest,
-    GitHubRepositorySnapshot
-  >("github-rest"),
-  npmRegistryProvider: unusedProvider<
-    NpmPackageMetadataRequest,
-    NpmPackageMetadata
-  >("npm-registry"),
+  githubRepositoryProvider: unusedProvider<GitHubRepositoryRequest, GitHubRepositorySnapshot>(
+    "github-rest",
+  ),
+  npmRegistryProvider: unusedProvider<NpmPackageMetadataRequest, NpmPackageMetadata>(
+    "npm-registry",
+  ),
   osvProvider: unusedProvider<OsvVulnerabilityRequest, OsvVulnerabilitySnapshot>("osv"),
 } satisfies RepositoryAnalysisTaskDependencies["analysisDependencies"];
 
@@ -335,9 +319,7 @@ describe("repository analysis worker task [FR-003, FR-021, NFR-003, NFR-008, NFR
   });
 
   it("short-circuits already-terminal analyses on at-least-once delivery", async () => {
-    const harness = repositoryHarness(
-      record({ status: "completed", progressStage: "completed" }),
-    );
+    const harness = repositoryHarness(record({ status: "completed", progressStage: "completed" }));
     const analyze = vi.fn<RepositoryAnalyzer>();
 
     await executeRepositoryAnalysisJob(

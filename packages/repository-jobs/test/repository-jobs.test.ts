@@ -1,9 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type {
-  AnalysisRepository,
-  RepositoryAnalysisRecord,
-} from "@stacklens/persistence";
+import type { AnalysisRepository, RepositoryAnalysisRecord } from "@stacklens/persistence";
 
 import {
   createGraphileRepositoryJobQueue,
@@ -39,9 +36,7 @@ function repositoryHarness(record = queuedRecord()) {
   const findReport = vi.fn<AnalysisRepository["findReport"]>(async () => undefined);
   const claimForExecution = vi.fn<AnalysisRepository["claimForExecution"]>(async () => true);
   const updateProgress = vi.fn<AnalysisRepository["updateProgress"]>(async () => undefined);
-  const markRetryPending = vi.fn<AnalysisRepository["markRetryPending"]>(
-    async () => undefined,
-  );
+  const markRetryPending = vi.fn<AnalysisRepository["markRetryPending"]>(async () => undefined);
   const complete = vi.fn<AnalysisRepository["complete"]>(async () => undefined);
   const fail = vi.fn<AnalysisRepository["fail"]>(async () => undefined);
 
@@ -106,9 +101,7 @@ describe("durable repository progress [FR-003, FR-021, NFR-008]", () => {
         failed: 0,
       }),
     ).toBe("collecting_metadata");
-    expect(durableStageForProgress({ phase: "analysis", status: "started" })).toBe(
-      "running_rules",
-    );
+    expect(durableStageForProgress({ phase: "analysis", status: "started" })).toBe("running_rules");
     expect(durableStageForProgress({ phase: "analysis", status: "completed" })).toBe("scoring");
   });
 });

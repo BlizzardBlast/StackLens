@@ -1,5 +1,6 @@
-import type { AnalysisReport } from "@stacklens/contracts";
 import { jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+
+import type { AnalysisReport } from "@stacklens/contracts";
 
 import type { AnalysisFailureSummary, AnalysisProgressStage, AnalysisStatus } from "./types.js";
 

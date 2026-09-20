@@ -8,11 +8,7 @@ export type { AnalysisRepository } from "./repository.js";
 
 export { analyses, analysisReports } from "./schema.js";
 
-export {
-  ANALYSIS_PROGRESS_STAGES,
-  ANALYSIS_STATUSES,
-  isTerminalAnalysisStatus,
-} from "./types.js";
+export { ANALYSIS_PROGRESS_STAGES, ANALYSIS_STATUSES, isTerminalAnalysisStatus } from "./types.js";
 export type {
   AnalysisCompletion,
   AnalysisFailureSummary,

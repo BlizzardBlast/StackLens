@@ -45,7 +45,9 @@ function compactRecord(row: typeof analyses.$inferSelect): RepositoryAnalysisRec
 }
 
 export interface AnalysisRepository {
-  createQueuedRepositoryAnalysis(input: CreateQueuedRepositoryAnalysis): Promise<RepositoryAnalysisRecord>;
+  createQueuedRepositoryAnalysis(
+    input: CreateQueuedRepositoryAnalysis,
+  ): Promise<RepositoryAnalysisRecord>;
   findAnalysis(id: string): Promise<RepositoryAnalysisRecord | undefined>;
   findReport(analysisId: string): Promise<StoredAnalysisReport | undefined>;
   claimForExecution(id: string, jobId: string, startedAt: string): Promise<boolean>;
@@ -89,7 +91,10 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
       throw new Error("Failed to persist repository analysis.");
     }
 
-    if (record.repositoryUrl !== input.repositoryUrl || record.requestedRef !== input.requestedRef) {
+    if (
+      record.repositoryUrl !== input.repositoryUrl ||
+      record.requestedRef !== input.requestedRef
+    ) {
       throw new Error("Analysis identifier is already bound to different repository input.");
     }
 
@@ -153,11 +158,7 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
         updatedAt,
       })
       .where(
-        and(
-          eq(analyses.id, id),
-          eq(analyses.status, "running"),
-          eq(analyses.activeJobId, jobId),
-        ),
+        and(eq(analyses.id, id), eq(analyses.status, "running"), eq(analyses.activeJobId, jobId)),
       );
   }
 
