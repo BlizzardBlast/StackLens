@@ -1,5 +1,5 @@
 {
-  "name": "@stacklens/api",
+  "name": "@stacklens/analysis-orchestration",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -17,7 +17,9 @@
   "dependencies": {
     "@stacklens/analyzer-core": "workspace:*",
     "@stacklens/contracts": "workspace:*",
-    "@stacklens/rules-javascript": "workspace:*"
+    "@stacklens/data-sources": "workspace:*",
+    "@stacklens/rules-javascript": "workspace:*",
+    "@stacklens/scoring": "workspace:*"
   },
   "devDependencies": {
     "vitest": "^5.0.1"
