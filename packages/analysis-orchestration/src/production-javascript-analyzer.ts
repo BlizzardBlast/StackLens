@@ -1,5 +1,4 @@
 import type { AnalyzerDefinition } from "@stacklens/analyzer-core";
-
 import {
   dependencyInventoryRule,
   dependencyOverlapRule,
