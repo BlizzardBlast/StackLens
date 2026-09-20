@@ -54,6 +54,18 @@ export const migrationOpportunityRule: FindingRule<
       const currentVersion = parseExactSemanticVersion(basis.declaredSpecifier);
 
       if (currentVersion === undefined) {
+        limitations.push(
+          createDependencyRuleLimitation(
+            RULE_ID,
+            "insufficient_evidence",
+            "migration-exact-version-required",
+            JSON.stringify([basis.packageName, basis.declaredSpecifier]),
+            `Migration analysis preserves declared specifier ${JSON.stringify(
+              basis.declaredSpecifier,
+            )} for ${basis.packageName}, but it is not an exact semantic version. A resolved exact current version is required before StackLens can identify a deterministic migration target.`,
+            [],
+          ),
+        );
         continue;
       }
 

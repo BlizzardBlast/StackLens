@@ -156,6 +156,31 @@ function dependencyCoverage(
   }
 
   for (const basis of dependencyDeclarationBases(context.project)) {
+    const unsupportedDeclarations = basis.declarations.filter(
+      (declaration) => parseExactSemanticVersion(declaration.declaredSpecifier) === undefined,
+    );
+
+    if (unsupportedDeclarations.length > 0) {
+      complete = false;
+
+      for (const declaration of unsupportedDeclarations) {
+        limitations.push(
+          coverageLimitation(
+            "dependencies",
+            `non-exact-version:${dependencyKey(
+              declaration.name,
+              declaration.declaredSpecifier,
+            )}`,
+            `Dependency scoring cannot establish complete version-health coverage for ${declaration.name} because ${JSON.stringify(
+              declaration.declaredSpecifier,
+            )} is not an exact supported semantic version.`,
+          ),
+        );
+      }
+
+      continue;
+    }
+
     const resolved = resolveNpmObservation({
       ruleId: RULE_ID,
       packageName: basis.packageName,
@@ -169,6 +194,27 @@ function dependencyCoverage(
     if (!resolved.ok || resolved.limitations.length > 0) {
       complete = false;
       continue;
+    }
+
+    let currentVersionsComplete = true;
+
+    for (const declaration of basis.declarations) {
+      if (
+        packageVersion(resolved.observation.snapshot, declaration.declaredSpecifier) === undefined
+      ) {
+        currentVersionsComplete = false;
+        complete = false;
+        limitations.push(
+          createDependencyRuleLimitation(
+            RULE_ID,
+            "insufficient_evidence",
+            "scoring-npm-current-version-incomplete",
+            dependencyKey(declaration.name, declaration.declaredSpecifier),
+            `Dependency scoring coverage requires the npm Registry snapshot for ${declaration.name} to include declared exact version ${declaration.declaredSpecifier}.`,
+            [resolved.observation.source.id],
+          ),
+        );
+      }
     }
 
     const latest = latestDistTag(resolved.observation.snapshot);
@@ -187,6 +233,10 @@ function dependencyCoverage(
           [resolved.observation.source.id],
         ),
       );
+      continue;
+    }
+
+    if (!currentVersionsComplete) {
       continue;
     }
 

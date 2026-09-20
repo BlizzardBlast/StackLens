@@ -4,7 +4,9 @@ import type { FindingCandidate, PrioritizationContext } from "@stacklens/analyze
 
 import {
   createJavaScriptProjectSnapshot,
+  dependencyInventoryRule,
   javascriptFindingPrioritizer,
+  migrationOpportunityRule,
   normalizePackageManifest,
   scoringCoverageFactRule,
   withJavaScriptSourceUsage,
@@ -132,7 +134,90 @@ describe("JavaScript production priority policy [FR-016, FR-020]", () => {
   });
 });
 
+describe("migration evidence boundaries [FR-014, FR-021]", () => {
+  it("discloses insufficient evidence for non-exact current versions", () => {
+    const project = normalizePackageManifest({
+      dependencies: {
+        react: "^18.2.0",
+      },
+    });
+    const inventory = dependencyInventoryRule.evaluate({
+      input: {
+        type: "manifest",
+        fingerprint: "fixture-migration-range",
+      },
+      project,
+      metadata: {},
+      sources: [],
+      evidence: [],
+      limitations: [],
+      partialFailures: [],
+    });
+    const result = migrationOpportunityRule.evaluate({
+      input: {
+        type: "manifest",
+        fingerprint: "fixture-migration-range",
+      },
+      project,
+      metadata: {},
+      sources: [],
+      evidence: [],
+      limitations: [],
+      partialFailures: [],
+      facts: inventory.facts ?? [],
+    });
+
+    expect(result.findings ?? []).toEqual([]);
+    expect(result.limitations).toEqual([
+      expect.objectContaining({
+        kind: "insufficient_evidence",
+        ruleIds: ["JS-MIGRATION-014"],
+        message: expect.stringContaining("not an exact semantic version"),
+      }),
+    ]);
+  });
+});
+
 describe("score coverage policy [FR-018, FR-019, FR-021, SCORE-003]", () => {
+  it("requires exact current dependency versions before dependency scoring can be complete", () => {
+    const manifest = normalizePackageManifest({
+      dependencies: {
+        react: "^18.2.0",
+      },
+    });
+    const project = withJavaScriptSourceUsage(
+      createJavaScriptProjectSnapshot(manifest, [
+        {
+          path: "src/index.ts",
+          content: 'import React from "react"; export const value = React.version;',
+        },
+      ]),
+      "complete",
+    );
+    const result = scoringCoverageFactRule.evaluate({
+      input: {
+        type: "manifest",
+        fingerprint: "fixture-dependency-range-coverage",
+      },
+      project,
+      metadata: {},
+      sources: [],
+      evidence: [],
+      limitations: [],
+      partialFailures: [],
+    });
+
+    expect(result.facts ?? []).toEqual([]);
+    expect(result.limitations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          affectedCategories: ["dependencies"],
+          message: expect.stringContaining("not an exact supported semantic version"),
+        }),
+      ]),
+    );
+  });
+
   it("emits limitations instead of score coverage when source and exact-version evidence are incomplete", () => {
     const manifest = normalizePackageManifest({
       dependencies: {
