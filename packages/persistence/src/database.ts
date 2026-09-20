@@ -7,5 +7,5 @@ import * as schema from "./schema.js";
 export type StackLensDatabase = NodePgDatabase<typeof schema>;
 
 export function createStackLensDatabase(pool: Pool): StackLensDatabase {
-  return drizzle(pool, { schema });
+  return drizzle({ client: pool, schema });
 }
