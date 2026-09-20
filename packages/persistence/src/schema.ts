@@ -10,6 +10,7 @@ export const analyses = pgTable("analysis", {
   requestedRef: text("requested_ref"),
   status: text("status").$type<AnalysisStatus>().notNull(),
   progressStage: text("progress_stage").$type<AnalysisProgressStage>().notNull(),
+  activeJobId: text("active_job_id"),
   repositoryOwner: text("repository_owner"),
   repositoryName: text("repository_name"),
   commitSha: text("commit_sha"),
