@@ -385,7 +385,13 @@ export async function analyzePublicGitHubRepository(
       batch.map((packageName) => dependencies.npmRegistryProvider.fetch({ packageName })),
     );
 
-    for (const [batchIndex, result] of results.entries()) {
+    const processBatchResult = async (batchIndex: number): Promise<void> => {
+      const result = results[batchIndex];
+
+      if (result === undefined) {
+        return;
+      }
+
       const artifacts = providerArtifacts(result);
       sources.push(...artifacts.sources);
       evidence.push(...artifacts.evidence);
@@ -407,8 +413,10 @@ export async function analyzePublicGitHubRepository(
         total: selectedPackageNames.length,
         failed: npmFailures,
       });
-    }
+      await processBatchResult(batchIndex + 1);
+    };
 
+    await processBatchResult(0);
     await acquireNpmBatch(offset + batch.length);
   };
 
