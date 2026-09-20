@@ -7,7 +7,7 @@ The package currently owns:
 - the production JavaScript/TypeScript analyzer composition root;
 - public GitHub repository analysis orchestration;
 - deterministic provider sequencing and metadata bounds;
-- transport-independent repository progress events;
+- transport-independent repository progress events whose observers may be asynchronous and are awaited;
 - conversion of provider successes/failures into analyzer inputs.
 
 It depends on provider/analyzer/rule/scoring abstractions but owns none of their internal policy.
