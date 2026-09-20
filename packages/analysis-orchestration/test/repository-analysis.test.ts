@@ -39,7 +39,7 @@ function availableSource(
   id: string,
   providerId: string,
   reference: string,
-): AvailableDataSource {
+): AvailableDataSource & { readonly reference: string } {
   return {
     id,
     provider: providerId,
