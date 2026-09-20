@@ -418,7 +418,7 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
     expect(result.limitations).toEqual([
       expect.objectContaining({
         kind: "unsupported_configuration",
-        affectedCategories: ["tooling"],
+        affectedCategories: ["dependencies", "tooling"],
         ruleIds: ["JS-CONFIG-013"],
         message: expect.stringContaining("did not import, execute, or resolve dynamic values"),
       }),

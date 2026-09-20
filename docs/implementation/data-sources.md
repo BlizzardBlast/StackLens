@@ -532,3 +532,25 @@ adapter, preserving the provider/rule dependency boundary.
 
 **Traceability:** FR-003, FR-009, FR-017, FR-021, DATA-001, DATA-002, DATA-006, NFR-003, NFR-004,
 SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.
+
+## OSV exact-query provenance for scoring
+
+Milestone I adds one source-bound `ExternalEvidence` record for every normalized OSV exact-version
+query, including complete queries with zero matches.
+
+The stable reference form is:
+
+```text
+npm:<package-name>@<exact-version>
+```
+
+This record exists so a scoring-coverage rule can prove that a dependency version was actually
+queried rather than interpreting the absence of advisory findings as evidence by itself.
+
+A complete zero-match record means only that OSV returned zero matching known vulnerabilities for
+that exact package/version query. It is never emitted or described as a general "secure" fact.
+
+Advisory evidence remains separate and continues to use the OSV advisory identifier/reference.
+
+**Traceability:** FR-011, FR-017–FR-021, DATA-001, DATA-002, SCORE-002, SCORE-003, SEC-008, GOV-007.
+

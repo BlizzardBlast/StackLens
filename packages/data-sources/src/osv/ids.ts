@@ -34,6 +34,16 @@ export function osvEvidenceId(sourceId: string, vulnerabilityId: string): string
   return `evidence-osv-${stableIdHash(JSON.stringify([sourceId, vulnerabilityId]))}`;
 }
 
+export function osvQueryEvidenceReference(query: OsvPackageVersionQuery): string {
+  return `npm:${query.packageName}@${query.version}`;
+}
+
+export function osvQueryEvidenceId(sourceId: string, query: OsvPackageVersionQuery): string {
+  return `evidence-osv-query-${stableIdHash(
+    JSON.stringify([sourceId, query.packageName, query.version]),
+  )}`;
+}
+
 export function osvFailureId(sourceId: string, code: string, context = ""): string {
   return `failure-osv-${stableIdHash(JSON.stringify([sourceId, code, context]))}`;
 }

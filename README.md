@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, the framework-independent quick-manifest API boundary, and bounded npm/OSV/public-GitHub data adapters are implemented. Fastify transport, repository-job orchestration, product screens, migration/recommendation policy, and production priority/scoring are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest API boundary, and bounded npm/OSV/public-GitHub data adapters are implemented. Fastify transport, repository-job orchestration, and product screens are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -102,11 +102,25 @@ evidence, **FR-005** dependency inventory, **FR-006** exact-version outdated det
 explicit npm deprecation detection, **FR-008** curated dependency-overlap heuristics, neutral
 **FR-009** bounded static source-usage analysis and potentially-unnecessary dependency heuristics,
 **FR-010** npm Registry health facts, **FR-011** known-vulnerability detection, **FR-012**
-framework/tool detection, and **FR-013** static configuration detection. Provider-backed rules
+framework/tool detection, **FR-013** static configuration detection, **FR-014** major-version
+migration opportunities, **FR-015** evidence-backed recommendations, **FR-016** deterministic
+priority, and explicit category scoring-coverage facts for **FR-018–FR-021**. Provider-backed rules
 consume source-bound normalized analyzer metadata, and project configuration is inspected without
 executing configuration code.
 
 See [JavaScript Rules](docs/implementation/rules-javascript.md).
+
+## Scoring policy
+
+The concrete deterministic scorer lives in **`packages/scoring`**.
+
+Scoring policy v1 uses finalized finding priority to produce evidence-linked deductions only when an
+ecosystem coverage fact proves the category is supported. Dependencies and Security are numeric when
+their evidence is complete; Maintainability, Testing, and Tooling remain N/A instead of receiving
+invented penalties. The overall score is available only when both currently supported numeric
+categories are available.
+
+See [Scoring Policy v1](docs/implementation/scoring.md) and **ADR-0011**.
 
 ## Quick manifest application boundary
 
@@ -126,7 +140,8 @@ See [Quick Manifest Analysis](docs/implementation/quick-manifest-analysis.md).
 The first provider package lives in **`packages/data-sources`**.
 
 Its npm Registry adapter performs bounded package-metadata acquisition. Its OSV adapter performs
-bounded exact-version vulnerability queries. Its public GitHub adapter validates supported repository
+bounded exact-version vulnerability queries and now records query-level provenance even when a
+complete exact-version query returns zero known vulnerability matches. Its public GitHub adapter validates supported repository
 URLs, resolves an immutable commit SHA, enumerates a bounded recursive tree, and fetches only the
 root manifest, supported configuration files, and bounded JS/TS/JSX/TSX source files by immutable blob SHA while exposing whether source acquisition was complete enough for absence-based analysis.
 

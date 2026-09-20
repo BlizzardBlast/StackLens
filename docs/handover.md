@@ -1,12 +1,12 @@
 # StackLens Session Handover
 
 > **Status:** Active implementation handover  
-> **Prepared:** 2026-09-19  
+> **Prepared:** 2026-09-20  
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
-> **Architecture:** v0.1.7  
-> **Completed milestone:** static source usage analysis — PR #19  
-> **Immediate milestone:** Milestone I — migration opportunities, recommendations, priority, scoring  
+> **Architecture:** v0.1.8  
+> **Completed milestone:** migration opportunities, recommendations, priority, scoring — PR #20  
+> **Immediate milestone:** Milestone J — product web/API/worker completion  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -23,14 +23,17 @@ Before implementing anything:
    - `docs/architecture.md`;
    - `docs/adr/0008-analysis-report-contract-v1.md`;
    - `docs/adr/0009-deterministic-staged-analyzer-core.md`;
+   - `docs/adr/0011-deterministic-priority-recommendation-scoring-v1.md`;
    - `docs/implementation/analysis-contracts.md`;
    - `docs/implementation/analyzer-core.md`;
    - `docs/implementation/rules-javascript.md`;
+   - `docs/implementation/scoring.md`;
    - `docs/implementation/quick-manifest-analysis.md`;
    - `docs/implementation/data-sources.md`;
    - `packages/contracts/README.md`;
    - `packages/analyzer-core/README.md`;
    - `packages/rules-javascript/README.md`;
+   - `packages/scoring/README.md`;
    - `packages/data-sources/README.md`;
    - `apps/api/README.md`;
    - `AGENTS.md`;
@@ -465,97 +468,127 @@ Primary traceability:
 `FR-003, FR-009, FR-017, FR-021, DATA-003, DATA-004, DATA-005, DATA-006, NFR-001, NFR-002, NFR-003,
 NFR-004, NFR-005, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007`.
 
-### Milestone I — Migration opportunities, recommendations, priority, scoring
+## 13. Completed milestone: migration opportunities, recommendations, priority, scoring
 
-Once source-usage evidence is meaningful, implement:
+PR #20 implements the first production policy slice for **FR-014–FR-021** and
+**SCORE-001–SCORE-004**.
 
-- FR-014 migration opportunities;
-- FR-015 recommendations;
-- FR-016 priority policy;
-- FR-018 overall score;
-- FR-019 category scores;
-- FR-020 score explanations;
-- FR-021 limitations.
+Accepted implementation:
 
-Create concrete `packages/scoring` only when score behavior can be based on accepted evidence
-coverage and rules.
+- `JS-MIGRATION-014@1` identifies a migration-review opportunity only for an exact declared
+  semantic version whose source-bound npm `latest` target crosses a major-version boundary;
+- migration findings name current/target state, preserve project/npm evidence, remain
+  medium-confidence heuristics, and explicitly do not make migration mandatory;
+- `JS-PRIORITY-016@1` is the production JavaScript/TypeScript prioritizer;
+- known vulnerabilities and explicit deprecations are high priority; major migrations, exact-version
+  outdated findings, and curated overlaps are medium; potentially-unnecessary findings are low;
+- heuristic confidence can cap/reduce urgency but can never increase it;
+- `JS-RECOMMEND-015@1` converts supported finalized findings into evidence-backed actions after
+  priority while preserving factual/heuristic basis and confidence;
+- recommendations never execute changes and do not claim an automatic migration/removal is safe;
+- `JS-COVERAGE-018@1` produces category scoring coverage facts/limitations;
+- dependency coverage requires complete supported project/source usage plus complete usable npm
+  latest metadata;
+- security coverage requires exact dependency versions, a complete bound OSV source, complete
+  exact-version query results, and explicit query-level provenance evidence;
+- the OSV adapter now emits one source-bound query evidence record per exact package/version query,
+  including zero-match results, without describing them as proof of security;
+- `@stacklens/scoring` implements `stack-health-v1` behind analyzer-core's existing
+  `AnalysisScorer` interface;
+- scoring v1 deducts critical/high/medium/low findings by 40/25/12/5 points respectively from a
+  category whose evidence coverage is complete;
+- Dependencies and Security are the only numeric categories in v1;
+- Maintainability, Testing, and Tooling are explicitly N/A/insufficient evidence until accepted
+  complete-coverage policy exists;
+- any material category limitation makes that category N/A rather than converting missing evidence
+  into a score penalty;
+- the v1 overall score is the arithmetic mean of Dependencies and Security only when both are
+  available, with evidenceCoverage=40 to disclose that only two of five accepted category families
+  are numeric;
+- score contributions reference their triggering finding evidence and `SCORE-STACK-001@1`;
+- priority mappings, score weights, category coverage, and overall formula are recorded in ADR-0011;
+- no UI/API/worker code recalculates policy, and analyzer-core required no formula changes.
 
-All score contributions must be explainable and versioned.
+Primary traceability:
 
-Missing evidence must yield N/A/insufficient-evidence, not penalties.
+`FR-014, FR-015, FR-016, FR-017, FR-018, FR-019, FR-020, FR-021,
+DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, DATA-006,
+SCORE-001, SCORE-002, SCORE-003, SCORE-004,
+NFR-001, NFR-002, NFR-003, NFR-004, NFR-005,
+SEC-001, SEC-002, GOV-002, GOV-006, GOV-007`.
 
-### Milestone J — Product web/API/worker completion
+## 14. Immediate next milestone: product web/API/worker completion
 
-After the analysis domain is proven in vertical slices, finish:
+Milestone J should now connect the proven analysis domain to hosted product flows:
 
-- React/Vite web app;
-- Fastify REST/OpenAPI API;
-- Graphile Worker repository jobs;
-- PostgreSQL job/report state;
-- progress visibility;
-- Design v1 implementation;
-- accessibility/responsiveness.
+- finish the React/Vite product screens from Design v1;
+- add Fastify REST/OpenAPI transport around the existing application services;
+- add Graphile Worker public-repository analysis jobs;
+- add PostgreSQL job/report state required by the hosted flow;
+- expose deterministic progress/status;
+- compose repository acquisition, metadata collection, analyzer rules, production priority,
+  recommendations, and `stack-health-v1` scoring in application/worker orchestration;
+- preserve WCAG 2.2 AA and responsive requirements;
+- keep analyzer/rule/scoring policy out of React/Fastify/database code.
 
-Do not move analyzer logic into React or Fastify.
+Implement Milestone J in bounded vertical slices rather than one giant infrastructure/UI PR.
 
-## 13. What not to do next
+## 15. What not to do next
 
-Avoid these tempting detours until their requirement slice is ready:
+Avoid these detours:
 
-- do not build the full dashboard before the analysis domain and provider boundaries are sufficiently complete;
-- do not add Next.js/TanStack Start just because they are available;
+- do not move analyzer, priority, recommendation, or score policy into React/Fastify/worker code;
+- do not change `stack-health-v1` weights/categories without a deliberate scoring-version + ADR/test update;
+- do not invent numeric Maintainability/Testing/Tooling scores until accepted evidence coverage exists;
+- do not add Next.js/TanStack Start merely because they are available;
 - do not introduce microservices;
-- do not add Redis/BullMQ;
-- do not add AI/LLM analysis;
+- do not add Redis/BullMQ when Graphile Worker/PostgreSQL is the accepted baseline;
+- do not add AI/LLM analysis to deterministic MVP policy;
 - do not implement private GitHub repositories;
 - do not create code-writing/PR automation;
 - do not implement whole-repository architecture analysis;
-- do not install dependencies from analyzed projects;
-- do not build one giant "analyze everything" rule;
-- do not add production scoring weights before evidence coverage is meaningful.
+- do not install dependencies or execute code from analyzed projects.
 
-## 14. Pull-request strategy for the next session
+## 16. Pull-request strategy for the next session
 
 Recommended next PR:
 
 **Title**
 
 ```text
-feat: add static dependency usage analysis
+feat: add repository analysis orchestration
 ```
 
 **Primary requirements**
 
 ```text
-FR-003, FR-009, FR-013, FR-017, FR-021,
-DATA-001, DATA-003, DATA-004, DATA-005, DATA-006,
-NFR-001, NFR-002, NFR-003, NFR-004, NFR-005,
-SEC-001, SEC-002, SEC-003, SEC-007,
+FR-003, FR-004, FR-017, FR-021,
+DATA-001, DATA-002, DATA-006,
+NFR-001, NFR-003, NFR-004, NFR-005, NFR-008, NFR-009,
+SEC-001, SEC-002, SEC-003, SEC-007, SEC-008,
 GOV-002, GOV-006, GOV-007
 ```
 
-Keep the PR limited to bounded supported source acquisition, static parser/adapters, deterministic
-dependency-reference evidence, conservative FR-009 heuristic findings/limitations, analyzer
-integration, and documentation.
+Start with the smallest hosted repository vertical slice: one application/worker orchestration path
+that resolves the public GitHub snapshot, builds normalized project/metadata inputs, invokes the
+production rule set/prioritizer/recommendations/scorer, and returns/persists contract-valid progress
+and report state.
 
-Do not add source execution, private repository support, full architecture analysis, production
-priority/recommendations/scoring, worker/database job infrastructure, or UI in the same PR.
+Do not combine all final UI screens, every API endpoint, all database schema, and every worker concern
+into one unreviewable change. Keep domain policy in the existing packages.
 
-## 15. Handover completion signal
+## 17. Handover completion signal
 
-The next session can consider static source-usage analysis complete when:
+The next session can consider Milestone I complete when it verifies that:
 
-1. bounded acquisition includes only supported source files required by the parser/rules;
-2. source/config files are parsed statically and never imported/executed;
-3. supported ESM/CommonJS/static dynamic-import references become deterministic evidence;
-4. parser/acquisition failures and unsupported dynamic references remain explicit limitations;
-5. no dependency is labeled unnecessary solely because an import scan returned no match;
-6. any FR-009 finding remains heuristic with explicit confidence/basis unless direct necessity can be
-   established;
-7. quick manifest mode still discloses source-level insufficiency;
-8. focused rule/parser/acquisition/analyzer integration tests are green;
-9. the same PR completes journey/handover documentation before merge and the permanent CI gate is
-   green.
+1. PR #20 is present on current `main` and its permanent quality workflow is green;
+2. migration opportunities identify deterministic current/target state and remain optional/heuristic;
+3. priority is created only by the production prioritizer and is explainable;
+4. recommendations consume finalized findings and preserve evidence/basis;
+5. score policy is versioned, deterministic, and implemented in `packages/scoring`;
+6. unavailable/unsupported category evidence produces N/A rather than a penalty;
+7. OSV zero-match coverage has explicit query provenance and is not described as proof of security;
+8. contribution IDs/rationales/evidence explain numeric deductions;
+9. ADR-0011 and implementation/package documentation match the code.
 
-Continue with the smallest deterministic source-usage vertical slice rather than combining migration
-recommendations, scoring, worker/database orchestration, or UI behavior.
+Then continue with Milestone J rather than extending score coverage without accepted evidence.

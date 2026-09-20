@@ -87,3 +87,15 @@ export type {
   JavaScriptOsvVulnerability,
   JavaScriptOsvVulnerabilityMatch,
 } from "./analysis-metadata.js";
+
+export {
+  migrationOpportunityFindingId,
+  migrationOpportunityRule,
+} from "./migration-opportunity.js";
+export { javascriptFindingPrioritizer } from "./priority-policy.js";
+export { evidenceBackedRecommendationRule, recommendationId } from "./recommendations.js";
+export {
+  analysisCoverageFactId,
+  analysisCoverageFactType,
+  scoringCoverageFactRule,
+} from "./scoring-coverage.js";

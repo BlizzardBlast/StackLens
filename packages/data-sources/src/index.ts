@@ -40,6 +40,8 @@ export {
   OSV_VULNERABILITY_PAGE_BASE_URL,
   OsvVulnerabilityAdapter,
   osvEvidenceId,
+  osvQueryEvidenceId,
+  osvQueryEvidenceReference,
   osvSourceId,
   osvVulnerabilityApiUrl,
   osvVulnerabilityPageUrl,
