@@ -126,8 +126,7 @@ describe("stack health scorer [FR-018, FR-019, FR-020, SCORE-001, SCORE-002, SCO
     });
     expect(scores.contributions).toHaveLength(2);
     expect(scores.contributions.map((item) => item.points).toSorted((a, b) => a - b)).toEqual([
-      5,
-      25,
+      5, 25,
     ]);
     expect(scores.contributions.every((item) => item.rule.id === "SCORE-STACK-001")).toBe(true);
     expect(AnalysisScoresSchema.safeParse(scores).success).toBe(true);

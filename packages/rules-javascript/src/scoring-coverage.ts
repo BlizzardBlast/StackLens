@@ -7,9 +7,7 @@ import type {
 } from "@stacklens/contracts";
 
 import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
-import {
-  dependencyInventoryEvidenceId,
-} from "./dependency-inventory.js";
+import { dependencyInventoryEvidenceId } from "./dependency-inventory.js";
 import { latestDistTag, packageVersion, resolveNpmObservation } from "./npm-rule-support.js";
 import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
 import {
@@ -167,10 +165,7 @@ function dependencyCoverage(
         limitations.push(
           coverageLimitation(
             "dependencies",
-            `non-exact-version:${dependencyKey(
-              declaration.name,
-              declaration.declaredSpecifier,
-            )}`,
+            `non-exact-version:${dependencyKey(declaration.name, declaration.declaredSpecifier)}`,
             `Dependency scoring cannot establish complete version-health coverage for ${declaration.name} because ${JSON.stringify(
               declaration.declaredSpecifier,
             )} is not an exact supported semantic version.`,
@@ -219,7 +214,9 @@ function dependencyCoverage(
 
     const latest = latestDistTag(resolved.observation.snapshot);
     const latestVersion =
-      latest === undefined ? undefined : packageVersion(resolved.observation.snapshot, latest.version);
+      latest === undefined
+        ? undefined
+        : packageVersion(resolved.observation.snapshot, latest.version);
 
     if (latest === undefined || latestVersion === undefined) {
       complete = false;
@@ -302,7 +299,10 @@ function securityCoverage(
   const limitations: AnalysisLimitation[] = [];
   const knownEvidence = new Set(context.evidence.map((evidence) => evidence.id));
   const externalEvidence = externalEvidenceOnly(context.evidence);
-  const uniqueDependencies = new Map<string, { readonly packageName: string; readonly version: string }>();
+  const uniqueDependencies = new Map<
+    string,
+    { readonly packageName: string; readonly version: string }
+  >();
 
   for (const declaration of context.project.dependencies) {
     if (parseExactSemanticVersion(declaration.declaredSpecifier) === undefined) {
@@ -365,10 +365,7 @@ function securityCoverage(
       limitations.push(
         coverageLimitation(
           "security",
-          `osv-query-evidence-missing:${dependencyKey(
-            dependency.packageName,
-            dependency.version,
-          )}`,
+          `osv-query-evidence-missing:${dependencyKey(dependency.packageName, dependency.version)}`,
           `Security scoring lacks provenance evidence for the complete OSV query of ${dependency.packageName}@${dependency.version}.`,
           [boundSource.id],
         ),

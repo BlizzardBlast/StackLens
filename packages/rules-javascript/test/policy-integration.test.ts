@@ -184,7 +184,11 @@ describe("production analysis policy integration [FR-014–FR-021, SCORE-001–S
     });
     expect(migration?.title).toContain("1.0.0");
     expect(migration?.title).toContain("2.0.0");
-    expect(report.findings.some((finding) => finding.rule.id === "JS-MIGRATION-014" && finding.subject.name === "react")).toBe(false);
+    expect(
+      report.findings.some(
+        (finding) => finding.rule.id === "JS-MIGRATION-014" && finding.subject.name === "react",
+      ),
+    ).toBe(false);
 
     expect(report.recommendations).toHaveLength(1);
     expect(report.recommendations[0]?.basis).toBe("heuristic");

@@ -80,7 +80,7 @@
     "@stacklens/contracts": "workspace:*"
   },
   "devDependencies": {
-    "vitest": "^5.0.1",
-    "@stacklens/scoring": "workspace:*"
+    "@stacklens/scoring": "workspace:*",
+    "vitest": "^5.0.1"
   }
 }

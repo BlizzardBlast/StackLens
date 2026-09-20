@@ -11,10 +11,7 @@ import {
   scoringCoverageFactRule,
   withJavaScriptSourceUsage,
 } from "../src/index.js";
-import type {
-  JavaScriptAnalysisMetadata,
-  JavaScriptProjectSnapshot,
-} from "../src/index.js";
+import type { JavaScriptAnalysisMetadata, JavaScriptProjectSnapshot } from "../src/index.js";
 
 function factualCandidate(ruleId: string, category: "dependencies" | "security"): FindingCandidate {
   return {
@@ -121,10 +118,7 @@ describe("JavaScript production priority policy [FR-016, FR-020]", () => {
 
   it("caps low-confidence heuristic urgency instead of allowing uncertainty to raise priority", () => {
     const candidate = heuristicCandidate("JS-UNNECESSARY-009");
-    const priority = javascriptFindingPrioritizer.prioritize(
-      priorityContext(candidate),
-      candidate,
-    );
+    const priority = javascriptFindingPrioritizer.prioritize(priorityContext(candidate), candidate);
 
     expect(priority.level).toBe("low");
     expect(priority.factors.map((factor) => factor.key)).toEqual([

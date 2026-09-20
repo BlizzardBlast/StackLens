@@ -302,18 +302,14 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
       },
     ]);
     expect(result.evidence).toHaveLength(4);
-    expect(
-      result.evidence.find((item) => item.reference === "GHSA-aaaa-bbbb-cccc"),
-    ).toMatchObject({
+    expect(result.evidence.find((item) => item.reference === "GHSA-aaaa-bbbb-cccc")).toMatchObject({
       kind: "external",
       sourceId: result.source.id,
       reference: "GHSA-aaaa-bbbb-cccc",
       url: osvVulnerabilityPageUrl("GHSA-aaaa-bbbb-cccc"),
       publishedAt: "2026-09-17T08:00:00Z",
     });
-    expect(
-      result.evidence.find((item) => item.reference === "npm:lodash@4.17.20"),
-    ).toMatchObject({
+    expect(result.evidence.find((item) => item.reference === "npm:lodash@4.17.20")).toMatchObject({
       kind: "external",
       sourceId: result.source.id,
       url: OSV_QUERY_BATCH_URL,
@@ -744,9 +740,9 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
 
     expect(result.source.status).toBe("partial");
     expect(result.data.vulnerabilities).toEqual([]);
-    expect(
-      result.evidence.find((item) => item.reference === "GHSA-aaaa-bbbb-cccc")?.url,
-    ).toBe(osvVulnerabilityPageUrl("GHSA-aaaa-bbbb-cccc"));
+    expect(result.evidence.find((item) => item.reference === "GHSA-aaaa-bbbb-cccc")?.url).toBe(
+      osvVulnerabilityPageUrl("GHSA-aaaa-bbbb-cccc"),
+    );
     expect(result.partialFailures[0]?.code).toBe("osv_invalid_detail_response");
   });
 
