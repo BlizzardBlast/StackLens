@@ -69,6 +69,7 @@ export interface CreateQueuedRepositoryAnalysis {
 
 export interface AnalysisRetryUpdate {
   readonly id: string;
+  readonly jobId: string;
   readonly failureSummary: AnalysisFailureSummary;
   readonly updatedAt: string;
 }
