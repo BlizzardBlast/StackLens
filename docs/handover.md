@@ -4,9 +4,9 @@
 > **Prepared:** 2026-09-20  
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
-> **Architecture:** v0.1.8  
-> **Completed milestone:** migration opportunities, recommendations, priority, scoring — PR #20  
-> **Immediate milestone:** Milestone J — product web/API/worker completion  
+> **Architecture:** v0.1.9  
+> **Completed milestone:** repository analysis orchestration — PR #21  
+> **Immediate milestone:** Milestone J2 — persistent repository jobs and progress state  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -26,12 +26,14 @@ Before implementing anything:
    - `docs/adr/0011-deterministic-priority-recommendation-scoring-v1.md`;
    - `docs/implementation/analysis-contracts.md`;
    - `docs/implementation/analyzer-core.md`;
+   - `docs/implementation/repository-analysis.md`;
    - `docs/implementation/rules-javascript.md`;
    - `docs/implementation/scoring.md`;
    - `docs/implementation/quick-manifest-analysis.md`;
    - `docs/implementation/data-sources.md`;
    - `packages/contracts/README.md`;
    - `packages/analyzer-core/README.md`;
+   - `packages/analysis-orchestration/README.md`;
    - `packages/rules-javascript/README.md`;
    - `packages/scoring/README.md`;
    - `packages/data-sources/README.md`;
@@ -70,7 +72,9 @@ The repository already has the following accepted foundations:
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 
-The latest completed product implementation milestone is the **FR-009 bounded static source-usage analysis** slice. The deterministic analyzer core remains the latest analyzer architecture milestone.
+The latest completed hosted-product slice is the **public repository analysis orchestration** in
+`@stacklens/analysis-orchestration`. It composes the existing provider, analyzer, priority,
+recommendation, and scoring boundaries without HTTP, worker, or persistence coupling.
 
 The analyzer flow is:
 
@@ -102,9 +106,14 @@ AnalysisReport
 
 The JavaScript/TypeScript rule package now implements **FR-005 dependency inventory**, **FR-006 exact-version outdated detection**, **FR-007 explicit npm deprecation detection**, **FR-008 curated overlap heuristics**, neutral **FR-010 npm Registry health facts**, **FR-011 known-vulnerability detection**, **FR-012 framework/tool detection**, and **FR-013 static configuration detection**.
 
-The API application now has a framework-independent quick-manifest service boundary, but no Fastify HTTP transport is implemented yet.
+The API application has a framework-independent quick-manifest service boundary, and
+`@stacklens/analysis-orchestration` now provides the shared long-running public-repository workflow.
+No Fastify HTTP transport is implemented yet.
 
-The npm Registry, OSV, and public GitHub acquisition adapters are implemented, including explicit bounded source-coverage state. Static source-usage facts and potentially-unnecessary dependency heuristics are implemented. No repository-analysis worker orchestration, web application, migration/recommendation policy, concrete production priority policy, or concrete scoring policy has been implemented yet.
+The npm Registry, OSV, and public GitHub acquisition adapters are implemented, including explicit
+bounded source-coverage state. Static source usage, migration/recommendation policy, production
+priority, scoring v1, and shared repository orchestration are implemented. Persistent Graphile Worker
+jobs, PostgreSQL job/report state, Fastify transport, and the product web flow are not yet implemented.
 
 ## 3. Non-negotiable boundaries
 
@@ -517,46 +526,83 @@ SCORE-001, SCORE-002, SCORE-003, SCORE-004,
 NFR-001, NFR-002, NFR-003, NFR-004, NFR-005,
 SEC-001, SEC-002, GOV-002, GOV-006, GOV-007`.
 
-## 14. Immediate next milestone: product web/API/worker completion
+## 14. Completed milestone: repository analysis orchestration
 
-Milestone J should now connect the proven analysis domain to hosted product flows:
+PR #21 implements the first bounded Milestone J hosted-analysis vertical slice.
 
-- finish the React/Vite product screens from Design v1;
-- add Fastify REST/OpenAPI transport around the existing application services;
-- add Graphile Worker public-repository analysis jobs;
-- add PostgreSQL job/report state required by the hosted flow;
-- expose deterministic progress/status;
-- compose repository acquisition, metadata collection, analyzer rules, production priority,
-  recommendations, and `stack-health-v1` scoring in application/worker orchestration;
-- preserve WCAG 2.2 AA and responsive requirements;
-- keep analyzer/rule/scoring policy out of React/Fastify/database code.
+Accepted implementation:
 
-Implement Milestone J in bounded vertical slices rather than one giant infrastructure/UI PR.
+- new `@stacklens/analysis-orchestration` package is reusable by API and Worker without either app
+  depending on the other;
+- `productionJavaScriptAnalyzer` binds the current production fact/finding rules,
+  `JS-PRIORITY-016@1`, `JS-RECOMMEND-015@1`, and `stack-health-v1` without moving their policy
+  into application code;
+- `analyzePublicGitHubRepository` resolves the injected public GitHub provider snapshot, validates
+  the root manifest, creates the static project/source-usage snapshot, collects bounded npm/OSV
+  metadata, and invokes analyzer-core;
+- GitHub acquisition/missing/invalid root manifest failures are terminal application errors;
+- npm/OSV provider failures remain non-terminal report sources/partial failures so unrelated findings
+  can still complete;
+- OSV acquisition is attempted only for exact semantic-version declarations accepted by the shared
+  JavaScript semantic-version parser;
+- metadata acquisition is deterministically bounded to 100 unique package identities and 100 OSV
+  exact-version queries; overflow becomes an explicit resource-limit limitation rather than negative
+  evidence;
+- transport-independent progress exposes repository/manifest/npm/OSV/analysis state and counts only;
+- transient manifest/source/script contents are not copied into returned progress/report data;
+- repository input records validated owner/name/ref/immutable commit and a commit-based fingerprint;
+- full synthetic integration tests exercise the production analyzer composition and contract-valid
+  report output without live external services;
+- the architecture diagram now correctly shows provider I/O before analyzer-core rather than from the
+  analyzer itself;
+- Fastify, Graphile Worker, PostgreSQL persistence, and React UI remain outside this PR.
 
-## 15. What not to do next
+Primary traceability:
+
+`FR-003–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004,
+NFR-001, NFR-003, NFR-004, NFR-005, NFR-008, NFR-009,
+SEC-001, SEC-002, SEC-003, SEC-007, SEC-008, GOV-002, GOV-006, GOV-007`.
+
+## 15. Immediate next milestone: persistent repository jobs and progress state
+
+Milestone J2 should put the shared repository workflow behind the accepted asynchronous hosted
+execution model:
+
+- add the `apps/worker` application;
+- add the minimal PostgreSQL/Drizzle analysis + analysis-report persistence boundary;
+- use Graphile Worker for public-repository jobs;
+- persist only job/report metadata required by the architecture; never persist transient source
+  bodies by default;
+- map shared orchestration progress into durable job stages/status;
+- preserve provider retryability/partial failures without converting them into whole-job failure when
+  analysis can complete;
+- make job processing idempotent around a stable analysis identity;
+- add synthetic/database integration tests for queued → running → completed/failed state;
+- keep Fastify routes and React screens for subsequent bounded slices unless a tiny status seam is
+  needed to test the job boundary.
+
+## 16. What not to do next
 
 Avoid these detours:
 
-- do not move analyzer, priority, recommendation, or score policy into React/Fastify/worker code;
-- do not change `stack-health-v1` weights/categories without a deliberate scoring-version + ADR/test update;
-- do not invent numeric Maintainability/Testing/Tooling scores until accepted evidence coverage exists;
-- do not add Next.js/TanStack Start merely because they are available;
-- do not introduce microservices;
-- do not add Redis/BullMQ when Graphile Worker/PostgreSQL is the accepted baseline;
-- do not add AI/LLM analysis to deterministic MVP policy;
-- do not implement private GitHub repositories;
-- do not create code-writing/PR automation;
-- do not implement whole-repository architecture analysis;
-- do not install dependencies or execute code from analyzed projects.
+- do not duplicate repository orchestration in Worker or Fastify code; consume
+  `@stacklens/analysis-orchestration`;
+- do not move analyzer, priority, recommendation, or score policy into API/worker/database code;
+- do not persist repository file bodies, manifest text, or scripts in job payloads/logs;
+- do not change `stack-health-v1` weights/categories without a scoring-version + ADR/test update;
+- do not invent numeric Maintainability/Testing/Tooling scores without accepted coverage policy;
+- do not introduce Redis/BullMQ; Graphile Worker/PostgreSQL is the accepted baseline;
+- do not add private GitHub support, AI analysis, code-writing automation, or project execution;
+- do not combine all final REST endpoints and product screens into the persistence/worker PR.
 
-## 16. Pull-request strategy for the next session
+## 17. Pull-request strategy for the next session
 
 Recommended next PR:
 
 **Title**
 
 ```text
-feat: add repository analysis orchestration
+feat: add persistent repository analysis jobs
 ```
 
 **Primary requirements**
@@ -564,31 +610,27 @@ feat: add repository analysis orchestration
 ```text
 FR-003, FR-004, FR-017, FR-021,
 DATA-001, DATA-002, DATA-006,
-NFR-001, NFR-003, NFR-004, NFR-005, NFR-008, NFR-009,
-SEC-001, SEC-002, SEC-003, SEC-007, SEC-008,
+NFR-003, NFR-008, NFR-009,
+SEC-001, SEC-002, SEC-003, SEC-007,
 GOV-002, GOV-006, GOV-007
 ```
 
-Start with the smallest hosted repository vertical slice: one application/worker orchestration path
-that resolves the public GitHub snapshot, builds normalized project/metadata inputs, invokes the
-production rule set/prioritizer/recommendations/scorer, and returns/persists contract-valid progress
-and report state.
+Start with the smallest durable job path: create a repository-analysis job record, enqueue it with
+Graphile Worker, execute `analyzePublicGitHubRepository` with real provider adapters, persist
+progress/report metadata, and expose the repository function needed for later API status routes.
 
-Do not combine all final UI screens, every API endpoint, all database schema, and every worker concern
-into one unreviewable change. Keep domain policy in the existing packages.
+## 18. Handover completion signal
 
-## 17. Handover completion signal
+The next session can consider PR #21 complete when it verifies:
 
-The next session can consider Milestone I complete when it verifies that:
+1. PR #21 is present on current `main` and permanent quality CI is green;
+2. API and future Worker can consume `@stacklens/analysis-orchestration` without cross-app imports;
+3. repository analysis uses immutable GitHub identity and bounded transient source acquisition;
+4. npm/OSV failures remain partial evidence, not fabricated clean results;
+5. non-exact dependency declarations are never sent to OSV;
+6. production analyzer/rule/scoring versions appear in the returned contract-valid report;
+7. application progress contains no repository source/manifest/script contents;
+8. metadata resource truncation produces explicit limitations;
+9. architecture/README/AGENTS/implementation docs match the shared package boundary.
 
-1. PR #20 is present on current `main` and its permanent quality workflow is green;
-2. migration opportunities identify deterministic current/target state and remain optional/heuristic;
-3. priority is created only by the production prioritizer and is explainable;
-4. recommendations consume finalized findings and preserve evidence/basis;
-5. score policy is versioned, deterministic, and implemented in `packages/scoring`;
-6. unavailable/unsupported category evidence produces N/A rather than a penalty;
-7. OSV zero-match coverage has explicit query provenance and is not described as proof of security;
-8. contribution IDs/rationales/evidence explain numeric deductions;
-9. ADR-0011 and implementation/package documentation match the code.
-
-Then continue with Milestone J rather than extending score coverage without accepted evidence.
+Then continue with Milestone J2 rather than adding transport/UI around non-persistent repository work.
