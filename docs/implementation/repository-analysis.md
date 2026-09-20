@@ -91,7 +91,9 @@ The service emits ordered progress events for repository acquisition, manifest v
 metadata, vulnerability data, and analyzer execution.
 
 Metadata events contain counts/failure counts only. A callback may observe events and the same
-sequence is returned with the result.
+sequence is returned with the result. Progress observers may be synchronous or asynchronous; the
+orchestrator awaits each observer before advancing so a worker can durably persist ordered progress
+without racing later analysis phases.
 
 This is not yet durable job state. The next slice maps these events into the architecture's persisted
 Graphile Worker/PostgreSQL stages.
