@@ -190,9 +190,15 @@ importers:
       '@stacklens/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@stacklens/data-sources':
+        specifier: workspace:*
+        version: link:../../packages/data-sources
       '@stacklens/rules-javascript':
         specifier: workspace:*
         version: link:../../packages/rules-javascript
+      '@stacklens/scoring':
+        specifier: workspace:*
+        version: link:../../packages/scoring
     devDependencies:
       vitest:
         specifier: ^5.0.1
