@@ -1,4 +1,4 @@
-import { and, eq, notInArray } from "drizzle-orm";
+import { and, eq, notInArray, or } from "drizzle-orm";
 
 import type { StackLensDatabase } from "./database.js";
 import { analysisReports, analyses } from "./schema.js";
@@ -42,8 +42,13 @@ export interface AnalysisRepository {
   createQueuedRepositoryAnalysis(input: CreateQueuedRepositoryAnalysis): Promise<RepositoryAnalysisRecord>;
   findAnalysis(id: string): Promise<RepositoryAnalysisRecord | undefined>;
   findReport(analysisId: string): Promise<StoredAnalysisReport | undefined>;
-  markRunning(id: string, startedAt: string): Promise<RepositoryAnalysisRecord | undefined>;
-  updateProgress(id: string, stage: AnalysisProgressStage, updatedAt: string): Promise<void>;
+  claimForExecution(id: string, jobId: string, startedAt: string): Promise<boolean>;
+  updateProgress(
+    id: string,
+    jobId: string,
+    stage: AnalysisProgressStage,
+    updatedAt: string,
+  ): Promise<void>;
   markRetryPending(update: AnalysisRetryUpdate): Promise<void>;
   complete(update: AnalysisCompletion): Promise<void>;
   fail(update: AnalysisFailureUpdate): Promise<void>;
@@ -100,27 +105,33 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
     return row === undefined ? undefined : row;
   }
 
-  async markRunning(id: string, startedAt: string): Promise<RepositoryAnalysisRecord | undefined> {
+  async claimForExecution(id: string, jobId: string, startedAt: string): Promise<boolean> {
     const [row] = await this.database
       .update(analyses)
       .set({
         status: "running",
+        activeJobId: jobId,
         startedAt,
         updatedAt: startedAt,
         failureSummary: null,
       })
-      .where(and(eq(analyses.id, id), notInArray(analyses.status, [...TERMINAL_STATUSES])))
-      .returning();
+      .where(
+        and(
+          eq(analyses.id, id),
+          or(
+            eq(analyses.status, "queued"),
+            and(eq(analyses.status, "running"), eq(analyses.activeJobId, jobId)),
+          ),
+        ),
+      )
+      .returning({ id: analyses.id });
 
-    if (row !== undefined) {
-      return compactRecord(row);
-    }
-
-    return this.findAnalysis(id);
+    return row !== undefined;
   }
 
   async updateProgress(
     id: string,
+    jobId: string,
     stage: AnalysisProgressStage,
     updatedAt: string,
   ): Promise<void> {
@@ -130,7 +141,13 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
         progressStage: stage,
         updatedAt,
       })
-      .where(and(eq(analyses.id, id), notInArray(analyses.status, [...TERMINAL_STATUSES])));
+      .where(
+        and(
+          eq(analyses.id, id),
+          eq(analyses.status, "running"),
+          eq(analyses.activeJobId, jobId),
+        ),
+      );
   }
 
   async markRetryPending(update: AnalysisRetryUpdate): Promise<void> {
@@ -139,10 +156,17 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
       .set({
         status: "queued",
         progressStage: "queued",
+        activeJobId: null,
         failureSummary: update.failureSummary,
         updatedAt: update.updatedAt,
       })
-      .where(and(eq(analyses.id, update.id), notInArray(analyses.status, [...TERMINAL_STATUSES])));
+      .where(
+        and(
+          eq(analyses.id, update.id),
+          eq(analyses.activeJobId, update.jobId),
+          notInArray(analyses.status, [...TERMINAL_STATUSES]),
+        ),
+      );
   }
 
   async complete(update: AnalysisCompletion): Promise<void> {
@@ -183,6 +207,7 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
           analyzerVersion: update.report.analyzer.version,
           ruleSetVersion: update.report.analyzer.ruleSetVersion,
           scoringVersion: update.report.analyzer.scoringVersion,
+          activeJobId: null,
           completedAt: update.completedAt,
           updatedAt: update.completedAt,
           failureSummary: null,
@@ -197,6 +222,7 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
       .set({
         status: "failed",
         progressStage: "failed",
+        activeJobId: null,
         failureSummary: update.failureSummary,
         completedAt: update.completedAt,
         updatedAt: update.completedAt,
