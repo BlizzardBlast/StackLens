@@ -64,5 +64,10 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Capture formatter diff
+        run: |
+          pnpm exec oxfmt .
+          git diff -- packages/data-sources/test/osv.test.ts packages/rules-javascript/package.json packages/rules-javascript/src/index.ts packages/rules-javascript/src/scoring-coverage.ts packages/rules-javascript/test/policy-integration.test.ts packages/rules-javascript/test/policy.test.ts packages/scoring/test/stack-health-scorer.test.ts
+
       - name: Format check
         run: pnpm format:check
