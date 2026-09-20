@@ -3,8 +3,9 @@
 Application-layer orchestration for the StackLens hosted API.
 
 The current implementation is intentionally framework-independent. The accepted architecture still
-uses Fastify for the HTTP transport, but the first milestone establishes the authoritative
-quick-manifest service before adding transport/framework concerns.
+uses Fastify for the HTTP transport. `apps/api` currently owns the authoritative quick-manifest
+service, while long-running repository-analysis composition is shared through
+`@stacklens/analysis-orchestration` so the future API and Worker do not depend on each other.
 
 ## Quick manifest analysis
 
@@ -39,14 +40,19 @@ their analysis semantics.
 
 ## Dependency inversion
 
-The service receives its `AnalyzerDefinition` as a dependency.
+Quick manifest analysis receives its `AnalyzerDefinition` as a dependency.
+
+Long-running public-repository analysis is composed in `@stacklens/analysis-orchestration`, which
+binds the production rule set/prioritizer/recommendations/scorer while keeping their formulas in their
+own packages.
 
 This is deliberate:
 
 - the API does not own production priority policy;
 - the API does not own production scoring formulas;
-- analyzer/rule construction can evolve independently as provider and scoring packages are added;
-- tests can supply a minimal deterministic analyzer without adding premature production policy.
+- the future Worker can reuse repository orchestration without importing the API application;
+- Fastify transport can map application errors/status without changing analyzer behavior;
+- quick-manifest tests can still inject a minimal deterministic analyzer.
 
 ## Retention and safety
 
@@ -68,3 +74,17 @@ digest.
 
 **Traceability:** FR-001, FR-002, FR-004, FR-005, FR-021, FR-022, NFR-001, NFR-004, SEC-001,
 SEC-002, SEC-003.
+
+
+## Public repository analysis
+
+The public GitHub repository analysis service does **not** live in this application package.
+
+Use `@stacklens/analysis-orchestration` for the transport-independent repository workflow. It
+performs bounded GitHub/npm/OSV acquisition, builds the normalized JavaScript project/metadata
+snapshot, invokes the production analyzer, and returns progress plus a contract-valid report.
+
+A later Fastify endpoint should create/read persistent repository-analysis jobs rather than copying
+that orchestration into route handlers.
+
+See [Repository Analysis Orchestration](../../docs/implementation/repository-analysis.md).

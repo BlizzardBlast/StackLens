@@ -99,3 +99,6 @@ export {
   analysisCoverageFactType,
   scoringCoverageFactRule,
 } from "./scoring-coverage.js";
+
+export { parseExactSemanticVersion } from "./semver.js";
+export type { ParsedSemanticVersion } from "./semver.js";

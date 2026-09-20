@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest API boundary, and bounded npm/OSV/public-GitHub data adapters are implemented. Fastify transport, repository-job orchestration, and product screens are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest API boundary, bounded npm/OSV/public-GitHub data adapters, and transport-independent public-repository analysis orchestration are implemented. Persistent Graphile Worker/PostgreSQL repository jobs, Fastify REST/OpenAPI transport, and product screens are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -134,6 +134,20 @@ introducing persistence, authentication, provider I/O, or scoring policy.
 The Fastify REST/OpenAPI transport remains a later adapter over this service.
 
 See [Quick Manifest Analysis](docs/implementation/quick-manifest-analysis.md).
+
+## Repository analysis orchestration
+
+The shared hosted-analysis composition layer lives in **`packages/analysis-orchestration`**.
+
+It resolves a bounded public GitHub snapshot through the provider boundary, normalizes the transient
+manifest/source snapshot, collects bounded npm/OSV metadata, preserves provider partial failures,
+invokes the production JavaScript rule/prioritization/recommendation/scoring composition, and returns
+transport-independent progress plus a contract-valid report.
+
+This package deliberately contains no Fastify routes, Graphile Worker registration, PostgreSQL
+persistence, or React behavior, so API and Worker processes can reuse the same application workflow.
+
+See [Repository Analysis Orchestration](docs/implementation/repository-analysis.md).
 
 ## External data sources
 

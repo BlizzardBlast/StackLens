@@ -1027,3 +1027,42 @@ flow.
 DATA-002, DATA-003, DATA-004, DATA-005, DATA-006, SCORE-001, SCORE-002, SCORE-003, SCORE-004,
 NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-002, GOV-006, GOV-007.
 
+## 2026-09-20 — Step 43: Compose the first hosted public-repository analysis workflow
+
+PR #21 begins Milestone J with a transport-independent repository-analysis vertical slice.
+
+The initial implementation briefly placed the long-running service under `apps/api`. Review caught
+that this would force the future Graphile Worker to depend on the API application. The implementation
+was corrected before merge by introducing `@stacklens/analysis-orchestration`, a shared application
+package that both hosted runtimes can consume without cross-app coupling.
+
+The package adds `productionJavaScriptAnalyzer`, which composes the already-accepted fact/finding
+rules, production prioritizer, recommendation rule, and `stack-health-v1` scorer without moving
+their policy into orchestration code.
+
+`analyzePublicGitHubRepository` now connects the complete existing analysis chain: bounded immutable
+GitHub acquisition → untrusted root-manifest normalization → static project/source-usage snapshot →
+bounded npm metadata → exact-version-only OSV queries → sources/evidence/partial failures →
+production analyzer → recommendations/scores/report.
+
+GitHub acquisition or an unusable root manifest is terminal because no supported project snapshot
+can be built. npm/OSV failures are deliberately non-terminal; their unavailable/partial sources and
+typed failures are retained so unrelated facts can complete and affected scores become N/A rather
+than falsely clean.
+
+Provider enrichment is deterministically capped at 100 unique package identities and 100 exact OSV
+queries. Overflow is represented as a resource-limit limitation. Progress events expose only
+phase/count/failure state; repository source, manifest, and script contents stay transient and are
+not returned in progress/report output.
+
+The architecture context diagram was corrected as part of the same review: provider adapters perform
+network I/O before analyzer-core; analyzer rules do not call npm/OSV/GitHub.
+
+Focused synthetic integration tests verify a complete production flow, partial npm failure, skipped
+OSV for non-exact declarations, terminal GitHub/missing/malformed-manifest behavior, progress
+delivery, report schema validity, and source-content non-retention.
+
+**Traceability:** FR-003–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-001, NFR-003,
+NFR-004, NFR-005, NFR-008, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008, GOV-002,
+GOV-006, GOV-007.
+

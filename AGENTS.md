@@ -193,6 +193,19 @@ The API application layer lives in `apps/api`.
 - Stable validation errors should be transport-agnostic so Fastify can map them without changing analyzer behavior.
 - Provider/network collection happens before analyzer-core and must remain outside rule evaluation.
 
+## Analysis orchestration package
+
+Shared hosted-analysis composition lives in `packages/analysis-orchestration`.
+
+- Keep it transport- and persistence-independent so API and Worker can both consume it.
+- This package may sequence injected GitHub/npm/OSV providers before analyzer-core; it must not hide provider I/O inside rules.
+- Keep production analyzer composition here rather than reconstructing rule/prioritizer/recommendation/scorer sets in Fastify routes or Worker handlers.
+- Preserve unavailable/partial providers as report sources/partial failures and let rules/scoring emit limitations; never translate missing data into clean conclusions.
+- Repository manifest/source bodies are transient construction input only. Do not place them in progress events, application errors, logs, persistence payloads, or returned reports.
+- OSV orchestration may query only deterministic exact semantic-version declarations; do not reinterpret ranges/tags as installed versions.
+- Bound metadata acquisition deterministically. Resource-limit truncation must become an explicit limitation, never negative evidence.
+- Progress events expose phase/count/failure state only. Durable Graphile Worker/PostgreSQL job state is a later adapter over this seam.
+
 ## Analyzer safety
 
 Analyzed repositories are untrusted input.

@@ -1,8 +1,8 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.8  
-> **Date:** 2026-09-19  
+> **Architecture version:** 0.1.9  
+> **Date:** 2026-09-20  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
@@ -40,23 +40,27 @@ The architecture must make the following requirements structurally difficult to 
 flowchart LR
     U[Developer] --> W[StackLens Web]
     W --> A[StackLens API]
-    A --> C[Analyzer Core]
     A --> DB[(PostgreSQL)]
     A --> Q[Job Queue]
     Q --> WK[StackLens Worker]
-    WK --> C
     WK --> DB
 
-    C --> NPM[npm Registry]
-    C --> OSV[OSV.dev]
-    WK --> GH[GitHub REST API]
+    A --> AO[Analysis Orchestration]
+    WK --> AO
+    AO --> DS[Data-source Adapters]
+    AO --> C[Analyzer Core]
+
+    DS --> GH[GitHub REST API]
+    DS --> NPM[npm Registry]
+    DS --> OSV[OSV.dev]
 
     CLI[Future CLI] -.-> C
     GA[Future GitHub Action/App] -.-> C
     IDE[Future IDE Integration] -.-> C
 ```
 
-External services are accessed only through explicit adapters. Core rules do not perform arbitrary network calls.
+External services are accessed only through explicit adapters before analyzer execution. Analyzer-core
+and ecosystem rules never call GitHub/npm/OSV directly.
 
 ## 4. Runtime containers
 
@@ -91,7 +95,9 @@ External services are accessed only through explicit adapters. Core rules do not
 - publish an OpenAPI contract;
 - own future authentication/session integration.
 
-The API is an orchestration boundary, not the home of rule logic.
+The API is a transport/job-management boundary, not the home of rule logic. The reusable
+long-running repository workflow is implemented in `@stacklens/analysis-orchestration` so API and
+Worker do not depend on each other's application package.
 
 ### 4.3 Worker application
 
@@ -100,8 +106,8 @@ The API is an orchestration boundary, not the home of rule logic.
 - process asynchronous public-repository analyses;
 - resolve an immutable repository reference/commit;
 - build a bounded repository snapshot without executing repository code;
-- collect required external metadata;
-- invoke the analyzer;
+- invoke the shared `@stacklens/analysis-orchestration` repository workflow;
+- collect required external metadata through that workflow's provider dependencies;
 - persist only the report/job metadata required by policy;
 - record progress and material partial failures.
 
@@ -136,6 +142,25 @@ The job system exists to:
 - provide the foundation for later monitoring (**FR-103**).
 
 The job payload must contain references/metadata rather than full private source content whenever possible (**SEC-003**, **SEC-004**).
+
+### 4.6 Shared analysis orchestration
+
+`@stacklens/analysis-orchestration` is the transport- and persistence-independent application
+composition layer shared by hosted runtimes.
+
+It owns:
+
+- production analyzer composition;
+- bounded repository/provider sequencing;
+- construction of normalized project/metadata/evidence inputs;
+- application-level progress events;
+- preservation of typed provider partial failures before analyzer execution.
+
+It does not own provider HTTP internals, finding/priority/recommendation/scoring formulas, Fastify,
+Graphile Worker registration, PostgreSQL repositories, or React behavior.
+
+This prevents Worker → API or API → Worker dependencies while keeping one authoritative hosted
+repository-analysis flow (**NFR-003**, **NFR-004**, **NFR-005**, **NFR-008**).
 
 ## 5. Analyzer architecture
 
@@ -460,6 +485,7 @@ StackLens/
 │  ├─ api/                 # Fastify REST API
 │  └─ worker/              # background analysis worker
 ├─ packages/
+│  ├─ analysis-orchestration/ # hosted analysis composition shared by API/worker
 │  ├─ analyzer-core/       # pipeline, finding model, rule interfaces
 │  ├─ rules-javascript/    # JS/TS rules + priority/recommendation/coverage policy
 │  ├─ contracts/           # Zod schemas + public domain/API contracts
@@ -481,6 +507,7 @@ Dependency direction:
 
 ```text
 apps/* -> packages/*
+analysis-orchestration -> analyzer-core + contracts + data-sources + rules-javascript + scoring
 rules-javascript -> analyzer-core + contracts
 scoring -> analyzer-core + contracts
 data-sources -> contracts
@@ -610,6 +637,11 @@ Repository analysis exposes coarse deterministic stages:
 
 The UI polls while a job is active. Individual provider failure may produce `completed_with_limitations` rather than a total failure when unrelated analysis remains valid (**NFR-003**, **FR-021**).
 
+The shared orchestration package already exposes transient provider/application progress
+(repository, manifest, package metadata, vulnerability data, analysis) without source content. The
+worker/persistence slice maps those events into the durable public job stages above rather than
+reimplementing provider/analyzer sequencing.
+
 ## 14. Security design
 
 ### Trust boundaries
@@ -648,6 +680,9 @@ Each adapter returns either:
 Rules declare the evidence they require.
 
 If npm metadata is unavailable, StackLens may still report manifest facts but cannot present outdated/deprecation findings that require that data. If OSV is unavailable, the Security category must not silently receive a perfect score; the report records insufficient vulnerability evidence (**NFR-003**, **PRD-004**, **SCORE-003**).
+
+The shared repository orchestrator preserves unavailable/partial provider sources and typed failures
+in analyzer input instead of converting them into empty successful metadata.
 
 ## 16. Testing architecture
 
