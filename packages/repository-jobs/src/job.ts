@@ -13,6 +13,14 @@ export function parseRepositoryAnalysisJobPayload(value: unknown): RepositoryAna
   }
 
   const record = value as Record<string, unknown>;
+  const allowedKeys = new Set(["analysisId", "repositoryUrl", "ref"]);
+
+  for (const key of Object.keys(record)) {
+    if (!allowedKeys.has(key)) {
+      throw new Error("Repository analysis job payload contains an unsupported field.");
+    }
+  }
+
   const analysisId = record.analysisId;
   const repositoryUrl = record.repositoryUrl;
   const ref = record.ref;
