@@ -1,7 +1,7 @@
 # Repository Analysis Orchestration
 
 > **Status:** Implemented application-service baseline  
-> **Date:** 2026-09-20  
+> **Date:** 2026-09-21  
 > **Requirements:** FR-003–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-001, NFR-003–NFR-005, NFR-008, NFR-009, SEC-001–SEC-003, SEC-007, SEC-008, GOV-007  
 > **Architecture:** `apps/api|apps/worker -> @stacklens/analysis-orchestration -> provider/analyzer packages`
 
@@ -95,15 +95,19 @@ sequence is returned with the result. Progress observers may be synchronous or a
 orchestrator awaits each observer before advancing so a worker can durably persist ordered progress
 without racing later analysis phases.
 
-This is not yet durable job state. The next slice maps these events into the architecture's persisted
-Graphile Worker/PostgreSQL stages.
+Milestone J2 now maps these events through `@stacklens/repository-jobs` into durable PostgreSQL
+stages. The orchestration package itself remains persistence-independent.
 
 ## Persistence boundary
 
 This package does not persist repository files, manifests, progress, or reports.
 
-The later worker/database layer should persist only job/report metadata required by the accepted
-architecture and SEC-003. Transient repository content must remain outside job payloads and logs.
+The implemented worker/database layer persists only job/report metadata required by the accepted
+architecture and SEC-003. `@stacklens/persistence` owns the database boundary,
+`@stacklens/repository-jobs` owns source-free delivery semantics, and `apps/worker` owns Graphile
+execution. Transient repository content remains outside job payloads and logs.
+
+See [Persistent Repository Analysis Jobs](repository-jobs.md).
 
 ## Verification
 
