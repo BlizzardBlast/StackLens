@@ -254,9 +254,9 @@ export async function analyzePublicGitHubRepository(
   dependencies: RepositoryAnalysisDependencies,
 ): Promise<RepositoryAnalysisResult> {
   const progress: RepositoryAnalysisProgress[] = [];
-  const recordProgress = (event: RepositoryAnalysisProgress) => {
+  const recordProgress = async (event: RepositoryAnalysisProgress): Promise<void> => {
     progress.push(event);
-    dependencies.onProgress?.(event);
+    await dependencies.onProgress?.(event);
   };
 
   await recordProgress({
