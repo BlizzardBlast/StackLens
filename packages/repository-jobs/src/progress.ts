@@ -15,4 +15,6 @@ export function durableStageForProgress(
     case "analysis":
       return progress.status === "completed" ? "scoring" : "running_rules";
   }
+
+  return undefined;
 }
