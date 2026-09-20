@@ -1066,3 +1066,34 @@ delivery, report schema validity, and source-content non-retention.
 NFR-004, NFR-005, NFR-008, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008, GOV-002,
 GOV-006, GOV-007.
 
+## 2026-09-21 — Step 44: Persist repository analysis jobs and progress
+
+Milestone J2 adds the accepted PostgreSQL/Graphile Worker delivery model around the repository
+orchestration introduced in PR #21.
+
+The implementation deliberately avoids API → Worker coupling. `@stacklens/persistence` owns the
+Drizzle/PostgreSQL analysis and report state, while `@stacklens/repository-jobs` owns the minimal
+source-free queue payload, stable task identity, enqueue seam, and mapping from transient orchestration
+events to coarse durable progress. `apps/worker` composes those boundaries with the existing
+`@stacklens/analysis-orchestration` workflow and production GitHub/npm/OSV adapters.
+
+Review tightened idempotency beyond a simple status flag. Each running analysis records the active
+Graphile job ID. Only that owner may persist progress or terminal output; a duplicate job cannot
+overwrite an in-flight execution. The same Graphile job may reclaim its analysis after interruption,
+which preserves retry behavior without allowing a different duplicate to race it.
+
+Retryable failures return to Graphile before the final attempt. On the final attempt StackLens writes
+a terminal failure and lets the queue job finish successfully, preventing a permanently-failed
+Graphile row from becoming the only record of failure. Reports that complete with provider
+limitations remain `completed_with_limitations`.
+
+The Graphile payload is restricted to analysis ID, public repository URL, and optional ref. Unknown
+payload fields are rejected so repository source, manifest text, scripts, and provider bodies cannot
+silently enter durable queue storage.
+
+The permanent quality workflow now provisions PostgreSQL 18. Integration coverage verifies durable
+state transitions, execution ownership, retry state, report/version metadata, and stale-job
+protection; focused worker tests cover at-least-once delivery and final-attempt behavior.
+
+**Traceability:** FR-003, FR-004, FR-017, FR-021, DATA-001, DATA-002, DATA-006, NFR-003, NFR-008,
+NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.
