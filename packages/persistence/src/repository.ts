@@ -14,6 +14,10 @@ import type {
 
 const TERMINAL_STATUSES = ["completed", "completed_with_limitations", "failed"] as const;
 
+function isoTimestamp(value: string): string {
+  return new Date(value).toISOString();
+}
+
 function compactRecord(row: typeof analyses.$inferSelect): RepositoryAnalysisRecord {
   return {
     id: row.id,
@@ -29,11 +33,13 @@ function compactRecord(row: typeof analyses.$inferSelect): RepositoryAnalysisRec
     ...(row.analyzerVersion === null ? {} : { analyzerVersion: row.analyzerVersion }),
     ...(row.ruleSetVersion === null ? {} : { ruleSetVersion: row.ruleSetVersion }),
     ...(row.scoringVersion === null ? {} : { scoringVersion: row.scoringVersion }),
-    createdAt: row.createdAt,
-    ...(row.startedAt === null ? {} : { startedAt: row.startedAt }),
-    ...(row.completedAt === null ? {} : { completedAt: row.completedAt }),
-    updatedAt: row.updatedAt,
-    ...(row.retentionExpiresAt === null ? {} : { retentionExpiresAt: row.retentionExpiresAt }),
+    createdAt: isoTimestamp(row.createdAt),
+    ...(row.startedAt === null ? {} : { startedAt: isoTimestamp(row.startedAt) }),
+    ...(row.completedAt === null ? {} : { completedAt: isoTimestamp(row.completedAt) }),
+    updatedAt: isoTimestamp(row.updatedAt),
+    ...(row.retentionExpiresAt === null
+      ? {}
+      : { retentionExpiresAt: isoTimestamp(row.retentionExpiresAt) }),
     ...(row.failureSummary === null ? {} : { failureSummary: row.failureSummary }),
   };
 }
@@ -102,7 +108,12 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
       .where(eq(analysisReports.analysisId, analysisId))
       .limit(1);
 
-    return row === undefined ? undefined : row;
+    return row === undefined
+      ? undefined
+      : {
+          ...row,
+          createdAt: isoTimestamp(row.createdAt),
+        };
   }
 
   async claimForExecution(id: string, jobId: string, startedAt: string): Promise<boolean> {
