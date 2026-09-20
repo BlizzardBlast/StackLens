@@ -255,7 +255,10 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
       githubRepositoryProvider,
       npmRegistryProvider,
       osvProvider,
-      onProgress(progress) {
+      async onProgress(progress) {
+        await new Promise<void>((resolve) => {
+          setTimeout(resolve, 0);
+        });
         observedProgress.push(progress);
       },
     });
