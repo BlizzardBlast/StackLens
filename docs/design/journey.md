@@ -998,8 +998,9 @@ overlap findings are medium, and potentially-unnecessary findings are low. Heuri
 only cap/reduce urgency.
 
 `JS-RECOMMEND-015@1` runs after final priority and emits bounded evidence-backed actions for the
-currently supported finding families. It preserves factual vs heuristic basis and never executes or
-automatically applies repository changes.
+currently supported finding families. It preserves factual vs heuristic basis, suppresses the generic
+outdated-version action when a more specific major-migration action exists for the same package, and
+never executes or automatically applies repository changes.
 
 Scoring required one additional evidence boundary: a clean security category cannot be justified by
 the absence of vulnerability findings alone. The OSV adapter therefore emits source-bound query

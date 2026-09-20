@@ -553,6 +553,8 @@ and potentially-unnecessary findings into bounded actions. It:
 - preserves factual vs heuristic basis;
 - carries confidence for heuristic recommendations;
 - explains the intended impact;
+- suppresses a generic outdated-version action when the same package already has a major-version
+  migration recommendation, avoiding duplicate update advice;
 - recommends review/testing/verification instead of automatic project modification.
 
 Recommendation output remains separate from facts/findings under DATA-005.

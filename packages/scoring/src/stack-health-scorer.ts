@@ -209,9 +209,13 @@ function overallScore(
 export const stackHealthScorer: AnalysisScorer = {
   version: STACK_HEALTH_SCORING_VERSION,
   score(context): AnalysisScores {
-    const categoryResults = Object.fromEntries(
-      CATEGORY_ORDER.map((category) => [category, scoreCategory(context, category)]),
-    ) as Record<
+    const categoryResults = {
+      dependencies: scoreCategory(context, "dependencies"),
+      security: scoreCategory(context, "security"),
+      maintainability: scoreCategory(context, "maintainability"),
+      testing: scoreCategory(context, "testing"),
+      tooling: scoreCategory(context, "tooling"),
+    } satisfies Record<
       ScoreCategory,
       { readonly score: ScoreResult; readonly contributions: readonly ScoreContribution[] }
     >;

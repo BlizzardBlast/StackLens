@@ -61,6 +61,8 @@ Recommendations:
 - reuse the finding evidence rather than inventing new facts;
 - carry heuristic confidence when applicable;
 - describe a review/action step instead of claiming an automatic change is safe;
+- suppress the generic FR-006 update recommendation when the same dependency has a more specific
+  FR-014 major-version migration finding, avoiding duplicate actions for one underlying update;
 - do not execute, install, migrate, or modify analyzed projects.
 
 ### Scoring coverage facts
