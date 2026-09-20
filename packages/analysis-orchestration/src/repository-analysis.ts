@@ -93,7 +93,7 @@ export interface RepositoryAnalysisDependencies {
   readonly npmRegistryProvider: EvidenceProvider<NpmPackageMetadataRequest, NpmPackageMetadata>;
   readonly osvProvider: EvidenceProvider<OsvVulnerabilityRequest, OsvVulnerabilitySnapshot>;
   readonly analyzer?: AnalyzerDefinition<JavaScriptProjectSnapshot, JavaScriptAnalysisMetadata>;
-  readonly onProgress?: (progress: RepositoryAnalysisProgress) => void;
+  readonly onProgress?: (progress: RepositoryAnalysisProgress) => void | Promise<void>;
 }
 
 export type RepositoryAnalysisResult =
@@ -259,7 +259,7 @@ export async function analyzePublicGitHubRepository(
     dependencies.onProgress?.(event);
   };
 
-  recordProgress({
+  await recordProgress({
     phase: "repository",
     status: "started",
   });
@@ -270,7 +270,7 @@ export async function analyzePublicGitHubRepository(
   });
 
   if (!repositoryResult.ok) {
-    recordProgress({
+    await recordProgress({
       phase: "repository",
       status: "failed",
       failed: 1,
@@ -288,17 +288,17 @@ export async function analyzePublicGitHubRepository(
     };
   }
 
-  recordProgress({
+  await recordProgress({
     phase: "repository",
     status: "completed",
   });
-  recordProgress({
+  await recordProgress({
     phase: "manifest",
     status: "started",
   });
 
   if (repositoryResult.data.manifest === undefined) {
-    recordProgress({
+    await recordProgress({
       phase: "manifest",
       status: "failed",
       failed: 1,
@@ -326,7 +326,7 @@ export async function analyzePublicGitHubRepository(
 
     parsedManifest = parsed;
   } catch {
-    recordProgress({
+    await recordProgress({
       phase: "manifest",
       status: "failed",
       failed: 1,
@@ -343,7 +343,7 @@ export async function analyzePublicGitHubRepository(
     };
   }
 
-  recordProgress({
+  await recordProgress({
     phase: "manifest",
     status: "completed",
   });
@@ -362,7 +362,7 @@ export async function analyzePublicGitHubRepository(
   const partialFailures: PartialFailure[] = [...repositoryResult.partialFailures];
   const limitations: AnalysisLimitation[] = [...repositoryResult.data.limitations];
 
-  recordProgress({
+  await recordProgress({
     phase: "package_metadata",
     status: "started",
     completed: 0,
@@ -400,7 +400,7 @@ export async function analyzePublicGitHubRepository(
         npmFailures += 1;
       }
 
-      recordProgress({
+      await recordProgress({
         phase: "package_metadata",
         status: "progress",
         completed: offset + batchIndex + 1,
@@ -414,7 +414,7 @@ export async function analyzePublicGitHubRepository(
 
   await acquireNpmBatch(0);
 
-  recordProgress({
+  await recordProgress({
     phase: "package_metadata",
     status: "completed",
     completed: selectedPackageNames.length,
@@ -436,7 +436,7 @@ export async function analyzePublicGitHubRepository(
   );
 
   if (selectedOsvQueries.length === 0) {
-    recordProgress({
+    await recordProgress({
       phase: "vulnerability_data",
       status: "skipped",
       completed: 0,
@@ -444,7 +444,7 @@ export async function analyzePublicGitHubRepository(
       failed: 0,
     });
   } else {
-    recordProgress({
+    await recordProgress({
       phase: "vulnerability_data",
       status: "started",
       completed: 0,
@@ -467,7 +467,7 @@ export async function analyzePublicGitHubRepository(
       };
     }
 
-    recordProgress({
+    await recordProgress({
       phase: "vulnerability_data",
       status: osvResult.ok ? "completed" : "failed",
       completed: osvResult.ok ? selectedOsvQueries.length : 0,
@@ -481,7 +481,7 @@ export async function analyzePublicGitHubRepository(
     ...(osvMetadata === undefined ? {} : { osv: osvMetadata }),
   };
 
-  recordProgress({
+  await recordProgress({
     phase: "analysis",
     status: "started",
   });
@@ -502,7 +502,7 @@ export async function analyzePublicGitHubRepository(
     partialFailures,
   });
 
-  recordProgress({
+  await recordProgress({
     phase: "analysis",
     status: "completed",
   });
