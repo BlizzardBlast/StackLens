@@ -12,6 +12,8 @@ import {
   parseRepositoryAnalysisJobPayload,
   REPOSITORY_ANALYSIS_MAX_ATTEMPTS,
   REPOSITORY_ANALYSIS_TASK_IDENTIFIER,
+  type GraphileJobAdder,
+  type RepositoryJobQueue,
 } from "../src/index.js";
 
 const createdAt = "2026-09-21T00:00:00.000Z";
@@ -29,16 +31,34 @@ function queuedRecord(): RepositoryAnalysisRecord {
   };
 }
 
-function repository(record = queuedRecord()): AnalysisRepository {
+function repositoryHarness(record = queuedRecord()) {
+  const createQueuedRepositoryAnalysis = vi.fn<
+    AnalysisRepository["createQueuedRepositoryAnalysis"]
+  >(async () => record);
+  const findAnalysis = vi.fn<AnalysisRepository["findAnalysis"]>(async () => record);
+  const findReport = vi.fn<AnalysisRepository["findReport"]>(async () => undefined);
+  const claimForExecution = vi.fn<AnalysisRepository["claimForExecution"]>(async () => true);
+  const updateProgress = vi.fn<AnalysisRepository["updateProgress"]>(async () => undefined);
+  const markRetryPending = vi.fn<AnalysisRepository["markRetryPending"]>(
+    async () => undefined,
+  );
+  const complete = vi.fn<AnalysisRepository["complete"]>(async () => undefined);
+  const fail = vi.fn<AnalysisRepository["fail"]>(async () => undefined);
+
+  const repository: AnalysisRepository = {
+    createQueuedRepositoryAnalysis,
+    findAnalysis,
+    findReport,
+    claimForExecution,
+    updateProgress,
+    markRetryPending,
+    complete,
+    fail,
+  };
+
   return {
-    createQueuedRepositoryAnalysis: vi.fn(async () => record),
-    findAnalysis: vi.fn(async () => record),
-    findReport: vi.fn(async () => undefined),
-    claimForExecution: vi.fn(async () => true),
-    updateProgress: vi.fn(async () => undefined),
-    markRetryPending: vi.fn(async () => undefined),
-    complete: vi.fn(async () => undefined),
-    fail: vi.fn(async () => undefined),
+    repository,
+    createQueuedRepositoryAnalysis,
   };
 }
 
@@ -95,8 +115,8 @@ describe("durable repository progress [FR-003, FR-021, NFR-008]", () => {
 
 describe("repository job enqueue service [FR-003, NFR-008, NFR-009]", () => {
   it("persists queued state before enqueueing a minimal job", async () => {
-    const analysisRepository = repository();
-    const enqueue = vi.fn(async () => undefined);
+    const harness = repositoryHarness();
+    const enqueue = vi.fn<RepositoryJobQueue["enqueue"]>(async () => undefined);
 
     const result = await createRepositoryAnalysisJob(
       {
@@ -106,13 +126,13 @@ describe("repository job enqueue service [FR-003, NFR-008, NFR-009]", () => {
         createdAt,
       },
       {
-        repository: analysisRepository,
+        repository: harness.repository,
         queue: { enqueue },
       },
     );
 
     expect(result.status).toBe("queued");
-    expect(analysisRepository.createQueuedRepositoryAnalysis).toHaveBeenCalledWith({
+    expect(harness.createQueuedRepositoryAnalysis).toHaveBeenCalledWith({
       id: "analysis-001",
       repositoryUrl: "https://github.com/acme/demo",
       requestedRef: "main",
@@ -126,7 +146,9 @@ describe("repository job enqueue service [FR-003, NFR-008, NFR-009]", () => {
   });
 
   it("configures Graphile with a stable analysis job key and bounded attempts", async () => {
-    const addJob = vi.fn(async () => ({ id: "graphile-job-1" }));
+    const addJob = vi.fn<GraphileJobAdder["addJob"]>(async () => ({
+      id: "graphile-job-1",
+    }));
     const queue = createGraphileRepositoryJobQueue({ addJob });
 
     await queue.enqueue({
