@@ -109,8 +109,7 @@ export function RepositoryAnalysisForm({
         </Button>
 
         {isPending ? (
-          <div
-            role="status"
+          <output
             aria-live="polite"
             className="flex items-start gap-3 rounded-lg border bg-muted/35 px-4 py-3"
           >
@@ -118,13 +117,13 @@ export function RepositoryAnalysisForm({
               aria-hidden="true"
               className="mt-1.5 size-2 shrink-0 animate-pulse rounded-full bg-primary motion-reduce:animate-none"
             />
-            <div className="grid gap-0.5">
-              <p className="text-sm font-semibold">Creating analysis</p>
-              <p className="text-xs leading-5 text-muted-foreground">
+            <span className="grid gap-0.5">
+              <span className="text-sm font-semibold">Creating analysis</span>
+              <span className="text-xs leading-5 text-muted-foreground">
                 Preparing the durable analysis state before opening live progress.
-              </p>
-            </div>
-          </div>
+              </span>
+            </span>
+          </output>
         ) : (
           <p className="text-xs text-muted-foreground">
             Static inspection only · Public repositories · No project code execution
