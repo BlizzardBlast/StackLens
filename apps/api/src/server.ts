@@ -21,6 +21,28 @@ function errorName(error: unknown): string {
   return error instanceof Error ? error.name : "UnknownError";
 }
 
+function validationFailure(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "validation" in error &&
+    error.validation !== undefined
+  );
+}
+
+function errorCode(error: unknown): string | undefined {
+  if (
+    typeof error !== "object" ||
+    error === null ||
+    !("code" in error) ||
+    typeof error.code !== "string"
+  ) {
+    return undefined;
+  }
+
+  return error.code;
+}
+
 export async function createStackLensApi(
   options: StackLensApiOptions,
 ): Promise<FastifyInstance> {
@@ -32,7 +54,7 @@ export async function createStackLensApi(
   app.setSerializerCompiler(serializerCompiler);
 
   app.setErrorHandler((error, request, reply) => {
-    if (error.validation !== undefined) {
+    if (validationFailure(error)) {
       return reply.code(400).send({
         code: "invalid_request",
         message: "Request does not match the API schema.",
@@ -42,7 +64,7 @@ export async function createStackLensApi(
     request.log.error(
       {
         errorName: errorName(error),
-        errorCode: error.code,
+        errorCode: errorCode(error),
       },
       "Unhandled StackLens API error.",
     );
