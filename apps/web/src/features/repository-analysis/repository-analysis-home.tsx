@@ -54,7 +54,7 @@ export function RepositoryAnalysisHome() {
     <main className="relative isolate min-h-[calc(100dvh-73px)] overflow-hidden">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-80 bg-gradient-to-b from-primary/8 via-primary/3 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-80 bg-linear-to-b from-primary/8 via-primary/3 to-transparent"
       />
 
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1.08fr)_minmax(22rem,0.92fr)] lg:items-center lg:gap-14 lg:py-20">
