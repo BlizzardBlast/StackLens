@@ -24,11 +24,15 @@ From the repository root:
 
 ```bash
 pnpm install
+pnpm build
 pnpm dev:infra
 pnpm dev
 ```
 
-The commands provide:
+The workspace build is currently required on a fresh checkout because the application entrypoints
+resolve internal workspace package exports from their compiled `dist` output.
+
+The commands then provide:
 
 - PostgreSQL 18 on `127.0.0.1:55432`;
 - Fastify on `127.0.0.1:3000`;
