@@ -44,7 +44,7 @@ const repository: AnalysisRepository = {
 
 const queue: RepositoryJobQueue = {
   async enqueue() {
-    return undefined;
+    throw new Error("Quick manifest analysis must not enqueue background work.");
   },
 };
 
