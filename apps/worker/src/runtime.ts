@@ -29,35 +29,42 @@ export async function startStackLensWorker(
   options: WorkerRuntimeOptions,
 ): Promise<StackLensWorkerRuntime> {
   const pool = new Pool({ connectionString: options.connectionString });
-  pool.on("error", () => undefined);
 
-  const database = createStackLensDatabase(pool);
-  await migrateStackLensDatabase(database);
-  await runMigrations({ pgPool: pool });
+  try {
+    const database = createStackLensDatabase(pool);
+    await migrateStackLensDatabase(database);
+    await runMigrations({ pgPool: pool });
 
-  const repository = new DrizzleAnalysisRepository(database);
-  const taskList = createRepositoryAnalysisTaskList({
-    repository,
-    analysisDependencies: {
-      githubRepositoryProvider: new GitHubRepositoryAdapter(),
-      npmRegistryProvider: new NpmRegistryAdapter(),
-      osvProvider: new OsvVulnerabilityAdapter(),
-    },
-  });
+    const repository = new DrizzleAnalysisRepository(database);
+    const taskList = createRepositoryAnalysisTaskList({
+      repository,
+      analysisDependencies: {
+        githubRepositoryProvider: new GitHubRepositoryAdapter(),
+        npmRegistryProvider: new NpmRegistryAdapter(),
+        osvProvider: new OsvVulnerabilityAdapter(),
+      },
+    });
 
-  const runner = await run({
-    pgPool: pool,
-    taskList,
-    concurrency: options.concurrency ?? 2,
-    noHandleSignals: false,
-  });
+    const runner = await run({
+      pgPool: pool,
+      taskList,
+      concurrency: options.concurrency ?? 2,
+      noHandleSignals: false,
+    });
 
-  return {
-    pool,
-    runner,
-    async stop() {
-      await runner.stop();
-      await pool.end();
-    },
-  };
+    return {
+      pool,
+      runner,
+      async stop() {
+        try {
+          await runner.stop();
+        } finally {
+          await pool.end();
+        }
+      },
+    };
+  } catch (error) {
+    await pool.end();
+    throw error;
+  }
 }
