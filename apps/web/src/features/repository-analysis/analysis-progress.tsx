@@ -39,17 +39,22 @@ const stageContent: Record<
   },
 };
 
+type ActiveProgressStage = (typeof ACTIVE_PROGRESS_STAGES)[number];
+
+function isActiveProgressStage(
+  stage: RepositoryAnalysisProgressStage,
+): stage is ActiveProgressStage {
+  return ACTIVE_PROGRESS_STAGES.some((activeStage) => activeStage === stage);
+}
+
 export interface AnalysisProgressProps {
   readonly repositoryUrl: string;
   readonly stage: RepositoryAnalysisProgressStage;
 }
 
 export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProgressProps>) {
-  const currentIndex = ACTIVE_PROGRESS_STAGES.indexOf(
-    stage as (typeof ACTIVE_PROGRESS_STAGES)[number],
-  );
-  const boundedCurrentIndex = currentIndex < 0 ? 0 : currentIndex;
-  const currentStage = ACTIVE_PROGRESS_STAGES[boundedCurrentIndex] ?? "queued";
+  const currentIndex = isActiveProgressStage(stage) ? ACTIVE_PROGRESS_STAGES.indexOf(stage) : 0;
+  const currentStage = ACTIVE_PROGRESS_STAGES[currentIndex] ?? "queued";
 
   return (
     <section
@@ -69,9 +74,9 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
       <ol className="grid gap-3" aria-label="Analysis stages">
         {ACTIVE_PROGRESS_STAGES.map((progressStage, index) => {
           const status =
-            index < boundedCurrentIndex
+            index < currentIndex
               ? "Complete"
-              : index === boundedCurrentIndex
+              : index === currentIndex
                 ? "Current"
                 : "Pending";
 
@@ -80,14 +85,14 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
               <span
                 aria-hidden="true"
                 className={
-                  index <= boundedCurrentIndex
+                  index <= currentIndex
                     ? "grid size-7 shrink-0 place-items-center rounded-full border border-primary/40 bg-primary/10 text-primary"
                     : "grid size-7 shrink-0 place-items-center rounded-full border text-muted-foreground"
                 }
               >
-                {index < boundedCurrentIndex ? "✓" : index + 1}
+                {index < currentIndex ? "✓" : index + 1}
               </span>
-              <span className={index === boundedCurrentIndex ? "font-semibold" : undefined}>
+              <span className={index === currentIndex ? "font-semibold" : undefined}>
                 {stageContent[progressStage].label}
               </span>
               <span className="sr-only"> — {status}</span>
