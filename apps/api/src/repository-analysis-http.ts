@@ -9,6 +9,7 @@ import {
   type AnalysisFailureSummary,
 } from "@stacklens/persistence";
 
+import { ApiErrorSchema } from "./http-contracts.js";
 import {
   readRepositoryAnalysis,
   submitRepositoryAnalysis,
@@ -49,10 +50,6 @@ const AnalysisIdParamsSchema = z.strictObject({
   analysisId: z.string().min(1),
 });
 
-export const ApiErrorSchema = z.strictObject({
-  code: z.string(),
-  message: z.string(),
-});
 
 export interface RepositoryAnalysisHttpDependencies extends RepositoryAnalysisApplicationDependencies {}
 
