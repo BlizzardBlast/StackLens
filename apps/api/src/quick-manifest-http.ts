@@ -12,11 +12,10 @@ import { ApiErrorSchema } from "./repository-analysis-http.js";
 import {
   analyzeQuickManifest,
   type QuickManifestInput,
-  type QuickManifestValidationErrorCode,
 } from "./quick-manifest-analysis.js";
 import { quickManifestAnalyzer } from "./quick-manifest-analyzer.js";
 
-const MAX_MANIFEST_CONTENT_LENGTH = 1_048_576;
+const MAX_MANIFEST_CONTENT_LENGTH = 524_288;
 
 export const QuickManifestAnalysisRequestSchema = z
   .discriminatedUnion("kind", [
@@ -40,10 +39,6 @@ export interface QuickManifestAnalysisHttpDependencies {
   readonly quickManifestAnalyzer?: AnalyzerDefinition<NormalizedPackageManifest, unknown>;
   readonly createAnalysisId?: () => string;
   readonly now?: () => string;
-}
-
-function errorStatus(code: QuickManifestValidationErrorCode): 400 {
-  return 400;
 }
 
 function publicInput(input: z.infer<typeof QuickManifestAnalysisRequestSchema>): QuickManifestInput {
@@ -92,7 +87,7 @@ export function registerQuickManifestAnalysisRoutes(
       );
 
       if (!result.ok) {
-        return reply.code(errorStatus(result.error.code)).send({
+        return reply.code(400).send({
           code: result.error.code,
           message: result.error.message,
         });
