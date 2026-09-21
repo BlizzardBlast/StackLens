@@ -19,6 +19,20 @@ export type {
   QuickManifestAnalysisResult,
 } from "./quick-manifest-analysis.js";
 
+export {
+  QUICK_MANIFEST_ANALYZER_VERSION,
+  QUICK_MANIFEST_RULE_SET_VERSION,
+  QUICK_MANIFEST_SCORING_VERSION,
+  quickManifestAnalyzer,
+} from "./quick-manifest-analyzer.js";
+
+export {
+  QuickManifestAnalysisRequestSchema,
+  QuickManifestAnalysisResponseSchema,
+  registerQuickManifestAnalysisRoutes,
+} from "./quick-manifest-http.js";
+export type { QuickManifestAnalysisHttpDependencies } from "./quick-manifest-http.js";
+
 export { readRepositoryAnalysis, submitRepositoryAnalysis } from "./repository-analysis.js";
 export type {
   RepositoryAnalysisApplicationDependencies,
