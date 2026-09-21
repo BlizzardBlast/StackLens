@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest API boundary, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, and persistent PostgreSQL/Graphile Worker repository jobs are implemented. Fastify REST/OpenAPI transport and product screens are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest API boundary, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, persistent PostgreSQL/Graphile Worker repository jobs, and the Fastify REST/OpenAPI repository-analysis transport are implemented. The quick-manifest HTTP route and product screens are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -131,7 +131,7 @@ returns stable validation errors for invalid input, creates a deterministic cont
 reuses the JavaScript manifest normalizer/evidence rule, and invokes analyzer-core without
 introducing persistence, authentication, provider I/O, or scoring policy.
 
-The Fastify REST/OpenAPI transport remains a later adapter over this service.
+The quick-manifest service remains framework-independent; its dedicated Fastify route is still a later bounded transport slice.
 
 See [Quick Manifest Analysis](docs/implementation/quick-manifest-analysis.md).
 
@@ -162,6 +162,21 @@ existing contract/version metadata.
 The permanent quality workflow provisions PostgreSQL 18 for persistence integration coverage.
 
 See [Persistent Repository Analysis Jobs](docs/implementation/repository-jobs.md) and **ADR-0004**.
+
+## Repository analysis API transport
+
+The hosted repository-analysis HTTP boundary now lives in **`apps/api`**.
+
+Fastify validates and canonicalizes supported public GitHub repository URLs, generates a non-guessable
+analysis identifier, creates/enqueues work through `@stacklens/repository-jobs`, and returns
+`202 Accepted`. Clients poll `GET /v1/analyses/:analysisId`; that endpoint reads only
+`@stacklens/persistence` state and returns coarse progress, terminal failure, or the persisted
+contract-valid report without exposing Graphile Worker internals.
+
+The same Zod route schemas generate the public OpenAPI 3.1 document at `/openapi.json`.
+
+See [Repository Analysis HTTP Transport](docs/implementation/repository-api.md) and **ADR-0002** /
+**ADR-0004**.
 
 ## External data sources
 

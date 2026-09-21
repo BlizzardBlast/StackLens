@@ -4,9 +4,9 @@
 > **Prepared:** 2026-09-21  
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
-> **Architecture:** v0.1.10  
-> **Completed milestone:** repository analysis orchestration — PR #21  
-> **Immediate milestone:** Milestone J2 — persistent repository jobs and progress state  
+> **Architecture:** v0.1.11  
+> **Completed milestone:** repository-analysis HTTP transport — PR #23  
+> **Immediate milestone:** Milestone K1 — repository-analysis web flow  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -603,72 +603,116 @@ Primary traceability:
 `FR-003, FR-004, FR-017, FR-021, DATA-001, DATA-002, DATA-006, NFR-003, NFR-008, NFR-009,
 SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007`.
 
-## 16. Immediate next milestone: repository-analysis HTTP transport
+## 16. Completed milestone: repository-analysis HTTP transport
 
-Milestone J3 should expose the durable job flow through the accepted Fastify REST/OpenAPI boundary:
+PR #23 implements the accepted Fastify REST/OpenAPI boundary over the
+durable J2 job flow.
 
-- add authoritative Fastify request validation for public GitHub repository submissions;
-- generate a non-guessable analysis ID at the API boundary;
-- create/enqueue repository analyses through `@stacklens/repository-jobs`;
-- return `202 Accepted` with the analysis identifier for new asynchronous work;
-- add a read endpoint for durable status/progress and terminal report/failure state;
-- reuse `@stacklens/persistence` repositories instead of querying Graphile internals;
-- publish and test the OpenAPI contract;
-- keep analyzer/provider sequencing in `@stacklens/analysis-orchestration`;
-- keep React product screens for a subsequent bounded slice unless a tiny transport acceptance
-  fixture is required.
+Accepted implementation:
 
-## 17. What not to do next
+- `apps/api` now constructs a Fastify 5 application with Zod validation/serialization and
+  `@fastify/swagger` OpenAPI generation;
+- `POST /v1/analyses/repository` accepts only a supported public HTTPS GitHub repository URL;
+- authoritative URL validation/canonicalization reuses `@stacklens/data-sources` rather than
+  creating a second GitHub URL policy in Fastify;
+- the API boundary generates a non-guessable UUID analysis ID and delegates persistence/enqueueing to
+  `@stacklens/repository-jobs`;
+- successful submission returns `202 Accepted` with only the stable analysis identifier;
+- `GET /v1/analyses/:analysisId` reads `@stacklens/persistence` for coarse durable
+  status/progress and terminal report/failure state;
+- active Graphile job IDs, internal queue tables, retry counters, source bodies, manifest text,
+  scripts, provider bodies, and secrets are not part of the public status contract;
+- completed analyses require their transactionally persisted `AnalysisReport`; inconsistent
+  completed-without-report state is treated as service unavailable instead of fabricated output;
+- request/schema errors are stable and source-free; dependency failures return a generic `503`
+  without leaking low-level provider/database/queue details;
+- `GET /openapi.json` publishes OpenAPI 3.1 from the same Zod schemas used by route validation and
+  response serialization;
+- the API does not import `apps/worker` or reconstruct provider/analyzer sequencing;
+- focused Fastify injection tests cover submission, strict validation, queue failure, progress,
+  terminal report/failure, not-found behavior, and OpenAPI publication.
+
+Primary traceability:
+
+`FR-003, FR-004, FR-017, FR-021, DATA-006, NFR-003, NFR-008, NFR-009,
+SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007`.
+
+## 17. Immediate next milestone: repository-analysis web flow
+
+After this PR is merged and current `main` is verified green, start the first production web
+application slice rather than adding more queue internals.
+
+The next bounded milestone should:
+
+- bootstrap `apps/web` with the already-accepted React 19 + Vite + TanStack Router/Query stack;
+- reuse `packages/ui`, semantic design tokens, and the Design v1 analyzer/report information
+  architecture;
+- submit public GitHub URLs to `POST /v1/analyses/repository`;
+- poll `GET /v1/analyses/:analysisId` through TanStack Query while the analysis is non-terminal;
+- display the actual coarse server progress stage without fake percentage progress;
+- distinguish total failure from `completed_with_limitations`;
+- render the persisted `AnalysisReport` using existing contract/domain components without
+  recalculating finding priority or scores in React;
+- add focused component/accessibility tests and a bounded happy/failure flow fixture;
+- keep quick-manifest HTTP transport and UI as a separate follow-up unless the accepted task is
+  explicitly broadened.
+
+## 18. What not to do next
 
 Avoid these detours:
 
-- do not import `apps/worker` from `apps/api`; API uses the shared job/persistence packages;
-- do not duplicate repository orchestration in Fastify routes;
-- do not expose Graphile Worker internal tables as the public status model;
-- do not move analyzer, priority, recommendation, or score policy into API/worker/database code;
-- do not persist repository source bodies, manifest text, scripts, or raw provider bodies;
-- do not change `stack-health-v1` weights/categories without a scoring-version + ADR/test update;
-- do not invent numeric Maintainability/Testing/Tooling scores without accepted coverage policy;
-- do not introduce Redis/BullMQ; Graphile Worker/PostgreSQL is the accepted baseline;
-- do not add private GitHub support, AI analysis, code-writing automation, or project execution;
-- do not combine the full React product experience into the first Fastify transport PR.
+- do not import `apps/worker` into the API or web app;
+- do not poll Graphile Worker tables or expose Graphile identifiers in client state;
+- do not duplicate repository URL rules, orchestration, analyzer policy, priority, or scoring in
+  React/Fastify;
+- do not execute analyzed repository code or install its dependencies;
+- do not persist repository source, manifest, script, or provider response bodies;
+- do not invent percentage progress when the server exposes stage progress only;
+- do not change `stack-health-v1` policy without its scoring-version/ADR process;
+- do not add private GitHub support, AI analysis, code-writing automation, Redis/BullMQ, or unrelated
+  product surfaces to the first web slice.
 
-## 18. Pull-request strategy for the next session
+## 19. Pull-request strategy for the next session
 
 Recommended next PR:
 
 **Title**
 
 ```text
-feat: add repository analysis API transport
+feat: add repository analysis web flow
 ```
 
 **Primary requirements**
 
 ```text
 FR-003, FR-004, FR-017, FR-021,
-DATA-006,
-NFR-003, NFR-008, NFR-009,
+DATA-001–DATA-006,
+SCORE-001–SCORE-004,
+NFR-003, NFR-006, NFR-007, NFR-008,
 SEC-001, SEC-002, SEC-003, SEC-007,
 GOV-002, GOV-006, GOV-007
 ```
 
-Start with the smallest end-to-end hosted transport path: validate a public GitHub URL, create a
-stable asynchronous analysis record, enqueue it, return `202`, and let clients poll the durable
-analysis status/report endpoint.
+Start with the smallest client path that proves submit → durable polling → terminal
+report/failure/limitations against the J3 REST contract.
 
-## 19. Handover completion signal
+## 20. Handover completion signal
 
-The next session can consider PR #22 complete when it verifies:
+The next session can consider Milestone J3 complete when it verifies:
 
-1. PR #22 is present on current `main` and permanent quality CI is green;
-2. PostgreSQL stores analysis/report metadata but no repository source/manifest/script bodies;
-3. the Graphile payload is restricted to analysis ID, public repository URL, and optional ref;
-4. duplicate/stale jobs cannot overwrite another active execution;
-5. retryable failures return to Graphile before the final attempt and final exhaustion is persisted;
-6. provider partial failures can still produce `completed_with_limitations`;
-7. final reports persist immutable repository identity and analyzer/rule/scoring/schema versions;
-8. PostgreSQL-backed integration tests run in permanent CI;
-9. architecture/README/AGENTS/implementation docs match the J2 package boundaries.
+1. PR #23 is present on current `main` and permanent quality CI is green;
+2. `POST /v1/analyses/repository` rejects unsupported/non-GitHub/extra-field input before durable
+   work and returns `202` with a non-guessable analysis ID for accepted input;
+3. the API delegates enqueueing through `@stacklens/repository-jobs` and never imports the Worker;
+4. `GET /v1/analyses/:analysisId` reads StackLens persistence, not Graphile internal tables;
+5. active responses expose coarse status/progress only, failed responses expose typed terminal
+   failure, and successful terminal responses expose the persisted contract-valid report;
+6. completed state without a durable report does not produce a fabricated successful response;
+7. low-level queue/database errors and source/provider bodies do not leak through public errors;
+8. `/openapi.json` contains the repository submission and polling endpoints from the same schemas
+   used at runtime;
+9. focused Fastify tests plus the repository-wide build/typecheck/test/lint/format suite pass;
+10. README, architecture, AGENTS, implementation docs, journey, and this handover describe the J3
+    boundary consistently.
 
-Then continue with Milestone J3 rather than adding UI directly around internal queue state.
+Then continue with the repository-analysis web flow rather than adding UI around queue internals.

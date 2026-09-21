@@ -1103,3 +1103,38 @@ protection; focused worker tests cover at-least-once delivery and final-attempt 
 
 **Traceability:** FR-003, FR-004, FR-017, FR-021, DATA-001, DATA-002, DATA-006, NFR-003, NFR-008,
 NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.
+
+
+## 2026-09-21 — Step 45: Expose durable repository analysis through Fastify
+
+PR #23 / Milestone J3 adds the first public REST/OpenAPI adapter over the persistent repository-analysis job
+flow (**FR-003**, **FR-004**, **FR-017**, **FR-021**, **NFR-008**).
+
+The API keeps transport concerns separate from analysis execution:
+
+- Fastify 5 validates a strict repository request body and reuses the existing public-GitHub URL
+  parser/canonicalizer instead of duplicating URL policy;
+- the API generates a non-guessable UUID analysis ID, then calls the shared
+  `@stacklens/repository-jobs` creation/enqueue seam;
+- accepted work returns `202` plus the analysis ID;
+- polling reads `@stacklens/persistence` and exposes StackLens status/progress plus terminal
+  report/failure, never Graphile internal tables or active job identifiers;
+- completed analyses without their transactionally expected report fail closed as unavailable;
+- Zod route schemas are also the source for OpenAPI 3.1 at `/openapi.json`;
+- dependency failures are mapped to source-free generic service errors and tests verify low-level
+  queue messages do not leak;
+- Fastify injection tests cover accepted/canonicalized submission, strict invalid input, queue
+  failure, running progress, terminal report/failure, not-found state, and OpenAPI shape.
+
+The implementation follows ADR-0002 and ADR-0004 and does not add a new architecture decision:
+Fastify remains a replaceable adapter, Graphile/PostgreSQL remain the accepted async infrastructure,
+and `@stacklens/analysis-orchestration` remains the only production repository workflow.
+
+One operational edge remains intentionally visible: analysis-row creation and Graphile enqueue are
+separate durable operations. If enqueueing throws, the HTTP request returns `503` without exposing
+the generated analysis ID; the API does not delete or force-fail the row because queue commit outcome
+can be ambiguous. Hosted-launch retention/reconciliation must handle such unreachable queued rows
+without weakening the current source-free/idempotent job boundary.
+
+Verification for this step is the focused Fastify test suite plus the repository-wide quality
+workflow. The next bounded milestone is the React repository-analysis submit/poll/report flow.
