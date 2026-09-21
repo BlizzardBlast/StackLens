@@ -44,7 +44,7 @@ export function RepositoryAnalysisForm({
     }
 
     setClientError(undefined);
-    await onSubmit(normalizedValue);
+    await onSubmit(normalizedValue).catch(() => undefined);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
