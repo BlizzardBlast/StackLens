@@ -26,7 +26,7 @@ function snapshot(overrides: Partial<RepositoryAnalysisSnapshot> = {}): Reposito
 
 function renderWithRouter(ui: ReactNode) {
   const rootRoute = createRootRoute({
-    component: () => <>{ui}</>,
+    component: () => <div>{ui}</div>,
   });
   const router = createRouter({
     routeTree: rootRoute,
