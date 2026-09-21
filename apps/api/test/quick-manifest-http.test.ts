@@ -161,7 +161,7 @@ describe("quick manifest Fastify transport [FR-001, FR-002, FR-004, FR-021]", ()
     });
   });
 
-  it("rejects unknown fields and over-limit manifest content at the HTTP schema boundary", async () => {
+  it("rejects schema violations and over-limit manifest content", async () => {
     const app = await testApi();
 
     const unknownField = await app.inject({
