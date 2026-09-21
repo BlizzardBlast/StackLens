@@ -94,7 +94,7 @@ Or run only the API after PostgreSQL is available:
 pnpm --filter @stacklens/api dev
 ```
 
-The local defaults are `DATABASE_URL=postgresql://stacklens:stacklens@127.0.0.1:5433/stacklens`,
+The local defaults are `DATABASE_URL=postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens`,
 `STACKLENS_API_HOST=127.0.0.1`, and `STACKLENS_API_PORT=3000`. Production should provide an
 explicit `DATABASE_URL`.
 
