@@ -79,7 +79,8 @@ The repository already has the following accepted foundations:
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 - runnable local web/API/worker composition with PostgreSQL 18 via Docker Compose (host port
-  `55432`, container port `5432`);
+  `55432`, container port `5432`); root `pnpm dev` automatically prepares the shared workspace
+  dependency outputs required by web/API/worker before their watch processes start;
 
 The latest hosted-product slice is the **repository-analysis web flow** in `apps/web`, including a
 post-K1 UX refinement from real end-to-end use. The browser remains a replaceable client of the
