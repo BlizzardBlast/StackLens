@@ -26,7 +26,11 @@ pnpm dev:infra
 pnpm dev
 ```
 
-Or run only the worker after PostgreSQL is available:
+The root `pnpm dev` command prepares the shared workspace outputs required by the applications before
+starting the watch processes; Turbo reuses cached builds when possible.
+
+Or run only the worker after PostgreSQL is available and shared outputs have been prepared (for
+example with `pnpm dev:prepare`):
 
 ```bash
 pnpm --filter @stacklens/worker dev
