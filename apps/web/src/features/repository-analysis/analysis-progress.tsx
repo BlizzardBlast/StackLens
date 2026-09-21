@@ -120,7 +120,6 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
       <div className="grid gap-8 p-5 sm:p-7 lg:grid-cols-[minmax(0,0.9fr)_minmax(20rem,1.1fr)] lg:gap-10">
         <div className="grid content-start gap-5">
           <div
-            role="status"
             aria-live="polite"
             aria-atomic="true"
             className="grid gap-3 rounded-xl border border-primary/20 bg-primary/5 p-5"
@@ -128,7 +127,9 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
             <p className="text-xs font-semibold tracking-wide text-primary uppercase">Now working</p>
             <div className="grid gap-2">
               <h2 className="text-xl font-semibold tracking-tight">{currentContent.label}</h2>
-              <p className="text-sm leading-6 text-muted-foreground">{currentContent.detail}</p>
+              <output className="text-sm leading-6 text-muted-foreground">
+                {currentContent.detail}
+              </output>
             </div>
           </div>
 
