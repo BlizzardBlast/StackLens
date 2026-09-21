@@ -109,7 +109,7 @@ The transport remains thin:
 - one strict Zod request union represents `paste` or `upload` input;
 - uploaded semantics preserve the submitted filename and content, while the authoritative service
   still requires the filename to be exactly `package.json`;
-- request content is bounded to 512 KiB and unknown fields are rejected before analysis;
+- request content is bounded to 524,288 characters and unknown fields are rejected before analysis;
 - application validation codes map directly to stable source-free `400` responses;
 - successful requests return `200` with a contract-valid `AnalysisReport`;
 - the same schemas publish the operation through the existing OpenAPI 3.1 document;
