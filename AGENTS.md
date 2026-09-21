@@ -181,6 +181,33 @@ External provider integration lives in `packages/data-sources`.
 - Keep GitHub full file bodies transient: do not copy source/config content into provider evidence, limitations, partial failures, or logs. Repository rules consume the already-acquired snapshot later.
 - PR tests use synthetic/recorded provider responses; normal PR correctness must not depend on live external services.
 
+## Web application boundary
+
+The production web application lives in `apps/web`.
+
+- Keep it a replaceable client of the public Fastify REST contract; never import `apps/api`,
+  `apps/worker`, `@stacklens/persistence`, or Graphile internals into browser code.
+- TanStack Query owns remote repository-analysis state. Forward its `AbortSignal` to fetch and stop
+  polling when the public status becomes terminal.
+- Client-side repository URL checks are advisory only. Do not duplicate the authoritative GitHub URL
+  parser/canonicalizer from the server.
+- Runtime-validate terminal `AnalysisReport` payloads with `@stacklens/contracts`; do not create a
+  parallel report shape in React.
+- Render analyzer-owned classification, priority, confidence, evidence, recommendations, and scores
+  as supplied. Do not calculate replacement severity/priority/scoring rules in presentation code.
+- Show coarse named progress stages only. Never derive fake percentages from stage position.
+- Keep total failure visually and semantically distinct from
+  `completed_with_limitations`.
+- Reuse `@stacklens/ui` and semantic tokens for product meaning. Screen composition belongs in
+  `apps/web`; shared UI packages must not grow route/server-state behavior.
+- Preserve Design v1 accessibility and responsive requirements: labeled controls, alert/live
+  semantics where appropriate, keyboard-visible focus, text labels for status meaning, and useful
+  narrow layouts.
+- Web tests use synthetic API responses and contract-valid report fixtures; normal PR correctness
+  must not depend on live providers or a browser talking to production services.
+
+See `docs/implementation/repository-web.md`.
+
 ## API application boundary
 
 The API application layer lives in `apps/api`.
