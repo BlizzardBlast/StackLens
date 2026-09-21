@@ -38,6 +38,18 @@ pnpm check
 
 Run `pnpm check` before considering implementation work complete when the full suite is practical.
 
+
+For local end-to-end repository analysis:
+
+```sh
+pnpm dev:infra
+pnpm dev
+```
+
+`compose.yaml` owns only local PostgreSQL. The web, API, and worker remain normal pnpm workspace
+processes. Keep process bootstrap/composition in app runtime entrypoints; do not move analyzer,
+priority, recommendation, or scoring policy into `main.ts` or infrastructure wiring.
+
 Do not replace pnpm, Turborepo, TypeScript, Oxlint, Oxfmt, Vitest, Tailwind CSS, shadcn/ui, or Base UI without an architecture decision that explains the requirement impact.
 
 ## TypeScript

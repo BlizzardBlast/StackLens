@@ -76,6 +76,33 @@ digest.
 SEC-002, SEC-003.
 
 
+
+## Development runtime
+
+The package has a runnable PostgreSQL/Graphile composition boundary.
+
+From the repository root, start PostgreSQL and all application processes with:
+
+```bash
+pnpm dev:infra
+pnpm dev
+```
+
+Or run only the API after PostgreSQL is available:
+
+```bash
+pnpm --filter @stacklens/api dev
+```
+
+The local defaults are `DATABASE_URL=postgresql://stacklens:stacklens@127.0.0.1:5432/stacklens`,
+`STACKLENS_API_HOST=127.0.0.1`, and `STACKLENS_API_PORT=3000`. Production should provide an
+explicit `DATABASE_URL`.
+
+`src/runtime.ts` owns infrastructure composition only: PostgreSQL pool, StackLens migrations,
+Graphile Worker queue utilities, the durable repository implementation, and Fastify construction.
+`src/main.ts` owns process environment, listening, and graceful shutdown. Route/application policy
+remains in the existing testable modules.
+
 ## Public repository analysis HTTP transport
 
 `createStackLensApi` exposes the Milestone J3 Fastify boundary:

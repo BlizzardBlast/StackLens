@@ -33,3 +33,6 @@ export type { RepositoryAnalysisHttpDependencies } from "./repository-analysis-h
 
 export { createStackLensApi } from "./server.js";
 export type { StackLensApiOptions } from "./server.js";
+
+export { createStackLensApiRuntime } from "./runtime.js";
+export type { StackLensApiRuntime, StackLensApiRuntimeOptions } from "./runtime.js";

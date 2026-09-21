@@ -12,7 +12,11 @@
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "ui:add": "pnpm --filter @stacklens/ui exec shadcn add",
-    "ui:info": "pnpm --filter @stacklens/ui exec shadcn info --json"
+    "ui:info": "pnpm --filter @stacklens/ui exec shadcn info --json",
+    "dev": "pnpm -r --parallel --stream --filter @stacklens/api --filter @stacklens/worker --filter @stacklens/web run dev",
+    "dev:infra": "docker compose up -d postgres",
+    "dev:infra:down": "docker compose down",
+    "dev:infra:logs": "docker compose logs -f postgres"
   },
   "devDependencies": {
     "oxfmt": "^0.68.0",

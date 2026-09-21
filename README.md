@@ -14,6 +14,44 @@ For the current implementation sequence and fresh-session handover, see **[docs/
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 
+## Local development
+
+The repository is runnable end to end for the public-repository flow.
+
+Prerequisites:
+
+- Node.js 24;
+- pnpm 12.4.2;
+- Docker with Docker Compose.
+
+From the repository root:
+
+```bash
+pnpm install
+pnpm dev:infra
+pnpm dev
+```
+
+This starts PostgreSQL 18 in Docker and runs the web, API, and worker as normal workspace processes.
+The default local endpoints are:
+
+- web: `http://localhost:5173`;
+- API: `http://127.0.0.1:3000`;
+- OpenAPI: `http://127.0.0.1:3000/openapi.json`.
+
+The API and worker automatically apply the StackLens/Graphile database migrations on startup. Local
+defaults match `.env.example`; copy or override those variables when a different database, host,
+port, or worker concurrency is required.
+
+Stop the application processes with Ctrl+C, then stop PostgreSQL with:
+
+```bash
+pnpm dev:infra:down
+```
+
+See [Local Development Runtime](docs/implementation/local-development.md) for runtime boundaries,
+environment variables, and troubleshooting.
+
 ## MVP
 
 The MVP is defined by the accepted requirements in `docs/requirements.md`. At a high level, it must support:

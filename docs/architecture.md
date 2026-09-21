@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.12  
+> **Architecture version:** 0.1.13  
 > **Date:** 2026-09-21  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
@@ -779,7 +779,7 @@ Containerized API ---- PostgreSQL
         +------------- Worker container
 ```
 
-Local development uses Docker Compose for PostgreSQL while web/API/worker can run as normal pnpm workspace processes.
+Local development uses the checked-in `compose.yaml` for PostgreSQL 18 while web/API/worker run as normal pnpm workspace processes. `apps/api/src/runtime.ts` composes PostgreSQL persistence with Graphile queue utilities before constructing Fastify; `apps/worker/src/runtime.ts` composes the same PostgreSQL boundary with Graphile Worker and the accepted provider/orchestration stack. Process entrypoints own environment parsing, listening/signals, and graceful shutdown only; they do not own analyzer policy. See [Local Development Runtime](implementation/local-development.md).
 
 A specific cloud vendor is intentionally not an architectural dependency. The deployment provider may be selected later as long as it can run:
 

@@ -15,3 +15,24 @@ ref.
 
 Traceability: FR-003, FR-021, DATA-006, NFR-003, NFR-008, NFR-009, SEC-001, SEC-002, SEC-003,
 GOV-006.
+
+
+## Development runtime
+
+Start PostgreSQL and all local applications from the repository root:
+
+```bash
+pnpm dev:infra
+pnpm dev
+```
+
+Or run only the worker after PostgreSQL is available:
+
+```bash
+pnpm --filter @stacklens/worker dev
+```
+
+The worker defaults to the local Compose `DATABASE_URL` and concurrency 2. Override
+`DATABASE_URL` or `STACKLENS_WORKER_CONCURRENCY` through the process environment when needed.
+The runtime owns Graphile/StackLens migrations and provider composition; the process entrypoint owns
+signals and graceful shutdown.

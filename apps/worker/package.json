@@ -12,7 +12,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/main.ts",
+    "start": "node --enable-source-maps dist/main.js"
   },
   "dependencies": {
     "@stacklens/analysis-orchestration": "workspace:*",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@types/node": "24.13.6",
     "@types/pg": "8.23.1",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.1",
+    "tsx": "^4.23.15"
   }
 }
