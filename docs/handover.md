@@ -5,8 +5,8 @@
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
 > **Architecture:** v0.1.11  
-> **Completed milestone:** persistent repository jobs and progress state — PR #22  
-> **Immediate milestone:** Milestone J3 — repository-analysis HTTP transport  
+> **Completed milestone:** repository-analysis HTTP transport — PR #23  
+> **Immediate milestone:** Milestone K1 — repository-analysis web flow  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -605,7 +605,7 @@ SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007`.
 
 ## 16. Completed milestone: repository-analysis HTTP transport
 
-The current Milestone J3 pull request implements the accepted Fastify REST/OpenAPI boundary over the
+PR #23 implements the accepted Fastify REST/OpenAPI boundary over the
 durable J2 job flow.
 
 Accepted implementation:
@@ -700,7 +700,7 @@ report/failure/limitations against the J3 REST contract.
 
 The next session can consider Milestone J3 complete when it verifies:
 
-1. the Milestone J3 PR is present on current `main` and permanent quality CI is green;
+1. PR #23 is present on current `main` and permanent quality CI is green;
 2. `POST /v1/analyses/repository` rejects unsupported/non-GitHub/extra-field input before durable
    work and returns `202` with a non-guessable analysis ID for accepted input;
 3. the API delegates enqueueing through `@stacklens/repository-jobs` and never imports the Worker;

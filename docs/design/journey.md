@@ -1107,7 +1107,7 @@ NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.
 
 ## 2026-09-21 — Step 45: Expose durable repository analysis through Fastify
 
-Milestone J3 adds the first public REST/OpenAPI adapter over the persistent repository-analysis job
+PR #23 / Milestone J3 adds the first public REST/OpenAPI adapter over the persistent repository-analysis job
 flow (**FR-003**, **FR-004**, **FR-017**, **FR-021**, **NFR-008**).
 
 The API keeps transport concerns separate from analysis execution:
