@@ -52,6 +52,7 @@ export interface GraphileJobAdder {
     payload: Record<string, unknown>,
     options?: {
       readonly jobKey?: string;
+      readonly jobKeyMode?: "unsafe_dedupe";
       readonly maxAttempts?: number;
     },
   ): Promise<unknown>;
@@ -65,6 +66,7 @@ export function createGraphileRepositoryJobQueue(jobAdder: GraphileJobAdder): Re
         { ...payload },
         {
           jobKey: "repository-analysis:" + payload.analysisId,
+          jobKeyMode: "unsafe_dedupe",
           maxAttempts: REPOSITORY_ANALYSIS_MAX_ATTEMPTS,
         },
       );
