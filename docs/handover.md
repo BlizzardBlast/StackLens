@@ -4,9 +4,9 @@
 > **Prepared:** 2026-09-21  
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
-> **Architecture:** v0.1.11  
-> **Completed milestone:** repository-analysis HTTP transport — PR #23  
-> **Immediate milestone:** Milestone K1 — repository-analysis web flow  
+> **Architecture:** v0.1.12  
+> **Completed milestone:** Milestone K1 — repository-analysis web flow  
+> **Immediate milestone:** Milestone K2 — quick-manifest HTTP transport  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -28,6 +28,7 @@ Before implementing anything:
    - `docs/implementation/analyzer-core.md`;
    - `docs/implementation/repository-analysis.md`;
    - `docs/implementation/repository-jobs.md`;
+   - `docs/implementation/repository-web.md`;
    - `docs/implementation/rules-javascript.md`;
    - `docs/implementation/scoring.md`;
    - `docs/implementation/quick-manifest-analysis.md`;
@@ -41,6 +42,7 @@ Before implementing anything:
    - `packages/scoring/README.md`;
    - `packages/data-sources/README.md`;
    - `apps/api/README.md`;
+   - `apps/web/README.md`;
    - `apps/worker/README.md`;
    - `AGENTS.md`;
    - `CONTRIBUTING.md`;
@@ -55,7 +57,7 @@ Before implementing anything:
 The repository already has the following accepted foundations:
 
 - canonical product/system requirements;
-- architecture v0.1.10;
+- architecture v0.1.12;
 - Product Design v1;
 - generated design-token infrastructure;
 - shared UI package;
@@ -76,10 +78,10 @@ The repository already has the following accepted foundations:
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 
-The latest completed hosted-product slice is the **persistent public-repository job flow** from PR
-#22. `@stacklens/analysis-orchestration` remains transport/persistence independent, while
-`@stacklens/persistence`, `@stacklens/repository-jobs`, and `apps/worker` add the accepted
-PostgreSQL/Graphile Worker delivery boundary without moving analyzer policy into runtime code.
+The latest hosted-product slice is the **repository-analysis web flow** in `apps/web`.
+The browser remains a replaceable client of the public Fastify contract: TanStack Query polls durable
+status, shared contracts validate terminal reports, and React renders analyzer-owned
+findings/evidence/limitations/scores without importing persistence, Worker, or provider internals.
 
 The analyzer flow is:
 
@@ -111,15 +113,16 @@ AnalysisReport
 
 The JavaScript/TypeScript rule package now implements **FR-005 dependency inventory**, **FR-006 exact-version outdated detection**, **FR-007 explicit npm deprecation detection**, **FR-008 curated overlap heuristics**, neutral **FR-010 npm Registry health facts**, **FR-011 known-vulnerability detection**, **FR-012 framework/tool detection**, and **FR-013 static configuration detection**.
 
-The API application has a framework-independent quick-manifest service boundary, and
-`@stacklens/analysis-orchestration` now provides the shared long-running public-repository workflow.
-No Fastify HTTP transport is implemented yet.
+The API application has both the framework-independent quick-manifest service boundary and the J3
+Fastify REST/OpenAPI repository-analysis transport. `@stacklens/analysis-orchestration` remains the
+shared long-running public-repository workflow; quick-manifest Fastify transport is still pending.
 
 The npm Registry, OSV, and public GitHub acquisition adapters are implemented, including explicit
 bounded source-coverage state. Static source usage, migration/recommendation policy, production
-priority, scoring v1, shared repository orchestration, PostgreSQL analysis/report persistence, and
-Graphile Worker repository jobs are implemented. Fastify repository-job transport/status routes and
-the product web flow are not yet implemented.
+priority, scoring v1, shared repository orchestration, PostgreSQL analysis/report persistence,
+Graphile Worker jobs, Fastify repository transport/status routes, and the public-repository web flow
+are implemented. The next bounded gap is quick-manifest HTTP transport; its web input remains a
+separate follow-up.
 
 ## 3. Non-negotiable boundaries
 
@@ -637,82 +640,103 @@ Primary traceability:
 `FR-003, FR-004, FR-017, FR-021, DATA-006, NFR-003, NFR-008, NFR-009,
 SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007`.
 
-## 17. Immediate next milestone: repository-analysis web flow
+## 17. Completed milestone: repository-analysis web flow
 
-After this PR is merged and current `main` is verified green, start the first production web
-application slice rather than adding more queue internals.
+Milestone K1 introduces the first production React application in `apps/web`.
 
-The next bounded milestone should:
+Accepted implementation:
 
-- bootstrap `apps/web` with the already-accepted React 19 + Vite + TanStack Router/Query stack;
-- reuse `packages/ui`, semantic design tokens, and the Design v1 analyzer/report information
-  architecture;
-- submit public GitHub URLs to `POST /v1/analyses/repository`;
-- poll `GET /v1/analyses/:analysisId` through TanStack Query while the analysis is non-terminal;
-- display the actual coarse server progress stage without fake percentage progress;
-- distinguish total failure from `completed_with_limitations`;
-- render the persisted `AnalysisReport` using existing contract/domain components without
-  recalculating finding priority or scores in React;
-- add focused component/accessibility tests and a bounded happy/failure flow fixture;
-- keep quick-manifest HTTP transport and UI as a separate follow-up unless the accepted task is
-  explicitly broadened.
+- React 19 + Vite remain the ADR-0005 client runtime;
+- TanStack Router owns `/` and the stable `/analyses/$analysisId` route;
+- a small runtime-validated client adapter submits public repository URLs to
+  `POST /v1/analyses/repository`;
+- TanStack Query polls `GET /v1/analyses/:analysisId`, forwards cancellation, and stops at terminal
+  public statuses;
+- progress renders coarse durable stages only and never derives percentage progress;
+- terminal failure is distinct from `completed_with_limitations`;
+- terminal reports are runtime-validated with the shared `AnalysisReportSchema`;
+- report screens reuse `@stacklens/ui` finding/evidence/limitation vocabulary while keeping screen
+  composition in `apps/web`;
+- React renders report-owned priority, confidence, recommendations, evidence, and scores rather than
+  reconstructing analyzer/scoring policy;
+- evidence referenced by a finding is inspectable from the report without provider calls;
+- focused tests cover transport parsing, advisory URL validation, value preservation, progress,
+  failure, limited completion, and evidence disclosure;
+- quick-manifest HTTP transport and UI remain outside K1.
 
-## 18. What not to do next
+Primary traceability:
+
+`FR-003, FR-004, FR-017, FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004,
+NFR-003, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002, SEC-003, SEC-007,
+GOV-002, GOV-006, GOV-007`.
+
+See `docs/implementation/repository-web.md` and `apps/web/README.md`.
+
+## 18. Immediate next milestone: quick-manifest HTTP transport
+
+After K1 is merged and current `main` is green, expose the existing framework-independent
+quick-manifest service through the accepted Fastify/OpenAPI boundary.
+
+Keep this next slice transport-only:
+
+- reuse the existing quick-manifest application service rather than reimplementing manifest
+  normalization/analyzer behavior in Fastify;
+- define a bounded versioned HTTP request/response contract from shared Zod schemas;
+- support the accepted pasted/uploaded manifest semantics without persisting raw manifest content;
+- map validation/application errors to stable source-free public errors;
+- publish the operation through the existing OpenAPI document;
+- add focused Fastify injection coverage for accepted input, validation errors, and report output;
+- keep the corresponding React package.json input mode for a later web slice.
+
+Do not make repository polling depend on this route and do not introduce persistence or background
+jobs for the fast quick-manifest path.
+
+## 19. What not to do next
 
 Avoid these detours:
 
 - do not import `apps/worker` into the API or web app;
 - do not poll Graphile Worker tables or expose Graphile identifiers in client state;
-- do not duplicate repository URL rules, orchestration, analyzer policy, priority, or scoring in
-  React/Fastify;
+- do not duplicate repository URL, manifest normalization, orchestration, analyzer, priority, or
+  scoring policy in React/Fastify;
 - do not execute analyzed repository code or install its dependencies;
-- do not persist repository source, manifest, script, or provider response bodies;
+- do not persist repository source, manifest, script, or provider response bodies by default;
 - do not invent percentage progress when the server exposes stage progress only;
 - do not change `stack-health-v1` policy without its scoring-version/ADR process;
 - do not add private GitHub support, AI analysis, code-writing automation, Redis/BullMQ, or unrelated
-  product surfaces to the first web slice.
+  product surfaces to the quick-manifest transport slice.
 
-## 19. Pull-request strategy for the next session
+## 20. Pull-request strategy for the next session
 
 Recommended next PR:
 
 **Title**
 
 ```text
-feat: add repository analysis web flow
+feat: add quick manifest API transport
 ```
 
-**Primary requirements**
+Primary requirements should include the accepted manifest input/validation/report requirements,
+notably `FR-001`, `FR-002`, `FR-004`, `FR-017`, `FR-021`, and `FR-022`, plus applicable
+NFR/SEC/GOV requirements.
 
-```text
-FR-003, FR-004, FR-017, FR-021,
-DATA-001–DATA-006,
-SCORE-001–SCORE-004,
-NFR-003, NFR-006, NFR-007, NFR-008,
-SEC-001, SEC-002, SEC-003, SEC-007,
-GOV-002, GOV-006, GOV-007
-```
+Start by adapting the existing quick-manifest application service to Fastify/OpenAPI. Do not combine
+that work with a second product-screen expansion.
 
-Start with the smallest client path that proves submit → durable polling → terminal
-report/failure/limitations against the J3 REST contract.
+## 21. Handover completion signal
 
-## 20. Handover completion signal
+The next session can consider Milestone K1 complete when it verifies:
 
-The next session can consider Milestone J3 complete when it verifies:
+1. the K1 PR is present on current `main` and permanent quality CI is green;
+2. `apps/web` uses the accepted React 19 + Vite + TanStack Router/Query stack;
+3. public repository submission uses the J3 POST contract and preserves server validation errors;
+4. the stable analysis route polls only the public status endpoint and forwards request cancellation;
+5. polling stops at terminal status and progress shows named server stages without fake percentages;
+6. total failure is distinct from `completed_with_limitations`;
+7. terminal reports are runtime-validated with `AnalysisReportSchema` and rendered from contract data;
+8. browser code does not import Worker/persistence/provider internals or recalculate analyzer policy;
+9. focused web tests plus repository-wide build/typecheck/test/lint/format checks pass;
+10. README, architecture, AGENTS, implementation docs, journey, and this handover describe K1
+    consistently.
 
-1. PR #23 is present on current `main` and permanent quality CI is green;
-2. `POST /v1/analyses/repository` rejects unsupported/non-GitHub/extra-field input before durable
-   work and returns `202` with a non-guessable analysis ID for accepted input;
-3. the API delegates enqueueing through `@stacklens/repository-jobs` and never imports the Worker;
-4. `GET /v1/analyses/:analysisId` reads StackLens persistence, not Graphile internal tables;
-5. active responses expose coarse status/progress only, failed responses expose typed terminal
-   failure, and successful terminal responses expose the persisted contract-valid report;
-6. completed state without a durable report does not produce a fabricated successful response;
-7. low-level queue/database errors and source/provider bodies do not leak through public errors;
-8. `/openapi.json` contains the repository submission and polling endpoints from the same schemas
-   used at runtime;
-9. focused Fastify tests plus the repository-wide build/typecheck/test/lint/format suite pass;
-10. README, architecture, AGENTS, implementation docs, journey, and this handover describe the J3
-    boundary consistently.
-
-Then continue with the repository-analysis web flow rather than adding UI around queue internals.
+Then continue with quick-manifest HTTP transport before adding its web input mode.
