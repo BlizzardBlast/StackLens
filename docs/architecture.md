@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.11  
+> **Architecture version:** 0.1.12  
 > **Date:** 2026-09-21  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
@@ -80,6 +80,18 @@ and ecosystem rules never call GitHub/npm/OSV directly.
 - contain authoritative analyzer/scoring rules;
 - call npm/OSV/GitHub directly for product analysis;
 - infer findings independently of the analyzer report.
+
+The production implementation is `apps/web`, a React 19 + Vite SPA. TanStack Router owns stable
+product routes and TanStack Query owns repository-analysis server state. The web transport adapter
+consumes only the public Fastify contract, forwards cancellation to fetch, and runtime-validates
+terminal reports with `@stacklens/contracts`.
+
+Repository polling stops at terminal StackLens states. Presentation may map coarse server stages to
+human-readable labels, but it must not invent percentage progress or reconstruct queue internals.
+Report screens consume persisted analyzer priority, confidence, evidence, recommendations, and
+scores as data; React does not derive replacements for those policies.
+
+See [Repository Analysis Web Flow](implementation/repository-web.md).
 
 ### 4.2 API application
 

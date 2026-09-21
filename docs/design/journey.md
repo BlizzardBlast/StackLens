@@ -1138,3 +1138,40 @@ without weakening the current source-free/idempotent job boundary.
 
 Verification for this step is the focused Fastify test suite plus the repository-wide quality
 workflow. The next bounded milestone is the React repository-analysis submit/poll/report flow.
+
+
+## 2026-09-21 — Step 46: Add the first production repository-analysis web flow
+
+Milestone K1 introduces `apps/web`, the first production React surface for StackLens.
+
+The implementation keeps the browser deliberately thin. React 19 + Vite remain the accepted
+ADR-0005 runtime, TanStack Router owns the stable analysis route, and TanStack Query owns
+repository-analysis server state. A small injectable transport adapter submits the public repository
+URL, forwards query cancellation to `fetch`, validates public status payloads with Zod, and validates
+terminal reports with the shared `AnalysisReportSchema`.
+
+The web flow now proves submit → durable polling → terminal state against the J3 API. Progress uses
+only the coarse server stage names; it does not synthesize a percentage from stage position. Total
+failure has a dedicated alert state, while `completed_with_limitations` renders the report with an
+early limitations banner.
+
+Report composition reuses the accepted shared UI vocabulary for finding cards, evidence coverage,
+and limitations. Classification, priority, confidence, recommendation basis, evidence references,
+and score values all come from the persisted report. React does not sort by a new local urgency
+policy, derive score thresholds, or call GitHub/npm/OSV directly. Finding evidence can be disclosed
+from the contract report and focus moves to that detail for keyboard users.
+
+The repository URL form performs only obvious advisory syntax/HTTPS checks. GitHub-specific
+acceptance remains authoritative in Fastify, and server validation errors preserve the user's input.
+
+Focused synthetic tests cover transport request/response parsing, shared report validation, advisory
+validation, input preservation, stage-only progress, terminal failure, limited completion, and
+evidence disclosure. The web tests require no live provider, Worker, or database.
+
+K1 also updates the architecture/agent guidance so future work preserves the web boundary. The next
+bounded milestone is the quick-manifest Fastify/OpenAPI transport; the package.json web input remains
+a separate follow-up.
+
+**Traceability:** FR-003, FR-004, FR-017, FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004,
+NFR-003, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006,
+GOV-007.

@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest API boundary, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, persistent PostgreSQL/Graphile Worker repository jobs, and the Fastify REST/OpenAPI repository-analysis transport are implemented. The quick-manifest HTTP route and product screens are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest API boundary, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, persistent PostgreSQL/Graphile Worker repository jobs, the Fastify REST/OpenAPI repository-analysis transport, and the first React repository-analysis web flow are implemented. The quick-manifest HTTP route and quick-analysis web flow are not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -177,6 +177,21 @@ The same Zod route schemas generate the public OpenAPI 3.1 document at `/openapi
 
 See [Repository Analysis HTTP Transport](docs/implementation/repository-api.md) and **ADR-0002** /
 **ADR-0004**.
+
+## Repository analysis web flow
+
+The first production web application lives in **`apps/web`**.
+
+React 19 + Vite provide the client runtime, TanStack Router owns the stable analysis route, and
+TanStack Query polls the public J3 API contract until repository analysis reaches a terminal state.
+The UI shows only the durable coarse progress stage, distinguishes total failure from
+`completed_with_limitations`, validates terminal reports with `@stacklens/contracts`, and reuses
+`@stacklens/ui` for findings, evidence coverage, and limitations.
+
+The browser does not call GitHub/npm/OSV directly, inspect Graphile tables, or recalculate analyzer
+priority/scoring policy.
+
+See [Repository Analysis Web Flow](docs/implementation/repository-web.md) and **ADR-0005**.
 
 ## External data sources
 
