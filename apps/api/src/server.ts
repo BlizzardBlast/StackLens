@@ -9,13 +9,13 @@ import {
 
 import { ApiErrorSchema } from "./http-contracts.js";
 import {
-  registerRepositoryAnalysisRoutes,
-  type RepositoryAnalysisHttpDependencies,
-} from "./repository-analysis-http.js";
-import {
   registerQuickManifestAnalysisRoutes,
   type QuickManifestAnalysisHttpDependencies,
 } from "./quick-manifest-http.js";
+import {
+  registerRepositoryAnalysisRoutes,
+  type RepositoryAnalysisHttpDependencies,
+} from "./repository-analysis-http.js";
 
 export interface StackLensApiOptions
   extends RepositoryAnalysisHttpDependencies,
