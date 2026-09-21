@@ -74,11 +74,7 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
       <ol className="grid gap-3" aria-label="Analysis stages">
         {ACTIVE_PROGRESS_STAGES.map((progressStage, index) => {
           const status =
-            index < currentIndex
-              ? "Complete"
-              : index === currentIndex
-                ? "Current"
-                : "Pending";
+            index < currentIndex ? "Complete" : index === currentIndex ? "Current" : "Pending";
 
           return (
             <li key={progressStage} className="flex items-center gap-3 text-sm">
