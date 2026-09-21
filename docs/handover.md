@@ -582,6 +582,8 @@ Accepted implementation:
   payload, enqueue seam, and transient-progress → durable-stage mapping;
 - unknown queue payload fields are rejected so source/manifest/script/provider bodies cannot enter
   durable queue storage;
+- the stable analysis-ID Graphile key uses dedupe-only behavior so a repeated enqueue cannot replace
+  and exhaust a locked in-flight job;
 - `apps/worker` composes Graphile Worker with the existing repository orchestration and real
   GitHub/npm/OSV provider adapters;
 - active Graphile job ownership prevents a stale/duplicate job from mutating progress or terminal
