@@ -24,15 +24,18 @@ From the repository root:
 
 ```bash
 pnpm install
-pnpm build
 pnpm dev:infra
 pnpm dev
 ```
 
-The workspace build is currently required on a fresh checkout because the application entrypoints
-resolve internal workspace package exports from their compiled `dist` output.
+The application entrypoints resolve internal workspace packages through compiled `dist` exports.
+To keep that boundary while removing the manual fresh-checkout build step, the root `pnpm dev`
+script first runs `pnpm dev:prepare`. That preparation uses Turborepo filters to build only the
+shared workspace dependencies of `@stacklens/api`, `@stacklens/worker`, and `@stacklens/web`,
+excluding the applications themselves. Turbo caching makes repeat preparation a no-op or a small
+incremental build when those outputs are already current.
 
-The commands then provide:
+The commands provide:
 
 - PostgreSQL 18 on `127.0.0.1:55432`;
 - Fastify on `127.0.0.1:3000`;
@@ -40,6 +43,8 @@ The commands then provide:
 - one Graphile Worker process with default concurrency 2.
 
 The Vite client proxies `/v1` to the local API. The API and Worker both use the same local database.
+`pnpm dev:prepare` is also available explicitly when a developer wants to refresh shared package
+outputs without starting the applications.
 They apply StackLens and Graphile migrations during startup, so no separate migration command is
 required for a fresh local database. StackLens schema bootstrap uses a transaction-scoped PostgreSQL
 advisory lock so API and Worker may initialize the same database concurrently without racing DDL.
