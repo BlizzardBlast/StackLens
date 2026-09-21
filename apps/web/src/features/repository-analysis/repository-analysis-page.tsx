@@ -65,7 +65,6 @@ export function RepositoryAnalysisPage({
       <div className="mx-auto grid w-full max-w-6xl gap-5 px-4 py-8 sm:px-6 sm:py-10">
         <AnalysisNavigation />
         <section
-          role="status"
           aria-live="polite"
           aria-busy="true"
           className="overflow-hidden rounded-2xl border bg-card"
@@ -76,7 +75,7 @@ export function RepositoryAnalysisPage({
                 aria-hidden="true"
                 className="size-2.5 animate-pulse rounded-full bg-primary motion-reduce:animate-none"
               />
-              <p className="text-sm font-semibold">Preparing analysis status</p>
+              <output className="text-sm font-semibold">Preparing analysis status</output>
             </div>
           </div>
           <div className="grid gap-4 p-5 sm:p-7">
