@@ -157,6 +157,7 @@ describe("repository job enqueue service [FR-003, NFR-008, NFR-009]", () => {
       },
       {
         jobKey: "repository-analysis:analysis-001",
+        jobKeyMode: "unsafe_dedupe",
         maxAttempts: REPOSITORY_ANALYSIS_MAX_ATTEMPTS,
       },
     );
