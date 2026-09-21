@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+
 import { Button } from "@stacklens/ui/components/button";
 
+import { AnalysisStatusView } from "./analysis-status-view.js";
 import {
   RepositoryAnalysisApiError,
   isTerminalRepositoryAnalysisStatus,
   repositoryAnalysisClient,
   type RepositoryAnalysisClient,
 } from "./repository-analysis-api.js";
-import { AnalysisStatusView } from "./analysis-status-view.js";
 
 export interface RepositoryAnalysisPageProps {
   readonly analysisId: string;

@@ -1,4 +1,9 @@
-import { createMemoryHistory, createRootRoute, createRouter, RouterProvider } from "@tanstack/react-router";
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/react-router";
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it } from "vitest";
@@ -7,9 +12,7 @@ import { AnalysisStatusView } from "./analysis-status-view.js";
 import type { RepositoryAnalysisSnapshot } from "./repository-analysis-api.js";
 import { createRepositoryReportFixture } from "./test-fixture.js";
 
-function snapshot(
-  overrides: Partial<RepositoryAnalysisSnapshot> = {},
-): RepositoryAnalysisSnapshot {
+function snapshot(overrides: Partial<RepositoryAnalysisSnapshot> = {}): RepositoryAnalysisSnapshot {
   return {
     analysisId: "analysis-web-001",
     repositoryUrl: "https://github.com/BlizzardBlast/StackLens",

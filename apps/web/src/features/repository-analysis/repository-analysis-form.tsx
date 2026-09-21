@@ -1,5 +1,6 @@
-import { Button } from "@stacklens/ui/components/button";
 import { useState, type FormEvent } from "react";
+
+import { Button } from "@stacklens/ui/components/button";
 
 export interface RepositoryAnalysisFormProps {
   readonly onSubmit: (repositoryUrl: string) => Promise<void>;
@@ -77,7 +78,7 @@ export function RepositoryAnalysisForm({
           aria-invalid={error === undefined ? undefined : true}
           aria-describedby={errorId ?? "repository-url-help"}
           disabled={isPending}
-          className="min-h-11 w-full rounded-md border bg-background px-3 py-2 text-sm outline-none transition-[border-color,box-shadow] placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/35 disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
+          className="min-h-11 w-full rounded-md border bg-background px-3 py-2 text-sm transition-[border-color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/35 disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
         />
         <p id="repository-url-help" className="text-xs text-muted-foreground">
           StackLens performs static inspection only. Server validation is authoritative.

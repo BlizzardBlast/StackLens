@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 
-import type { RepositoryAnalysisSnapshot } from "./repository-analysis-api.js";
 import { AnalysisProgress } from "./analysis-progress.js";
 import { AnalysisReportView } from "./analysis-report-view.js";
+import type { RepositoryAnalysisSnapshot } from "./repository-analysis-api.js";
 
 export interface AnalysisStatusViewProps {
   readonly snapshot: RepositoryAnalysisSnapshot;

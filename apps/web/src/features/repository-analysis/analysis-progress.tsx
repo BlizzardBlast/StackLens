@@ -57,7 +57,7 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
       className="grid gap-6 rounded-xl border bg-card p-5 text-card-foreground sm:p-6"
     >
       <div className="grid gap-2">
-        <p className="break-all font-mono text-xs text-muted-foreground">{repositoryUrl}</p>
+        <p className="font-mono text-xs break-all text-muted-foreground">{repositoryUrl}</p>
         <h1 id="analysis-progress-title" className="text-2xl font-semibold tracking-tight">
           Analyzing repository
         </h1>

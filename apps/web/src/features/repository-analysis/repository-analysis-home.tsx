@@ -1,10 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
-import {
-  RepositoryAnalysisApiError,
-  repositoryAnalysisClient,
-} from "./repository-analysis-api.js";
+import { RepositoryAnalysisApiError, repositoryAnalysisClient } from "./repository-analysis-api.js";
 import { RepositoryAnalysisForm } from "./repository-analysis-form.js";
 
 function errorMessage(error: unknown): string | undefined {
@@ -22,8 +19,7 @@ function errorMessage(error: unknown): string | undefined {
 export function RepositoryAnalysisHome() {
   const navigate = useNavigate();
   const mutation = useMutation({
-    mutationFn: (repositoryUrl: string) =>
-      repositoryAnalysisClient.submitRepository(repositoryUrl),
+    mutationFn: (repositoryUrl: string) => repositoryAnalysisClient.submitRepository(repositoryUrl),
   });
 
   async function handleSubmit(repositoryUrl: string): Promise<void> {

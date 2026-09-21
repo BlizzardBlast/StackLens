@@ -1,5 +1,6 @@
-import { AnalysisReportSchema } from "@stacklens/contracts";
 import { describe, expect, it } from "vitest";
+
+import { AnalysisReportSchema } from "@stacklens/contracts";
 
 import {
   RepositoryAnalysisApiError,

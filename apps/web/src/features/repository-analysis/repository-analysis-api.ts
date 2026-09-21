@@ -1,5 +1,6 @@
-import { AnalysisReportSchema } from "@stacklens/contracts";
 import * as z from "zod";
+
+import { AnalysisReportSchema } from "@stacklens/contracts";
 
 const ANALYSIS_STATUSES = [
   "queued",
@@ -57,10 +58,7 @@ export interface SubmitRepositoryAnalysisResult {
   readonly analysisId: string;
 }
 
-export type FetchLike = (
-  input: string | URL | Request,
-  init?: RequestInit,
-) => Promise<Response>;
+export type FetchLike = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 
 export interface RepositoryAnalysisClient {
   submitRepository(
@@ -107,10 +105,7 @@ async function responsePayload(response: Response): Promise<unknown> {
   }
 }
 
-async function ensureSuccessPayload<T>(
-  response: Response,
-  schema: z.ZodType<T>,
-): Promise<T> {
+async function ensureSuccessPayload<T>(response: Response, schema: z.ZodType<T>): Promise<T> {
   const payload = await responsePayload(response);
 
   if (!response.ok) {

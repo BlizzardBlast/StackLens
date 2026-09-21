@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+
 import type {
   AnalysisReport,
   Evidence,
@@ -9,7 +11,6 @@ import { Button } from "@stacklens/ui/components/button";
 import { AnalysisLimitation } from "@stacklens/ui/domain/analysis-limitation";
 import { EvidenceCoverage } from "@stacklens/ui/domain/evidence-coverage";
 import { FindingCard } from "@stacklens/ui/domain/finding-card";
-import { useEffect, useMemo, useRef, useState } from "react";
 
 const categoryLabels: Record<ScoreCategory, string> = {
   dependencies: "Dependencies",
@@ -56,12 +57,7 @@ interface EvidenceDetailProps {
   readonly onClose: () => void;
 }
 
-function EvidenceDetail({
-  finding,
-  evidence,
-  report,
-  onClose,
-}: Readonly<EvidenceDetailProps>) {
+function EvidenceDetail({ finding, evidence, report, onClose }: Readonly<EvidenceDetailProps>) {
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {

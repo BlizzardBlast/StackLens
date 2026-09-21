@@ -1,10 +1,4 @@
-import {
-  Link,
-  Outlet,
-  createRootRoute,
-  createRoute,
-  createRouter,
-} from "@tanstack/react-router";
+import { Link, Outlet, createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
 
 import { RepositoryAnalysisHome } from "./features/repository-analysis/repository-analysis-home.js";
 import { RepositoryAnalysisPage } from "./features/repository-analysis/repository-analysis-page.js";
