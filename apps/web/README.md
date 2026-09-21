@@ -19,18 +19,19 @@ persistence internals. It never recalculates analyzer priority or stack-health s
 
 ## Development
 
-For the full local stack, build workspace package outputs once and then start the local processes:
+For the full local stack, start infrastructure and the development processes:
 
 ```bash
-pnpm build
 pnpm dev:infra
 pnpm dev
 ```
 
-The current app entrypoints resolve internal workspace packages through their compiled `dist`
-exports, so a fresh checkout needs the build before the first `pnpm dev`.
+The root `pnpm dev` command automatically builds only the shared workspace dependencies required by
+the web/API/worker entrypoints before starting their watch processes. Turbo reuses cached outputs when
+those dependencies are already current, so a fresh checkout no longer needs a manual `pnpm build`.
 
-To run only the web client when an API is already listening on port 3000:
+To run only the web client when an API is already listening on port 3000, first ensure shared
+workspace outputs have been prepared (for example with `pnpm dev:prepare`), then run:
 
 ```bash
 pnpm --filter @stacklens/web dev
