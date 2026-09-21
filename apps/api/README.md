@@ -48,7 +48,7 @@ The request is a tagged JSON union:
 - `{ "kind": "paste", "content": "..." }`;
 - `{ "kind": "upload", "filename": "package.json", "content": "..." }`.
 
-The transport caps manifest content at 512 KiB, rejects unknown request fields, and uses the existing
+The transport caps manifest content at 524,288 characters, rejects unknown request fields, and uses the existing
 service for upload filename checks, JSON/manifest validation, fingerprinting, evidence, limitations,
 and analyzer execution. It returns `200` with `{ report }` on success and does not create
 PostgreSQL rows or Graphile jobs. The uploaded-file bytes are expected to be read by the client and
