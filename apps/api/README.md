@@ -81,9 +81,11 @@ SEC-002, SEC-003.
 
 The package has a runnable PostgreSQL/Graphile composition boundary.
 
-From the repository root, start PostgreSQL and all application processes with:
+From a fresh checkout, build workspace package outputs before starting PostgreSQL and all
+application processes:
 
 ```bash
+pnpm build
 pnpm dev:infra
 pnpm dev
 ```
