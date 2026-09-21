@@ -46,8 +46,10 @@ Its payload contains only:
 - `repositoryUrl`;
 - optional `ref`.
 
-Unknown fields are rejected. The queue uses a stable job key derived from the analysis ID and five
-maximum attempts.
+Unknown fields are rejected. The queue uses a stable job key derived from the analysis ID, five
+maximum attempts, and Graphile's `unsafe_dedupe` mode. That mode is intentional here because a
+second enqueue with the same stable analysis ID represents the same logical work; replacing a locked
+job would otherwise exhaust its attempts and create a competing job.
 
 ## Execution ownership and idempotency
 
