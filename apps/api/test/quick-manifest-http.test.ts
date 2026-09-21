@@ -67,9 +67,7 @@ async function testApi(): Promise<FastifyInstance> {
   return app;
 }
 
-describe(
-  "quick manifest Fastify transport [FR-001, FR-002, FR-004, FR-017, FR-021, FR-022]",
-  () => {
+describe("quick manifest Fastify transport [FR-001, FR-002, FR-004, FR-021]", () => {
   it("analyzes pasted package.json synchronously without persistence", async () => {
     const app = await testApi();
     const secretScript = "never-retain-this-script";
@@ -216,5 +214,4 @@ describe(
       },
     });
   });
-  },
-);
+});
