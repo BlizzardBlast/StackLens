@@ -83,7 +83,4 @@ jobs:
         run: pnpm lint
 
       - name: Format check
-        run: |
-          pnpm format
-          git diff -- apps/api/src/quick-manifest-http.ts apps/api/src/server.ts
-          exit 1
+        run: pnpm format:check
