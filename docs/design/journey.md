@@ -1091,6 +1091,12 @@ The Graphile payload is restricted to analysis ID, public repository URL, and op
 payload fields are rejected so repository source, manifest text, scripts, and provider bodies cannot
 silently enter durable queue storage.
 
+A final queue review caught a Graphile-specific idempotency edge: the default job-key replacement
+mode creates a competing job and exhausts a locked matching job. Repository analysis therefore uses
+`unsafe_dedupe` for the stable analysis-ID job key. In this narrow case an ignored duplicate is the
+intended behavior because it represents the same logical analysis, while database active-job
+ownership remains the authority for execution writes.
+
 The permanent quality workflow now provisions PostgreSQL 18. Integration coverage verifies durable
 state transitions, execution ownership, retry state, report/version metadata, and stale-job
 protection; focused worker tests cover at-least-once delivery and final-attempt behavior.
