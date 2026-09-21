@@ -1,0 +1,144 @@
+# Repository Analysis Web Flow
+
+> **Status:** Implemented Milestone K1 baseline  
+> **Date:** 2026-09-21  
+> **Requirements:** FR-003, FR-004, FR-017, FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-003, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007  
+> **Architecture:** `apps/web -> apps/api -> @stacklens/repository-jobs/@stacklens/persistence`
+
+## Purpose
+
+Milestone K1 makes the existing J3 repository-analysis HTTP contract usable from the first production
+React application without moving analyzer, scoring, provider, queue, or persistence policy into the
+browser.
+
+The implementation deliberately proves one bounded path:
+
+```text
+public GitHub URL
+    -> POST /v1/analyses/repository
+    -> /analyses/:analysisId
+    -> TanStack Query polling
+    -> coarse durable progress
+    -> failed | completed_with_limitations | completed
+    -> persisted AnalysisReport rendering
+```
+
+Quick-manifest HTTP transport and UI remain separate follow-up work.
+
+## Client boundary
+
+`repository-analysis-api.ts` owns the web transport adapter.
+
+It:
+
+- exposes a small `RepositoryAnalysisClient` interface for dependency inversion and focused tests;
+- accepts an injectable `fetch` implementation;
+- forwards `AbortSignal` from TanStack Query to polling requests;
+- validates successful transport payloads with Zod;
+- validates terminal reports with the shared `AnalysisReportSchema`;
+- maps public API errors to a stable client error without exposing lower-level implementation details;
+- encodes the analysis identifier before putting it into the status URL.
+
+The adapter intentionally duplicates only the public HTTP response vocabulary needed by the client.
+It does not import `@stacklens/persistence`, Graphile Worker types, or provider adapters.
+
+## Submission and validation
+
+The repository form performs only obvious advisory checks that are safe for the client to own:
+
+- non-empty input;
+- syntactically valid URL;
+- HTTPS scheme.
+
+The Fastify API remains authoritative for GitHub-host/path/ref support. Server validation errors are
+shown inline while preserving the user's entered value.
+
+This avoids creating a second browser implementation of the repository URL policy.
+
+## Polling and progress
+
+TanStack Query owns server-state polling.
+
+The analysis route polls every 1.5 seconds only while status is non-terminal. Polling stops for:
+
+- `completed`;
+- `completed_with_limitations`;
+- `failed`.
+
+The UI renders the actual server `progressStage` as named stages. It never converts those stages
+into a fabricated percentage.
+
+Transient status failures use a bounded retry policy. A public `404` is not repeatedly retried.
+Users can explicitly retry a failed status fetch.
+
+## Report rendering
+
+The report screen consumes analyzer-owned data as-is.
+
+It renders:
+
+- overall and category score values or explicit `N/A`;
+- evidence coverage;
+- finding classification, priority, confidence, rule identity, and description;
+- evidence referenced by each finding;
+- separate recommendations;
+- limitations and partial failures.
+
+React does not reorder findings by a new local priority policy, calculate scores, assign score
+categories, infer finding confidence, or convert missing evidence into numeric values.
+
+The existing `@stacklens/ui` domain components remain the shared product vocabulary. K1 uses
+`FindingCard`, `EvidenceCoverage`, and `AnalysisLimitation` while keeping screen composition in
+`apps/web`.
+
+## Accessibility and responsive behavior
+
+K1 follows Design v1's structural accessibility rules:
+
+- every form control has a programmatic label;
+- validation and terminal failures use alert semantics;
+- progress changes are announced without indeterminate percentage claims;
+- focus moves to newly disclosed evidence detail;
+- interactive targets preserve the shared minimum sizes;
+- narrow layouts retain the same content order without requiring a desktop navigation rail;
+- status and finding meaning is communicated with text, not color alone.
+
+## Testing
+
+Focused tests use synthetic responses and a contract-valid bounded report fixture. They cover:
+
+- submission payload shape;
+- shared report-schema validation;
+- stable server-error propagation;
+- advisory client validation and input preservation;
+- stage-only progress;
+- total terminal failure;
+- completed-with-limitations report rendering;
+- evidence disclosure.
+
+No live GitHub, npm, OSV, Worker, or database dependency is required for web component tests.
+
+## Deployment notes
+
+The Vite development server proxies `/v1` to the local Fastify server on port 3000.
+
+Production requests are same-origin by default. `VITE_STACKLENS_API_BASE_URL` may be used only when
+the deployment provides the corresponding cross-origin network/CORS policy; K1 does not weaken the
+Fastify transport boundary merely to support a development topology.
+
+## Out of scope
+
+K1 does not add:
+
+- pasted/uploaded `package.json` HTTP transport or UI;
+- private GitHub authentication;
+- saved repositories or history;
+- Graphile job identifiers in client state;
+- browser calls to GitHub/npm/OSV;
+- client-owned analyzer/scoring logic;
+- code execution or dependency installation;
+- source/config/provider response persistence.
+
+**Traceability:** FR-003, FR-004, FR-017, FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004,
+NFR-003, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006,
+GOV-007.
