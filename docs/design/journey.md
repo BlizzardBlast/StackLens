@@ -1268,7 +1268,7 @@ The route remains deliberately thin. It creates only analysis identity/time, del
 normalization, fingerprinting, evidence construction, limitations, and analyzer execution to
 `analyzeQuickManifest`, maps stable application validation errors to public `400` responses, and
 returns the contract-valid report synchronously. Unknown fields are rejected and manifest content is
-bounded to 512 KiB.
+bounded to 524,288 characters.
 
 Quick analysis remains anonymous and non-persistent: it creates no PostgreSQL analysis row, Graphile
 job, repository polling state, or provider snapshot. A dedicated manifest-only analyzer runs the
