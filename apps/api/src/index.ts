@@ -42,7 +42,9 @@ export type {
   SubmitRepositoryAnalysisResult,
 } from "./repository-analysis.js";
 
-export { ApiErrorSchema, registerRepositoryAnalysisRoutes } from "./repository-analysis-http.js";
+export { ApiErrorSchema } from "./http-contracts.js";
+
+export { registerRepositoryAnalysisRoutes } from "./repository-analysis-http.js";
 export type { RepositoryAnalysisHttpDependencies } from "./repository-analysis-http.js";
 
 export { createStackLensApi } from "./server.js";
