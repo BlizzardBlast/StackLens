@@ -45,7 +45,7 @@ describe("AnalysisStatusView [FR-017, FR-021, NFR-006, NFR-008]", () => {
     expect(screen.getByRole("status")).toHaveTextContent(
       "Collecting bounded npm and vulnerability metadata",
     );
-    expect(screen.getByText("Collecting package metadata").closest("li")).toHaveAttribute(
+    expect(screen.getByText("Checking supported package evidence").closest("li")).toHaveAttribute(
       "aria-current",
       "step",
     );
