@@ -40,7 +40,15 @@ describe("AnalysisStatusView [FR-017, FR-021, NFR-006, NFR-008]", () => {
   it("shows the actual coarse progress stage without inventing percentage progress", async () => {
     renderWithRouter(<AnalysisStatusView snapshot={snapshot()} />);
 
-    expect(await screen.findByText("Collecting package metadata")).toBeInTheDocument();
+    expect(await screen.findAllByText("Collecting package metadata")).not.toHaveLength(0);
+    expect(screen.getByText("Analysis in progress")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Collecting bounded npm and vulnerability metadata",
+    );
+    expect(screen.getByText("Checking supported package evidence").closest("li")).toHaveAttribute(
+      "aria-current",
+      "step",
+    );
     expect(screen.queryByText(/\d+%/)).not.toBeInTheDocument();
   });
 

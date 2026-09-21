@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { RepositoryAnalysisForm } from "./repository-analysis-form.js";
 
-describe("RepositoryAnalysisForm [FR-003, FR-004, NFR-006]", () => {
+describe("RepositoryAnalysisForm [FR-003, FR-004, NFR-006, NFR-008]", () => {
   it("rejects an obviously invalid non-HTTPS URL before submission", () => {
     const onSubmit = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
 
@@ -40,5 +40,18 @@ describe("RepositoryAnalysisForm [FR-003, FR-004, NFR-006]", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Enter a supported public GitHub repository URL.",
     );
+  });
+
+  it("exposes an explicit busy state while the analysis is being created", () => {
+    const onSubmit = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
+
+    render(<RepositoryAnalysisForm onSubmit={onSubmit} isPending />);
+
+    expect(screen.getByLabelText("Public GitHub repository")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Starting analysis" })).toBeDisabled();
+    expect(screen.getByRole("status")).toHaveTextContent("Creating analysis");
+    expect(
+      screen.getByRole("button", { name: "Starting analysis" }).closest("form"),
+    ).toHaveAttribute("aria-busy", "true");
   });
 });

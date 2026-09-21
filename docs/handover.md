@@ -78,12 +78,16 @@ The repository already has the following accepted foundations:
 - TypeScript 7 strict type checking;
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
-- runnable local web/API/worker composition with PostgreSQL 18 via Docker Compose;
+- runnable local web/API/worker composition with PostgreSQL 18 via Docker Compose (host port
+  `55432`, container port `5432`);
 
-The latest hosted-product slice is the **repository-analysis web flow** in `apps/web`.
-The browser remains a replaceable client of the public Fastify contract: TanStack Query polls durable
-status, shared contracts validate terminal reports, and React renders analyzer-owned
-findings/evidence/limitations/scores without importing persistence, Worker, or provider internals.
+The latest hosted-product slice is the **repository-analysis web flow** in `apps/web`, including a
+post-K1 UX refinement from real end-to-end use. The browser remains a replaceable client of the
+public Fastify contract: TanStack Query polls durable status, shared contracts validate terminal
+reports, and React renders analyzer-owned findings/evidence/limitations/scores without importing
+persistence, Worker, or provider internals. Submission and initial-route fetches now have explicit
+busy/preparing states, while active analysis renders the real coarse server stages as an accessible
+timeline without fake percentage progress.
 
 The analyzer flow is:
 

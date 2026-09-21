@@ -24,13 +24,17 @@ From the repository root:
 
 ```bash
 pnpm install
+pnpm build
 pnpm dev:infra
 pnpm dev
 ```
 
-The commands provide:
+The workspace build is currently required on a fresh checkout because the application entrypoints
+resolve internal workspace package exports from their compiled `dist` output.
 
-- PostgreSQL 18 on `127.0.0.1:5432`;
+The commands then provide:
+
+- PostgreSQL 18 on `127.0.0.1:55432`;
 - Fastify on `127.0.0.1:3000`;
 - React/Vite on `localhost:5173`;
 - one Graphile Worker process with default concurrency 2.
@@ -53,7 +57,7 @@ Use `pnpm dev:infra:logs` to inspect PostgreSQL container logs.
 Local defaults match `.env.example`. Copy it to `.env` when you want checked-out local overrides; API and Worker dev/start scripts load the root `.env` automatically:
 
 ```text
-DATABASE_URL=postgresql://stacklens:stacklens@127.0.0.1:5432/stacklens
+DATABASE_URL=postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens
 STACKLENS_API_HOST=127.0.0.1
 STACKLENS_API_PORT=3000
 STACKLENS_WORKER_CONCURRENCY=2

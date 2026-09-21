@@ -68,6 +68,13 @@ The analysis route polls every 1.5 seconds only while status is non-terminal. Po
 The UI renders the actual server `progressStage` as named stages. It never converts those stages
 into a fabricated percentage.
 
+The submission mutation now exposes a visible busy state from the moment a valid repository is
+submitted until the stable analysis route opens. The first status fetch has its own preparing state,
+and active analysis presents the server stages as an accessible timeline with explicit
+done/current/waiting labels plus a live current-stage explanation. Motion is limited to small
+activity indicators and respects reduced-motion preferences; it does not imply measurable numeric
+progress.
+
 Transient status failures use a bounded retry policy. A public `404` is not repeatedly retried.
 Users can explicitly retry a failed status fetch.
 
@@ -97,7 +104,7 @@ K1 follows Design v1's structural accessibility rules:
 
 - every form control has a programmatic label;
 - validation and terminal failures use alert semantics;
-- progress changes are announced without indeterminate percentage claims;
+- submission and progress changes are announced with status semantics without percentage claims;
 - focus moves to newly disclosed evidence detail;
 - interactive targets preserve the shared minimum sizes;
 - narrow layouts retain the same content order without requiring a desktop navigation rail;

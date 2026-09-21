@@ -10,7 +10,7 @@ the public-repository flow:
 1. submit a public repository URL to `POST /v1/analyses/repository`;
 2. navigate to the stable analysis route;
 3. poll `GET /v1/analyses/:analysisId` with TanStack Query while the analysis is non-terminal;
-4. show the server's coarse progress stage without inventing percentage progress;
+4. expose an explicit submission busy state, then show the server's coarse progress stage without inventing percentage progress;
 5. distinguish total failure from `completed_with_limitations`;
 6. render the persisted `AnalysisReport` using shared contract data and `@stacklens/ui` components.
 
@@ -19,12 +19,16 @@ persistence internals. It never recalculates analyzer priority or stack-health s
 
 ## Development
 
-For the full local stack, run from the repository root:
+For the full local stack, build workspace package outputs once and then start the local processes:
 
 ```bash
+pnpm build
 pnpm dev:infra
 pnpm dev
 ```
+
+The current app entrypoints resolve internal workspace packages through their compiled `dist`
+exports, so a fresh checkout needs the build before the first `pnpm dev`.
 
 To run only the web client when an API is already listening on port 3000:
 
@@ -43,7 +47,8 @@ Focused tests cover:
 - request/response contract parsing;
 - advisory client-side URL validation;
 - input preservation across authoritative server errors;
-- stage-only progress;
+- explicit submission busy state;
+- accessible live stage-only progress;
 - terminal failure;
 - completed-with-limitations report rendering;
 - evidence disclosure from contract data.
