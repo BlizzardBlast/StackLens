@@ -1,6 +1,7 @@
 name: temporary dev prepare validation
 
 on:
+  pull_request:
   push:
     branches:
       - chore/automatic-dev-prepare
