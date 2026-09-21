@@ -12,6 +12,7 @@ import {
   type GraphileJobAdder,
 } from "@stacklens/repository-jobs";
 
+import { quickManifestAnalyzer } from "./quick-manifest-analyzer.js";
 import { createStackLensApi } from "./server.js";
 
 export interface StackLensApiRuntimeOptions {
@@ -49,6 +50,7 @@ export async function createStackLensApiRuntime(
       const app = await createStackLensApi({
         repository: new DrizzleAnalysisRepository(database),
         queue: createGraphileRepositoryJobQueue(jobAdder),
+        quickManifestAnalyzer,
         ...(options.logger === undefined ? {} : { logger: options.logger }),
       });
 

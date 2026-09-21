@@ -1,8 +1,8 @@
 # Quick Manifest Analysis
 
-> **Status:** Accepted implementation baseline
-> **Date:** 2026-09-19
-> **Requirements:** FR-001, FR-002, FR-004, FR-005, FR-021, FR-022, NFR-001, NFR-004, SEC-001, SEC-002, SEC-003, GOV-007
+> **Status:** Accepted implementation baseline + HTTP transport
+> **Date:** 2026-09-22
+> **Requirements:** FR-001, FR-002, FR-004, FR-005, FR-017, FR-021, FR-022, NFR-001, NFR-004, SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007
 > **Architecture:** `apps/api -> packages/*`
 
 ## Purpose
@@ -101,20 +101,44 @@ Missing evidence is not converted into a positive/negative finding or a perfect 
 
 ## HTTP transport
 
-This milestone intentionally does not add Fastify/OpenAPI or multipart handling.
+Milestone K2 exposes the existing application service through synchronous
+`POST /v1/analyze/manifest`.
 
-The eventual `POST /v1/analyze/manifest` transport should call this service rather than duplicate
-validation, fingerprinting, normalization, evidence, or analyzer orchestration.
+The transport remains thin:
+
+- one strict Zod request union represents `paste` or `upload` input;
+- uploaded semantics preserve the submitted filename and content, while the authoritative service
+  still requires the filename to be exactly `package.json`;
+- request content is bounded to 524,288 characters and unknown fields are rejected before analysis;
+- application validation codes map directly to stable source-free `400` responses;
+- successful requests return `200` with a contract-valid `AnalysisReport`;
+- the same schemas publish the operation through the existing OpenAPI 3.1 document;
+- the route calls `analyzeQuickManifest`; it does not duplicate normalization, fingerprinting,
+  evidence, limitations, or analyzer execution;
+- no persistence, Graphile Worker job, repository polling, provider I/O, authentication, or raw
+  manifest retention is introduced.
+
+The upload contract is JSON rather than multipart: the web client may read a selected
+`package.json` file and send its filename plus text content. This keeps transport behavior bounded
+and leaves file-selection UX in the browser milestone without creating a second server-side analysis
+path.
+
+A dedicated manifest-only analyzer composition runs dependency inventory and deliberately returns
+insufficient-evidence scores for the quick snapshot. It does not reuse the repository analyzer's
+provider/source-dependent rules or `stack-health-v1` numeric scoring.
 
 ## Verification
 
-Focused tests cover:
+Focused service and Fastify injection tests cover:
 
-- valid pasted JSON (**FR-001**);
-- valid uploaded `package.json` (**FR-002**);
+- valid pasted JSON through service and HTTP (**FR-001**);
+- valid uploaded `package.json` semantics through service and HTTP (**FR-002**);
 - invalid JSON and malformed manifest values (**FR-004**);
 - unsupported upload filename (**FR-002**, **FR-004**);
 - no authentication/persistence dependency (**FR-022**, **SEC-003**);
 - ignored manifest fields not retained in the report (**SEC-003**);
 - stable fingerprints across equivalent paste/upload content;
-- contract-valid analyzer output and explicit limitations (**FR-021**).
+- contract-valid analyzer output and explicit limitations (**FR-017**, **FR-021**);
+- strict request validation and bounded content (**FR-004**, **SEC-002**);
+- OpenAPI publication from the same route schemas (**GOV-006**);
+- HTTP success does not require persistence/background jobs (**FR-022**, **SEC-003**).

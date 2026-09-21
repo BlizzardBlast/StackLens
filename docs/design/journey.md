@@ -1254,3 +1254,34 @@ this step. The next product milestone remains quick-manifest Fastify/OpenAPI tra
 
 **Traceability:** NFR-005, GOV-002, GOV-006, GOV-007.
 
+## 2026-09-22 — Step 50: Expose quick manifest analysis through Fastify
+
+Milestone K2 completes the public transport boundary for the existing synchronous quick-manifest
+service.
+
+The API now exposes `POST /v1/analyze/manifest` through the same Fastify/Zod/OpenAPI stack as
+repository analysis. The request is a strict tagged JSON union for pasted content or uploaded-file
+semantics. Uploads carry the selected filename and text content, allowing the browser to own file
+selection without introducing a second multipart analysis path.
+
+The route remains deliberately thin. It creates only analysis identity/time, delegates validation,
+normalization, fingerprinting, evidence construction, limitations, and analyzer execution to
+`analyzeQuickManifest`, maps stable application validation errors to public `400` responses, and
+returns the contract-valid report synchronously. Unknown fields are rejected and manifest content is
+bounded to 524,288 characters.
+
+Quick analysis remains anonymous and non-persistent: it creates no PostgreSQL analysis row, Graphile
+job, repository polling state, or provider snapshot. A dedicated manifest-only analyzer runs the
+dependency inventory rule and reports insufficient-evidence scores for categories that cannot be
+supported by manifest-only data; it does not reuse repository-only source/provider rules or
+`stack-health-v1` numeric scoring.
+
+Focused Fastify injection tests cover paste and upload success, application validation errors, strict
+schema/resource-bound failures, source-content non-retention, contract-valid report output, and
+OpenAPI publication.
+
+The next bounded product milestone is the React quick-analysis flow: paste/file input, accessible
+synchronous busy/error states, and report rendering over this public K2 contract.
+
+**Traceability:** FR-001, FR-002, FR-004, FR-005, FR-017, FR-021, FR-022, NFR-001, NFR-004,
+SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007.

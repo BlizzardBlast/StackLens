@@ -2,7 +2,7 @@
 
 > **Status:** Accepted baseline  
 > **Architecture version:** 0.1.13  
-> **Date:** 2026-09-21  
+> **Date:** 2026-09-22  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
@@ -107,9 +107,12 @@ See [Repository Analysis Web Flow](implementation/repository-web.md).
 - publish an OpenAPI contract;
 - own future authentication/session integration.
 
-The API is a transport/job-management boundary, not the home of rule logic. The reusable
-long-running repository workflow is implemented in `@stacklens/analysis-orchestration` so API and
-Worker do not depend on each other's application package.
+The API is a transport/job-management boundary, not the home of rule logic. Quick
+`package.json` analysis is exposed synchronously at `POST /v1/analyze/manifest` through a strict
+Zod/OpenAPI contract and delegates to the framework-independent quick-manifest service. It does not
+use PostgreSQL or Graphile Worker. The reusable long-running repository workflow is implemented in
+`@stacklens/analysis-orchestration` so API and Worker do not depend on each other's application
+package.
 
 ### 4.3 Worker application
 

@@ -2,8 +2,9 @@
 
 Application-layer orchestration for the StackLens hosted API.
 
-`apps/api` now owns the Fastify REST/OpenAPI transport for asynchronous public-repository analysis
-and still owns the framework-independent quick-manifest application service. Long-running
+`apps/api` owns the Fastify REST/OpenAPI transport for both synchronous quick-manifest analysis and
+asynchronous public-repository analysis, while keeping the quick-manifest application service
+framework-independent. Long-running
 repository-analysis composition remains shared through `@stacklens/analysis-orchestration`; the API
 and Worker do not import each other.
 
@@ -35,8 +36,25 @@ User-input failures use transport-independent codes:
 - `invalid_manifest`;
 - `unsupported_upload`.
 
-A future quick-manifest Fastify route should map these errors to the REST/OpenAPI contract rather
-than changing their analysis semantics.
+The Fastify quick-manifest route maps these errors to stable public `400` responses without
+changing their analysis semantics.
+
+## Quick manifest HTTP transport
+
+`POST /v1/analyze/manifest` exposes the service synchronously through a strict Zod/OpenAPI contract.
+
+The request is a tagged JSON union:
+
+- `{ "kind": "paste", "content": "..." }`;
+- `{ "kind": "upload", "filename": "package.json", "content": "..." }`.
+
+The transport caps manifest content at 524,288 characters, rejects unknown request fields, and uses the existing
+service for upload filename checks, JSON/manifest validation, fingerprinting, evidence, limitations,
+and analyzer execution. It returns `200` with `{ report }` on success and does not create
+PostgreSQL rows or Graphile jobs. The uploaded-file bytes are expected to be read by the client and
+sent as content; multipart handling is intentionally not required by this contract.
+
+The operation is published through `GET /openapi.json` with the repository-analysis operations.
 
 ## Dependency inversion
 

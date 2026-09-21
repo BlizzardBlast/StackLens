@@ -7,13 +7,18 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 
+import { ApiErrorSchema } from "./http-contracts.js";
 import {
-  ApiErrorSchema,
+  registerQuickManifestAnalysisRoutes,
+  type QuickManifestAnalysisHttpDependencies,
+} from "./quick-manifest-http.js";
+import {
   registerRepositoryAnalysisRoutes,
   type RepositoryAnalysisHttpDependencies,
 } from "./repository-analysis-http.js";
 
-export interface StackLensApiOptions extends RepositoryAnalysisHttpDependencies {
+export interface StackLensApiOptions
+  extends RepositoryAnalysisHttpDependencies, QuickManifestAnalysisHttpDependencies {
   readonly logger?: boolean;
 }
 
@@ -87,6 +92,7 @@ export async function createStackLensApi(options: StackLensApiOptions): Promise<
   });
 
   registerRepositoryAnalysisRoutes(app, options);
+  registerQuickManifestAnalysisRoutes(app, options);
 
   app.get(
     "/openapi.json",

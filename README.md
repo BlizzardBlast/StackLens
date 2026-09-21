@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest API boundary, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, persistent PostgreSQL/Graphile Worker repository jobs, the Fastify REST/OpenAPI repository-analysis transport, and the first React repository-analysis web flow are implemented. The quick-manifest HTTP route and quick-analysis web flow are not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest service plus Fastify/OpenAPI transport, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, persistent PostgreSQL/Graphile Worker repository jobs, the Fastify REST/OpenAPI repository-analysis transport, and the first React repository-analysis web flow are implemented. The quick-analysis web flow is not yet implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -173,7 +173,10 @@ returns stable validation errors for invalid input, creates a deterministic cont
 reuses the JavaScript manifest normalizer/evidence rule, and invokes analyzer-core without
 introducing persistence, authentication, provider I/O, or scoring policy.
 
-The quick-manifest service remains framework-independent; its dedicated Fastify route is still a later bounded transport slice.
+Fastify exposes the same service through synchronous `POST /v1/analyze/manifest`. The strict
+versioned request contract supports `paste` and `upload` semantics, returns a contract-valid
+`AnalysisReport`, publishes through the existing OpenAPI document, and does not add persistence or
+background jobs. The corresponding React input flow remains a separate web milestone.
 
 See [Quick Manifest Analysis](docs/implementation/quick-manifest-analysis.md).
 
