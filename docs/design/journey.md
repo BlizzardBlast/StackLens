@@ -1201,3 +1201,35 @@ build, shadcn validation, typecheck, test, lint, and format gates.
 **Traceability:** FR-003, FR-004, FR-017, FR-021, DATA-006, NFR-003, NFR-004, NFR-005, NFR-008,
 NFR-009, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.  
 **Decisions:** ADR-0002, ADR-0004.
+
+## 2026-09-21 — Step 48: Refine the repository-analysis experience after real end-to-end use
+
+Manual use of the locally runnable K1 flow exposed a UX gap that component-level correctness did not
+make obvious: a real repository analysis can remain active for tens of seconds, while the production
+screen gave too little visual feedback and the analyzer landing surface still felt like a bare
+functional scaffold.
+
+This refinement keeps the accepted analysis semantics unchanged and improves only presentation and
+state communication:
+
+- the repository landing screen now uses the accepted neutral-first developer-tool hierarchy rather
+  than a single generic centered card;
+- repository submission exposes an explicit busy state while the durable analysis is being created;
+- the initial analysis-route fetch has a dedicated preparing state instead of a one-line placeholder;
+- active analysis turns the existing coarse server stages into a clearer timeline with textual
+  done/current/waiting states and a live explanation of the current stage;
+- progress still never fabricates a percentage from stage position;
+- small activity indicators respect reduced-motion preferences and do not replace textual status;
+- focused tests protect the submission busy state, current-stage semantics, and no-fake-percentage
+  rule.
+
+The same pass corrected the local PostgreSQL port documentation and CI host/container mapping after
+the Windows development setup moved the Docker host port to `55432`. PostgreSQL 18 continues to
+listen on `5432` inside its container.
+
+No analyzer, scoring, provider, persistence, queue, or API contract behavior changes in this step.
+The next product milestone remains quick-manifest Fastify/OpenAPI transport.
+
+**Traceability:** FR-003, FR-004, FR-017, FR-021, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002,
+GOV-002, GOV-006, GOV-007.
+
