@@ -43,9 +43,7 @@ function errorCode(error: unknown): string | undefined {
   return error.code;
 }
 
-export async function createStackLensApi(
-  options: StackLensApiOptions,
-): Promise<FastifyInstance> {
+export async function createStackLensApi(options: StackLensApiOptions): Promise<FastifyInstance> {
   const app = Fastify({
     logger: options.logger ?? false,
   });

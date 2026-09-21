@@ -13,9 +13,7 @@ import { createStackLensApi } from "../src/index.js";
 
 const createdAt = "2026-09-21T12:00:00.000Z";
 
-function record(
-  overrides: Partial<RepositoryAnalysisRecord> = {},
-): RepositoryAnalysisRecord {
+function record(overrides: Partial<RepositoryAnalysisRecord> = {}): RepositoryAnalysisRecord {
   return {
     id: "analysis-test-001",
     inputType: "repository",

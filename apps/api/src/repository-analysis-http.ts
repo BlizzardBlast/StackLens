@@ -54,8 +54,7 @@ export const ApiErrorSchema = z.strictObject({
   message: z.string(),
 });
 
-export interface RepositoryAnalysisHttpDependencies
-  extends RepositoryAnalysisApplicationDependencies {}
+export interface RepositoryAnalysisHttpDependencies extends RepositoryAnalysisApplicationDependencies {}
 
 function publicFailure(
   failureSummary: AnalysisFailureSummary | undefined,
@@ -71,8 +70,7 @@ function publicFailure(
 
 function statusResponse(snapshot: RepositoryAnalysisSnapshot) {
   const { analysis, report } = snapshot;
-  const failure =
-    analysis.status === "failed" ? publicFailure(analysis.failureSummary) : undefined;
+  const failure = analysis.status === "failed" ? publicFailure(analysis.failureSummary) : undefined;
 
   return {
     analysisId: analysis.id,
