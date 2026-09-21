@@ -204,7 +204,32 @@ Shared hosted-analysis composition lives in `packages/analysis-orchestration`.
 - Repository manifest/source bodies are transient construction input only. Do not place them in progress events, application errors, logs, persistence payloads, or returned reports.
 - OSV orchestration may query only deterministic exact semantic-version declarations; do not reinterpret ranges/tags as installed versions.
 - Bound metadata acquisition deterministically. Resource-limit truncation must become an explicit limitation, never negative evidence.
-- Progress events expose phase/count/failure state only. Durable Graphile Worker/PostgreSQL job state is a later adapter over this seam.
+- Progress events expose phase/count/failure state only. Durable Graphile Worker/PostgreSQL job state is implemented outside this package through `@stacklens/repository-jobs`, `@stacklens/persistence`, and `apps/worker`.
+
+## Persistence and repository job boundaries
+
+Durable hosted repository-analysis state lives in `packages/persistence`,
+`packages/repository-jobs`, and `apps/worker`.
+
+- `@stacklens/persistence` owns the Drizzle/PostgreSQL analysis/report schema and repository methods.
+- `@stacklens/repository-jobs` owns the minimal queue payload, task identifier, enqueue seam, and
+  transient-progress → durable-stage mapping. Keep this package reusable by API code; it must not
+  import the Worker application.
+- `apps/worker` owns Graphile Worker runtime/task execution and production provider wiring. It must
+  consume `@stacklens/analysis-orchestration`; never reconstruct analyzer policy or provider
+  sequencing.
+- Job payloads may contain only stable identifiers/public repository metadata required to execute the
+  analysis. Reject unknown payload fields; never persist repository source, manifest bodies, scripts,
+  provider response bodies, or secrets in the queue.
+- Treat Graphile delivery as at-least-once. Progress and terminal writes must be bound to the current
+  Graphile job ownership claim so stale/duplicate jobs cannot overwrite active work.
+- Retryable failures should return to Graphile before the final attempt. On the final attempt, persist
+  StackLens terminal failure state and finish the queue task so a permafailed Graphile row is not the
+  only durable failure record.
+- Provider partial failures that still produce a report remain report limitations/partial failures;
+  do not turn them into whole-job failure.
+- PostgreSQL timestamps leaving the persistence repository must be normalized to ISO 8601.
+- Keep Fastify transport and React status polling outside persistence/worker packages.
 
 ## Analyzer safety
 

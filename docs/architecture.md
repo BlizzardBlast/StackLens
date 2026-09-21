@@ -1,8 +1,8 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.9  
-> **Date:** 2026-09-20  
+> **Architecture version:** 0.1.10  
+> **Date:** 2026-09-21  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
@@ -119,7 +119,7 @@ PostgreSQL is the only required stateful infrastructure component for the hosted
 
 MVP uses it for:
 
-- repository-analysis jobs/status;
+- repository-analysis jobs/status and active Graphile execution ownership;
 - transient/report metadata needed for asynchronous delivery;
 - structured analysis reports when configured for hosted retention;
 - schema/rule/scoring version metadata;
@@ -486,6 +486,8 @@ StackLens/
 │  └─ worker/              # background analysis worker
 ├─ packages/
 │  ├─ analysis-orchestration/ # hosted analysis composition shared by API/worker
+│  ├─ persistence/           # Drizzle/PostgreSQL analysis + report persistence
+│  ├─ repository-jobs/      # shared Graphile payload/enqueue/progress semantics
 │  ├─ analyzer-core/       # pipeline, finding model, rule interfaces
 │  ├─ rules-javascript/    # JS/TS rules + priority/recommendation/coverage policy
 │  ├─ contracts/           # Zod schemas + public domain/API contracts
@@ -508,6 +510,9 @@ Dependency direction:
 ```text
 apps/* -> packages/*
 analysis-orchestration -> analyzer-core + contracts + data-sources + rules-javascript + scoring
+repository-jobs -> analysis-orchestration + persistence
+apps/worker -> analysis-orchestration + data-sources + persistence + repository-jobs
+persistence -> contracts + Drizzle/node-postgres
 rules-javascript -> analyzer-core + contracts
 scoring -> analyzer-core + contracts
 data-sources -> contracts
@@ -608,6 +613,7 @@ Initial logical entities:
 - rule-set version;
 - scoring version;
 - progress stage;
+- active Graphile job identifier used only for execution ownership/idempotency;
 - created/started/completed timestamps;
 - failure summary;
 - retention expiry where applicable.
@@ -637,10 +643,14 @@ Repository analysis exposes coarse deterministic stages:
 
 The UI polls while a job is active. Individual provider failure may produce `completed_with_limitations` rather than a total failure when unrelated analysis remains valid (**NFR-003**, **FR-021**).
 
-The shared orchestration package already exposes transient provider/application progress
-(repository, manifest, package metadata, vulnerability data, analysis) without source content. The
-worker/persistence slice maps those events into the durable public job stages above rather than
-reimplementing provider/analyzer sequencing.
+The shared orchestration package exposes transient provider/application progress
+(repository, manifest, package metadata, vulnerability data, analysis) without source content.
+`@stacklens/repository-jobs` maps those events into the durable public stages above, and
+`apps/worker` awaits persistence before advancing execution rather than reimplementing
+provider/analyzer sequencing.
+
+Durable execution ownership is keyed by the current Graphile job ID. A different duplicate job
+cannot update progress or terminal output for an analysis already owned by an in-flight job.
 
 ## 14. Security design
 

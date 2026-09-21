@@ -1,10 +1,10 @@
 # StackLens Session Handover
 
 > **Status:** Active implementation handover  
-> **Prepared:** 2026-09-20  
+> **Prepared:** 2026-09-21  
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
-> **Architecture:** v0.1.9  
+> **Architecture:** v0.1.10  
 > **Completed milestone:** repository analysis orchestration — PR #21  
 > **Immediate milestone:** Milestone J2 — persistent repository jobs and progress state  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
@@ -27,6 +27,7 @@ Before implementing anything:
    - `docs/implementation/analysis-contracts.md`;
    - `docs/implementation/analyzer-core.md`;
    - `docs/implementation/repository-analysis.md`;
+   - `docs/implementation/repository-jobs.md`;
    - `docs/implementation/rules-javascript.md`;
    - `docs/implementation/scoring.md`;
    - `docs/implementation/quick-manifest-analysis.md`;
@@ -34,10 +35,13 @@ Before implementing anything:
    - `packages/contracts/README.md`;
    - `packages/analyzer-core/README.md`;
    - `packages/analysis-orchestration/README.md`;
+   - `packages/persistence/README.md`;
+   - `packages/repository-jobs/README.md`;
    - `packages/rules-javascript/README.md`;
    - `packages/scoring/README.md`;
    - `packages/data-sources/README.md`;
    - `apps/api/README.md`;
+   - `apps/worker/README.md`;
    - `AGENTS.md`;
    - `CONTRIBUTING.md`;
    - `docs/documentation-governance.md`.
@@ -51,7 +55,7 @@ Before implementing anything:
 The repository already has the following accepted foundations:
 
 - canonical product/system requirements;
-- architecture v0.1.6;
+- architecture v0.1.10;
 - Product Design v1;
 - generated design-token infrastructure;
 - shared UI package;
@@ -72,9 +76,10 @@ The repository already has the following accepted foundations:
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
 
-The latest completed hosted-product slice is the **public repository analysis orchestration** in
-`@stacklens/analysis-orchestration`. It composes the existing provider, analyzer, priority,
-recommendation, and scoring boundaries without HTTP, worker, or persistence coupling.
+The latest completed hosted-product slice is the **persistent public-repository job flow** from PR
+#22. `@stacklens/analysis-orchestration` remains transport/persistence independent, while
+`@stacklens/persistence`, `@stacklens/repository-jobs`, and `apps/worker` add the accepted
+PostgreSQL/Graphile Worker delivery boundary without moving analyzer policy into runtime code.
 
 The analyzer flow is:
 
@@ -112,8 +117,9 @@ No Fastify HTTP transport is implemented yet.
 
 The npm Registry, OSV, and public GitHub acquisition adapters are implemented, including explicit
 bounded source-coverage state. Static source usage, migration/recommendation policy, production
-priority, scoring v1, and shared repository orchestration are implemented. Persistent Graphile Worker
-jobs, PostgreSQL job/report state, Fastify transport, and the product web flow are not yet implemented.
+priority, scoring v1, shared repository orchestration, PostgreSQL analysis/report persistence, and
+Graphile Worker repository jobs are implemented. Fastify repository-job transport/status routes and
+the product web flow are not yet implemented.
 
 ## 3. Non-negotiable boundaries
 
@@ -563,74 +569,106 @@ Primary traceability:
 NFR-001, NFR-003, NFR-004, NFR-005, NFR-008, NFR-009,
 SEC-001, SEC-002, SEC-003, SEC-007, SEC-008, GOV-002, GOV-006, GOV-007`.
 
-## 15. Immediate next milestone: persistent repository jobs and progress state
+## 15. Completed milestone: persistent repository jobs and progress state
 
-Milestone J2 should put the shared repository workflow behind the accepted asynchronous hosted
-execution model:
+PR #22 implements Milestone J2 around the shared repository workflow.
 
-- add the `apps/worker` application;
-- add the minimal PostgreSQL/Drizzle analysis + analysis-report persistence boundary;
-- use Graphile Worker for public-repository jobs;
-- persist only job/report metadata required by the architecture; never persist transient source
-  bodies by default;
-- map shared orchestration progress into durable job stages/status;
-- preserve provider retryability/partial failures without converting them into whole-job failure when
-  analysis can complete;
-- make job processing idempotent around a stable analysis identity;
-- add synthetic/database integration tests for queued → running → completed/failed state;
-- keep Fastify routes and React screens for subsequent bounded slices unless a tiny status seam is
-  needed to test the job boundary.
+Accepted implementation:
 
-## 16. What not to do next
+- `@stacklens/persistence` owns the Drizzle/PostgreSQL `analysis` and `analysis_report` model;
+- durable state stores public repository coordinates, progress/status, immutable commit/fingerprint,
+  analyzer/rule/scoring/report versions, timestamps, failure summary, and final report JSON only;
+- `@stacklens/repository-jobs` owns the `repository_analysis` task identity, minimal source-free
+  payload, enqueue seam, and transient-progress → durable-stage mapping;
+- unknown queue payload fields are rejected so source/manifest/script/provider bodies cannot enter
+  durable queue storage;
+- the stable analysis-ID Graphile key uses dedupe-only behavior so a repeated enqueue cannot replace
+  and exhaust a locked in-flight job;
+- `apps/worker` composes Graphile Worker with the existing repository orchestration and real
+  GitHub/npm/OSV provider adapters;
+- active Graphile job ownership prevents a stale/duplicate job from mutating progress or terminal
+  output for another in-flight execution;
+- the same Graphile job can reclaim after interruption, supporting retries without cross-job races;
+- retryable failures are returned to Graphile before the final attempt;
+- the final attempt persists StackLens `failed` state and finishes the Graphile task, avoiding a
+  permafailed queue row as the only failure record;
+- successful reports with material limitations/partial failures persist as
+  `completed_with_limitations`;
+- PostgreSQL timestamps are normalized to ISO 8601 at the repository boundary;
+- the permanent quality workflow provisions PostgreSQL 18 and runs integration coverage;
+- Fastify and React remain outside this PR.
+
+Primary traceability:
+
+`FR-003, FR-004, FR-017, FR-021, DATA-001, DATA-002, DATA-006, NFR-003, NFR-008, NFR-009,
+SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007`.
+
+## 16. Immediate next milestone: repository-analysis HTTP transport
+
+Milestone J3 should expose the durable job flow through the accepted Fastify REST/OpenAPI boundary:
+
+- add authoritative Fastify request validation for public GitHub repository submissions;
+- generate a non-guessable analysis ID at the API boundary;
+- create/enqueue repository analyses through `@stacklens/repository-jobs`;
+- return `202 Accepted` with the analysis identifier for new asynchronous work;
+- add a read endpoint for durable status/progress and terminal report/failure state;
+- reuse `@stacklens/persistence` repositories instead of querying Graphile internals;
+- publish and test the OpenAPI contract;
+- keep analyzer/provider sequencing in `@stacklens/analysis-orchestration`;
+- keep React product screens for a subsequent bounded slice unless a tiny transport acceptance
+  fixture is required.
+
+## 17. What not to do next
 
 Avoid these detours:
 
-- do not duplicate repository orchestration in Worker or Fastify code; consume
-  `@stacklens/analysis-orchestration`;
+- do not import `apps/worker` from `apps/api`; API uses the shared job/persistence packages;
+- do not duplicate repository orchestration in Fastify routes;
+- do not expose Graphile Worker internal tables as the public status model;
 - do not move analyzer, priority, recommendation, or score policy into API/worker/database code;
-- do not persist repository file bodies, manifest text, or scripts in job payloads/logs;
+- do not persist repository source bodies, manifest text, scripts, or raw provider bodies;
 - do not change `stack-health-v1` weights/categories without a scoring-version + ADR/test update;
 - do not invent numeric Maintainability/Testing/Tooling scores without accepted coverage policy;
 - do not introduce Redis/BullMQ; Graphile Worker/PostgreSQL is the accepted baseline;
 - do not add private GitHub support, AI analysis, code-writing automation, or project execution;
-- do not combine all final REST endpoints and product screens into the persistence/worker PR.
+- do not combine the full React product experience into the first Fastify transport PR.
 
-## 17. Pull-request strategy for the next session
+## 18. Pull-request strategy for the next session
 
 Recommended next PR:
 
 **Title**
 
 ```text
-feat: add persistent repository analysis jobs
+feat: add repository analysis API transport
 ```
 
 **Primary requirements**
 
 ```text
 FR-003, FR-004, FR-017, FR-021,
-DATA-001, DATA-002, DATA-006,
+DATA-006,
 NFR-003, NFR-008, NFR-009,
 SEC-001, SEC-002, SEC-003, SEC-007,
 GOV-002, GOV-006, GOV-007
 ```
 
-Start with the smallest durable job path: create a repository-analysis job record, enqueue it with
-Graphile Worker, execute `analyzePublicGitHubRepository` with real provider adapters, persist
-progress/report metadata, and expose the repository function needed for later API status routes.
+Start with the smallest end-to-end hosted transport path: validate a public GitHub URL, create a
+stable asynchronous analysis record, enqueue it, return `202`, and let clients poll the durable
+analysis status/report endpoint.
 
-## 18. Handover completion signal
+## 19. Handover completion signal
 
-The next session can consider PR #21 complete when it verifies:
+The next session can consider PR #22 complete when it verifies:
 
-1. PR #21 is present on current `main` and permanent quality CI is green;
-2. API and future Worker can consume `@stacklens/analysis-orchestration` without cross-app imports;
-3. repository analysis uses immutable GitHub identity and bounded transient source acquisition;
-4. npm/OSV failures remain partial evidence, not fabricated clean results;
-5. non-exact dependency declarations are never sent to OSV;
-6. production analyzer/rule/scoring versions appear in the returned contract-valid report;
-7. application progress contains no repository source/manifest/script contents;
-8. metadata resource truncation produces explicit limitations;
-9. architecture/README/AGENTS/implementation docs match the shared package boundary.
+1. PR #22 is present on current `main` and permanent quality CI is green;
+2. PostgreSQL stores analysis/report metadata but no repository source/manifest/script bodies;
+3. the Graphile payload is restricted to analysis ID, public repository URL, and optional ref;
+4. duplicate/stale jobs cannot overwrite another active execution;
+5. retryable failures return to Graphile before the final attempt and final exhaustion is persisted;
+6. provider partial failures can still produce `completed_with_limitations`;
+7. final reports persist immutable repository identity and analyzer/rule/scoring/schema versions;
+8. PostgreSQL-backed integration tests run in permanent CI;
+9. architecture/README/AGENTS/implementation docs match the J2 package boundaries.
 
-Then continue with Milestone J2 rather than adding transport/UI around non-persistent repository work.
+Then continue with Milestone J3 rather than adding UI directly around internal queue state.
