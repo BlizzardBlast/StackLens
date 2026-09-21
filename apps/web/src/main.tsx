@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 
 import { router } from "./router.js";
 
+// oxlint-disable-next-line import/no-unassigned-import -- Vite loads the application stylesheet by side effect.
 import "./styles.css";
 
 const queryClient = new QueryClient({
