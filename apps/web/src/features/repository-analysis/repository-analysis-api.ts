@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-import { AnalysisReportSchema } from "@stacklens/contracts";
+import { AnalysisReportSchema, IsoDateTimeSchema } from "@stacklens/contracts";
 
 const ANALYSIS_STATUSES = [
   "queued",
@@ -42,10 +42,10 @@ const RepositoryAnalysisSnapshotSchema = z.strictObject({
   repositoryUrl: z.string(),
   status: z.enum(ANALYSIS_STATUSES),
   progressStage: z.enum(ANALYSIS_PROGRESS_STAGES),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  startedAt: z.string().optional(),
-  completedAt: z.string().optional(),
+  createdAt: IsoDateTimeSchema,
+  updatedAt: IsoDateTimeSchema,
+  startedAt: IsoDateTimeSchema.optional(),
+  completedAt: IsoDateTimeSchema.optional(),
   failure: AnalysisFailureSchema.optional(),
   report: AnalysisReportSchema.optional(),
 });
