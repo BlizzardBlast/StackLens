@@ -9,11 +9,33 @@ import {
 } from "./repository-analysis-api.js";
 import { createRepositoryReportFixture } from "./test-fixture.js";
 
+function requestInputUrl(input: Parameters<FetchLike>[0]): string {
+  if (typeof input === "string") {
+    return input;
+  }
+
+  return input instanceof URL ? input.href : input.url;
+}
+
+const invalidRepositoryFetch: FetchLike = () =>
+  Promise.resolve(
+    new Response(
+      JSON.stringify({
+        code: "invalid_repository_url",
+        message: "Enter a supported public GitHub repository URL.",
+      }),
+      {
+        status: 400,
+        headers: { "content-type": "application/json" },
+      },
+    ),
+  );
+
 describe("repository analysis API client [FR-003, FR-004, FR-017, FR-021]", () => {
   it("submits only the public repository URL expected by the J3 transport", async () => {
     const requests: Array<{ url: string; init?: RequestInit }> = [];
     const fetchImpl: FetchLike = async (input, init) => {
-      requests.push({ url: String(input), ...(init === undefined ? {} : { init }) });
+      requests.push({ url: requestInputUrl(input), ...(init === undefined ? {} : { init }) });
 
       return new Response(JSON.stringify({ analysisId: "analysis-123" }), {
         status: 202,
@@ -66,18 +88,7 @@ describe("repository analysis API client [FR-003, FR-004, FR-017, FR-021]", () =
   });
 
   it("preserves stable server validation errors without exposing transport internals", async () => {
-    const fetchImpl: FetchLike = async () =>
-      new Response(
-        JSON.stringify({
-          code: "invalid_repository_url",
-          message: "Enter a supported public GitHub repository URL.",
-        }),
-        {
-          status: 400,
-          headers: { "content-type": "application/json" },
-        },
-      );
-    const client = createRepositoryAnalysisClient({ fetchImpl });
+    const client = createRepositoryAnalysisClient({ fetchImpl: invalidRepositoryFetch });
 
     await expect(client.submitRepository("https://example.com/repository")).rejects.toMatchObject({
       name: "RepositoryAnalysisApiError",
