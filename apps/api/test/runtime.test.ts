@@ -1,9 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
-import {
-  createStackLensApiRuntime,
-  type StackLensApiRuntime,
-} from "../src/index.js";
+import { createStackLensApiRuntime, type StackLensApiRuntime } from "../src/index.js";
 
 const databaseUrl = process.env.TEST_DATABASE_URL ?? "";
 const describeWithDatabase = databaseUrl.length > 0 ? describe : describe.skip;

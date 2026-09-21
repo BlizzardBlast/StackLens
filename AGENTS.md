@@ -38,7 +38,6 @@ pnpm check
 
 Run `pnpm check` before considering implementation work complete when the full suite is practical.
 
-
 For local end-to-end repository analysis:
 
 ```sh
