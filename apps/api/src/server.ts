@@ -18,8 +18,7 @@ import {
 } from "./repository-analysis-http.js";
 
 export interface StackLensApiOptions
-  extends RepositoryAnalysisHttpDependencies,
-    QuickManifestAnalysisHttpDependencies {
+  extends RepositoryAnalysisHttpDependencies, QuickManifestAnalysisHttpDependencies {
   readonly logger?: boolean;
 }
 
