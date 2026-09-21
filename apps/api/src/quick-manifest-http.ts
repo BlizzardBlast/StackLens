@@ -9,10 +9,8 @@ import { AnalysisReportSchema } from "@stacklens/contracts";
 import type { NormalizedPackageManifest } from "@stacklens/rules-javascript";
 
 import { ApiErrorSchema } from "./http-contracts.js";
-import {
-  analyzeQuickManifest,
-  type QuickManifestInput,
-} from "./quick-manifest-analysis.js";
+import type { QuickManifestInput } from "./manifest-input.js";
+import { analyzeQuickManifest } from "./quick-manifest-analysis.js";
 import { quickManifestAnalyzer } from "./quick-manifest-analyzer.js";
 
 const MAX_MANIFEST_CONTENT_LENGTH = 524_288;
