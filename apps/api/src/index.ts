@@ -18,3 +18,26 @@ export type {
   QuickManifestAnalysisDependencies,
   QuickManifestAnalysisResult,
 } from "./quick-manifest-analysis.js";
+
+export {
+  readRepositoryAnalysis,
+  submitRepositoryAnalysis,
+} from "./repository-analysis.js";
+export type {
+  RepositoryAnalysisApplicationDependencies,
+  RepositoryAnalysisSnapshot,
+  RepositoryAnalysisValidationError,
+  SubmitRepositoryAnalysisCommand,
+  SubmitRepositoryAnalysisResult,
+} from "./repository-analysis.js";
+
+export {
+  ApiErrorSchema,
+  registerRepositoryAnalysisRoutes,
+} from "./repository-analysis-http.js";
+export type {
+  RepositoryAnalysisHttpDependencies,
+} from "./repository-analysis-http.js";
+
+export { createStackLensApi } from "./server.js";
+export type { StackLensApiOptions } from "./server.js";
