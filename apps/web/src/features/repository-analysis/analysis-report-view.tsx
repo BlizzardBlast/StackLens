@@ -261,9 +261,9 @@ export function AnalysisReportView({
                 key={finding.id}
                 classification={finding.classification}
                 priority={finding.priority.level}
-                confidence={
-                  finding.classification === "heuristic" ? finding.confidence.level : undefined
-                }
+                {...(finding.classification === "heuristic"
+                  ? { confidence: finding.confidence.level }
+                  : {})}
                 subject={finding.subject.name}
                 title={finding.title}
                 description={finding.description}
