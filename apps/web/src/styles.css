@@ -1,0 +1,9 @@
+@import "@stacklens/ui/styles.css";
+
+@source "./**/*.{ts,tsx}";
+
+@layer base {
+  #root {
+    min-height: 100dvh;
+  }
+}
