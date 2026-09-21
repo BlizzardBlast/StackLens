@@ -37,14 +37,14 @@ function renderWithRouter(ui: ReactNode) {
 }
 
 describe("AnalysisStatusView [FR-017, FR-021, NFR-006, NFR-008]", () => {
-  it("shows the actual coarse progress stage without inventing percentage progress", () => {
+  it("shows the actual coarse progress stage without inventing percentage progress", async () => {
     renderWithRouter(<AnalysisStatusView snapshot={snapshot()} />);
 
-    expect(screen.getByText("Collecting package metadata")).toBeInTheDocument();
+    expect(await screen.findByText("Collecting package metadata")).toBeInTheDocument();
     expect(screen.queryByText(/\d+%/)).not.toBeInTheDocument();
   });
 
-  it("renders terminal failure distinctly from a limited successful report", () => {
+  it("renders terminal failure distinctly from a limited successful report", async () => {
     renderWithRouter(
       <AnalysisStatusView
         snapshot={snapshot({
@@ -59,11 +59,12 @@ describe("AnalysisStatusView [FR-017, FR-021, NFR-006, NFR-008]", () => {
       />,
     );
 
-    expect(screen.getByRole("alert")).toHaveTextContent("Analysis failed");
-    expect(screen.getByRole("alert")).toHaveTextContent("The repository could not be resolved.");
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("Analysis failed");
+    expect(alert).toHaveTextContent("The repository could not be resolved.");
   });
 
-  it("renders a completed-with-limitations report and evidence from contract data", () => {
+  it("renders a completed-with-limitations report and evidence from contract data", async () => {
     const report = createRepositoryReportFixture();
 
     renderWithRouter(
@@ -76,7 +77,7 @@ describe("AnalysisStatusView [FR-017, FR-021, NFR-006, NFR-008]", () => {
       />,
     );
 
-    expect(screen.getByText("Analysis completed with limitations")).toBeInTheDocument();
+    expect(await screen.findByText("Analysis completed with limitations")).toBeInTheDocument();
     expect(screen.getByText("Example evidence-backed finding")).toBeInTheDocument();
     expect(screen.getAllByText("N/A").length).toBeGreaterThan(0);
 
