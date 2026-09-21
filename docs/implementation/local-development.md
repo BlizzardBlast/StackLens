@@ -36,8 +36,9 @@ The commands provide:
 - one Graphile Worker process with default concurrency 2.
 
 The Vite client proxies `/v1` to the local API. The API and Worker both use the same local database.
-They apply idempotent StackLens and Graphile migrations during startup, so no separate migration
-command is required for a fresh local database.
+They apply StackLens and Graphile migrations during startup, so no separate migration command is
+required for a fresh local database. StackLens schema bootstrap uses a transaction-scoped PostgreSQL
+advisory lock so API and Worker may initialize the same database concurrently without racing DDL.
 
 Stop application processes with Ctrl+C and stop local infrastructure with:
 

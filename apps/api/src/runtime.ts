@@ -49,7 +49,7 @@ export async function createStackLensApiRuntime(
       const app = await createStackLensApi({
         repository: new DrizzleAnalysisRepository(database),
         queue: createGraphileRepositoryJobQueue(jobAdder),
-        logger: options.logger,
+        ...(options.logger === undefined ? {} : { logger: options.logger }),
       });
 
       let stopped = false;

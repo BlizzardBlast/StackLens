@@ -4,6 +4,10 @@ import type { StackLensDatabase } from "./database.js";
 
 export async function migrateStackLensDatabase(database: StackLensDatabase): Promise<void> {
   await database.transaction(async (transaction) => {
+    // API and Worker may start concurrently against the same database. Serialize only the
+    // StackLens schema bootstrap transaction; the lock is automatically released at commit/rollback.
+    await transaction.execute(sql`SELECT pg_advisory_xact_lock(1398030670, 1)`);
+
     await transaction.execute(sql`
       CREATE TABLE IF NOT EXISTS analysis (
         id text PRIMARY KEY,

@@ -1186,7 +1186,9 @@ entrypoints, so the browser could not complete a real repository analysis from a
 The runtime slice adds PostgreSQL 18 through Docker Compose, explicit API and Worker process
 entrypoints, graceful lifecycle ownership, real Drizzle/Graphile queue composition for Fastify, and
 workspace-level `pnpm dev` commands. Development TypeScript execution uses `tsx`; production
-`start` commands continue to run compiled JavaScript.
+`start` commands continue to run compiled JavaScript. StackLens schema bootstrap is serialized by a
+transaction-scoped PostgreSQL advisory lock because API and Worker are intentionally started in
+parallel.
 
 The composition preserves existing boundaries: Fastify routes still depend on repository/queue
 interfaces, the Worker still owns provider/orchestration execution, analyzed source never enters the
