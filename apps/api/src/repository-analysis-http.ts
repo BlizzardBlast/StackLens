@@ -50,7 +50,6 @@ const AnalysisIdParamsSchema = z.strictObject({
   analysisId: z.string().min(1),
 });
 
-
 export interface RepositoryAnalysisHttpDependencies extends RepositoryAnalysisApplicationDependencies {}
 
 function publicFailure(
