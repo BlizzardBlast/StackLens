@@ -12,8 +12,14 @@ import {
   registerRepositoryAnalysisRoutes,
   type RepositoryAnalysisHttpDependencies,
 } from "./repository-analysis-http.js";
+import {
+  registerQuickManifestAnalysisRoutes,
+  type QuickManifestAnalysisHttpDependencies,
+} from "./quick-manifest-http.js";
 
-export interface StackLensApiOptions extends RepositoryAnalysisHttpDependencies {
+export interface StackLensApiOptions
+  extends RepositoryAnalysisHttpDependencies,
+    QuickManifestAnalysisHttpDependencies {
   readonly logger?: boolean;
 }
 
@@ -87,6 +93,7 @@ export async function createStackLensApi(options: StackLensApiOptions): Promise<
   });
 
   registerRepositoryAnalysisRoutes(app, options);
+  registerQuickManifestAnalysisRoutes(app, options);
 
   app.get(
     "/openapi.json",
