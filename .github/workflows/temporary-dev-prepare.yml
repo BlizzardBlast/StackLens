@@ -1,0 +1,53 @@
+name: temporary dev prepare validation
+
+on:
+  push:
+    branches:
+      - chore/automatic-dev-prepare
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: package.json
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Remove generated build outputs
+        run: |
+          find apps packages -type d -name dist -prune -exec rm -rf {} +
+
+      - name: Prepare development dependencies
+        run: pnpm dev:prepare
+
+      - name: Verify dependency-only outputs
+        run: |
+          test -f packages/contracts/dist/index.js
+          test -f packages/analyzer-core/dist/index.js
+          test -f packages/data-sources/dist/index.js
+          test -f packages/rules-javascript/dist/index.js
+          test -f packages/scoring/dist/index.js
+          test -f packages/analysis-orchestration/dist/index.js
+          test -f packages/persistence/dist/index.js
+          test -f packages/repository-jobs/dist/index.js
+          test -f packages/design-tokens/dist/theme.css
+          test ! -d apps/api/dist
+          test ! -d apps/worker/dist
+          test ! -d apps/web/dist
