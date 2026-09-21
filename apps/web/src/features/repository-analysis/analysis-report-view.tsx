@@ -62,7 +62,7 @@ function EvidenceDetail({ finding, evidence, report, onClose }: Readonly<Evidenc
 
   useEffect(() => {
     headingRef.current?.focus();
-  }, [finding.id]);
+  }, []);
 
   const sourcesById = useMemo(
     () => new Map(report.sources.map((source) => [source.id, source])),
@@ -279,6 +279,7 @@ export function AnalysisReportView({
 
         {selectedFinding === undefined ? null : (
           <EvidenceDetail
+            key={selectedFinding.id}
             finding={selectedFinding}
             evidence={selectedEvidence}
             report={report}
