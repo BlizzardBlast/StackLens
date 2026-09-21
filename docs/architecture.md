@@ -2,7 +2,7 @@
 
 > **Status:** Accepted baseline  
 > **Architecture version:** 0.1.13  
-> **Date:** 2026-09-21  
+> **Date:** 2026-09-22  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
