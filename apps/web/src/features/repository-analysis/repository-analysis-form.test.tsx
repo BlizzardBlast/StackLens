@@ -50,9 +50,8 @@ describe("RepositoryAnalysisForm [FR-003, FR-004, NFR-006, NFR-008]", () => {
     expect(screen.getByLabelText("Public GitHub repository")).toBeDisabled();
     expect(screen.getByRole("button", { name: "Starting analysis" })).toBeDisabled();
     expect(screen.getByRole("status")).toHaveTextContent("Creating analysis");
-    expect(screen.getByRole("button", { name: "Starting analysis" }).closest("form")).toHaveAttribute(
-      "aria-busy",
-      "true",
-    );
+    expect(
+      screen.getByRole("button", { name: "Starting analysis" }).closest("form"),
+    ).toHaveAttribute("aria-busy", "true");
   });
 });

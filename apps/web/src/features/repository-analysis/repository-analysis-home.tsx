@@ -20,12 +20,14 @@ const capabilities = [
   {
     eyebrow: "Static by design",
     title: "No project execution",
-    detail: "StackLens inspects supported repository evidence without installing or running project code.",
+    detail:
+      "StackLens inspects supported repository evidence without installing or running project code.",
   },
   {
     eyebrow: "Traceable",
     title: "Evidence-backed findings",
-    detail: "Findings keep their rule identity and supporting project or provider evidence visible.",
+    detail:
+      "Findings keep their rule identity and supporting project or provider evidence visible.",
   },
   {
     eyebrow: "Deterministic",

@@ -124,7 +124,9 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
             aria-atomic="true"
             className="grid gap-3 rounded-xl border border-primary/20 bg-primary/5 p-5"
           >
-            <p className="text-xs font-semibold tracking-wide text-primary uppercase">Now working</p>
+            <p className="text-xs font-semibold tracking-wide text-primary uppercase">
+              Now working
+            </p>
             <div className="grid gap-2">
               <h2 className="text-xl font-semibold tracking-tight">{currentContent.label}</h2>
               <output className="text-sm leading-6 text-muted-foreground">
@@ -136,16 +138,16 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
           <div className="grid gap-2 border-l pl-4">
             <p className="text-sm font-semibold">Status updates automatically</p>
             <p className="text-sm leading-6 text-muted-foreground">
-              StackLens reports real analysis stages from the worker. It does not invent a percentage
-              when the backend cannot measure one reliably.
+              StackLens reports real analysis stages from the worker. It does not invent a
+              percentage when the backend cannot measure one reliably.
             </p>
           </div>
 
           <div className="rounded-xl border bg-muted/20 p-4">
             <p className="text-sm font-semibold">Safe static inspection</p>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              Repository code, package scripts, builds, tests, hooks, and dependency installation are
-              not executed during this analysis.
+              Repository code, package scripts, builds, tests, hooks, and dependency installation
+              are not executed during this analysis.
             </p>
           </div>
         </div>
