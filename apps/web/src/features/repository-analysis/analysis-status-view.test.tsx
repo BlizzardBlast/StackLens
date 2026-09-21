@@ -84,6 +84,6 @@ describe("AnalysisStatusView [FR-017, FR-021, NFR-006, NFR-008]", () => {
     fireEvent.click(screen.getByRole("button", { name: /View evidence/ }));
 
     expect(screen.getByText("example-package is declared in package.json.")).toBeInTheDocument();
-    expect(screen.getByText(/JS-EXAMPLE-001/)).toBeInTheDocument();
+    expect(screen.getAllByText(/JS-EXAMPLE-001/)).toHaveLength(2);
   });
 });
