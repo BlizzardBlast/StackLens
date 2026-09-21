@@ -30,6 +30,8 @@ export function RepositoryAnalysisHome() {
     });
   }
 
+  const mutationError = errorMessage(mutation.error);
+
   return (
     <div className="mx-auto grid min-h-[calc(100dvh-73px)] w-full max-w-4xl place-items-center px-4 py-12 sm:px-6">
       <section className="w-full rounded-2xl border bg-card p-6 text-card-foreground sm:p-10">
@@ -49,7 +51,7 @@ export function RepositoryAnalysisHome() {
           <RepositoryAnalysisForm
             onSubmit={handleSubmit}
             isPending={mutation.isPending}
-            serverError={errorMessage(mutation.error)}
+            {...(mutationError === undefined ? {} : { serverError: mutationError })}
           />
         </div>
       </section>
