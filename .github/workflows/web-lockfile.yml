@@ -36,6 +36,9 @@ jobs:
           pnpm install --lockfile-only
           pnpm format
 
+      - name: Run repository quality gate
+        run: pnpm check
+
       - name: Commit generated changes
         run: |
           if git diff --quiet; then
