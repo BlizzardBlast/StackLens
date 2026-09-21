@@ -1,6 +1,7 @@
+// oxlint-disable-next-line import/no-unassigned-import -- jest-dom registers Vitest matchers by side effect.
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
-import { afterEach, vi } from "vitest";
+import { afterEach } from "vitest";
 
 afterEach(() => {
   cleanup();
@@ -8,6 +9,6 @@ afterEach(() => {
 
 Object.defineProperty(window, "scrollTo", {
   configurable: true,
-  value: vi.fn(),
+  value: () => undefined,
   writable: true,
 });
