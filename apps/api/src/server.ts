@@ -7,8 +7,8 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 
+import { ApiErrorSchema } from "./http-contracts.js";
 import {
-  ApiErrorSchema,
   registerRepositoryAnalysisRoutes,
   type RepositoryAnalysisHttpDependencies,
 } from "./repository-analysis-http.js";
