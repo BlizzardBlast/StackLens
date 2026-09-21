@@ -8,7 +8,7 @@ import type { AnalyzerDefinition } from "@stacklens/analyzer-core";
 import { AnalysisReportSchema } from "@stacklens/contracts";
 import type { NormalizedPackageManifest } from "@stacklens/rules-javascript";
 
-import { ApiErrorSchema } from "./repository-analysis-http.js";
+import { ApiErrorSchema } from "./http-contracts.js";
 import {
   analyzeQuickManifest,
   type QuickManifestInput,
