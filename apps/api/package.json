@@ -13,8 +13,8 @@
     "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json",
-    "dev": "tsx watch src/main.ts",
-    "start": "node --enable-source-maps dist/main.js"
+    "dev": "node --env-file-if-exists=../../.env --import tsx --watch src/main.ts",
+    "start": "node --env-file-if-exists=../../.env --enable-source-maps dist/main.js"
   },
   "dependencies": {
     "@fastify/swagger": "9.8.1",

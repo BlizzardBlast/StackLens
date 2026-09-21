@@ -49,7 +49,7 @@ Use `pnpm dev:infra:logs` to inspect PostgreSQL container logs.
 
 ## Environment
 
-Local defaults match `.env.example`:
+Local defaults match `.env.example`. Copy it to `.env` when you want checked-out local overrides; API and Worker dev/start scripts load the root `.env` automatically:
 
 ```text
 DATABASE_URL=postgresql://stacklens:stacklens@127.0.0.1:5432/stacklens

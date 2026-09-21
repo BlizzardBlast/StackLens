@@ -40,8 +40,8 @@ The default local endpoints are:
 - OpenAPI: `http://127.0.0.1:3000/openapi.json`.
 
 The API and worker automatically apply the StackLens/Graphile database migrations on startup. Local
-defaults match `.env.example`; copy or override those variables when a different database, host,
-port, or worker concurrency is required.
+defaults match `.env.example`; copy it to `.env` or override the process environment when a different database, host,
+port, or worker concurrency is required. API and worker dev/start scripts load the root `.env` when present.
 
 Stop the application processes with Ctrl+C, then stop PostgreSQL with:
 

@@ -49,8 +49,11 @@ jobs:
           node-version-file: package.json
           cache: pnpm
 
+      - name: Refresh lockfile
+        run: pnpm install --lockfile-only --no-frozen-lockfile
+
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Format
         run: pnpm format
