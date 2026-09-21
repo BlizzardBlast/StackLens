@@ -19,7 +19,14 @@ persistence internals. It never recalculates analyzer priority or stack-health s
 
 ## Development
 
-Run the API on port 3000, then run:
+For the full local stack, run from the repository root:
+
+```bash
+pnpm dev:infra
+pnpm dev
+```
+
+To run only the web client when an API is already listening on port 3000:
 
 ```bash
 pnpm --filter @stacklens/web dev

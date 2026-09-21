@@ -11,6 +11,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "dev": "node --env-file-if-exists=../../.env --import tsx --watch src/main.ts",
+    "start": "node --env-file-if-exists=../../.env --enable-source-maps dist/main.js",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@types/node": "24.13.6",
     "@types/pg": "8.23.1",
+    "tsx": "^4.23.15",
     "vitest": "^5.0.1"
   }
 }

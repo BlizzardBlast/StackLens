@@ -1175,3 +1175,29 @@ a separate follow-up.
 **Traceability:** FR-003, FR-004, FR-017, FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004,
 NFR-003, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006,
 GOV-007.
+
+
+## 2026-09-21 — Step 47: Make the accepted three-process architecture locally runnable
+
+After K1 exposed the first real React repository-analysis flow, manual end-to-end use revealed an
+infrastructure gap: the API and Worker existed as composable libraries but had no executable process
+entrypoints, so the browser could not complete a real repository analysis from a fresh checkout.
+
+The runtime slice adds PostgreSQL 18 through Docker Compose, explicit API and Worker process
+entrypoints, graceful lifecycle ownership, real Drizzle/Graphile queue composition for Fastify, and
+workspace-level `pnpm dev` commands. Development TypeScript execution uses `tsx`; production
+`start` commands continue to run compiled JavaScript. StackLens schema bootstrap is serialized by a
+transaction-scoped PostgreSQL advisory lock because API and Worker are intentionally started in
+parallel.
+
+The composition preserves existing boundaries: Fastify routes still depend on repository/queue
+interfaces, the Worker still owns provider/orchestration execution, analyzed source never enters the
+queue/database by default, and no analyzer/priority/recommendation/scoring policy moved into process
+bootstrap code.
+
+Verification includes a PostgreSQL-backed API runtime integration test plus the repository-wide
+build, shadcn validation, typecheck, test, lint, and format gates.
+
+**Traceability:** FR-003, FR-004, FR-017, FR-021, DATA-006, NFR-003, NFR-004, NFR-005, NFR-008,
+NFR-009, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.  
+**Decisions:** ADR-0002, ADR-0004.

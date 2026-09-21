@@ -5,6 +5,10 @@
   "scripts": {
     "build": "turbo run build",
     "check": "pnpm build && pnpm ui:info && pnpm typecheck && pnpm test && pnpm lint && pnpm format:check",
+    "dev": "pnpm -r --parallel --stream --filter @stacklens/api --filter @stacklens/worker --filter @stacklens/web run dev",
+    "dev:infra": "docker compose up -d postgres",
+    "dev:infra:down": "docker compose down",
+    "dev:infra:logs": "docker compose logs -f postgres",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",

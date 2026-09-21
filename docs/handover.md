@@ -4,7 +4,7 @@
 > **Prepared:** 2026-09-21  
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
-> **Architecture:** v0.1.12  
+> **Architecture:** v0.1.13  
 > **Completed milestone:** Milestone K1 — repository-analysis web flow  
 > **Immediate milestone:** Milestone K2 — quick-manifest HTTP transport  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
@@ -29,6 +29,7 @@ Before implementing anything:
    - `docs/implementation/repository-analysis.md`;
    - `docs/implementation/repository-jobs.md`;
    - `docs/implementation/repository-web.md`;
+   - `docs/implementation/local-development.md`;
    - `docs/implementation/rules-javascript.md`;
    - `docs/implementation/scoring.md`;
    - `docs/implementation/quick-manifest-analysis.md`;
@@ -77,6 +78,7 @@ The repository already has the following accepted foundations:
 - TypeScript 7 strict type checking;
 - Oxlint + Oxfmt;
 - Vitest-based package tests.
+- runnable local web/API/worker composition with PostgreSQL 18 via Docker Compose;
 
 The latest hosted-product slice is the **repository-analysis web flow** in `apps/web`.
 The browser remains a replaceable client of the public Fastify contract: TanStack Query polls durable
@@ -671,6 +673,14 @@ NFR-003, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002, SEC-003, SEC-007,
 GOV-002, GOV-006, GOV-007`.
 
 See `docs/implementation/repository-web.md` and `apps/web/README.md`.
+
+
+Post-K1 runtime composition is also implemented: `compose.yaml` provisions local PostgreSQL,
+`apps/api` and `apps/worker` expose executable dev/start entrypoints, the API composes real
+Drizzle/Graphile queue adapters, and `pnpm dev` runs web/API/worker together. This is infrastructure
+composition only and does not change repository-analysis product semantics.
+
+See `docs/implementation/local-development.md`.
 
 ## 18. Immediate next milestone: quick-manifest HTTP transport
 
