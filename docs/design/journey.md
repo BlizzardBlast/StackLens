@@ -1233,3 +1233,24 @@ The next product milestone remains quick-manifest Fastify/OpenAPI transport.
 **Traceability:** FR-003, FR-004, FR-017, FR-021, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002,
 GOV-002, GOV-006, GOV-007.
 
+## 2026-09-21 — Step 49: Make the development command self-preparing
+
+Real local use after the runtime-composition and UX passes exposed one remaining developer-experience
+paper cut: application package exports intentionally point at compiled `dist` output, so a fresh
+checkout could fail if a developer ran `pnpm dev` before manually running `pnpm build`.
+
+The root development workflow now keeps the compiled-package boundary without requiring that manual
+step. `pnpm dev` first invokes `pnpm dev:prepare`, which uses Turborepo package-graph filters to
+build only the shared dependencies consumed by `@stacklens/api`, `@stacklens/worker`, and
+`@stacklens/web`; the three application packages themselves are excluded from this preparation.
+The existing parallel web/API/worker watch processes start only after that preparation succeeds.
+
+This deliberately avoids a full production application build on every development start. Turbo's
+normal cache makes repeated preparation cheap when shared packages have not changed. Developers can
+also run `pnpm dev:prepare` directly before launching an individual application package.
+
+No production runtime, analyzer, provider, persistence, queue, API, or product behavior changes in
+this step. The next product milestone remains quick-manifest Fastify/OpenAPI transport.
+
+**Traceability:** NFR-005, GOV-002, GOV-006, GOV-007.
+

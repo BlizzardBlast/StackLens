@@ -33,6 +33,10 @@ pnpm dev
 ```
 
 This starts PostgreSQL 18 in Docker and runs the web, API, and worker as normal workspace processes.
+`pnpm dev` first prepares only the shared workspace package outputs required by those applications;
+Turbo caching makes that preparation cheap when nothing relevant changed. No separate `pnpm build`
+is required for the normal full-stack development flow.
+
 The default local endpoints are:
 
 - web: `http://localhost:5173`;

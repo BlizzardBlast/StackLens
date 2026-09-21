@@ -81,16 +81,19 @@ SEC-002, SEC-003.
 
 The package has a runnable PostgreSQL/Graphile composition boundary.
 
-From a fresh checkout, build workspace package outputs before starting PostgreSQL and all
-application processes:
+From a fresh checkout, start PostgreSQL and the application processes directly:
 
 ```bash
-pnpm build
 pnpm dev:infra
 pnpm dev
 ```
 
-Or run only the API after PostgreSQL is available:
+The root `pnpm dev` command automatically prepares the shared workspace package outputs consumed by
+the applications before their watch processes start. Turbo caches those dependency builds, so no
+separate full-workspace `pnpm build` is required for normal development.
+
+Or run only the API after PostgreSQL is available and shared outputs have been prepared (for example
+with `pnpm dev:prepare`):
 
 ```bash
 pnpm --filter @stacklens/api dev
