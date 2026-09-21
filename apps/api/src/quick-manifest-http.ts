@@ -39,7 +39,9 @@ export interface QuickManifestAnalysisHttpDependencies {
   readonly now?: () => string;
 }
 
-function publicInput(input: z.infer<typeof QuickManifestAnalysisRequestSchema>): QuickManifestInput {
+function publicInput(
+  input: z.infer<typeof QuickManifestAnalysisRequestSchema>,
+): QuickManifestInput {
   return input.kind === "paste"
     ? {
         kind: "paste",
