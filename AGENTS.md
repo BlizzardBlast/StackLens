@@ -192,6 +192,12 @@ The API application layer lives in `apps/api`.
 - Do not retain or log full manifest content by default. Keep only data needed for the report plus the input fingerprint.
 - Stable validation errors should be transport-agnostic so Fastify can map them without changing analyzer behavior.
 - Provider/network collection happens before analyzer-core and must remain outside rule evaluation.
+- Repository-analysis Fastify routes must create/enqueue through `@stacklens/repository-jobs` and
+  read durable state through `@stacklens/persistence`; never import `apps/worker`, query Graphile
+  internal tables, or duplicate `@stacklens/analysis-orchestration`.
+- Keep Fastify request/response validation and generated OpenAPI aligned by using the same Zod route
+  schemas. Public polling responses expose coarse StackLens status/progress and terminal
+  report/failure only, not active Graphile job identifiers or retry internals.
 
 ## Analysis orchestration package
 

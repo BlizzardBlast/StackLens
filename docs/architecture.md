@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.10  
+> **Architecture version:** 0.1.11  
 > **Date:** 2026-09-21  
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
@@ -436,6 +436,16 @@ GET  /health/ready
 GET  /openapi.json
 ```
 
+Milestone J3 implements the repository-analysis subset of this contract in `apps/api`.
+`POST /v1/analyses/repository` performs authoritative supported-GitHub URL validation, generates a
+non-guessable UUID, and delegates durable creation/enqueueing to `@stacklens/repository-jobs`.
+`GET /v1/analyses/:analysisId` reads the StackLens persistence repository rather than Graphile
+tables and returns coarse status/progress plus terminal report or failure state. The same Zod route
+schemas generate the OpenAPI 3.1 document at `/openapi.json`.
+
+The quick-manifest HTTP route and health endpoints remain separate later transport slices; their
+absence does not move their application behavior into the repository routes.
+
 The API contract is described by runtime-validatable schemas and published as OpenAPI.
 
 REST/OpenAPI is selected rather than a React-specific RPC layer because future CLI, GitHub, IDE, and third-party consumers must use the same stable contracts (**NFR-005**, **FR-108–FR-110**).
@@ -509,6 +519,7 @@ Dependency direction:
 
 ```text
 apps/* -> packages/*
+apps/api -> data-sources + persistence + repository-jobs (repository HTTP transport)
 analysis-orchestration -> analyzer-core + contracts + data-sources + rules-javascript + scoring
 repository-jobs -> analysis-orchestration + persistence
 apps/worker -> analysis-orchestration + data-sources + persistence + repository-jobs

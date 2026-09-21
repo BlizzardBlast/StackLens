@@ -2,10 +2,10 @@
 
 Application-layer orchestration for the StackLens hosted API.
 
-The current implementation is intentionally framework-independent. The accepted architecture still
-uses Fastify for the HTTP transport. `apps/api` currently owns the authoritative quick-manifest
-service, while long-running repository-analysis composition is shared through
-`@stacklens/analysis-orchestration` so the future API and Worker do not depend on each other.
+`apps/api` now owns the Fastify REST/OpenAPI transport for asynchronous public-repository analysis
+and still owns the framework-independent quick-manifest application service. Long-running
+repository-analysis composition remains shared through `@stacklens/analysis-orchestration`; the API
+and Worker do not import each other.
 
 ## Quick manifest analysis
 
@@ -35,8 +35,8 @@ User-input failures use transport-independent codes:
 - `invalid_manifest`;
 - `unsupported_upload`.
 
-A future Fastify route should map these errors to the REST/OpenAPI contract rather than changing
-their analysis semantics.
+A future quick-manifest Fastify route should map these errors to the REST/OpenAPI contract rather
+than changing their analysis semantics.
 
 ## Dependency inversion
 
@@ -50,7 +50,7 @@ This is deliberate:
 
 - the API does not own production priority policy;
 - the API does not own production scoring formulas;
-- the future Worker can reuse repository orchestration without importing the API application;
+- the Worker reuses repository orchestration without importing the API application;
 - Fastify transport can map application errors/status without changing analyzer behavior;
 - quick-manifest tests can still inject a minimal deterministic analyzer.
 
@@ -76,18 +76,29 @@ digest.
 SEC-002, SEC-003.
 
 
-## Public repository analysis
+## Public repository analysis HTTP transport
 
-The public GitHub repository analysis service does **not** live in this application package.
+`createStackLensApi` exposes the Milestone J3 Fastify boundary:
 
-Use `@stacklens/analysis-orchestration` for the transport-independent repository workflow. It
-performs bounded GitHub/npm/OSV acquisition, builds the normalized JavaScript project/metadata
-snapshot, invokes the production analyzer, and returns progress plus a contract-valid report.
+- `POST /v1/analyses/repository` accepts only a public GitHub repository URL, reuses the shared
+  GitHub URL parser, canonicalizes supported clone/trailing-slash forms, creates a UUID analysis ID,
+  persists/enqueues through `@stacklens/repository-jobs`, and returns `202` with the ID;
+- `GET /v1/analyses/:analysisId` reads `@stacklens/persistence` and returns durable status,
+  coarse progress, terminal failure, or the persisted `AnalysisReport`;
+- `GET /openapi.json` publishes OpenAPI 3.1 generated from the same Zod schemas used by Fastify
+  validation and serialization.
 
-The persistent job boundary now exists outside this app. A Fastify endpoint should create/enqueue
-work through `@stacklens/repository-jobs` and read status/report state through
-`@stacklens/persistence`; it must not import `apps/worker` or copy repository orchestration into
-route handlers.
+The Fastify layer does not query Graphile tables, import `apps/worker`, collect provider data, or
+reconstruct analyzer policy. The background Worker remains the only process that invokes
+`@stacklens/analysis-orchestration` for queued repository work.
 
-See [Repository Analysis Orchestration](../../docs/implementation/repository-analysis.md) and
-[Persistent Repository Analysis Jobs](../../docs/implementation/repository-jobs.md).
+`createStackLensApi` receives an `AnalysisRepository` and `RepositoryJobQueue` so hosted runtime
+composition can use Drizzle/PostgreSQL and Graphile Worker adapters without making Fastify routes
+infrastructure-specific.
+
+See [Repository Analysis Orchestration](../../docs/implementation/repository-analysis.md),
+[Persistent Repository Analysis Jobs](../../docs/implementation/repository-jobs.md), and
+[Repository Analysis HTTP Transport](../../docs/implementation/repository-api.md).
+
+**Repository transport traceability:** FR-003, FR-004, FR-017, FR-021, DATA-006, NFR-003, NFR-008,
+NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.
