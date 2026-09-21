@@ -49,7 +49,7 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
     stage as (typeof ACTIVE_PROGRESS_STAGES)[number],
   );
   const boundedCurrentIndex = currentIndex < 0 ? 0 : currentIndex;
-  const currentStage = ACTIVE_PROGRESS_STAGES[boundedCurrentIndex];
+  const currentStage = ACTIVE_PROGRESS_STAGES[boundedCurrentIndex] ?? "queued";
 
   return (
     <section
