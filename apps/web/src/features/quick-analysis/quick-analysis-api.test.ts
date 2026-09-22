@@ -29,6 +29,28 @@ function requestInputUrl(input: Parameters<QuickAnalysisFetch>[0]): string {
   return input instanceof URL ? input.href : input.url;
 }
 
+const invalidJsonFetch: QuickAnalysisFetch = () =>
+  Promise.resolve(
+    new Response(
+      JSON.stringify({
+        code: "invalid_json",
+        message: "package.json must contain valid JSON.",
+      }),
+      {
+        status: 400,
+        headers: { "content-type": "application/json" },
+      },
+    ),
+  );
+
+const invalidReportFetch: QuickAnalysisFetch = () =>
+  Promise.resolve(
+    new Response(JSON.stringify({ report: {} }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    }),
+  );
+
 describe("quick analysis API client [FR-001, FR-002, FR-004, FR-017, FR-021]", () => {
   it("submits the existing synchronous paste contract and validates the report", async () => {
     const requests: Array<{ url: string; init?: RequestInit }> = [];
@@ -85,18 +107,7 @@ describe("quick analysis API client [FR-001, FR-002, FR-004, FR-017, FR-021]", (
   });
 
   it("preserves stable Fastify validation messages for recoverable input errors", async () => {
-    const fetchImpl: QuickAnalysisFetch = async () =>
-      new Response(
-        JSON.stringify({
-          code: "invalid_json",
-          message: "package.json must contain valid JSON.",
-        }),
-        {
-          status: 400,
-          headers: { "content-type": "application/json" },
-        },
-      );
-    const client = createQuickAnalysisClient({ fetchImpl });
+    const client = createQuickAnalysisClient({ fetchImpl: invalidJsonFetch });
 
     await expect(client.analyzeManifest({ kind: "paste", content: "{" })).rejects.toMatchObject({
       name: "QuickAnalysisApiError",
@@ -107,12 +118,7 @@ describe("quick analysis API client [FR-001, FR-002, FR-004, FR-017, FR-021]", (
   });
 
   it("fails closed when a successful response is not a contract-valid AnalysisReport", async () => {
-    const fetchImpl: QuickAnalysisFetch = async () =>
-      new Response(JSON.stringify({ report: {} }), {
-        status: 200,
-        headers: { "content-type": "application/json" },
-      });
-    const client = createQuickAnalysisClient({ fetchImpl });
+    const client = createQuickAnalysisClient({ fetchImpl: invalidReportFetch });
 
     await expect(
       client.analyzeManifest({ kind: "paste", content: '{"name":"demo"}' }),
