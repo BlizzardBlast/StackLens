@@ -191,9 +191,7 @@ describe("parsePublicGitHubRepositoryUrl [FR-003, FR-004, SEC-002]", () => {
   });
 });
 
-describe(
-  "GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, DATA-006, NFR-008, SEC-007]",
-  () => {
+describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, DATA-006]", () => {
   it("resolves the default branch to an immutable commit and acquires only supported static files", async () => {
     const packageJson = JSON.stringify({
       name: "fixture",
