@@ -341,6 +341,38 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     }
   });
 
+  it("keeps configured GitHub tokens out of provider failures", async () => {
+    const secretToken = "github_pat_DO_NOT_LEAK";
+    const adapter = createAdapter(
+      vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(JSON.stringify({ message: "rate limited" }), {
+          status: 403,
+          headers: {
+            "content-type": "application/json",
+            "x-ratelimit-remaining": "0",
+            "x-ratelimit-reset": String(Date.parse("2026-09-22T16:00:00.000Z") / 1_000),
+          },
+        }),
+      ),
+      {
+        authToken: secretToken,
+      },
+    );
+    const result = await adapter.fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+
+    expect(result.ok).toBe(false);
+
+    if (result.ok) {
+      throw new Error("Expected authenticated rate-limit failure");
+    }
+
+    expect(result.failure.code).toBe("github_repository_rate_limited");
+    expect(result.failure.message).toContain("configured GitHub token");
+    expect(JSON.stringify(result.failure)).not.toContain(secretToken);
+  });
+
   it("rejects malformed configured GitHub tokens before making a request", () => {
     const fetchImpl = vi.fn<typeof fetch>();
 
