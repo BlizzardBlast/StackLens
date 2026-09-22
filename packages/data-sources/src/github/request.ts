@@ -136,7 +136,7 @@ export class GitHubRequestClient {
           throw new GitHubRequestError(
             `github_${operation}_rate_limited`,
             rateLimitMessage(response, operation, this.#authToken !== undefined),
-            true,
+            false,
             endpoint,
           );
         }
