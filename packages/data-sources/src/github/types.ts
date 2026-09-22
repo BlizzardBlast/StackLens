@@ -46,7 +46,7 @@ export interface GitHubRepositorySnapshot {
 
 export interface GitHubAdapterOptions {
   readonly fetchImpl?: typeof fetch;
-  readonly authToken?: string;
+  readonly authToken?: string | undefined;
   readonly now?: () => string;
   readonly timeoutMs?: number;
   readonly maxResponseBytes?: number;
