@@ -889,7 +889,7 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
 
     expect(primaryRateResult.failure).toMatchObject({
       code: "github_repository_rate_limited",
-      retryable: true,
+      retryable: false,
     });
     expect(primaryRateResult.failure.message).toContain("Retry after 2026-09-22T16:00:00.000Z");
     expect(primaryRateResult.failure.message).toContain("STACKLENS_GITHUB_TOKEN");
@@ -918,7 +918,7 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
 
     expect(secondaryRateResult.failure).toMatchObject({
       code: "github_repository_rate_limited",
-      retryable: true,
+      retryable: false,
     });
     expect(secondaryRateResult.failure.message).toContain("Retry after 60 seconds");
 
