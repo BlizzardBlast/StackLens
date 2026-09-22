@@ -108,7 +108,7 @@ export function QuickAnalysisForm({
       <fieldset className="grid gap-3" disabled={isPending}>
         <legend className="text-sm font-semibold">Choose your input</legend>
         <div className="grid gap-3 sm:grid-cols-2">
-          <label className="group cursor-pointer">
+          <label className="group cursor-pointer" aria-label="Paste manifest">
             <input
               className="peer sr-only"
               type="radio"
@@ -131,7 +131,7 @@ export function QuickAnalysisForm({
             </span>
           </label>
 
-          <label className="group cursor-pointer">
+          <label className="group cursor-pointer" aria-label="Choose local file">
             <input
               className="peer sr-only"
               type="radio"
