@@ -193,7 +193,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
     const client = new GitHubRequestClient({
       fetchImpl: this.#fetchImpl,
-      authToken: this.#authToken,
+      ...(this.#authToken === undefined ? {} : { authToken: this.#authToken }),
       timeoutMs: this.#timeoutMs,
       maxResponseBytes: this.#maxResponseBytes,
       maxRequests: this.#maxRequests,
