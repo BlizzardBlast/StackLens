@@ -94,6 +94,18 @@ function usageEvidencePathWasAffected(paths: readonly string[]): boolean {
   return paths.some((path) => path !== "package.json" && isInitialSupportedSnapshotPath(path));
 }
 
+function hasControlCharacter(value: string): boolean {
+  for (const character of value) {
+    const codePoint = character.codePointAt(0);
+
+    if (codePoint !== undefined && (codePoint <= 0x1f || codePoint === 0x7f)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function validateAuthToken(authToken: string | undefined): string | undefined {
   if (authToken === undefined) {
     return undefined;
@@ -102,7 +114,7 @@ function validateAuthToken(authToken: string | undefined): string | undefined {
   if (
     authToken.length === 0 ||
     authToken.trim() !== authToken ||
-    /[\u0000-\u001f\u007f]/u.test(authToken)
+    hasControlCharacter(authToken)
   ) {
     throw new GitHubConfigurationError(
       "authToken must be a non-empty trimmed string without control characters",
@@ -193,7 +205,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
     const client = new GitHubRequestClient({
       fetchImpl: this.#fetchImpl,
-      ...(this.#authToken === undefined ? {} : { authToken: this.#authToken }),
+      authToken: this.#authToken,
       timeoutMs: this.#timeoutMs,
       maxResponseBytes: this.#maxResponseBytes,
       maxRequests: this.#maxRequests,
