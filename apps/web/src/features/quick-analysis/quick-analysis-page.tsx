@@ -66,7 +66,7 @@ export function QuickAnalysisPage({
   function startAnother(): void {
     setReport(undefined);
     mutation.reset();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0 });
   }
 
   if (report !== undefined) {
