@@ -1376,7 +1376,8 @@ acquisition operationally reliable and the failure state actionable:
 - configured tokens are validated as non-empty, trimmed, control-character-free strings before any
   request is sent;
 - `429`, plus `403` responses carrying `x-ratelimit-remaining: 0` or `retry-after`, are
-  classified as retryable `github_<operation>_rate_limited` failures;
+  classified as terminal `github_<operation>_rate_limited` failures so Graphile does not hammer a
+  provider that explicitly asked clients to wait;
 - retry guidance prefers `retry-after` and otherwise safely renders `x-ratelimit-reset` as UTC;
 - generic forbidden responses remain non-retryable, provider response bodies stay out of failure
   messages, and operation wording now names repository metadata/commit/tree/blob work clearly;
