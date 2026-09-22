@@ -74,7 +74,7 @@ export interface GitHubRequestClientOptions {
 
 export class GitHubRequestClient {
   readonly #fetchImpl: typeof fetch;
-  readonly #authToken?: string;
+  readonly #authToken: string | undefined;
   readonly #timeoutMs: number;
   readonly #maxResponseBytes: number;
   readonly #maxRequests: number;
