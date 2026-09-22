@@ -111,11 +111,7 @@ function validateAuthToken(authToken: string | undefined): string | undefined {
     return undefined;
   }
 
-  if (
-    authToken.length === 0 ||
-    authToken.trim() !== authToken ||
-    hasControlCharacter(authToken)
-  ) {
+  if (authToken.length === 0 || authToken.trim() !== authToken || hasControlCharacter(authToken)) {
     throw new GitHubConfigurationError(
       "authToken must be a non-empty trimmed string without control characters",
     );
