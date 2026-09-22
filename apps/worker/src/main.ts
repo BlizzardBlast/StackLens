@@ -23,10 +23,17 @@ function errorName(error: unknown): string {
   return error instanceof Error ? error.name : "UnknownError";
 }
 
+function optionalEnvironmentSecret(name: string): string | undefined {
+  const value = process.env[name];
+  return value === undefined || value.length === 0 ? undefined : value;
+}
+
 async function main(): Promise<void> {
+  const githubToken = optionalEnvironmentSecret("STACKLENS_GITHUB_TOKEN");
   const runtime = await startStackLensWorker({
     connectionString: process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
     concurrency: environmentInteger("STACKLENS_WORKER_CONCURRENCY", DEFAULT_CONCURRENCY),
+    ...(githubToken === undefined ? {} : { githubToken }),
     onDatabasePoolError(error) {
       process.stderr.write(`StackLens Worker database pool error (${errorName(error)}).\n`);
     },
