@@ -38,11 +38,7 @@ function rateLimitAction(authenticated: boolean): string {
     : "Configure STACKLENS_GITHUB_TOKEN for authenticated public-repository requests and a higher rate limit.";
 }
 
-function rateLimitMessage(
-  response: Response,
-  operation: string,
-  authenticated: boolean,
-): string {
+function rateLimitMessage(response: Response, operation: string, authenticated: boolean): string {
   const label = operationLabel(operation);
   const action = rateLimitAction(authenticated);
   const retryAfter = response.headers.get("retry-after");
