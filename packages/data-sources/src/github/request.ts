@@ -158,7 +158,7 @@ export class GitHubRequestClient {
       } catch {
         throw new GitHubRequestError(
           `github_${operation}_invalid_json`,
-          `GitHub returned invalid JSON during repository ${operation}.`,
+          `GitHub returned invalid JSON while fetching ${operationLabel(operation)}.`,
           false,
           endpoint,
         );
@@ -171,7 +171,7 @@ export class GitHubRequestClient {
       if (error instanceof ProviderResponseTooLargeError) {
         throw new GitHubRequestError(
           `github_${operation}_response_too_large`,
-          `GitHub response exceeded the configured byte limit during repository ${operation}.`,
+          `GitHub response exceeded the configured byte limit while fetching ${operationLabel(operation)}.`,
           false,
           endpoint,
         );
@@ -180,7 +180,7 @@ export class GitHubRequestClient {
       if (timedOut) {
         throw new GitHubRequestError(
           `github_${operation}_timeout`,
-          `GitHub repository ${operation} timed out.`,
+          `GitHub request timed out while fetching ${operationLabel(operation)}.`,
           true,
           endpoint,
         );
@@ -188,7 +188,7 @@ export class GitHubRequestClient {
 
       throw new GitHubRequestError(
         `github_${operation}_request_failed`,
-        `GitHub repository ${operation} request failed.`,
+        `GitHub request failed while fetching ${operationLabel(operation)}.`,
         true,
         endpoint,
       );
