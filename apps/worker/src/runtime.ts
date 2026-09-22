@@ -44,7 +44,7 @@ export async function startStackLensWorker(
       repository,
       analysisDependencies: {
         githubRepositoryProvider: new GitHubRepositoryAdapter({
-          ...(options.githubToken === undefined ? {} : { authToken: options.githubToken }),
+          authToken: options.githubToken,
         }),
         npmRegistryProvider: new NpmRegistryAdapter(),
         osvProvider: new OsvVulnerabilityAdapter(),
