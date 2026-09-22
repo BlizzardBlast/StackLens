@@ -217,9 +217,9 @@ authentication, private repository access, and write access remain outside this 
 
 Rate-limit responses are classified without copying GitHub response bodies into StackLens failures.
 A `429`, or a `403` carrying GitHub rate-limit headers such as
-`x-ratelimit-remaining: 0` / `retry-after`, becomes a retryable
-`github_<operation>_rate_limited` failure with bounded retry guidance. Other `403` responses
-remain non-retryable forbidden provider failures.
+`x-ratelimit-remaining: 0` / `retry-after`, becomes a terminal `github_<operation>_rate_limited` failure with bounded manual retry guidance.
+StackLens deliberately does not let Graphile auto-retry that request before GitHub's provider reset
+window. Other `403` responses remain non-retryable forbidden provider failures.
 
 ## GitHub tests
 
