@@ -179,10 +179,10 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
                   aria-hidden="true"
                   className={
                     isComplete
-                      ? "relative z-10 inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm leading-none font-semibold text-primary-foreground tabular-nums"
+                      ? "relative z-10 inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm leading-none font-semibold tabular-nums text-primary-foreground"
                       : isCurrent
-                        ? "relative z-10 inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-background text-sm leading-none font-semibold text-primary ring-4 ring-primary/10 tabular-nums"
-                        : "relative z-10 inline-flex size-8 shrink-0 items-center justify-center rounded-full border bg-background text-sm leading-none font-medium text-muted-foreground tabular-nums"
+                        ? "relative z-10 inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-background text-sm leading-none font-semibold tabular-nums text-primary ring-4 ring-primary/10"
+                        : "relative z-10 inline-flex size-8 shrink-0 items-center justify-center rounded-full border bg-background text-sm leading-none font-medium tabular-nums text-muted-foreground"
                   }
                 >
                   {isComplete ? "✓" : index + 1}
