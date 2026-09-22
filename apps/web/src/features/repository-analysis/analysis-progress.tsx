@@ -163,24 +163,32 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
                 aria-current={isCurrent ? "step" : undefined}
                 className={
                   isCurrent
-                    ? "grid grid-cols-[2rem_1fr] gap-3 rounded-xl border border-primary/25 bg-primary/5 p-3"
+                    ? "relative grid grid-cols-[2rem_1fr] gap-3 overflow-hidden rounded-xl border border-primary/25 bg-primary/5 p-3"
                     : "grid grid-cols-[2rem_1fr] gap-3 rounded-xl p-3"
                 }
               >
+                {isCurrent ? (
+                  <span
+                    aria-hidden="true"
+                    data-progress-activity=""
+                    className="pointer-events-none absolute inset-0 animate-pulse bg-primary/10 motion-reduce:animate-none"
+                  />
+                ) : null}
+
                 <span
                   aria-hidden="true"
                   className={
                     isComplete
-                      ? "grid size-8 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground"
+                      ? "relative z-10 inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm leading-none font-semibold text-primary-foreground tabular-nums"
                       : isCurrent
-                        ? "grid size-8 place-items-center rounded-full border border-primary/40 bg-background text-sm font-semibold text-primary ring-4 ring-primary/10"
-                        : "grid size-8 place-items-center rounded-full border bg-background text-sm font-medium text-muted-foreground"
+                        ? "relative z-10 inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-background text-sm leading-none font-semibold text-primary tabular-nums ring-4 ring-primary/10"
+                        : "relative z-10 inline-flex size-8 shrink-0 items-center justify-center rounded-full border bg-background text-sm leading-none font-medium text-muted-foreground tabular-nums"
                   }
                 >
                   {isComplete ? "✓" : index + 1}
                 </span>
 
-                <div className="grid min-w-0 gap-0.5">
+                <div className="relative z-10 grid min-w-0 gap-0.5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className={isCurrent ? "text-sm font-semibold" : "text-sm font-medium"}>
                       {stageContent[progressStage].label}
