@@ -11,9 +11,7 @@ afterEach(async () => {
   await Promise.all(runtimes.map(async (runtime) => runtime.stop()));
 });
 
-describeWithDatabase(
-  "API runtime composition [FR-001, FR-003, FR-017, FR-021, FR-022, NFR-008, NFR-009]",
-  () => {
+describeWithDatabase("API runtime composition [FR-001, FR-003, FR-017, FR-021, FR-022]", () => {
   it("migrates PostgreSQL/Graphile and enqueues repository analysis through the real adapters", async () => {
     const runtime = await createStackLensApiRuntime({
       connectionString: databaseUrl,

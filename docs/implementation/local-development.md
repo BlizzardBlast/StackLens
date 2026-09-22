@@ -1,8 +1,8 @@
 # Local Development Runtime
 
 > **Status:** Implemented runtime composition baseline  
-> **Date:** 2026-09-21  
-> **Requirements:** FR-003, FR-004, FR-017, FR-021, DATA-006, NFR-003, NFR-004, NFR-005, NFR-008, NFR-009, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007  
+> **Date:** 2026-09-22  
+> **Requirements:** FR-001, FR-003, FR-004, FR-017, FR-021, FR-022, DATA-006, NFR-003, NFR-004, NFR-005, NFR-008, NFR-009, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007  
 > **Decisions:** ADR-0002, ADR-0004
 
 ## Purpose
@@ -111,9 +111,14 @@ Local runtime composition does not alter analysis semantics:
 
 ## Verification
 
-A PostgreSQL-backed API runtime integration test creates the actual persistence and Graphile queue
-adapters, submits one synthetic public repository URL, and confirms durable queued status without
-starting the Worker or performing live provider requests.
+PostgreSQL-backed API runtime integration coverage creates the actual persistence and Graphile
+queue adapters and verifies both public API execution models without live providers:
+
+- repository submission creates durable queued state through the real Drizzle/Graphile adapters;
+- quick manifest analysis runs synchronously through the composed Fastify runtime, returns a
+  manifest report with explicit limitations, and does not create durable repository-analysis state.
+
+See [MVP Acceptance Hardening](mvp-acceptance.md) for the cross-surface smoke coverage.
 
 The repository-wide completion gate remains:
 

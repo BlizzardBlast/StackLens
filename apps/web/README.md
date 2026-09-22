@@ -84,7 +84,12 @@ Focused tests cover:
 - accessible submission busy states without fake percentages;
 - terminal repository failure and completed-with-limitations rendering;
 - shared evidence/report disclosure;
-- explicit manifest-only insufficient-evidence messaging.
+- explicit manifest-only insufficient-evidence messaging;
+- a production-router acceptance smoke that traverses package.json analysis, returns to the analyzer,
+  submits a repository, navigates to the stable analysis route, and renders a terminal report.
+
+The acceptance smoke uses the real production route tree and real web client singletons while mocking
+only their network methods. This verifies route composition without depending on live providers.
 
 The repository-wide `pnpm check` remains the completion gate.
 
