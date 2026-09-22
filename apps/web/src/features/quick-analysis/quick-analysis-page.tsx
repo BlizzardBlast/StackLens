@@ -4,8 +4,8 @@ import { useState } from "react";
 import type { AnalysisReport } from "@stacklens/contracts";
 import { Button } from "@stacklens/ui/components/button";
 
-import { AnalysisModeNav } from "../analyze/analysis-mode-nav.js";
 import { AnalysisReportView } from "../analysis-report/analysis-report-view.js";
+import { AnalysisModeNav } from "../analyze/analysis-mode-nav.js";
 import {
   QuickAnalysisApiError,
   quickAnalysisClient,
@@ -174,8 +174,8 @@ export function QuickAnalysisPage({
               </p>
               <h2 className="text-2xl font-semibold tracking-tight">Provide package.json</h2>
               <p className="text-sm leading-6 text-muted-foreground">
-                Paste JSON or choose a local file. The browser submits the existing K2 JSON contract;
-                no multipart upload or repository access is added.
+                Paste JSON or choose a local file. The browser submits the existing K2 JSON
+                contract; no multipart upload or repository access is added.
               </p>
             </div>
 

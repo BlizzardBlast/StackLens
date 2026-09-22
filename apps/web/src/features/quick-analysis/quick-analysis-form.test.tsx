@@ -66,16 +66,11 @@ describe("QuickAnalysisForm [FR-001, FR-002, FR-004, FR-022, NFR-006, NFR-007]",
     });
 
     rerender(
-      <QuickAnalysisForm
-        onSubmit={onSubmit}
-        serverError="package.json must contain valid JSON."
-      />,
+      <QuickAnalysisForm onSubmit={onSubmit} serverError="package.json must contain valid JSON." />,
     );
 
     expect(textarea).toHaveValue('{"name": }');
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      "package.json must contain valid JSON.",
-    );
+    expect(screen.getByRole("alert")).toHaveTextContent("package.json must contain valid JSON.");
   });
 
   it("exposes a synchronous accessible busy state without fake progress", () => {

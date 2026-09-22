@@ -170,7 +170,9 @@ export function QuickAnalysisForm({
             spellCheck={false}
             autoCapitalize="off"
             autoCorrect="off"
-            placeholder={'{\n  "name": "my-project",\n  "dependencies": {\n    "react": "^19.0.0"\n  }\n}'}
+            placeholder={
+              '{\n  "name": "my-project",\n  "dependencies": {\n    "react": "^19.0.0"\n  }\n}'
+            }
             value={pastedContent}
             onChange={(event) => {
               setPastedContent(event.currentTarget.value);
@@ -213,7 +215,7 @@ export function QuickAnalysisForm({
               aria-invalid={error === undefined ? undefined : true}
               aria-describedby={errorId ?? "manifest-file-help"}
               disabled={isPending}
-              className="block w-full max-w-64 text-sm text-muted-foreground file:mr-3 file:min-h-10 file:rounded-md file:border file:bg-background file:px-3 file:font-semibold file:text-foreground file:transition-colors hover:file:bg-accent focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/35 disabled:cursor-not-allowed disabled:opacity-60"
+              className="block w-full max-w-64 text-sm text-muted-foreground file:mr-3 file:min-h-10 file:rounded-md file:border file:bg-background file:px-3 file:font-semibold file:text-foreground file:transition-colors hover:file:bg-accent focus-visible:rounded-md focus-visible:ring-3 focus-visible:ring-ring/35 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
             />
           </div>
           <p id="manifest-file-help" className="text-xs leading-5 text-muted-foreground">

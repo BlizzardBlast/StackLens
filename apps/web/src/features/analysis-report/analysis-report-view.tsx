@@ -208,14 +208,16 @@ export function AnalysisReportView({
           className="grid gap-2 rounded-xl border border-primary/20 bg-primary/5 p-5"
           aria-labelledby="manifest-boundary-title"
         >
-          <p className="text-xs font-semibold tracking-wide text-primary uppercase">Evidence boundary</p>
+          <p className="text-xs font-semibold tracking-wide text-primary uppercase">
+            Evidence boundary
+          </p>
           <h2 id="manifest-boundary-title" className="text-lg font-semibold">
             Manifest-only analysis
           </h2>
           <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-            This report can inspect supported package.json evidence, but it has no repository source,
-            configuration, or external provider snapshot. N/A means insufficient evidence—not a
-            clean bill of health.
+            This report can inspect supported package.json evidence, but it has no repository
+            source, configuration, or external provider snapshot. N/A means insufficient
+            evidence—not a clean bill of health.
           </p>
         </section>
       ) : null}
