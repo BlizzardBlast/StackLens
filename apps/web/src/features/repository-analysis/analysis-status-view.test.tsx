@@ -62,7 +62,9 @@ describe("AnalysisStatusView [FR-017, FR-021, NFR-006, NFR-007, NFR-008]", () =>
 
     expect(currentStep).toHaveAttribute("aria-current", "step");
 
-    const marker = currentStep?.querySelector("span[aria-hidden='true']:not([data-progress-activity])");
+    const marker = currentStep?.querySelector(
+      "span[aria-hidden='true']:not([data-progress-activity])",
+    );
     expect(marker).toHaveTextContent("2");
     expect(marker).toHaveClass(
       "inline-flex",
