@@ -1,6 +1,6 @@
 # Quick Manifest Analysis
 
-> **Status:** Accepted implementation baseline + HTTP transport
+> **Status:** Accepted implementation baseline + HTTP transport + web consumer
 > **Date:** 2026-09-22
 > **Requirements:** FR-001, FR-002, FR-004, FR-005, FR-017, FR-021, FR-022, NFR-001, NFR-004, SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007
 > **Architecture:** `apps/api -> packages/*`
@@ -142,3 +142,28 @@ Focused service and Fastify injection tests cover:
 - strict request validation and bounded content (**FR-004**, **SEC-002**);
 - OpenAPI publication from the same route schemas (**GOV-006**);
 - HTTP success does not require persistence/background jobs (**FR-022**, **SEC-003**).
+
+
+## Web consumer
+
+Milestone K3 exposes the completed K2 contract through `apps/web`.
+
+The web implementation remains a client of the public HTTP boundary:
+
+- `/quick` provides pasted-text and local-file input modes;
+- selected files are read with the browser File API and sent as the existing
+  `{ kind: "upload", filename, content }` JSON shape;
+- React performs only obvious empty-input checks; authoritative JSON, manifest, filename, and
+  request-bound validation stays in the API/application service;
+- TanStack Query owns synchronous mutation state without adding polling or a background job;
+- stable Fastify/application error messages are shown without clearing recoverable user input;
+- successful payloads are runtime-validated with `AnalysisReportSchema`;
+- repository and quick analysis share the report renderer while keeping their execution models
+  separate;
+- manifest-only reports show the evidence boundary before scores so N/A cannot be misread as a
+  healthy result.
+
+See [Quick Analysis Web Flow](quick-analysis-web.md).
+
+**Web traceability:** FR-001, FR-002, FR-004, FR-017, FR-021, FR-022, NFR-006, NFR-007,
+SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007.

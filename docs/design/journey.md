@@ -1285,3 +1285,40 @@ synchronous busy/error states, and report rendering over this public K2 contract
 
 **Traceability:** FR-001, FR-002, FR-004, FR-005, FR-017, FR-021, FR-022, NFR-001, NFR-004,
 SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007.
+
+
+## 2026-09-22 — Step 51: Add the quick package.json web flow
+
+Milestone K3 completes the second accepted anonymous analyzer input path in the production React
+client.
+
+The analyzer now exposes an explicit repository/package.json input-mode navigation matching Product
+Design v1. The quick surface supports both pasted manifest text and local file selection. Browser
+file input is intentionally local-read only: React reads the selected `File` as text and submits the
+existing K2 `kind + filename + content` JSON shape. No multipart transport or parallel server-side
+analysis path was added.
+
+The new quick transport adapter is injectable and validates successful responses with the shared
+`AnalysisReportSchema`. Stable API/application validation errors remain visible without clearing
+recoverable user input. React performs only obvious empty-input checks; authoritative JSON, manifest,
+filename, and resource validation remains in Fastify/application code.
+
+Because quick analysis is synchronous, the interaction uses one explicit accessible busy state and
+disables duplicate submission. It does not borrow repository polling, invent stages, show a fake
+percentage, create persistence, or enqueue background work.
+
+The page follows the accepted StackLens visual language rather than adding a generic form: neutral
+surface hierarchy carries the layout, restrained primary accents identify interaction, the input
+workspace is paired with a concise validate/inventory/evidence-limit explanation rail, and both wide
+and narrow layouts retain the same semantic order.
+
+Report presentation was moved out of the repository-specific feature into a shared analysis-report
+feature. Both product paths now render the same contract/analyzer-owned evidence grammar without
+duplicating scoring or finding semantics. Manifest reports add an early evidence-boundary explanation
+so N/A states are explicitly interpreted as insufficient evidence rather than healthy results.
+
+No Fastify change was required. The existing K2 route already provides strict Zod/OpenAPI schemas,
+bounded input, stable public errors, and thin delegation to `analyzeQuickManifest`.
+
+**Traceability:** FR-001, FR-002, FR-004, FR-017, FR-021, FR-022, SCORE-003, NFR-006, NFR-007,
+SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007.

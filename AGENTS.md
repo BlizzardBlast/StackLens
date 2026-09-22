@@ -202,8 +202,14 @@ The production web application lives in `apps/web`.
   polling when the public status becomes terminal.
 - Client-side repository URL checks are advisory only. Do not duplicate the authoritative GitHub URL
   parser/canonicalizer from the server.
-- Runtime-validate terminal `AnalysisReport` payloads with `@stacklens/contracts`; do not create a
-  parallel report shape in React.
+- Quick-manifest paste/upload checks are advisory only. Keep JSON/manifest/filename/resource
+  validation authoritative in the API/application boundary; browser file selection reads text
+  locally and submits the existing JSON upload shape rather than adding multipart behavior.
+- Quick analysis is synchronous: show an accessible request-busy state, but do not add repository
+  polling, fake stages/percentages, persistence, or background jobs.
+- Runtime-validate every returned `AnalysisReport` payload with `@stacklens/contracts`; do not create
+  a parallel report shape in React. Reuse report presentation across input modes where semantics are
+  shared and keep manifest-only evidence limits explicit.
 - Render analyzer-owned classification, priority, confidence, evidence, recommendations, and scores
   as supplied. Do not calculate replacement severity/priority/scoring rules in presentation code.
 - Show coarse named progress stages only. Never derive fake percentages from stage position.
