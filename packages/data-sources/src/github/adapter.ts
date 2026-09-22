@@ -94,6 +94,24 @@ function usageEvidencePathWasAffected(paths: readonly string[]): boolean {
   return paths.some((path) => path !== "package.json" && isInitialSupportedSnapshotPath(path));
 }
 
+function validateAuthToken(authToken: string | undefined): string | undefined {
+  if (authToken === undefined) {
+    return undefined;
+  }
+
+  if (
+    authToken.length === 0 ||
+    authToken.trim() !== authToken ||
+    /[\u0000-\u001f\u007f]/u.test(authToken)
+  ) {
+    throw new GitHubConfigurationError(
+      "authToken must be a non-empty trimmed string without control characters",
+    );
+  }
+
+  return authToken;
+}
+
 export class GitHubRepositoryAdapter implements EvidenceProvider<
   GitHubRepositoryRequest,
   GitHubRepositorySnapshot
@@ -101,6 +119,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
   readonly id = GITHUB_PROVIDER_ID;
 
   readonly #fetchImpl: typeof fetch;
+  readonly #authToken?: string;
   readonly #now: () => string;
   readonly #timeoutMs: number;
   readonly #maxResponseBytes: number;
@@ -111,6 +130,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
   constructor(options: GitHubAdapterOptions = {}) {
     this.#fetchImpl = options.fetchImpl ?? globalThis.fetch;
+    this.#authToken = validateAuthToken(options.authToken);
     this.#now = options.now ?? (() => new Date().toISOString());
     this.#timeoutMs = validatePositiveInteger(
       options.timeoutMs ?? GITHUB_DEFAULT_TIMEOUT_MS,
@@ -173,6 +193,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
     const client = new GitHubRequestClient({
       fetchImpl: this.#fetchImpl,
+      authToken: this.#authToken,
       timeoutMs: this.#timeoutMs,
       maxResponseBytes: this.#maxResponseBytes,
       maxRequests: this.#maxRequests,
