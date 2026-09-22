@@ -351,11 +351,13 @@ rather than being sent to GitHub.
 Rate-limit classification uses response status and safe provider headers rather than response-body
 text:
 
-- `429` is classified as a retryable `github_<operation>_rate_limited` failure;
+- `429` is classified as a terminal `github_<operation>_rate_limited` failure with explicit
+  manual retry guidance;
 - `403` is classified as rate-limited when `x-ratelimit-remaining: 0` or `retry-after` is
-  present;
+  present and is handled the same way;
 - `retry-after` seconds are preferred for guidance, otherwise a valid `x-ratelimit-reset` epoch
   is rendered as an ISO UTC timestamp;
+- Graphile does not automatically retry provider throttling before GitHub's reset window;
 - other `403` responses remain non-retryable forbidden failures.
 
 The user-facing message therefore distinguishes provider throttling from a generic forbidden
