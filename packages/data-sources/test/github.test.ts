@@ -37,6 +37,7 @@ const sourceSha = "4".repeat(40);
 function createAdapter(
   fetchImpl: typeof fetch,
   options: {
+    readonly authToken?: string;
     readonly timeoutMs?: number;
     readonly maxResponseBytes?: number;
     readonly maxFileBytes?: number;
@@ -315,6 +316,40 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     expect(DataSourceSchema.safeParse(result.source).success).toBe(true);
     expect(EvidenceSchema.safeParse(result.evidence[0]).success).toBe(true);
     expect(RepositoryIdentitySchema.safeParse(result.data.repository).success).toBe(true);
+  });
+
+  it("sends a bearer token only when authenticated public access is configured", async () => {
+    const packageJson = "{}";
+    const tree = treePayload([treeEntry("package.json", manifestSha, packageJson.length)]);
+    const fetchImpl = successfulBaseFetch(tree, [blobPayload(manifestSha, packageJson)]);
+    const result = await createAdapter(fetchImpl, {
+      authToken: "github_pat_example",
+    }).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+
+    expect(result.ok).toBe(true);
+
+    for (const call of fetchImpl.mock.calls) {
+      expect(call[1]).toEqual(
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            authorization: "Bearer github_pat_example",
+          }),
+        }),
+      );
+    }
+  });
+
+  it("rejects malformed configured GitHub tokens before making a request", () => {
+    const fetchImpl = vi.fn<typeof fetch>();
+
+    expect(() =>
+      createAdapter(fetchImpl, {
+        authToken: " token-with-whitespace ",
+      }),
+    ).toThrow("authToken must be a non-empty trimmed string without control characters");
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   it("marks source coverage partial when relevant source evidence is skipped or unsupported", async () => {
@@ -828,32 +863,84 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     expect(treeResult.failure.code).toBe("github_invalid_tree_response");
   });
 
-  it("classifies rate limits and network errors without leaking provider details", async () => {
-    const rateLimited = createAdapter(
+  it("classifies GitHub rate limits and forbidden responses without leaking provider details", async () => {
+    const primaryReset = String(Date.parse("2026-09-22T16:00:00.000Z") / 1_000);
+    const primaryRateLimited = createAdapter(
       vi.fn<typeof fetch>().mockResolvedValue(
-        jsonResponse(
-          {
-            message: "sensitive provider message",
+        new Response(JSON.stringify({ message: "sensitive provider message" }), {
+          status: 403,
+          headers: {
+            "content-type": "application/json",
+            "x-ratelimit-remaining": "0",
+            "x-ratelimit-reset": primaryReset,
           },
-          429,
-        ),
+        }),
       ),
     );
-    const rateResult = await rateLimited.fetch({
+    const primaryRateResult = await primaryRateLimited.fetch({
       repositoryUrl: `https://github.com/${owner}/${name}`,
     });
 
-    expect(rateResult.ok).toBe(false);
+    expect(primaryRateResult.ok).toBe(false);
 
-    if (rateResult.ok) {
-      throw new Error("Expected rate-limit failure");
+    if (primaryRateResult.ok) {
+      throw new Error("Expected primary rate-limit failure");
     }
 
-    expect(rateResult.failure).toMatchObject({
-      code: "github_repository_http_429",
+    expect(primaryRateResult.failure).toMatchObject({
+      code: "github_repository_rate_limited",
       retryable: true,
     });
-    expect(rateResult.failure.message).not.toContain("sensitive provider message");
+    expect(primaryRateResult.failure.message).toContain("Retry after 2026-09-22T16:00:00.000Z");
+    expect(primaryRateResult.failure.message).toContain("STACKLENS_GITHUB_TOKEN");
+    expect(primaryRateResult.failure.message).not.toContain("sensitive provider message");
+
+    const secondaryRateLimited = createAdapter(
+      vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(JSON.stringify({ message: "another provider detail" }), {
+          status: 429,
+          headers: {
+            "content-type": "application/json",
+            "retry-after": "60",
+          },
+        }),
+      ),
+    );
+    const secondaryRateResult = await secondaryRateLimited.fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+
+    expect(secondaryRateResult.ok).toBe(false);
+
+    if (secondaryRateResult.ok) {
+      throw new Error("Expected secondary rate-limit failure");
+    }
+
+    expect(secondaryRateResult.failure).toMatchObject({
+      code: "github_repository_rate_limited",
+      retryable: true,
+    });
+    expect(secondaryRateResult.failure.message).toContain("Retry after 60 seconds");
+
+    const forbidden = createAdapter(
+      vi.fn<typeof fetch>().mockResolvedValue(jsonResponse({ message: "forbidden detail" }, 403)),
+    );
+    const forbiddenResult = await forbidden.fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+
+    expect(forbiddenResult.ok).toBe(false);
+
+    if (forbiddenResult.ok) {
+      throw new Error("Expected forbidden failure");
+    }
+
+    expect(forbiddenResult.failure).toMatchObject({
+      code: "github_repository_http_403",
+      retryable: false,
+      message: "GitHub returned HTTP 403 while fetching repository metadata.",
+    });
+    expect(forbiddenResult.failure.message).not.toContain("forbidden detail");
 
     const networkFailure = createAdapter(
       vi.fn<typeof fetch>().mockRejectedValue(new Error("socket secret")),
