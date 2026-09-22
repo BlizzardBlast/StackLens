@@ -83,6 +83,4 @@ jobs:
         run: pnpm lint
 
       - name: Format check
-        run: |
-          pnpm format
-          git diff --exit-code
+        run: pnpm format:check
