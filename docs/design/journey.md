@@ -1322,3 +1322,38 @@ bounded input, stable public errors, and thin delegation to `analyzeQuickManifes
 
 **Traceability:** FR-001, FR-002, FR-004, FR-017, FR-021, FR-022, SCORE-003, NFR-006, NFR-007,
 SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007.
+
+
+## 2026-09-22 — Step 52: Add automated MVP acceptance hardening
+
+After K3 completed both anonymous product input paths, the next handover explicitly called for a
+bounded acceptance/hardening pass rather than another analyzer feature.
+
+Review found two integration assumptions that were not yet protected by acceptance-level tests.
+First, K3's completion signal required `/quick` to be reachable through the production TanStack
+Router, but existing tests exercised forms, transport adapters, and report components separately.
+Second, the PostgreSQL-backed API runtime smoke proved the asynchronous repository path but did not
+prove that the synchronous quick route was present in the fully composed runtime or remained
+non-persistent there.
+
+The web suite now renders the actual production router and traverses a continuous package.json ->
+manifest report -> analyzer home -> repository submission -> stable analysis route -> terminal
+repository report journey. It uses the real client singletons and mocks only their network methods,
+so route registration, navigation, form wiring, TanStack Query handoff, and shared report rendering
+are exercised together without live-provider dependency.
+
+The API runtime integration suite now calls `POST /v1/analyze/manifest` through
+`createStackLensApiRuntime` after the real PostgreSQL/Graphile/Drizzle composition is initialized.
+It verifies a manifest report with explicit limitations and then confirms that the returned quick
+analysis ID is not readable from durable repository-analysis state.
+
+The hardening pass also corrected stale durable guidance that still described quick analysis as
+future work after K3. No analyzer rule, score, provider behavior, transport contract, persistence
+policy, or product interaction was changed.
+
+The remaining acceptance work is intentionally manual/browser-oriented: fresh local startup, real
+Worker/provider completion, keyboard/focus inspection, responsive visual review, and live proxy/API
+error recovery.
+
+**Traceability:** FR-001, FR-002, FR-003, FR-004, FR-017, FR-021, FR-022, NFR-006, NFR-007,
+NFR-008, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.

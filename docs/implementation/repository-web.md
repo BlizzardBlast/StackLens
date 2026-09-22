@@ -23,7 +23,8 @@ public GitHub URL
     -> persisted AnalysisReport rendering
 ```
 
-Quick-manifest HTTP transport and UI remain separate follow-up work.
+Quick-manifest transport and UI were implemented later as K2/K3 and remain a separate synchronous
+execution path. See [Quick Analysis Web Flow](quick-analysis-web.md).
 
 ## Client boundary
 
@@ -123,7 +124,13 @@ Focused tests use synthetic responses and a contract-valid bounded report fixtur
 - completed-with-limitations report rendering;
 - evidence disclosure.
 
-No live GitHub, npm, OSV, Worker, or database dependency is required for web component tests.
+MVP acceptance hardening additionally exercises the production TanStack Router tree across the quick
+and repository input modes. The smoke test mocks only the client network methods, then verifies
+package.json submission -> manifest report -> analyzer home -> repository submission -> stable
+analysis route -> terminal report.
+
+No live GitHub, npm, OSV, Worker, or database dependency is required for web component or
+production-router acceptance tests.
 
 ## Deployment notes
 
@@ -137,7 +144,6 @@ Fastify transport boundary merely to support a development topology.
 
 K1 does not add:
 
-- pasted/uploaded `package.json` HTTP transport or UI;
 - private GitHub authentication;
 - saved repositories or history;
 - Graphile job identifiers in client state;

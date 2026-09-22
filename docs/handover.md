@@ -5,8 +5,8 @@
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
 > **Architecture:** v0.1.13  
-> **Completed milestone:** Milestone K3 — quick-analysis web flow  
-> **Immediate milestone:** MVP end-to-end acceptance and hardening review (no new product behavior)  
+> **Completed milestone:** MVP automated acceptance hardening  
+> **Immediate milestone:** Manual browser acceptance and release-readiness review (no new product behavior)  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -30,6 +30,7 @@ Before implementing anything:
    - `docs/implementation/repository-jobs.md`;
    - `docs/implementation/repository-web.md`;
    - `docs/implementation/local-development.md`;
+   - `docs/implementation/mvp-acceptance.md`;
    - `docs/implementation/rules-javascript.md`;
    - `docs/implementation/scoring.md`;
    - `docs/implementation/quick-manifest-analysis.md`;
@@ -58,7 +59,7 @@ Before implementing anything:
 The repository already has the following accepted foundations:
 
 - canonical product/system requirements;
-- architecture v0.1.12;
+- architecture v0.1.13;
 - Product Design v1;
 - generated design-token infrastructure;
 - shared UI package;
@@ -129,9 +130,9 @@ K3 quick analysis uses synchronous paste/local-file submission and shared report
 The npm Registry, OSV, and public GitHub acquisition adapters are implemented, including explicit
 bounded source-coverage state. Static source usage, migration/recommendation policy, production
 priority, scoring v1, shared repository orchestration, PostgreSQL analysis/report persistence,
-Graphile Worker jobs, Fastify repository transport/status routes, and the public-repository web flow
-are implemented. The next bounded gap is the quick-analysis web input/result flow over the completed K2 HTTP
-contract.
+Graphile Worker jobs, both Fastify analysis transports, and both public React input flows are
+implemented. Automated acceptance coverage now verifies production-router composition across both
+web flows and composed-runtime behavior across both API execution models.
 
 ## 3. Non-negotiable boundaries
 
@@ -689,48 +690,78 @@ composition only and does not change repository-analysis product semantics.
 
 See `docs/implementation/local-development.md`.
 
-## 18. Immediate next milestone: MVP end-to-end acceptance and hardening
+## 18. Completed milestone: automated MVP acceptance hardening
 
-After K3 is merged and current `main` is green, do not immediately add another analyzer/provider
-feature. First run a bounded MVP acceptance pass across both public product paths.
+The first bounded MVP acceptance pass now has automated coverage at the two integration seams that
+were previously only implied by focused tests.
 
-Verify, and fix only concrete gaps in:
+### Production web router smoke
 
-- fresh-checkout local startup through `pnpm dev:infra && pnpm dev`;
-- repository submit -> durable progress -> terminal report;
-- quick paste -> synchronous report;
-- quick local package.json -> synchronous report;
-- narrow/wide responsive layouts and keyboard-only operation;
-- authoritative validation/error recovery without lost input;
-- explicit N/A/limitation semantics in both report modes;
-- no analyzed project execution, raw-manifest persistence, or source-content logging;
-- OpenAPI/client contract agreement;
-- permanent repository quality gate.
+`apps/web/src/mvp-acceptance.test.tsx` renders the actual production TanStack Router and verifies one
+continuous anonymous user journey:
 
-If the acceptance pass reveals product behavior not covered by requirements, update requirements
-before or with the fix. Keep hardening changes small and evidence-driven rather than using this pass
-to begin private repositories, AI analysis, automation, or unrelated future surfaces.
+1. analyzer home -> `/quick`;
+2. pasted package.json -> synchronous manifest report;
+3. explicit manifest-only N/A/limitation semantics;
+4. StackLens home navigation -> repository analyzer;
+5. public repository submission -> stable `/analyses/:analysisId` route;
+6. terminal repository report.
 
-## 19. What not to do next
+The test uses the production client singletons and mocks only their network methods. It therefore
+checks route registration/composition, form wiring, mutation/query handoff, and shared report
+rendering without requiring live GitHub/npm/OSV.
 
-Avoid these detours until the MVP acceptance pass is complete:
+### Composed API runtime smoke
+
+The PostgreSQL-backed `apps/api/test/runtime.test.ts` now verifies both public execution models
+through `createStackLensApiRuntime`:
+
+- repository submission reaches the real Drizzle/Graphile adapters and becomes durably queued;
+- quick manifest analysis runs synchronously through the composed Fastify runtime and its returned
+  analysis ID is absent from durable repository-analysis state.
+
+This preserves the accepted distinction between asynchronous repository analysis and anonymous,
+non-persistent quick analysis.
+
+See `docs/implementation/mvp-acceptance.md`.
+
+## 19. Immediate next milestone: manual browser acceptance and release readiness
+
+Do not add a new analyzer/provider capability yet. Run the remaining checks that require a real
+browser and locally running three-process stack:
+
+- fresh-checkout `pnpm install && pnpm dev:infra && pnpm dev`;
+- quick paste and local-file flows against the real local Fastify process;
+- repository submission -> real Worker progress -> terminal report against a small public fixture;
+- keyboard-only navigation and focus behavior;
+- narrow and wide viewport review;
+- validation/error recovery with the live proxy/API boundary;
+- browser console/network review for source-content leakage or unexpected calls;
+- OpenAPI/client request agreement in the running deployment topology.
+
+Fix only concrete acceptance failures. If a fix changes product behavior beyond existing
+requirements, update the requirement first or in the same PR.
+
+## 20. What not to do next
+
+Until manual acceptance/release readiness is complete:
 
 - do not merge the quick synchronous path into repository polling/background jobs;
 - do not add multipart upload when the accepted JSON file contract already serves browser input;
 - do not duplicate analyzer, validation, priority, recommendation, or scoring semantics in React;
 - do not add private GitHub support, authentication, AI analysis, code-writing automation, CLI/IDE
-  surfaces, or monitoring/history as part of hardening;
+  surfaces, or monitoring/history;
 - do not weaken insufficient-evidence/N/A behavior to make the report appear more complete.
 
-## 20. Pull-request strategy for the next session
+## 21. Pull-request strategy for the next session
 
-Prefer small hardening PRs tied to an observed acceptance failure. Each PR must identify the affected
-requirement(s), include a regression test, append the design journey when product UI changes, and
-preserve the existing architecture boundaries.
+Prefer small hardening PRs tied to an observed manual acceptance failure. Each PR must identify the
+affected requirement(s), include a regression test, append the project journey, and preserve the
+existing architecture boundaries.
 
-## 21. K3 completion signal
+## 22. K3 completion signal
 
-Milestone K3 is complete when current `main` verifies:
+Milestone K3 remains complete when current `main` verifies:
 
 1. `/quick` is reachable through the production TanStack Router tree;
 2. repository/package.json input modes are discoverable through the analyzer UI;
@@ -741,5 +772,5 @@ Milestone K3 is complete when current `main` verifies:
 7. success is runtime-validated with `AnalysisReportSchema`;
 8. repository and quick modes reuse shared report presentation;
 9. manifest-only evidence limits are prominent before score interpretation;
-10. focused web tests and repository-wide quality checks pass;
+10. production-router acceptance and repository-wide quality checks pass;
 11. README, implementation docs, journey, AGENTS, and this handover describe K3 consistently.

@@ -11,7 +11,7 @@ afterEach(async () => {
   await Promise.all(runtimes.map(async (runtime) => runtime.stop()));
 });
 
-describeWithDatabase("API runtime composition [FR-003, NFR-008, NFR-009]", () => {
+describeWithDatabase("API runtime composition [FR-001, FR-003, FR-017, FR-021, FR-022]", () => {
   it("migrates PostgreSQL/Graphile and enqueues repository analysis through the real adapters", async () => {
     const runtime = await createStackLensApiRuntime({
       connectionString: databaseUrl,
@@ -46,5 +46,53 @@ describeWithDatabase("API runtime composition [FR-003, NFR-008, NFR-009]", () =>
     });
     expect(status.body).not.toContain("jobId");
     expect(status.body).not.toContain("activeJobId");
+  });
+
+  it("serves quick manifest analysis through the real runtime without durable analysis state", async () => {
+    const runtime = await createStackLensApiRuntime({
+      connectionString: databaseUrl,
+      logger: false,
+    });
+    openRuntimes.push(runtime);
+
+    const response = await runtime.app.inject({
+      method: "POST",
+      url: "/v1/analyze/manifest",
+      payload: {
+        kind: "paste",
+        content: JSON.stringify({
+          name: "runtime-quick-smoke",
+          dependencies: {
+            react: "19.3.0",
+          },
+        }),
+      },
+    });
+
+    expect(response.statusCode).toBe(200);
+
+    const { report } = response.json<{
+      report: {
+        analysisId: string;
+        input: {
+          type: string;
+        };
+        limitations: Array<{ message: string }>;
+      };
+    }>();
+
+    expect(report.analysisId).toBeTruthy();
+    expect(report.input.type).toBe("manifest");
+    expect(report.limitations.length).toBeGreaterThan(0);
+
+    const durableLookup = await runtime.app.inject({
+      method: "GET",
+      url: `/v1/analyses/${encodeURIComponent(report.analysisId)}`,
+    });
+
+    expect(durableLookup.statusCode).toBe(404);
+    expect(durableLookup.json()).toMatchObject({
+      code: "analysis_not_found",
+    });
   });
 });
