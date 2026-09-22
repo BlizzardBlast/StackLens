@@ -32,12 +32,23 @@ function isRateLimitResponse(response: Response): boolean {
   );
 }
 
-function rateLimitMessage(response: Response, operation: string): string {
+function rateLimitAction(authenticated: boolean): string {
+  return authenticated
+    ? "The configured GitHub token is also subject to GitHub API rate limits."
+    : "Configure STACKLENS_GITHUB_TOKEN for authenticated public-repository requests and a higher rate limit.";
+}
+
+function rateLimitMessage(
+  response: Response,
+  operation: string,
+  authenticated: boolean,
+): string {
   const label = operationLabel(operation);
+  const action = rateLimitAction(authenticated);
   const retryAfter = response.headers.get("retry-after");
 
   if (retryAfter !== null && /^\d+$/u.test(retryAfter)) {
-    return `GitHub API rate limit reached while fetching ${label}. Retry after ${retryAfter} seconds or configure STACKLENS_GITHUB_TOKEN for authenticated public-repository requests.`;
+    return `GitHub API rate limit reached while fetching ${label}. Retry after ${retryAfter} seconds. ${action}`;
   }
 
   const reset = response.headers.get("x-ratelimit-reset");
@@ -46,11 +57,11 @@ function rateLimitMessage(response: Response, operation: string): string {
     const resetAt = new Date(Number(reset) * 1_000);
 
     if (!Number.isNaN(resetAt.getTime())) {
-      return `GitHub API rate limit reached while fetching ${label}. Retry after ${resetAt.toISOString()} or configure STACKLENS_GITHUB_TOKEN for authenticated public-repository requests.`;
+      return `GitHub API rate limit reached while fetching ${label}. Retry after ${resetAt.toISOString()}. ${action}`;
     }
   }
 
-  return `GitHub API rate limit reached while fetching ${label}. Retry later or configure STACKLENS_GITHUB_TOKEN for authenticated public-repository requests.`;
+  return `GitHub API rate limit reached while fetching ${label}. Retry later. ${action}`;
 }
 
 export interface GitHubRequestClientOptions {
@@ -124,7 +135,7 @@ export class GitHubRequestClient {
         if (isRateLimitResponse(response)) {
           throw new GitHubRequestError(
             `github_${operation}_rate_limited`,
-            rateLimitMessage(response, operation),
+            rateLimitMessage(response, operation, this.#authToken !== undefined),
             true,
             endpoint,
           );
