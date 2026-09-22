@@ -1,12 +1,12 @@
 # StackLens Session Handover
 
 > **Status:** Active implementation handover  
-> **Prepared:** 2026-09-21  
+> **Prepared:** 2026-09-22  
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
 > **Architecture:** v0.1.13  
-> **Completed milestone:** Milestone K2 — quick-manifest HTTP transport  
-> **Immediate milestone:** Milestone K3 — quick-analysis web flow  
+> **Completed milestone:** Milestone K3 — quick-analysis web flow  
+> **Immediate milestone:** MVP end-to-end acceptance and hardening review (no new product behavior)  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
 This document is the operational handover for the next StackLens implementation session.
@@ -120,10 +120,11 @@ AnalysisReport
 
 The JavaScript/TypeScript rule package now implements **FR-005 dependency inventory**, **FR-006 exact-version outdated detection**, **FR-007 explicit npm deprecation detection**, **FR-008 curated overlap heuristics**, neutral **FR-010 npm Registry health facts**, **FR-011 known-vulnerability detection**, **FR-012 framework/tool detection**, and **FR-013 static configuration detection**.
 
-The API application now has the framework-independent quick-manifest service, the K2 synchronous
-Fastify/OpenAPI quick-manifest transport, and the J3 repository-analysis transport.
-`@stacklens/analysis-orchestration` remains the shared long-running public-repository workflow; the
-next bounded gap is the React quick-analysis input/result flow.
+The API application has the framework-independent quick-manifest service, the K2 synchronous
+Fastify/OpenAPI quick-manifest transport, and the J3 repository-analysis transport. The production
+React client now consumes both public input modes: repository analysis uses durable polling, while
+K3 quick analysis uses synchronous paste/local-file submission and shared report rendering.
+`@stacklens/analysis-orchestration` remains the shared long-running public-repository workflow.
 
 The npm Registry, OSV, and public GitHub acquisition adapters are implemented, including explicit
 bounded source-coverage state. Static source usage, migration/recommendation policy, production
@@ -688,78 +689,57 @@ composition only and does not change repository-analysis product semantics.
 
 See `docs/implementation/local-development.md`.
 
-## 18. Immediate next milestone: quick-analysis web flow
+## 18. Immediate next milestone: MVP end-to-end acceptance and hardening
 
-After K2 is merged and current `main` is green, add the package.json quick-analysis experience to
-`apps/web` over the completed public Fastify contract.
+After K3 is merged and current `main` is green, do not immediately add another analyzer/provider
+feature. First run a bounded MVP acceptance pass across both public product paths.
 
-Keep the next slice web-only:
+Verify, and fix only concrete gaps in:
 
-- add paste and local-file selection for `package.json`;
-- read selected files in the browser and submit the strict K2 JSON `upload` shape rather than adding
-  multipart server behavior;
-- call only `POST /v1/analyze/manifest` through an injectable web transport adapter;
-- runtime-validate the returned report with `AnalysisReportSchema`;
-- reuse the existing report presentation/domain UI where its semantics fit;
-- preserve server validation messages and the user's entered/selected content on recoverable errors;
-- make synchronous analysis submission visibly busy and accessible without inventing repository-style
-  polling/progress;
-- keep quick-analysis limitations prominent so unavailable source/configuration/external metadata are
-  not mistaken for clean results;
-- add focused responsive/accessibility tests for paste, upload, validation failure, busy state, and
-  report rendering.
+- fresh-checkout local startup through `pnpm dev:infra && pnpm dev`;
+- repository submit -> durable progress -> terminal report;
+- quick paste -> synchronous report;
+- quick local package.json -> synchronous report;
+- narrow/wide responsive layouts and keyboard-only operation;
+- authoritative validation/error recovery without lost input;
+- explicit N/A/limitation semantics in both report modes;
+- no analyzed project execution, raw-manifest persistence, or source-content logging;
+- OpenAPI/client contract agreement;
+- permanent repository quality gate.
 
-Do not call analyzer packages directly from React and do not add persistence, authentication, provider
-I/O, polling, or background jobs to quick analysis.
+If the acceptance pass reveals product behavior not covered by requirements, update requirements
+before or with the fix. Keep hardening changes small and evidence-driven rather than using this pass
+to begin private repositories, AI analysis, automation, or unrelated future surfaces.
 
 ## 19. What not to do next
 
-Avoid these detours:
+Avoid these detours until the MVP acceptance pass is complete:
 
-- do not import `apps/api`, `apps/worker`, persistence, Graphile, provider, analyzer, priority, or
-  scoring internals into browser code;
-- do not duplicate manifest normalization or server-side validation semantics in React;
-- do not introduce multipart handling merely for the browser file picker; K2 already accepts upload
-  filename + text content;
-- do not persist raw manifest text by default;
-- do not execute package scripts, builds, tests, hooks, or dependency installation;
-- do not add repository-style polling or fake progress to the synchronous quick path;
-- do not change `stack-health-v1` or the K2 manifest-only insufficient-evidence scoring semantics
-  through UI code;
-- do not add private GitHub support, AI analysis, code-writing automation, or unrelated product
-  surfaces to this slice.
+- do not merge the quick synchronous path into repository polling/background jobs;
+- do not add multipart upload when the accepted JSON file contract already serves browser input;
+- do not duplicate analyzer, validation, priority, recommendation, or scoring semantics in React;
+- do not add private GitHub support, authentication, AI analysis, code-writing automation, CLI/IDE
+  surfaces, or monitoring/history as part of hardening;
+- do not weaken insufficient-evidence/N/A behavior to make the report appear more complete.
 
 ## 20. Pull-request strategy for the next session
 
-Recommended next PR:
+Prefer small hardening PRs tied to an observed acceptance failure. Each PR must identify the affected
+requirement(s), include a regression test, append the design journey when product UI changes, and
+preserve the existing architecture boundaries.
 
-**Title**
+## 21. K3 completion signal
 
-```text
-feat: add quick analysis web flow
-```
+Milestone K3 is complete when current `main` verifies:
 
-Primary requirements should include `FR-001`, `FR-002`, `FR-004`, `FR-017`, `FR-021`,
-`FR-022`, `NFR-006`, and `NFR-007`, plus applicable SEC/GOV requirements.
-
-Build on the existing React 19 + Vite + TanStack Router/Query conventions and the K2 public API
-contract. Do not combine the web flow with analyzer/provider expansion.
-
-## 21. Handover completion signal
-
-The next session can consider Milestone K2 complete when it verifies:
-
-1. the K2 PR is present on current `main` and permanent quality CI is green;
-2. `POST /v1/analyze/manifest` is registered in the existing Fastify app;
-3. the request contract is a strict bounded `paste`/`upload` Zod union and appears in OpenAPI;
-4. the route delegates to `analyzeQuickManifest` rather than duplicating service logic;
-5. upload semantics still require the authoritative `package.json` filename check;
-6. success returns a contract-valid report synchronously without PostgreSQL or Graphile jobs;
-7. quick analysis uses its manifest-only analyzer and keeps unsupported evidence categories
-   insufficient rather than inventing numeric health;
-8. stable application validation errors map to source-free public errors;
-9. focused Fastify tests plus repository-wide build/typecheck/test/lint/format checks pass;
-10. README, architecture, API/implementation docs, journey, and this handover describe K2
-    consistently.
-
-Then continue with the React quick-analysis web flow.
+1. `/quick` is reachable through the production TanStack Router tree;
+2. repository/package.json input modes are discoverable through the analyzer UI;
+3. paste submits only the existing K2 paste JSON shape;
+4. selected files are read locally and submit only the existing K2 upload JSON shape;
+5. authoritative server errors preserve recoverable user input;
+6. synchronous analysis has an accessible busy state without fake progress/polling;
+7. success is runtime-validated with `AnalysisReportSchema`;
+8. repository and quick modes reuse shared report presentation;
+9. manifest-only evidence limits are prominent before score interpretation;
+10. focused web tests and repository-wide quality checks pass;
+11. README, implementation docs, journey, AGENTS, and this handover describe K3 consistently.

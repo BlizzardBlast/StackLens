@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest service plus Fastify/OpenAPI transport, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, persistent PostgreSQL/Graphile Worker repository jobs, the Fastify REST/OpenAPI repository-analysis transport, and the first React repository-analysis web flow are implemented. The quick-analysis web flow is not yet implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest service plus Fastify/OpenAPI transport, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, persistent PostgreSQL/Graphile Worker repository jobs, the Fastify REST/OpenAPI repository-analysis transport, and the React repository-analysis plus quick-manifest web flows are implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -16,7 +16,7 @@ Do not treat this README, an issue, implementation detail, or code behavior as a
 
 ## Local development
 
-The repository is runnable end to end for the public-repository flow.
+The repository is runnable end to end for both public-repository and quick-manifest analysis.
 
 Prerequisites:
 
@@ -176,9 +176,16 @@ introducing persistence, authentication, provider I/O, or scoring policy.
 Fastify exposes the same service through synchronous `POST /v1/analyze/manifest`. The strict
 versioned request contract supports `paste` and `upload` semantics, returns a contract-valid
 `AnalysisReport`, publishes through the existing OpenAPI document, and does not add persistence or
-background jobs. The corresponding React input flow remains a separate web milestone.
+background jobs.
 
-See [Quick Manifest Analysis](docs/implementation/quick-manifest-analysis.md).
+The React web client exposes this contract at `/quick` with pasted and local-file input modes,
+accessible synchronous request state, authoritative server-error preservation, runtime report
+validation, and explicit manifest-only evidence limits. The selected local file is read in the
+browser and submitted through the existing JSON upload shape; the web client adds no multipart
+transport or second analysis path.
+
+See [Quick Manifest Analysis](docs/implementation/quick-manifest-analysis.md) and
+[Quick Analysis Web Flow](docs/implementation/quick-analysis-web.md).
 
 ## Repository analysis orchestration
 

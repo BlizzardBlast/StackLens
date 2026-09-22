@@ -1,61 +1,93 @@
 # StackLens web
 
-The production web client for StackLens.
+The production React 19 + Vite client for StackLens.
 
 ## Responsibility
 
-`apps/web` is a React 19 + Vite client of the public Fastify API. The first production slice covers
-the public-repository flow:
+`apps/web` is a replaceable client of the public Fastify API. It now exposes both accepted anonymous
+MVP input modes:
 
-1. submit a public repository URL to `POST /v1/analyses/repository`;
-2. navigate to the stable analysis route;
-3. poll `GET /v1/analyses/:analysisId` with TanStack Query while the analysis is non-terminal;
-4. expose an explicit submission busy state, then show the server's coarse progress stage without inventing percentage progress;
-5. distinguish total failure from `completed_with_limitations`;
-6. render the persisted `AnalysisReport` using shared contract data and `@stacklens/ui` components.
+1. **public GitHub repository** — submit to `POST /v1/analyses/repository`, navigate to a stable
+   analysis route, poll durable status with TanStack Query, and render the terminal report;
+2. **quick package.json** — paste manifest text or read a selected local `package.json` in the
+   browser, submit the existing JSON contract to `POST /v1/analyze/manifest`, and render the
+   synchronous report without polling or persistence.
 
-The web app does not call GitHub, npm, or OSV directly and does not import Worker, Graphile, or
-persistence internals. It never recalculates analyzer priority or stack-health scores.
+Both modes runtime-validate `AnalysisReport` data through `@stacklens/contracts` and share one
+report renderer. React displays analyzer-owned findings, priority, confidence, evidence,
+recommendations, limitations, and scores without reconstructing analysis policy.
+
+The browser does not call GitHub, npm, or OSV directly and does not import API implementation,
+Worker, Graphile, persistence, analyzer, priority, or scoring internals.
+
+## Analyzer input UX
+
+The analyzer surface follows Product Design v1 with an explicit input-mode navigation between
+repository and `package.json` analysis.
+
+Quick analysis intentionally keeps two browser input choices behind one server contract:
+
+- **Paste manifest** sends `{ kind: "paste", content }`;
+- **Choose local file** reads the file text locally, then sends
+  `{ kind: "upload", filename, content }`.
+
+The web client performs only obvious empty-input checks. JSON shape, manifest semantics, filename
+rules, and request bounds remain authoritative in Fastify/application validation. Recoverable server
+errors preserve the user's entered or selected content.
+
+Quick analysis uses an accessible synchronous busy state. It does not invent repository-style
+stages, percentages, background jobs, or polling.
+
+## Report presentation
+
+Repository and manifest analysis reuse the shared web report composition under
+`src/features/analysis-report`.
+
+Manifest reports include an early evidence-boundary explanation so N/A scores cannot be interpreted
+as healthy. Source/configuration/provider gaps stay visible as insufficient evidence and
+limitations.
 
 ## Development
 
-For the full local stack, start infrastructure and the development processes:
+For the full local stack:
 
 ```bash
 pnpm dev:infra
 pnpm dev
 ```
 
-The root `pnpm dev` command automatically builds only the shared workspace dependencies required by
-the web/API/worker entrypoints before starting their watch processes. Turbo reuses cached outputs when
-those dependencies are already current, so a fresh checkout no longer needs a manual `pnpm build`.
+The root `pnpm dev` command automatically prepares shared workspace dependencies before starting
+web/API/worker watch processes. Turbo reuses cached outputs when possible; a fresh checkout does not
+need a separate `pnpm build`.
 
-To run only the web client when an API is already listening on port 3000, first ensure shared
-workspace outputs have been prepared (for example with `pnpm dev:prepare`), then run:
+To run only the web client when the API already listens on port 3000:
 
 ```bash
+pnpm dev:prepare
 pnpm --filter @stacklens/web dev
 ```
 
-Vite proxies `/v1` to `http://127.0.0.1:3000` for local development. Production defaults to
-same-origin API requests. A deployment may provide `VITE_STACKLENS_API_BASE_URL` when its network
-and CORS boundary explicitly supports a separate API origin.
+Vite proxies `/v1` to `http://127.0.0.1:3000` locally. Production defaults to same-origin API
+requests. `VITE_STACKLENS_API_BASE_URL` may be provided only when the deployment explicitly supports
+a separate API origin.
 
 ## Testing
 
 Focused tests cover:
 
-- request/response contract parsing;
-- advisory client-side URL validation;
-- input preservation across authoritative server errors;
-- explicit submission busy state;
-- accessible live stage-only progress;
-- terminal failure;
-- completed-with-limitations report rendering;
-- evidence disclosure from contract data.
+- repository request/response parsing and polling semantics;
+- advisory repository URL validation;
+- quick paste and upload JSON contracts;
+- local file reading without multipart transport;
+- authoritative server-error preservation;
+- invalid API/report payload rejection;
+- accessible submission busy states without fake percentages;
+- terminal repository failure and completed-with-limitations rendering;
+- shared evidence/report disclosure;
+- explicit manifest-only insufficient-evidence messaging.
 
 The repository-wide `pnpm check` remains the completion gate.
 
-**Traceability:** FR-003, FR-004, FR-017, FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004,
-NFR-003, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006,
-GOV-007.
+**Traceability:** FR-001–FR-004, FR-017, FR-021, FR-022, DATA-001–DATA-006,
+SCORE-001–SCORE-004, NFR-003, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002, SEC-003, SEC-007,
+GOV-002, GOV-006, GOV-007.
