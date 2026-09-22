@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
+import { AnalysisModeNav } from "../analyze/analysis-mode-nav.js";
 import { RepositoryAnalysisApiError, repositoryAnalysisClient } from "./repository-analysis-api.js";
 import { RepositoryAnalysisForm } from "./repository-analysis-form.js";
 
@@ -92,8 +93,11 @@ export function RepositoryAnalysisHome() {
           </div>
         </section>
 
-        <section className="rounded-2xl border bg-card/95 p-5 text-card-foreground shadow-sm backdrop-blur sm:p-7">
-          <div className="grid gap-6">
+        <section className="overflow-hidden rounded-2xl border bg-card/95 text-card-foreground shadow-sm backdrop-blur">
+          <div className="border-b bg-muted/20 p-4 sm:p-5">
+            <AnalysisModeNav current="repository" />
+          </div>
+          <div className="grid gap-6 p-5 sm:p-7">
             <div className="grid gap-2">
               <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                 Start an analysis

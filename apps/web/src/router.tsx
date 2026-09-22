@@ -1,5 +1,6 @@
 import { Link, Outlet, createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
 
+import { QuickAnalysisPage } from "./features/quick-analysis/quick-analysis-page.js";
 import { RepositoryAnalysisHome } from "./features/repository-analysis/repository-analysis-home.js";
 import { RepositoryAnalysisPage } from "./features/repository-analysis/repository-analysis-page.js";
 
@@ -40,13 +41,19 @@ function AnalysisRouteComponent() {
   return <RepositoryAnalysisPage analysisId={analysisId} />;
 }
 
+const quickAnalysisRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/quick",
+  component: QuickAnalysisPage,
+});
+
 const analysisRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/analyses/$analysisId",
   component: AnalysisRouteComponent,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, analysisRoute]);
+const routeTree = rootRoute.addChildren([indexRoute, quickAnalysisRoute, analysisRoute]);
 
 export const router = createRouter({
   routeTree,
