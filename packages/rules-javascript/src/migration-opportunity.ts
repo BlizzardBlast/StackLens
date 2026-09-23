@@ -2,8 +2,8 @@ import type { FindingCandidate, FindingRule } from "@stacklens/analyzer-core";
 import type { AnalysisLimitation } from "@stacklens/contracts";
 
 import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
-import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
 import { latestDistTag, packageVersion, resolveNpmObservation } from "./npm-rule-support.js";
+import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
 import {
   createDependencyRuleLimitation,
   dependencyFactBases,
@@ -140,11 +140,7 @@ export const migrationOpportunityRule: FindingRule<
       ]);
 
       findings.push({
-        id: migrationOpportunityFindingId(
-          basis.packageName,
-          effective.version,
-          latest.version,
-        ),
+        id: migrationOpportunityFindingId(basis.packageName, effective.version, latest.version),
         category: "maintainability",
         classification: "heuristic",
         subject: {
