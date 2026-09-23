@@ -83,7 +83,12 @@ const TOOL_DESCRIPTORS: readonly ToolDescriptor[] = [
     role: "observability",
     roleLabel: "observability tool",
   },
-  { packageName: "expo", displayName: "Expo", role: "framework", roleLabel: "application framework" },
+  {
+    packageName: "expo",
+    displayName: "Expo",
+    role: "framework",
+    roleLabel: "application framework",
+  },
   {
     packageName: "expo-router",
     displayName: "Expo Router",
