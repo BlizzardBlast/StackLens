@@ -388,7 +388,8 @@ depend on `JS-DEP-005` output, preserving same-stage independence.
 
 A curated exact-package catalog covers supported frameworks, build tools, test frameworks,
 linters/formatters, TypeScript, selected state-management libraries, and selected observability
-tools.
+tools. The supported manifest signatures now include Expo, Expo Router, React, React Native, and
+Sentry for React Native alongside the existing web/tooling catalog.
 
 One fact is emitted per supported package/role. Duplicate declarations across dependency groups
 share one fact but preserve all declaration evidence. Unknown packages are not classified by fuzzy
@@ -447,7 +448,7 @@ boundary for static source-usage analysis.
 
 Synthetic fixtures cover:
 
-- exact supported framework/tool package detection;
+- exact supported framework/tool package detection, including Expo/React Native signatures;
 - unknown packages not being guessed;
 - duplicate declaration evidence preservation;
 - every initial curated overlap pair mechanism and deterministic ordering;

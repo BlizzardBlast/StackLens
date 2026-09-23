@@ -99,12 +99,101 @@ describe("quick manifest Fastify transport [FR-001, FR-002, FR-004, FR-021]", ()
       ruleSetVersion: QUICK_MANIFEST_RULE_SET_VERSION,
       scoringVersion: QUICK_MANIFEST_SCORING_VERSION,
     });
-    expect(body.report.facts).toHaveLength(1);
-    expect(body.report.facts[0]?.subject.name).toBe("react");
+    expect(body.report.facts).toHaveLength(2);
+    expect(body.report.facts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "dependency.inventory",
+          subject: expect.objectContaining({ name: "react" }),
+        }),
+        expect.objectContaining({
+          type: "project.tool.ui_library",
+          subject: expect.objectContaining({ name: "React" }),
+        }),
+      ]),
+    );
     expect(body.report.scores.overall.status).toBe("insufficient_evidence");
     expect(body.report.limitations).toHaveLength(2);
     expect(JSON.stringify(body.report)).not.toContain(secretScript);
     expect(AnalysisReportSchema.safeParse(body.report).success).toBe(true);
+  });
+
+  it("emits manifest-safe tool facts, overlap findings, and recommendations without numeric scoring", async () => {
+    const app = await testApi();
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/v1/analyze/manifest",
+      payload: {
+        kind: "paste",
+        content: JSON.stringify({
+          dependencies: {
+            expo: "~57.0.23",
+            "react-native": "0.86.3",
+          },
+          devDependencies: {
+            "@biomejs/biome": "2.5.13",
+            eslint: "10.10.0",
+            jest: "~29.7.0",
+            typescript: "~6.0.3",
+          },
+        }),
+      },
+    });
+
+    expect(response.statusCode).toBe(200);
+
+    const report = response.json().report;
+    expect(report.facts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "project.tool.framework",
+          subject: expect.objectContaining({ name: "Expo" }),
+        }),
+        expect.objectContaining({
+          type: "project.tool.framework",
+          subject: expect.objectContaining({ name: "React Native" }),
+        }),
+        expect.objectContaining({
+          type: "project.tool.linter_formatter",
+          subject: expect.objectContaining({ name: "Biome" }),
+        }),
+        expect.objectContaining({
+          type: "project.tool.linter",
+          subject: expect.objectContaining({ name: "ESLint" }),
+        }),
+      ]),
+    );
+    expect(report.findings).toEqual([
+      expect.objectContaining({
+        classification: "heuristic",
+        category: "dependencies",
+        rule: {
+          id: "JS-OVERLAP-008",
+          version: "1",
+        },
+        priority: expect.objectContaining({
+          level: "medium",
+          rule: {
+            id: "JS-PRIORITY-016",
+            version: "1",
+          },
+        }),
+      }),
+    ]);
+    expect(report.recommendations).toEqual([
+      expect.objectContaining({
+        basis: "heuristic",
+        rule: {
+          id: "JS-RECOMMEND-015",
+          version: "1",
+        },
+      }),
+    ]);
+    expect(report.scores.overall).toMatchObject({
+      status: "insufficient_evidence",
+      evidenceCoverage: 0,
+    });
   });
 
   it("accepts uploaded package.json semantics through the same route", async () => {

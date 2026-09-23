@@ -1,9 +1,6 @@
 import type { FindingCandidate, FindingPrioritizer } from "@stacklens/analyzer-core";
 import type { FindingPriority, PriorityLevel } from "@stacklens/contracts";
 
-import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
-import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
-
 const RULE_ID = "JS-PRIORITY-016";
 const RULE_VERSION = "1";
 
@@ -85,10 +82,7 @@ function descriptorFor(finding: FindingCandidate): PriorityDescriptor {
       };
 }
 
-export const javascriptFindingPrioritizer: FindingPrioritizer<
-  JavaScriptProjectSnapshot,
-  JavaScriptAnalysisMetadata
-> = {
+export const javascriptFindingPrioritizer: FindingPrioritizer<unknown, unknown> = {
   kind: "priority",
   id: RULE_ID,
   version: RULE_VERSION,

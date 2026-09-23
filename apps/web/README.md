@@ -45,7 +45,9 @@ Repository and manifest analysis reuse the shared web report composition under
 
 Manifest reports include an early evidence-boundary explanation so N/A scores cannot be interpreted
 as healthy. Source/configuration/provider gaps stay visible as insufficient evidence and
-limitations.
+limitations. A **Verified from package.json** section then surfaces analyzer-owned dependency
+inventory and supported framework/tool facts before the score cards. Quick-mode 0% is explicitly
+described as numeric-score evidence coverage rather than manifest parse coverage.
 
 ## Development
 
@@ -84,7 +86,7 @@ Focused tests cover:
 - accessible submission busy states without fake percentages;
 - terminal repository failure and completed-with-limitations rendering;
 - shared evidence/report disclosure;
-- explicit manifest-only insufficient-evidence messaging;
+- explicit manifest-only insufficient-evidence messaging and analyzer-backed insight presentation;
 - a production-router acceptance smoke that traverses package.json analysis, returns to the analyzer,
   submits a repository, navigates to the stable analysis route, and renders a terminal report.
 

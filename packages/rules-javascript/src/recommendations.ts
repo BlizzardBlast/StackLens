@@ -1,8 +1,6 @@
 import type { RecommendationRule } from "@stacklens/analyzer-core";
 import type { Finding, Recommendation } from "@stacklens/contracts";
 
-import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
-import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
 import { compareCodeUnits, truncate } from "./rule-support.js";
 import { stableHash } from "./stable-id.js";
 
@@ -98,10 +96,7 @@ function recommendationFor(finding: Finding): Recommendation | undefined {
       };
 }
 
-export const evidenceBackedRecommendationRule: RecommendationRule<
-  JavaScriptProjectSnapshot,
-  JavaScriptAnalysisMetadata
-> = {
+export const evidenceBackedRecommendationRule: RecommendationRule<unknown, unknown> = {
   kind: "recommendation",
   id: RULE_ID,
   version: RULE_VERSION,
