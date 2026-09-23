@@ -100,9 +100,7 @@ importers:
 packages: {}
 `;
 
-    const result = normalizeResolvedDependencies(manifest, [
-      { path: "pnpm-lock.yaml", content },
-    ]);
+    const result = normalizeResolvedDependencies(manifest, [{ path: "pnpm-lock.yaml", content }]);
 
     expect(result.issues).toEqual([]);
     expect(result.snapshot?.resolutions).toEqual([
@@ -233,9 +231,7 @@ importers:
     ]);
 
     expect(result.issues).toEqual([]);
-    expect(
-      resolvedDependency(result.snapshot, "react", "^19.0.0"),
-    ).toEqual({
+    expect(resolvedDependency(result.snapshot, "react", "^19.0.0")).toEqual({
       packageName: "react",
       declaredSpecifier: "^19.0.0",
       version: "19.2.3",
