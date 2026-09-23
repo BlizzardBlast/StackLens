@@ -72,8 +72,10 @@ into a fabricated percentage.
 The submission mutation now exposes a visible busy state from the moment a valid repository is
 submitted until the stable analysis route opens. The first status fetch has its own preparing state,
 and active analysis presents the server stages as an accessible timeline with explicit
-done/current/waiting labels plus a live current-stage explanation. Motion is limited to small
-activity indicators and respects reduced-motion preferences; it does not imply measurable numeric
+done/current/waiting labels plus a live current-stage explanation. Numbered stage markers use a
+fixed-size, line-height-neutral flex box so single-digit numerals remain visually centered. The
+current row adds a restrained pulsing semantic-primary surface layer while keeping its text stable;
+the animation is disabled by reduced-motion preferences and never implies measurable numeric
 progress.
 
 Transient status failures use a bounded retry policy. A public `404` is not repeatedly retried.
@@ -119,7 +121,7 @@ Focused tests use synthetic responses and a contract-valid bounded report fixtur
 - shared report-schema validation;
 - stable server-error propagation;
 - advisory client validation and input preservation;
-- stage-only progress;
+- stage-only progress, centered stage-marker treatment, and reduced-motion-safe active feedback;
 - total terminal failure;
 - completed-with-limitations report rendering;
 - evidence disclosure.

@@ -36,7 +36,7 @@ function renderWithRouter(ui: ReactNode) {
   return render(<RouterProvider router={router} />);
 }
 
-describe("AnalysisStatusView [FR-017, FR-021, NFR-006, NFR-008]", () => {
+describe("AnalysisStatusView [FR-017, FR-021, NFR-006, NFR-007, NFR-008]", () => {
   it("shows the actual coarse progress stage without inventing percentage progress", async () => {
     renderWithRouter(<AnalysisStatusView snapshot={snapshot()} />);
 
@@ -50,6 +50,35 @@ describe("AnalysisStatusView [FR-017, FR-021, NFR-006, NFR-008]", () => {
       "step",
     );
     expect(screen.queryByText(/\d+%/)).not.toBeInTheDocument();
+  });
+
+  it("centers numbered stage markers and animates only the active stage surface", async () => {
+    renderWithRouter(
+      <AnalysisStatusView snapshot={snapshot({ progressStage: "resolving_repository" })} />,
+    );
+
+    const currentDetail = await screen.findByText("Pinning an immutable revision");
+    const currentStep = currentDetail.closest("li");
+
+    expect(currentStep).toHaveAttribute("aria-current", "step");
+
+    const marker = currentStep?.querySelector(
+      "span[aria-hidden='true']:not([data-progress-activity])",
+    );
+    expect(marker).toHaveTextContent("2");
+    expect(marker).toHaveClass(
+      "inline-flex",
+      "items-center",
+      "justify-center",
+      "leading-none",
+      "tabular-nums",
+    );
+
+    const activityLayer = currentStep?.querySelector("[data-progress-activity]");
+    expect(activityLayer).toHaveClass("animate-pulse", "motion-reduce:animate-none");
+
+    const waitingStep = screen.getByText("Reading supported project files").closest("li");
+    expect(waitingStep?.querySelector("[data-progress-activity]")).toBeNull();
   });
 
   it("renders terminal failure distinctly from a limited successful report", async () => {

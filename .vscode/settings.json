@@ -3,6 +3,7 @@
     "source.format.oxc": "always",
     "source.fixAll.oxc": "always"
   },
+  "eslint.enable": false,
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "editor.formatOnSave": true,
   "editor.quickSuggestions": {

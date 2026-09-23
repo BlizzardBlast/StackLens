@@ -1358,6 +1358,30 @@ error recovery.
 **Traceability:** FR-001, FR-002, FR-003, FR-004, FR-017, FR-021, FR-022, NFR-006, NFR-007,
 NFR-008, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007.
 
+## 2026-09-22 — Step 53: Harden repository progress feedback from manual browser acceptance
+
+Manual analysis of a real public repository exposed two small but visible progress-state issues that
+the automated acceptance baseline could not judge: the numerals inside some circular stage markers
+looked optically off-center, and the active row did not provide enough ongoing visual activity during
+long provider/analyzer phases.
+
+The repository progress timeline now keeps its existing real server stages and textual
+done/current/waiting semantics while tightening only presentation:
+
+- stage markers use an explicit fixed-size flex box with line-height-neutral numerals so digits remain
+  visually centered inside their circles;
+- only the active stage receives a subtle pulsing semantic-primary background layer, leaving the text
+  itself stable and readable;
+- the pulse is disabled under reduced-motion preferences;
+- waiting and completed stages remain static, and no percentage or synthetic intermediate progress
+  was introduced.
+
+Focused web coverage protects the centered-marker class contract, active-only activity layer, and
+reduced-motion fallback. Analyzer, provider, queue, persistence, API, and scoring behavior are
+unchanged.
+
+**Traceability:** FR-017, FR-021, NFR-006, NFR-007, NFR-008, GOV-002, GOV-006, GOV-007.
+
 ## 2026-09-22 — Step 54: Harden live GitHub acquisition against API rate limits
 
 Manual browser acceptance against a real public repository exposed a provider-boundary failure that
