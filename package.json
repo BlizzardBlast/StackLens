@@ -11,7 +11,7 @@
     "dev:infra:logs": "docker compose logs -f postgres",
     "dev:prepare": "turbo run build --filter=\"@stacklens/api^...\" --filter=\"@stacklens/worker^...\" --filter=\"@stacklens/web^...\"",
     "format": "oxfmt .",
-    "format:check": "oxfmt . && git diff -- packages/analysis-orchestration/test/repository-analysis.test.ts packages/data-sources/test/github.test.ts packages/rules-javascript/src/deprecated-dependency.ts packages/rules-javascript/src/lockfile.ts packages/rules-javascript/src/migration-opportunity.ts packages/rules-javascript/src/outdated-dependency.ts packages/rules-javascript/test/lockfile.test.ts && exit 1",
+    "format:check": "oxfmt --check .",
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
     "test": "turbo run test",
