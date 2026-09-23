@@ -156,6 +156,36 @@ function exactVersion(value: string | undefined): string | undefined {
   return value;
 }
 
+function uniqueResolutions(
+  resolutions: readonly JavaScriptResolvedDependency[],
+): readonly JavaScriptResolvedDependency[] {
+  const unique = new Map<string, JavaScriptResolvedDependency>();
+
+  for (const resolution of resolutions) {
+    unique.set(
+      JSON.stringify([
+        resolution.packageName,
+        resolution.declaredSpecifier,
+        resolution.version,
+      ]),
+      resolution,
+    );
+  }
+
+  return [...unique.values()].toSorted((left, right) => {
+    const packageOrder = compareCodeUnits(left.packageName, right.packageName);
+
+    if (packageOrder !== 0) {
+      return packageOrder;
+    }
+
+    const specifierOrder = compareCodeUnits(left.declaredSpecifier, right.declaredSpecifier);
+    return specifierOrder === 0
+      ? compareCodeUnits(left.version, right.version)
+      : specifierOrder;
+  });
+}
+
 function resolutionFromCandidate(
   declaration: NormalizedDependencyDeclaration,
   candidate: CandidateResolution | undefined,
@@ -300,7 +330,7 @@ function parsePackageLock(
     snapshot: {
       path: "package-lock.json",
       packageManager: "npm",
-      resolutions,
+      resolutions: uniqueResolutions(resolutions),
       issues,
     },
     issues,
@@ -535,7 +565,7 @@ function parsePnpmLock(
     snapshot: {
       path: "pnpm-lock.yaml",
       packageManager: "pnpm",
-      resolutions,
+      resolutions: uniqueResolutions(resolutions),
       issues,
     },
     issues,
@@ -643,7 +673,7 @@ function parseYarnLock(
     snapshot: {
       path: "yarn.lock",
       packageManager: "yarn",
-      resolutions,
+      resolutions: uniqueResolutions(resolutions),
       issues,
     },
     issues,
