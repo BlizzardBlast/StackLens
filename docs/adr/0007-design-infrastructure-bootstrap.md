@@ -117,6 +117,15 @@ A lockfile is committed after the bootstrap install succeeds; subsequent CI inst
 
 These costs are accepted because they prevent screen-level implementation from bypassing the design and requirements baselines.
 
+### Production typography refinement (2026-09-23)
+
+Under the existing source-owned design-system boundary, the web application now self-hosts IBM Plex
+Sans Variable and IBM Plex Mono through Fontsource. Both use OFL-1.1; their notices ship with the web
+build. Font roles/fallbacks remain canonical design tokens, while the application owns font asset
+delivery. This adds no font CDN, paid-font requirement, animation framework, or component library.
+The token generator also supports the system color preference while retaining explicit theme
+overrides. This serves **NFR-006**, **NFR-007**, and **GOV-007** without changing analyzer architecture.
+
 ## References reviewed
 
 - pnpm releases: <https://github.com/pnpm/pnpm/releases>

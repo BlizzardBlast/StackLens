@@ -1,9 +1,54 @@
 @import "@stacklens/ui/styles.css";
+@import "@fontsource-variable/ibm-plex-sans/wght.css";
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+@import "@fontsource/ibm-plex-mono/latin-600.css";
 
 @source "./**/*.{ts,tsx}";
 
 @layer base {
   #root {
     min-height: 100dvh;
+  }
+}
+
+@layer components {
+  .analysis-intro {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+  }
+
+  .analysis-title {
+    max-width: 13ch;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 500;
+    line-height: 1.06;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  .analysis-panel {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--sl-border);
+    border-radius: var(--sl-radius-feature);
+    background: var(--sl-surface);
+    color: var(--sl-foreground);
+  }
+
+  .evidence-disclosure {
+    animation: disclose var(--sl-duration-normal) ease-out;
+  }
+
+  @keyframes disclose {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }

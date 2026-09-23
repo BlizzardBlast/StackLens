@@ -80,9 +80,15 @@ describe("MVP production-router acceptance [FR-001, FR-002, FR-003, FR-017, FR-0
 
     fireEvent.click(await screen.findByRole("link", { name: /package\.json/i }));
 
+    expect(screen.getAllByRole("main")).toHaveLength(1);
+    expect(screen.getByRole("link", { name: "Skip to content" })).toHaveAttribute(
+      "href",
+      "#main-content",
+    );
+
     expect(
       await screen.findByRole("heading", {
-        name: "Inspect a package.json without handing over a repository.",
+        name: "Start with your package.json.",
       }),
     ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe("/quick");
@@ -110,10 +116,11 @@ describe("MVP production-router acceptance [FR-001, FR-002, FR-003, FR-017, FR-0
 
     expect(
       await screen.findByRole("heading", {
-        name: "Understand what is actually happening in your development stack.",
+        name: "See your stack clearly.",
       }),
     ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe("/");
+    expect(screen.getAllByRole("main")).toHaveLength(1);
 
     fireEvent.change(screen.getByLabelText("Public GitHub repository"), {
       target: { value: "https://github.com/BlizzardBlast/StackLens" },

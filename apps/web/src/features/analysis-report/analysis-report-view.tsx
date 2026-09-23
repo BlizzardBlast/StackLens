@@ -189,7 +189,7 @@ function EvidenceDetail({ finding, evidence, report, onClose }: Readonly<Evidenc
 
   return (
     <aside
-      className="grid gap-4 rounded-xl border bg-card p-5"
+      className="evidence-disclosure grid gap-4 rounded-xl border border-primary/40 bg-card p-5"
       aria-labelledby="evidence-detail-title"
     >
       <div className="flex items-start justify-between gap-4">
@@ -302,12 +302,12 @@ export function AnalysisReportView({
       : "package.json · quick analysis";
 
   return (
-    <article className="grid gap-8">
-      <header className="grid gap-3">
+    <article className="grid min-w-0 gap-8 wrap-anywhere">
+      <header className="grid gap-3 border-b pb-6">
         <p className="font-mono text-sm text-muted-foreground">{repository}</p>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Analysis report</h1>
+            <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">Analysis report</h1>
             {report.input.type === "repository" ? (
               <p className="mt-1 font-mono text-xs text-muted-foreground">
                 {report.input.repository.ref ?? "resolved revision"} @{" "}
@@ -350,7 +350,7 @@ export function AnalysisReportView({
       {isManifestAnalysis ? <ManifestInsights report={report} /> : null}
 
       <section className="grid gap-4" aria-labelledby="score-summary-title">
-        <div className="grid gap-3 rounded-xl border bg-card p-5">
+        <div className="grid gap-3 rounded-xl border bg-muted/50 p-5">
           <div className="flex flex-wrap items-baseline justify-between gap-4">
             <h2 id="score-summary-title" className="text-lg font-semibold">
               Stack health

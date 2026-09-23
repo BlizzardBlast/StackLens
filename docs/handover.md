@@ -11,6 +11,13 @@
 
 This document is the operational handover for the next StackLens implementation session.
 
+The 2026-09-23 [production visual refinement](design/visual-refinement.md) records the updated
+palette, free self-hosted IBM Plex pairing, system themes, responsive input layouts, and motion
+checks. Its screenshot evidence is committed with the review. The full local quality gate passed;
+five database-gated tests require CI's PostgreSQL service. Live-provider/manual release acceptance
+remains a separate checkpoint. Resolve and verify the current `main` HEAD before the next change;
+the visual review is not a pinned release commit.
+
 It is intentionally more prescriptive than the general architecture documentation. The next session should begin here, then use the linked source-of-truth documents before changing code.
 
 ## 1. Start here in the next session

@@ -1,7 +1,7 @@
 # Design Infrastructure Implementation
 
 > **Status:** Accepted implementation baseline
-> **Last reviewed:** 2026-09-19
+> **Last reviewed:** 2026-09-23
 > **Architecture:** ADR-0006, ADR-0007
 > **Requirements:** FR-015–FR-021, DATA-004–DATA-005, SCORE-001–SCORE-003, NFR-002, NFR-006–NFR-007, GOV-007
 
@@ -9,7 +9,8 @@
 
 This implementation translates Design v1 into reusable production infrastructure.
 
-It deliberately does **not** create `apps/web` or any product screen.
+The original bootstrap created shared infrastructure only. The production web application now
+consumes those packages; screen composition stays in `apps/web`.
 
 ## Workspace
 
@@ -47,6 +48,27 @@ Rules:
 - run the token build after token changes;
 - CI checks generated output and tests key domain semantics;
 - semantic and domain tokens are preferred over raw palette references in UI components.
+
+The generator emits system dark-mode preference support plus explicit theme overrides. Brand-panel
+and destructive-button foreground roles are semantic tokens alongside the existing domain roles.
+Contrast tests exercise text, translucent badges, limitation surfaces, button hover states, input
+borders, and focus indicators in both modes. Do not lower their thresholds to accept a new palette.
+
+## Font delivery and motion
+
+`apps/web/src/styles.css` imports IBM Plex Sans Variable (`wght.css`) and IBM Plex Mono's normal
+Latin 400/500/600 styles from Fontsource. Vite emits local font assets; the sans uses Unicode ranges
+to fetch only applicable subsets. There is no runtime font-CDN dependency. OFL-1.1 notices in
+`apps/web/public/fonts/` are included in production output. No user font installation is needed.
+
+Family names and fallbacks are owned by the canonical tokens. Shared base CSS references
+`--sl-font-sans` and `--sl-font-mono` directly. Web-specific title/layout/disclosure styling remains
+in `apps/web`, while shared focus and reduced-motion behavior live in `packages/ui`.
+
+The browser follows the system light/dark preference unless an explicit theme class/data attribute
+overrides it. Reduced motion suppresses both animation and transitions globally; busy states keep
+their textual feedback. Font, theme, and motion checks require a browser in addition to JSDOM tests.
+Temporary browser captures/scripts live in the ignored `.playwright-mcp/` directory.
 
 ## shadcn/Base UI workflow
 

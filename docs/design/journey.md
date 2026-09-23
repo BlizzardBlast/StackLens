@@ -1531,3 +1531,47 @@ come from matching supported root-lockfile evidence rather than only exact packa
 declarations.
 
 **Traceability:** NFR-006, NFR-007, GOV-002, GOV-006, GOV-007.
+
+## 2026-09-23 — Step 59: Refine the production palette, typography, and visual rhythm
+
+A design review found that the cool neutral baseline suited StackLens's diagnostic purpose, but
+repeated pale cards, long headlines, system-font fallbacks, and implementation-heavy instructions
+made the input pages feel generic. The production design now pairs steel reading surfaces and
+action blue with a deep teal evidence explanation. A small stack mark and shorter, left-aligned
+headlines provide identity without borrowing severity colors for decoration.
+
+IBM Plex Sans Variable and IBM Plex Mono are locally bundled free OFL-1.1 fonts; both license
+notices ship with the web build. The shared font inheritance now reads canonical variables directly
+instead of relying on a Tailwind utility variable being emitted. Text remains available through
+system fallbacks and `font-display: swap`.
+
+Both input modes share simpler form/navigation treatment. On compact screens the form precedes
+supporting explanations. Native radio/current-page semantics now have visible checkmarks, including
+a correction to a previously ineffective nested `peer-checked` dot. One main landmark and a skip
+link replace nested main elements. Reports inherit the same typography and have a clearer section
+hierarchy while keeping analyzer-owned meaning intact.
+
+The theme follows the system preference and retains explicit overrides. Contrast review required
+adjusting status shades, input borders, focus outlines, and destructive-button foregrounds for both
+themes. Regression tests check actual tinted badge/limitation compositions and button hover states.
+Motion is limited to control feedback, existing honest busy/stage feedback, and a 180 ms evidence
+entrance. Reduced motion disables animations and transitions while preserving status text.
+
+Verification:
+
+- `pnpm check` passed: build, shadcn configuration, typecheck, tests, lint, and formatting.
+- The web suite passed 21 tests; the token suite passed six tests, including light/dark contrast.
+- Five existing database-gated tests were skipped locally without `TEST_DATABASE_URL`; CI provides
+  PostgreSQL. Existing shadcn setup notices did not fail lint.
+- Chromium checked both input routes at 320/390/768/1024/1440 px in both themes: no horizontal
+  document overflow and one main landmark in all 20 combinations.
+- Keyboard skip/focus/radio checks, synthetic file-upload/report/evidence flows, and compact
+  repository progress/failure states passed. Reduced motion disabled evidence and progress motion.
+- The browser loaded fonts from the local origin; production output includes both font licenses.
+
+The [visual review](visual-refinement.md) contains the rationale and committed captures. Design,
+implementation, ADR-0007, README, and handover documentation were updated; accepted requirements and
+analyzer/scoring behavior are unchanged. The disposable original prototype remains historical.
+
+**Traceability:** PRD-004, FR-001–FR-003, FR-017, FR-021, FR-022, NFR-006–NFR-008, GOV-002,
+GOV-006, GOV-007.

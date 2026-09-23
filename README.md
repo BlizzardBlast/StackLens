@@ -125,6 +125,10 @@ StackLens owns its visual language and domain components. shadcn/ui + Base UI ar
 
 The production design layer now lives in **`packages/design-tokens`** and **`packages/ui`**. See [Design infrastructure implementation](docs/implementation/design-infrastructure.md) and **ADR-0007**.
 
+The production web experience uses a cool diagnostic palette, locally bundled free IBM Plex
+Sans/Mono fonts, system light/dark themes, and reduced-motion-aware interaction feedback. See the
+[visual refinement review](docs/design/visual-refinement.md) for its design rationale.
+
 ## Analysis contracts
 
 The shared runtime-validatable analysis model lives in **`packages/contracts`**. It defines evidence, facts, factual/heuristic findings, separate recommendations, limitations, partial failures, and explainable score states for all future consumers.

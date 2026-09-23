@@ -17,11 +17,12 @@ This directory records StackLens product-design artifacts. Design decisions are 
 6. [Design system](design-system.md) — tokens, component model, shadcn/Base UI policy, accessibility, themes, and data-display rules.
 7. [Prototype specification](prototype.md) — what the coded prototype represents and how to evaluate it.
 8. [Design v1 review](review-v1.md) — validation findings, contrast checks, corrections, and acceptance.
+9. [Production visual refinement](visual-refinement.md) — palette, free font pairing, layout, and motion rationale.
 
 Supporting design artifacts:
 
 - `/design/tokens/stacklens.tokens.json` — platform-neutral design-token source.
-- `/design/tokens/tokens.css` — CSS mapping used by the prototype and intended web implementation.
+- `/design/tokens/tokens.css` — frozen original Design v1 prototype mapping; production uses the generated token package.
 - `/design/prototype/` — disposable coded prototype. It is **not** production application code.
 - [ADR-0006](../adr/0006-design-system-and-prototyping.md) — architectural decision for the design-system strategy.
 
