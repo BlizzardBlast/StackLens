@@ -2,19 +2,19 @@ import type { FindingCandidate, FindingRule } from "@stacklens/analyzer-core";
 import type { AnalysisLimitation } from "@stacklens/contracts";
 
 import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
-import type { NormalizedPackageManifest } from "./manifest.js";
+import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
 import { packageVersion, resolveNpmObservation } from "./npm-rule-support.js";
 import {
   createDependencyRuleLimitation,
   dependencyFactBases,
+  effectiveDependencyVersion,
   truncate,
   uniqueSorted,
 } from "./rule-support.js";
-import { parseExactSemanticVersion } from "./semver.js";
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-NPM-007";
-const RULE_VERSION = "1";
+const RULE_VERSION = "2";
 
 export function deprecatedDependencyFindingId(
   packageName: string,
@@ -24,7 +24,7 @@ export function deprecatedDependencyFindingId(
 }
 
 export const deprecatedDependencyRule: FindingRule<
-  NormalizedPackageManifest,
+  JavaScriptProjectSnapshot,
   JavaScriptAnalysisMetadata
 > = {
   kind: "finding",
@@ -32,6 +32,7 @@ export const deprecatedDependencyRule: FindingRule<
   version: RULE_VERSION,
   requirementIds: [
     "FR-007",
+    "FR-023",
     "DATA-001",
     "DATA-002",
     "DATA-003",
@@ -47,16 +48,22 @@ export const deprecatedDependencyRule: FindingRule<
     const limitations: AnalysisLimitation[] = [];
 
     for (const basis of dependencyFactBases(context.facts)) {
-      if (parseExactSemanticVersion(basis.declaredSpecifier) === undefined) {
+      const effective = effectiveDependencyVersion(
+        context.project,
+        basis.packageName,
+        basis.declaredSpecifier,
+      );
+
+      if (effective === undefined) {
         limitations.push(
           createDependencyRuleLimitation(
             RULE_ID,
             "insufficient_evidence",
-            "npm-exact-version-required",
+            "npm-resolved-version-required",
             JSON.stringify([basis.packageName, basis.declaredSpecifier]),
             `Deprecation analysis preserves declared specifier ${JSON.stringify(
               basis.declaredSpecifier,
-            )} for ${basis.packageName}, but it is not an exact semantic version. A resolved exact version is required before selecting version-specific npm deprecation metadata.`,
+            )} for ${basis.packageName}, but no supported exact current version can be established from package.json or a matching root lockfile.`,
             [],
           ),
         );
@@ -77,16 +84,16 @@ export const deprecatedDependencyRule: FindingRule<
         continue;
       }
 
-      const version = packageVersion(resolved.observation.snapshot, basis.declaredSpecifier);
+      const version = packageVersion(resolved.observation.snapshot, effective.version);
 
       if (version === undefined) {
         limitations.push(
           createDependencyRuleLimitation(
             RULE_ID,
             "external_data",
-            "npm-declared-version-missing",
-            JSON.stringify([basis.packageName, basis.declaredSpecifier]),
-            `npm Registry metadata for ${basis.packageName} does not contain declared exact version ${basis.declaredSpecifier}, so version-specific deprecation cannot be evaluated.`,
+            "npm-current-version-missing",
+            JSON.stringify([basis.packageName, effective.version]),
+            `npm Registry metadata for ${basis.packageName} does not contain resolved current version ${effective.version}, so version-specific deprecation cannot be evaluated.`,
             [resolved.observation.source.id],
           ),
         );
@@ -99,11 +106,12 @@ export const deprecatedDependencyRule: FindingRule<
 
       const evidenceIds = uniqueSorted([
         ...basis.facts.flatMap((fact) => fact.evidenceIds),
+        ...effective.evidenceIds,
         ...resolved.observation.evidence.map((item) => item.id),
       ]);
 
       findings.push({
-        id: deprecatedDependencyFindingId(basis.packageName, basis.declaredSpecifier),
+        id: deprecatedDependencyFindingId(basis.packageName, effective.version),
         category: "dependencies",
         classification: "fact",
         subject: {
@@ -112,18 +120,20 @@ export const deprecatedDependencyRule: FindingRule<
           path: "package.json",
         },
         title: truncate(
-          `Deprecated npm dependency ${basis.packageName}@${basis.declaredSpecifier}`,
+          `Deprecated npm dependency ${basis.packageName}@${effective.version}`,
           500,
         ),
         description: truncate(
-          `npm Registry explicitly marks ${basis.packageName}@${basis.declaredSpecifier} as deprecated: ${version.deprecatedMessage}`,
+          `package.json declares ${JSON.stringify(
+            basis.declaredSpecifier,
+          )} for ${basis.packageName}; StackLens established current exact version ${effective.version} from ${effective.source === "lockfile" ? "the supported root lockfile" : "the exact manifest declaration"}. npm Registry explicitly marks ${basis.packageName}@${effective.version} as deprecated: ${version.deprecatedMessage}`,
           4_000,
         ),
         rule: {
           id: RULE_ID,
           version: RULE_VERSION,
         },
-        requirementIds: ["FR-007", "DATA-001", "DATA-002", "DATA-003"],
+        requirementIds: ["FR-007", "FR-023", "DATA-001", "DATA-002", "DATA-003"],
         evidenceIds: [...evidenceIds],
         factIds: basis.facts.map((fact) => fact.id),
         limitationIds: [...resolved.observation.limitationIds],
