@@ -342,7 +342,8 @@ function yamlScalar(value: string): string {
 
   if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
     try {
-      return JSON.parse(trimmed) as string;
+      const parsed: unknown = JSON.parse(trimmed);
+      return typeof parsed === "string" ? parsed : trimmed.slice(1, -1);
     } catch {
       return trimmed.slice(1, -1);
     }
@@ -382,6 +383,17 @@ interface PnpmEntry {
   version?: string;
 }
 
+function isPackageDependencyGroup(
+  value: string | undefined,
+): value is PackageDependencyGroup {
+  return (
+    value === "dependencies" ||
+    value === "devDependencies" ||
+    value === "peerDependencies" ||
+    value === "optionalDependencies"
+  );
+}
+
 function parsePnpmEntries(content: string): readonly PnpmEntry[] {
   const lines = content.split(/\r?\n/u);
   const entries: PnpmEntry[] = [];
@@ -389,13 +401,6 @@ function parsePnpmEntries(content: string): readonly PnpmEntry[] {
   let inRootImporter = false;
   let currentGroup: PackageDependencyGroup | undefined;
   let currentEntry: PnpmEntry | undefined;
-
-  const groups = new Set<PackageDependencyGroup>([
-    "dependencies",
-    "devDependencies",
-    "peerDependencies",
-    "optionalDependencies",
-  ]);
 
   for (const line of lines) {
     if (line.includes("\t")) {
@@ -431,9 +436,7 @@ function parsePnpmEntries(content: string): readonly PnpmEntry[] {
 
       if (indent === 4) {
         const key = yamlKey(line);
-        currentGroup = groups.has(key as PackageDependencyGroup)
-          ? (key as PackageDependencyGroup)
-          : undefined;
+        currentGroup = isPackageDependencyGroup(key) ? key : undefined;
         currentEntry = undefined;
         continue;
       }
@@ -474,9 +477,7 @@ function parsePnpmEntries(content: string): readonly PnpmEntry[] {
 
     if (indent === 0) {
       const key = yamlKey(line);
-      currentGroup = groups.has(key as PackageDependencyGroup)
-        ? (key as PackageDependencyGroup)
-        : undefined;
+      currentGroup = isPackageDependencyGroup(key) ? key : undefined;
       currentEntry = undefined;
       continue;
     }
@@ -580,7 +581,8 @@ function yarnSelectors(header: string): readonly string[] {
 
   while (match !== null) {
     try {
-      quoted.push(JSON.parse(`"${match[1] ?? ""}"`) as string);
+      const parsed: unknown = JSON.parse(`"${match[1] ?? ""}"`);
+      quoted.push(typeof parsed === "string" ? parsed : (match[1] ?? ""));
     } catch {
       quoted.push(match[1] ?? "");
     }
