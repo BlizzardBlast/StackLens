@@ -70,7 +70,7 @@ function createCoverageFact(
       id: RULE_ID,
       version: RULE_VERSION,
     },
-    requirementIds: ["FR-018", "FR-019", "FR-020", "SCORE-003"],
+    requirementIds: ["FR-018", "FR-019", "FR-020", "FR-023", "SCORE-003"],
     evidenceIds: [...uniqueSorted(evidenceIds)],
   };
 }
