@@ -2,8 +2,8 @@ import type { FindingCandidate, FindingRule } from "@stacklens/analyzer-core";
 import type { AnalysisLimitation } from "@stacklens/contracts";
 
 import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
-import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
 import { packageVersion, resolveNpmObservation } from "./npm-rule-support.js";
+import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
 import {
   createDependencyRuleLimitation,
   dependencyFactBases,
@@ -119,10 +119,7 @@ export const deprecatedDependencyRule: FindingRule<
           name: basis.packageName,
           path: "package.json",
         },
-        title: truncate(
-          `Deprecated npm dependency ${basis.packageName}@${effective.version}`,
-          500,
-        ),
+        title: truncate(`Deprecated npm dependency ${basis.packageName}@${effective.version}`, 500),
         description: truncate(
           `package.json declares ${JSON.stringify(
             basis.declaredSpecifier,
