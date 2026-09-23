@@ -732,8 +732,9 @@ See `docs/implementation/mvp-acceptance.md`.
 
 ## 19. Immediate next milestone: manual browser acceptance and release readiness
 
-Do not add a new analyzer/provider capability yet. Run the remaining checks that require a real
-browser and locally running three-process stack:
+Beyond the bounded acceptance-driven evidence hardening recorded below, do not add another
+analyzer/provider capability yet. Run the remaining checks that require a real browser and locally
+running three-process stack:
 
 - fresh-checkout `pnpm install && pnpm dev:infra && pnpm dev`;
 - quick paste and local-file flows against the real local Fastify process;
@@ -755,6 +756,24 @@ no user-connected GitHub account flow.
 Re-run a real public repository analysis after this hardening, including the unauthenticated path
 when quota is available and the optional-token path when repeated live testing would otherwise hit
 anonymous limits.
+
+A second acceptance issue exposed that ordinary semver ranges such as `^19.0.0` left
+version-specific npm/OSV/scoring rules at insufficient evidence even when the committed repository
+already contained an authoritative package-manager lockfile. FR-023 now accepts normalized direct
+resolution evidence from root `package-lock.json`, `pnpm-lock.yaml`, or `yarn.lock` when the
+dependency name and exact package.json specifier match deterministically. Exact manifest versions
+still work without a lockfile. Ambiguous/stale/malformed/workspace/non-semver lockfile states remain
+limitations rather than guesses.
+
+Repository analysis now uses the resolved exact current version for npm version-specific rules, OSV
+queries, migration comparison, and Dependencies/Security score coverage. The scoring formula remains
+`stack-health-v1`; production analyzer/rule-set identities advance to v2 because their evidence
+semantics changed. Quick analysis remains package.json-only and provider-free.
+
+Manual acceptance must therefore also re-run a public repository that commits a supported lockfile
+and uses ranged dependency declarations, confirming that resolved-version evidence is visible and
+numeric Dependencies/Security scores become available only when the remaining source/npm/OSV
+coverage is complete.
 
 Fix only concrete acceptance failures. If a fix changes product behavior beyond existing
 requirements, update the requirement first or in the same PR.
