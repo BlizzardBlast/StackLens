@@ -11,7 +11,7 @@
     "dev:infra:logs": "docker compose logs -f postgres",
     "dev:prepare": "turbo run build --filter=\"@stacklens/api^...\" --filter=\"@stacklens/worker^...\" --filter=\"@stacklens/web^...\"",
     "format": "oxfmt .",
-    "format:check": "oxfmt packages/rules-javascript/src/lockfile.ts && git diff -- packages/rules-javascript/src/lockfile.ts && exit 1",
+    "format:check": "oxfmt --check .",
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
     "test": "turbo run test",
