@@ -24,8 +24,11 @@ The service:
 3. creates a deterministic versioned content fingerprint;
 4. creates FR-005 project evidence;
 5. records material quick-analysis limitations;
-6. invokes `@stacklens/analyzer-core`;
-7. returns a contract-valid report or a stable validation error.
+6. invokes `@stacklens/analyzer-core` with the manifest-safe quick analyzer;
+7. emits dependency inventory and supported framework/tool facts plus curated overlap
+   findings/recommendations when supported by the manifest;
+8. returns a contract-valid report or a stable validation error while numeric scoring remains
+   insufficient evidence.
 
 ## Validation errors
 
@@ -58,7 +61,10 @@ The operation is published through `GET /openapi.json` with the repository-analy
 
 ## Dependency inversion
 
-Quick manifest analysis receives its `AnalyzerDefinition` as a dependency.
+Quick manifest analysis receives its `AnalyzerDefinition` as a dependency. Production composition
+uses only manifest-safe deterministic rules: dependency inventory, exact-package framework/tool
+detection, curated overlap detection, and the shared priority/recommendation policies. It does not
+run source/provider-dependent rules or the repository numeric scorer.
 
 Long-running public-repository analysis is composed in `@stacklens/analysis-orchestration`, which
 binds the production rule set/prioritizer/recommendations/scorer while keeping their formulas in their
@@ -90,8 +96,8 @@ The current fingerprint format is a deterministic versioned FNV-1a 64-bit conten
 the UTF-16 string length included. It is an input identity/reproducibility marker, not a security
 digest.
 
-**Traceability:** FR-001, FR-002, FR-004, FR-005, FR-021, FR-022, NFR-001, NFR-004, SEC-001,
-SEC-002, SEC-003.
+**Traceability:** FR-001, FR-002, FR-004, FR-005, FR-008, FR-012, FR-015, FR-016, FR-017,
+FR-021, FR-022, NFR-001, NFR-004, SEC-001, SEC-002, SEC-003.
 
 
 
