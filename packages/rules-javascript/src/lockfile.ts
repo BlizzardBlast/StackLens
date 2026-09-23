@@ -1,5 +1,5 @@
-import type { AnalysisFact, ProjectEvidence } from "@stacklens/contracts";
 import type { FactRule } from "@stacklens/analyzer-core";
+import type { AnalysisFact, ProjectEvidence } from "@stacklens/contracts";
 
 import type {
   NormalizedDependencyDeclaration,
@@ -91,9 +91,7 @@ function uniqueDeclarations(
     }
 
     const specifierOrder = compareCodeUnits(left.declaredSpecifier, right.declaredSpecifier);
-    return specifierOrder === 0
-      ? compareCodeUnits(left.group, right.group)
-      : specifierOrder;
+    return specifierOrder === 0 ? compareCodeUnits(left.group, right.group) : specifierOrder;
   });
 }
 
@@ -163,11 +161,7 @@ function uniqueResolutions(
 
   for (const resolution of resolutions) {
     unique.set(
-      JSON.stringify([
-        resolution.packageName,
-        resolution.declaredSpecifier,
-        resolution.version,
-      ]),
+      JSON.stringify([resolution.packageName, resolution.declaredSpecifier, resolution.version]),
       resolution,
     );
   }
@@ -180,9 +174,7 @@ function uniqueResolutions(
     }
 
     const specifierOrder = compareCodeUnits(left.declaredSpecifier, right.declaredSpecifier);
-    return specifierOrder === 0
-      ? compareCodeUnits(left.version, right.version)
-      : specifierOrder;
+    return specifierOrder === 0 ? compareCodeUnits(left.version, right.version) : specifierOrder;
   });
 }
 
@@ -383,9 +375,7 @@ interface PnpmEntry {
   version?: string;
 }
 
-function isPackageDependencyGroup(
-  value: string | undefined,
-): value is PackageDependencyGroup {
+function isPackageDependencyGroup(value: string | undefined): value is PackageDependencyGroup {
   return (
     value === "dependencies" ||
     value === "devDependencies" ||
@@ -522,9 +512,7 @@ function pnpmVersion(value: string | undefined): string | undefined {
     return undefined;
   }
 
-  const match = /^(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)(?:\(|$)/u.exec(
-    value,
-  );
+  const match = /^(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)(?:\(|$)/u.exec(value);
 
   return match?.[1];
 }
@@ -711,9 +699,7 @@ export function normalizeResolvedDependencies(
       };
     }
 
-    selected = lockfiles.find(
-      (file) => lockfilePackageManager(file.path) === managerHint,
-    );
+    selected = lockfiles.find((file) => lockfilePackageManager(file.path) === managerHint);
 
     if (selected === undefined) {
       return {
