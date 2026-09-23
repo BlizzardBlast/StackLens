@@ -226,13 +226,18 @@ Accepted implementation:
 - the service creates deterministic input fingerprints without persisting raw manifest content;
 - dependency project evidence is created before analyzer execution;
 - analyzer-core is invoked in-process with caller-supplied analysis identity/time and an injected analyzer definition;
+- production quick composition uses manifest-safe dependency inventory, exact-package framework/tool
+  detection, curated overlap detection, and the shared deterministic priority/recommendation policy;
 - quick-analysis limitations explicitly disclose unavailable source/configuration and external metadata evidence;
-- no authentication, persistence, provider I/O, Fastify transport, priority policy, or production scoring formula is introduced;
-- ignored manifest fields are not copied into the report, supporting minimum-retention behavior.
+- numeric scoring remains insufficient evidence rather than inventing health from manifest-only data;
+- no authentication, persistence, provider I/O, repository source analysis, or project execution is introduced;
+- ignored manifest fields are not copied into the report, supporting minimum-retention behavior;
+- the web report surfaces verified manifest facts before score cards and explains that quick-mode 0%
+  means numeric-score evidence coverage, not manifest parse coverage.
 
 Primary traceability:
 
-`FR-001, FR-002, FR-004, FR-005, FR-021, FR-022, NFR-001, NFR-004, SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007`.
+`FR-001, FR-002, FR-004, FR-005, FR-008, FR-012, FR-015, FR-016, FR-017, FR-021, FR-022, SCORE-003, NFR-001, NFR-004, NFR-006, NFR-007, SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007`.
 
 ## 6. Completed milestone: npm Registry package metadata adapter
 
