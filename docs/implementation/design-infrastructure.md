@@ -64,6 +64,7 @@ Then review the generated source against:
 - target sizes;
 - accessible names/focus behavior;
 - ADR-0006 customization rules;
+- the repository `@shadcn/lint` policy;
 - actual product need.
 
 Do not bulk-add a component catalog before a requirement needs it.
@@ -111,6 +112,10 @@ pnpm format:check
 pnpm check
 pnpm ui:add -- <component>
 ```
+
+`pnpm lint` runs the existing Oxlint rules plus the registered `@shadcn/lint` design-system
+rules. `pnpm ui:info` remains a separate shadcn project-structure validation step; it does not
+replace design-system usage linting.
 
 The bootstrap CI produced and committed the first `pnpm-lock.yaml`. Normal CI uses `pnpm install --frozen-lockfile` with read-only repository permissions and pnpm caching. Third-party GitHub Actions are pinned to immutable full commit SHAs.
 
@@ -170,7 +175,15 @@ The repository favors the smallest durable configuration that expresses a real S
 
 - Node is constrained to the selected 24.x LTS major rather than accepting arbitrary future majors.
 - `oxlint-tsgolint` is pinned to the mature TypeScript-7-compatible bridge release used by the repository; temporary release-age exceptions are not kept in pnpm configuration.
-- Oxlint warnings fail CI, unused suppression comments are errors, and type-aware rules remain enabled without replacing `tsc` as the compiler/typechecker.
+- Oxlint warnings fail CI, unused suppression comments are errors, and type-aware rules remain
+  enabled without replacing `tsc` as the compiler/typechecker.
+- `@shadcn/lint@0.2.0` is registered as an Oxlint JavaScript plugin at the workspace root.
+  `shadcn/no-raw-colors` is enforced as an error so product UI must consume semantic/domain tokens
+  rather than raw Tailwind palette colors. Shared component imports are recognized through the
+  `@stacklens/ui/components` prefix.
+- Additional `@shadcn/lint` rules are adopted incrementally after measuring the codebase and
+  defining explicit component contracts/exceptions; the repository does not create warning debt
+  because Oxlint is configured with `denyWarnings: true`.
 - The repository `.gitignore` lists artifacts this codebase actually produces instead of carrying a generic multi-framework template.
 - Design-token tests generate their own required output before assertions so the package test is independently runnable.
 
