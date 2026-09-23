@@ -243,9 +243,10 @@ scope.
 
 `JS-TOOL-012@1` implements **FR-012** from deterministic manifest evidence.
 
-A curated package catalog identifies supported frameworks/tools such as Next.js, Angular, SvelteKit,
-Vite, webpack, Rollup, esbuild, Vitest, Jest, Playwright, Cypress, ESLint, Prettier, Biome,
-TypeScript, selected state-management libraries, and selected observability SDKs.
+A curated package catalog identifies supported frameworks/tools such as Expo, Expo Router, React,
+React Native, Next.js, Angular, SvelteKit, Vite, webpack, Rollup, esbuild, Vitest, Jest, Playwright,
+Cypress, ESLint, Prettier, Biome, TypeScript, selected state-management libraries, and selected
+observability SDKs including Sentry for React Native.
 
 Detection requires an exact supported package name in a normalized dependency group. Unknown
 packages are not guessed from names or broad categories. Duplicate declarations produce one tool
