@@ -18,6 +18,12 @@ interface ToolDescriptor {
 
 const TOOL_DESCRIPTORS: readonly ToolDescriptor[] = [
   {
+    packageName: "@sentry/react-native",
+    displayName: "Sentry for React Native",
+    role: "observability",
+    roleLabel: "observability tool",
+  },
+  {
     packageName: "@angular/core",
     displayName: "Angular",
     role: "framework",
@@ -77,6 +83,13 @@ const TOOL_DESCRIPTORS: readonly ToolDescriptor[] = [
     role: "observability",
     roleLabel: "observability tool",
   },
+  { packageName: "expo", displayName: "Expo", role: "framework", roleLabel: "application framework" },
+  {
+    packageName: "expo-router",
+    displayName: "Expo Router",
+    role: "routing",
+    roleLabel: "routing tool",
+  },
   { packageName: "esbuild", displayName: "esbuild", role: "build_tool", roleLabel: "build tool" },
   { packageName: "eslint", displayName: "ESLint", role: "linter", roleLabel: "linter" },
   { packageName: "jest", displayName: "Jest", role: "test_framework", roleLabel: "test framework" },
@@ -95,6 +108,13 @@ const TOOL_DESCRIPTORS: readonly ToolDescriptor[] = [
   { packageName: "next", displayName: "Next.js", role: "framework", roleLabel: "framework" },
   { packageName: "nuxt", displayName: "Nuxt", role: "framework", roleLabel: "framework" },
   { packageName: "prettier", displayName: "Prettier", role: "formatter", roleLabel: "formatter" },
+  { packageName: "react", displayName: "React", role: "ui_library", roleLabel: "UI library" },
+  {
+    packageName: "react-native",
+    displayName: "React Native",
+    role: "framework",
+    roleLabel: "mobile application framework",
+  },
   { packageName: "rollup", displayName: "Rollup", role: "build_tool", roleLabel: "build tool" },
   {
     packageName: "typescript",
