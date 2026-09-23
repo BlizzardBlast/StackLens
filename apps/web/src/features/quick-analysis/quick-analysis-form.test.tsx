@@ -5,6 +5,12 @@ import type { QuickManifestAnalysisInput } from "./quick-analysis-api.js";
 import { QuickAnalysisForm } from "./quick-analysis-form.js";
 
 describe("QuickAnalysisForm [FR-001, FR-002, FR-004, FR-022, NFR-006, NFR-007]", () => {
+  it("keeps explicit spacing between the input legend and mode choices", () => {
+    render(<QuickAnalysisForm onSubmit={vi.fn().mockResolvedValue(undefined)} />);
+
+    expect(screen.getByText("Choose your input")).toHaveClass("mb-3");
+  });
+
   it("submits pasted manifest content without duplicating authoritative JSON validation", async () => {
     const onSubmit = vi
       .fn<(input: QuickManifestAnalysisInput) => Promise<void>>()
