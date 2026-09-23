@@ -1413,3 +1413,35 @@ authentication, private repository access, and repository writes remain post-MVP
 
 **Traceability:** FR-003, FR-004, FR-021, NFR-003, NFR-008, NFR-009, SEC-002, SEC-003, SEC-007,
 GOV-002, GOV-006, GOV-007.
+
+## 2026-09-23 — Step 55: Make quick manifest analysis useful without inventing scores
+
+Manual browser acceptance of a real package.json exposed a presentation and composition gap: the
+quick analyzer correctly refused to calculate health scores without repository/provider evidence,
+but the report showed N/A and 0% so prominently that a successfully parsed, information-rich
+manifest looked indistinguishable from an analysis that had learned nothing.
+
+This hardening keeps SCORE-003 and the evidence boundary intact while surfacing what StackLens can
+actually prove from package.json:
+
+- quick analyzer v2 runs `JS-DEP-005@1` dependency inventory plus manifest-safe
+  `JS-TOOL-012@1` framework/tool detection;
+- the curated `JS-OVERLAP-008@1` heuristic may run because its basis is the declared dependency
+  inventory alone;
+- emitted overlap findings reuse the production `JS-PRIORITY-016@1` and
+  `JS-RECOMMEND-015@1` policies rather than introducing quick-only urgency/advice;
+- exact-package tool signatures now include Expo, Expo Router, React, React Native, and Sentry for
+  React Native, with unknown package names still never guessed;
+- the shared report renderer adds a manifest-only **Verified from package.json** section with
+  dependency-entry counts, supported tool/framework facts, and a collapsed declaration browser;
+- the score area explicitly explains that quick-mode 0% is numeric-score evidence coverage, not how
+  much of package.json StackLens parsed.
+
+Numeric scoring remains `quick-manifest-insufficient-evidence-v1`. Source/configuration inspection,
+npm/OSV provider conclusions, unused-dependency inference, and repository-only score coverage remain
+unavailable in quick mode. Raw manifest text and ignored fields are still not persisted or copied
+into the report, and no analyzed scripts/configuration are executed.
+
+**Traceability:** PRD-003, PRD-004, FR-001, FR-002, FR-005, FR-008, FR-012, FR-015, FR-016,
+FR-017, FR-021, FR-022, SCORE-003, NFR-001, NFR-004, NFR-006, NFR-007, SEC-001, SEC-003,
+GOV-002, GOV-006, GOV-007.
