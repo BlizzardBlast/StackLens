@@ -787,8 +787,7 @@ export function resolvedDependency(
 ): JavaScriptResolvedDependency | undefined {
   return snapshot?.resolutions.find(
     (resolution) =>
-      resolution.packageName === packageName &&
-      resolution.declaredSpecifier === declaredSpecifier,
+      resolution.packageName === packageName && resolution.declaredSpecifier === declaredSpecifier,
   );
 }
 
