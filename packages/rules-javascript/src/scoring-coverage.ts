@@ -14,15 +14,15 @@ import {
   createDependencyRuleLimitation,
   dependencyDeclarationBases,
   dependencyKey,
+  effectiveDependencyVersion,
   truncate,
   uniqueSorted,
 } from "./rule-support.js";
-import { parseExactSemanticVersion } from "./semver.js";
 import { sourceUsageCoverageEvidenceId } from "./source-usage.js";
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-COVERAGE-018";
-const RULE_VERSION = "1";
+const RULE_VERSION = "2";
 const OSV_PROVIDER_ID = "osv";
 
 export function analysisCoverageFactType(category: ScoreCategory): string {
@@ -70,7 +70,7 @@ function createCoverageFact(
       id: RULE_ID,
       version: RULE_VERSION,
     },
-    requirementIds: ["FR-018", "FR-019", "FR-020", "SCORE-003"],
+    requirementIds: ["FR-018", "FR-019", "FR-020", "FR-023", "SCORE-003"],
     evidenceIds: [...uniqueSorted(evidenceIds)],
   };
 }
@@ -154,21 +154,30 @@ function dependencyCoverage(
   }
 
   for (const basis of dependencyDeclarationBases(context.project)) {
-    const unsupportedDeclarations = basis.declarations.filter(
-      (declaration) => parseExactSemanticVersion(declaration.declaredSpecifier) === undefined,
-    );
+    const versionBases = basis.declarations.map((declaration) => ({
+      declaration,
+      effective: effectiveDependencyVersion(
+        context.project,
+        declaration.name,
+        declaration.declaredSpecifier,
+      ),
+    }));
+    const unresolvedDeclarations = versionBases.filter(({ effective }) => effective === undefined);
 
-    if (unsupportedDeclarations.length > 0) {
+    if (unresolvedDeclarations.length > 0) {
       complete = false;
 
-      for (const declaration of unsupportedDeclarations) {
+      for (const { declaration } of unresolvedDeclarations) {
         limitations.push(
           coverageLimitation(
             "dependencies",
-            `non-exact-version:${dependencyKey(declaration.name, declaration.declaredSpecifier)}`,
-            `Dependency scoring cannot establish complete version-health coverage for ${declaration.name} because ${JSON.stringify(
+            `resolved-version-missing:${dependencyKey(
+              declaration.name,
               declaration.declaredSpecifier,
-            )} is not an exact supported semantic version.`,
+            )}`,
+            `Dependency scoring cannot establish complete version-health coverage for ${declaration.name} declared as ${JSON.stringify(
+              declaration.declaredSpecifier,
+            )} because no supported exact current version is available from package.json or a matching root lockfile.`,
           ),
         );
       }
@@ -193,9 +202,10 @@ function dependencyCoverage(
 
     let currentVersionsComplete = true;
 
-    for (const declaration of basis.declarations) {
+    for (const { declaration, effective } of versionBases) {
       if (
-        packageVersion(resolved.observation.snapshot, declaration.declaredSpecifier) === undefined
+        effective === undefined ||
+        packageVersion(resolved.observation.snapshot, effective.version) === undefined
       ) {
         currentVersionsComplete = false;
         complete = false;
@@ -205,10 +215,12 @@ function dependencyCoverage(
             "insufficient_evidence",
             "scoring-npm-current-version-incomplete",
             dependencyKey(declaration.name, declaration.declaredSpecifier),
-            `Dependency scoring coverage requires the npm Registry snapshot for ${declaration.name} to include declared exact version ${declaration.declaredSpecifier}.`,
+            `Dependency scoring coverage requires the npm Registry snapshot for ${declaration.name} to include resolved current version ${effective?.version ?? declaration.declaredSpecifier}.`,
             [resolved.observation.source.id],
           ),
         );
+      } else {
+        evidenceIds.push(...effective.evidenceIds);
       }
     }
 
@@ -247,7 +259,7 @@ function dependencyCoverage(
   return {
     fact: createCoverageFact(
       "dependencies",
-      `Dependency scoring coverage is complete for ${context.project.dependencies.length} supported declaration(s): manifest evidence, npm latest metadata, and static source/configuration/script usage coverage are available.`,
+      `Dependency scoring coverage is complete for ${context.project.dependencies.length} supported declaration(s): manifest evidence, exact current versions from package.json or matching lockfile evidence, npm latest metadata, and static source/configuration/script usage coverage are available.`,
       evidenceIds,
     ),
     limitations: [],
@@ -305,22 +317,35 @@ function securityCoverage(
   >();
 
   for (const declaration of context.project.dependencies) {
-    if (parseExactSemanticVersion(declaration.declaredSpecifier) === undefined) {
+    const effective = effectiveDependencyVersion(
+      context.project,
+      declaration.name,
+      declaration.declaredSpecifier,
+    );
+
+    if (effective === undefined) {
       limitations.push(
         coverageLimitation(
           "security",
-          `non-exact-version:${dependencyKey(declaration.name, declaration.declaredSpecifier)}`,
-          `Security scoring cannot establish complete known-vulnerability coverage for ${declaration.name} because ${JSON.stringify(declaration.declaredSpecifier)} is not an exact supported semantic version.`,
+          `resolved-version-missing:${dependencyKey(
+            declaration.name,
+            declaration.declaredSpecifier,
+          )}`,
+          `Security scoring cannot establish complete known-vulnerability coverage for ${declaration.name} declared as ${JSON.stringify(
+            declaration.declaredSpecifier,
+          )} because no supported exact current version is available from package.json or a matching root lockfile.`,
           [boundSource.id],
         ),
       );
       continue;
     }
 
-    uniqueDependencies.set(dependencyKey(declaration.name, declaration.declaredSpecifier), {
+    uniqueDependencies.set(dependencyKey(declaration.name, effective.version), {
       packageName: declaration.name,
-      version: declaration.declaredSpecifier,
+      version: effective.version,
     });
+
+    evidenceIds.push(...effective.evidenceIds);
 
     const projectEvidenceId = dependencyInventoryEvidenceId(declaration);
 
@@ -402,6 +427,7 @@ export const scoringCoverageFactRule: FactRule<
     "FR-019",
     "FR-020",
     "FR-021",
+    "FR-023",
     "SCORE-001",
     "SCORE-002",
     "SCORE-003",

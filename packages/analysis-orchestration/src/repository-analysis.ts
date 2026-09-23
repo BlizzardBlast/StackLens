@@ -22,15 +22,19 @@ import {
   createDependencyInventoryEvidence,
   createJavaScriptProjectSnapshot,
   createProjectConfigurationEvidence,
+  createResolvedDependencyEvidence,
   createSourceUsageEvidence,
+  effectiveDependencyVersion,
+  isSupportedLockfilePath,
   normalizePackageManifest,
   normalizePackageScripts,
-  parseExactSemanticVersion,
+  normalizeResolvedDependencies,
   withJavaScriptSourceUsage,
 } from "@stacklens/rules-javascript";
 import type {
   JavaScriptAnalysisMetadata,
   JavaScriptProjectSnapshot,
+  JavaScriptResolvedDependencyIssue,
   NormalizedDependencyDeclaration,
 } from "@stacklens/rules-javascript";
 
@@ -110,6 +114,7 @@ export type RepositoryAnalysisResult =
 
 interface ParsedRepositoryManifest {
   readonly project: JavaScriptProjectSnapshot;
+  readonly lockfileIssues: readonly JavaScriptResolvedDependencyIssue[];
 }
 
 function compareCodeUnits(left: string, right: string): number {
@@ -144,6 +149,19 @@ function providerArtifacts<TData>(result: ProviderResult<TData>): {
         evidence: [],
         partialFailures: [result.failure],
       };
+}
+
+function lockfileLimitations(
+  issues: readonly JavaScriptResolvedDependencyIssue[],
+): AnalysisLimitation[] {
+  return issues.map((issue, index) => ({
+    id: `limitation-repository-lockfile-${issue.code}-${index + 1}`,
+    kind: "insufficient_evidence",
+    message: issue.message,
+    affectedCategories: ["dependencies", "security", "maintainability"],
+    sourceIds: [],
+    ruleIds: ["JS-RESOLVED-023"],
+  }));
 }
 
 function metadataLimitations(
@@ -184,23 +202,30 @@ function metadataLimitations(
 }
 
 function exactOsvQueries(
-  declarations: readonly NormalizedDependencyDeclaration[],
+  project: JavaScriptProjectSnapshot,
   selectedPackages: ReadonlySet<string>,
 ): readonly { readonly packageName: string; readonly version: string }[] {
   const queries = new Map<string, { readonly packageName: string; readonly version: string }>();
 
-  for (const declaration of declarations) {
-    if (
-      !selectedPackages.has(declaration.name) ||
-      parseExactSemanticVersion(declaration.declaredSpecifier) === undefined
-    ) {
+  for (const declaration of project.dependencies) {
+    if (!selectedPackages.has(declaration.name)) {
       continue;
     }
 
-    const key = JSON.stringify([declaration.name, declaration.declaredSpecifier]);
+    const effective = effectiveDependencyVersion(
+      project,
+      declaration.name,
+      declaration.declaredSpecifier,
+    );
+
+    if (effective === undefined) {
+      continue;
+    }
+
+    const key = JSON.stringify([declaration.name, effective.version]);
     queries.set(key, {
       packageName: declaration.name,
-      version: declaration.declaredSpecifier,
+      version: effective.version,
     });
   }
 
@@ -220,17 +245,26 @@ function parseRepositoryManifest(
   const rawManifest = JSON.parse(snapshot.manifest.content) as unknown;
   const manifest = normalizePackageManifest(rawManifest);
   const scripts = normalizePackageScripts(rawManifest);
-  const projectFiles = snapshot.files.map((file) => ({
-    path: file.path,
-    content: file.content,
-  }));
+  const lockfileNormalization = normalizeResolvedDependencies(manifest, snapshot.files);
+  const projectFiles = snapshot.files
+    .filter((file) => !isSupportedLockfilePath(file.path))
+    .map((file) => ({
+      path: file.path,
+      content: file.content,
+    }));
   const project = withJavaScriptSourceUsage(
-    createJavaScriptProjectSnapshot(manifest, projectFiles, { scripts }),
+    createJavaScriptProjectSnapshot(manifest, projectFiles, {
+      scripts,
+      ...(lockfileNormalization.snapshot === undefined
+        ? {}
+        : { resolvedDependencies: lockfileNormalization.snapshot }),
+    }),
     snapshot.sourceCoverage.status,
   );
 
   return {
     project,
+    lockfileIssues: lockfileNormalization.issues,
   };
 }
 
@@ -356,11 +390,17 @@ export async function analyzePublicGitHubRepository(
   const evidence: Evidence[] = [
     ...repositoryResult.evidence,
     ...createDependencyInventoryEvidence(parsedManifest.project),
+    ...(parsedManifest.project.resolvedDependencies === undefined
+      ? []
+      : createResolvedDependencyEvidence(parsedManifest.project.resolvedDependencies)),
     ...createProjectConfigurationEvidence(parsedManifest.project),
     ...createSourceUsageEvidence(parsedManifest.project),
   ];
   const partialFailures: PartialFailure[] = [...repositoryResult.partialFailures];
-  const limitations: AnalysisLimitation[] = [...repositoryResult.data.limitations];
+  const limitations: AnalysisLimitation[] = [
+    ...repositoryResult.data.limitations,
+    ...lockfileLimitations(parsedManifest.lockfileIssues),
+  ];
 
   await recordProgress({
     phase: "package_metadata",
@@ -430,7 +470,7 @@ export async function analyzePublicGitHubRepository(
     failed: npmFailures,
   });
 
-  const allOsvQueries = exactOsvQueries(parsedManifest.project.dependencies, selectedPackageSet);
+  const allOsvQueries = exactOsvQueries(parsedManifest.project, selectedPackageSet);
   const selectedOsvQueries = allOsvQueries.slice(0, REPOSITORY_ANALYSIS_MAX_OSV_QUERIES);
   let osvMetadata: JavaScriptAnalysisMetadata["osv"];
 

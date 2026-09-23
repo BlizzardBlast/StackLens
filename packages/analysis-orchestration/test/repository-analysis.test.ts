@@ -77,6 +77,10 @@ function repositorySuccess(
   options: {
     readonly manifest?: string;
     readonly sourceContent?: string;
+    readonly lockfile?: {
+      readonly path: "package-lock.json" | "pnpm-lock.yaml" | "yarn.lock";
+      readonly content: string;
+    };
   } = {},
 ): ProviderResult<GitHubRepositorySnapshot> {
   const source = availableSource(
@@ -110,8 +114,18 @@ function repositorySuccess(
               content: options.manifest,
             },
           }),
-      files:
-        options.sourceContent === undefined
+      files: [
+        ...(options.lockfile === undefined
+          ? []
+          : [
+              {
+                path: options.lockfile.path,
+                blobSha: "d".repeat(40),
+                byteLength: options.lockfile.content.length,
+                content: options.lockfile.content,
+              },
+            ]),
+        ...(options.sourceContent === undefined
           ? []
           : [
               {
@@ -120,7 +134,8 @@ function repositorySuccess(
                 byteLength: options.sourceContent.length,
                 content: options.sourceContent,
               },
-            ],
+            ]),
+      ],
       sourceCoverage: {
         status: "complete",
         candidateFiles: options.sourceContent === undefined ? 0 : 1,
@@ -221,7 +236,7 @@ const baseCommand = {
   repositoryUrl: "https://github.com/acme/demo",
 } as const;
 
-describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-009]", () => {
+describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-009]", () => {
   it("composes repository, npm, OSV, production rules, recommendations, and scoring", async () => {
     const secretSourceText =
       'import legacy from "legacy-package"; import React from "react"; const TOP_SECRET_SOURCE_VALUE = "never-retain"; export const value = [legacy, React.version, TOP_SECRET_SOURCE_VALUE];';
@@ -295,8 +310,8 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
       },
     });
     expect(result.report.analyzer).toEqual({
-      version: "javascript-production-v1",
-      ruleSetVersion: "javascript-rules-v1",
+      version: "javascript-production-v2",
+      ruleSetVersion: "javascript-rules-v2",
       scoringVersion: "stack-health-v1",
     });
 
@@ -354,6 +369,88 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
     expect(serializedResult).not.toContain("TOP_SECRET_SOURCE_VALUE");
     expect(serializedResult).not.toContain("never-retain-this-script");
     expect(serializedResult).not.toContain("never-retain");
+  });
+
+  it("uses pnpm lockfile resolutions for ranged dependency scoring and OSV queries", async () => {
+    const manifest = JSON.stringify({
+      packageManager: "pnpm@11.20.0",
+      dependencies: {
+        react: "^19.0.0",
+      },
+    });
+    const lockfile = `lockfileVersion: '9.0'
+importers:
+  .:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+`;
+    const githubRepositoryProvider = provider<GitHubRepositoryRequest, GitHubRepositorySnapshot>(
+      "github-rest",
+      async () =>
+        repositorySuccess({
+          manifest,
+          lockfile: {
+            path: "pnpm-lock.yaml",
+            content: lockfile,
+          },
+          sourceContent: 'import React from "react"; export const value = React.version;',
+        }),
+    );
+    const npmRegistryProvider = provider<NpmPackageMetadataRequest, NpmPackageMetadata>(
+      "npm-registry",
+      async ({ packageName }) => npmSuccess(packageName, "19.2.3", "19.2.4"),
+    );
+    const osvProvider = provider<OsvVulnerabilityRequest, OsvVulnerabilitySnapshot>(
+      "osv",
+      async (request) => osvSuccess(request),
+    );
+
+    const result = await analyzePublicGitHubRepository(baseCommand, {
+      githubRepositoryProvider,
+      npmRegistryProvider,
+      osvProvider,
+    });
+
+    expect(result.ok).toBe(true);
+
+    if (!result.ok) {
+      throw new Error("Expected lockfile-backed repository analysis to succeed");
+    }
+
+    expect(osvProvider.fetchMock).toHaveBeenCalledWith({
+      queries: [
+        {
+          packageName: "react",
+          version: "19.2.3",
+        },
+      ],
+    });
+    expect(result.report.facts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "dependency.resolution",
+          subject: expect.objectContaining({
+            name: "react",
+            path: "pnpm-lock.yaml",
+          }),
+          statement: expect.stringContaining("19.2.3"),
+        }),
+      ]),
+    );
+    expect(result.report.scores.categories.dependencies).toMatchObject({
+      status: "available",
+    });
+    expect(result.report.scores.categories.security).toMatchObject({
+      status: "available",
+      value: 100,
+    });
+    expect(result.report.scores.overall).toMatchObject({
+      status: "available",
+      evidenceCoverage: 40,
+    });
+    expect(JSON.stringify(result.report)).not.toContain(lockfile);
   });
 
   it("keeps npm acquisition failure non-fatal and marks dependency scoring N/A", async () => {
@@ -427,7 +524,7 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
     expect(AnalysisReportSchema.safeParse(result.report).success).toBe(true);
   });
 
-  it("queries OSV only for exact declared versions and exposes a skipped state when none exist", async () => {
+  it("skips OSV when no exact current version is provable", async () => {
     const manifest = JSON.stringify({
       dependencies: {
         react: "^18.2.0",
@@ -473,7 +570,7 @@ describe("analyzePublicGitHubRepository [FR-003–FR-021, NFR-003, NFR-008, NFR-
     expect(result.report.scores.categories.security.status).toBe("insufficient_evidence");
     expect(
       result.report.limitations.some((limitation) =>
-        limitation.message.includes("not an exact supported semantic version"),
+        limitation.message.includes("no supported exact current version"),
       ),
     ).toBe(true);
   });

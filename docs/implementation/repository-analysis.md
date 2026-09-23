@@ -2,7 +2,7 @@
 
 > **Status:** Implemented application-service baseline  
 > **Date:** 2026-09-21  
-> **Requirements:** FR-003–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-001, NFR-003–NFR-005, NFR-008, NFR-009, SEC-001–SEC-003, SEC-007, SEC-008, GOV-007  
+> **Requirements:** FR-003–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-001, NFR-003–NFR-005, NFR-008, NFR-009, SEC-001–SEC-003, SEC-007, SEC-008, GOV-007  
 > **Architecture:** `apps/api|apps/worker -> @stacklens/analysis-orchestration -> provider/analyzer packages`
 
 ## Purpose
@@ -19,7 +19,8 @@ Graphile Worker without either application importing the other.
 
 `productionJavaScriptAnalyzer` binds the current JavaScript/TypeScript production policy:
 
-- dependency inventory, framework/tool, npm-health, configuration, source-usage, and scoring-coverage facts;
+- dependency inventory, resolved-dependency, framework/tool, npm-health, configuration, source-usage,
+  and scoring-coverage facts;
 - overlap, deprecation, vulnerability, migration, outdated, and potentially-unnecessary findings;
 - `JS-PRIORITY-016@1`;
 - `JS-RECOMMEND-015@1`;
@@ -28,8 +29,9 @@ Graphile Worker without either application importing the other.
 The composition root owns no formula itself. Detection/priority/recommendation policy remains in
 `@stacklens/rules-javascript`; numeric scoring remains in `@stacklens/scoring`.
 
-Production identities are `javascript-production-v1`, `javascript-rules-v1`, and
-`stack-health-v1`.
+Production identities are `javascript-production-v2`, `javascript-rules-v2`, and
+`stack-health-v1`. The analyzer/rule-set version changed because accepted project evidence now
+includes normalized lockfile resolutions; the numeric deduction formula remains scoring v1.
 
 ## Repository flow
 
@@ -38,15 +40,20 @@ The service performs the following bounded sequence:
 1. acquire a public immutable repository snapshot through an injected GitHub provider;
 2. fail clearly when the repository cannot be resolved or a supported root `package.json` is absent;
 3. parse the root manifest as untrusted JSON;
-4. normalize dependency declarations and package scripts without executing them;
-5. create the static project snapshot from already-acquired GitHub files;
-6. run bounded static source-usage parsing using the provider source-coverage state;
-7. create local manifest/configuration/source evidence;
-8. fetch npm Registry metadata for a deterministic bounded set of package identities;
-9. submit OSV queries only for exact semantic-version declarations;
-10. preserve provider sources/evidence/partial failures;
-11. invoke the production analyzer;
-12. return a contract-valid `AnalysisReport` plus transport-independent progress events.
+4. normalize dependency declarations, package-manager intent, and package scripts without executing
+   them;
+5. select and normalize at most one supported root lockfile
+   (`package-lock.json`, `pnpm-lock.yaml`, or `yarn.lock`) when deterministically attributable;
+6. create the static project snapshot from already-acquired GitHub files while keeping raw lockfile
+   text outside analyzer-visible static files;
+7. run bounded static source-usage parsing using the provider source-coverage state;
+8. create local manifest/lockfile/configuration/source evidence;
+9. fetch npm Registry metadata for a deterministic bounded set of package identities;
+10. submit OSV queries for exact current versions established either directly by package.json or by
+    matching normalized lockfile evidence;
+11. preserve provider sources/evidence/partial failures;
+12. invoke the production analyzer;
+13. return a contract-valid `AnalysisReport` plus transport-independent progress events.
 
 Raw manifest/source/script content is not copied into the returned progress or report.
 
@@ -62,14 +69,26 @@ npm Registry and OSV failures are non-terminal:
 - unrelated analysis still runs;
 - affected rules/scoring disclose limitations or N/A rather than clean conclusions.
 
-## Exact-version OSV policy
+## Exact-current-version and OSV policy
 
-OSV requests are built only from declarations accepted by the same deterministic semantic-version
-parser used by JavaScript rules.
+OSV requests are built only from exact current versions accepted by the same deterministic
+semantic-version parser used by JavaScript rules.
 
-Ranges, tags, URLs, workspace references, shortened versions, and other unsupported declarations are
-not silently reinterpreted as installed versions. When no exact declarations exist, OSV acquisition
-is skipped and existing analyzer policy reports insufficient evidence.
+An exact package.json declaration is sufficient by itself. A ranged declaration such as
+`^19.0.0` or `~57.0.23` can also become exact-current-version evidence when a supported committed
+root lockfile deterministically matches the same dependency name and exact declared specifier and
+provides a supported exact semantic version.
+
+StackLens never treats a lockfile as permission to guess:
+
+- multiple supported lockfiles require a recognized `packageManager` hint to select one;
+- package-manager mismatch, stale specifiers, malformed lockfiles, missing direct resolutions,
+  workspace/link targets, and non-semver resolutions remain insufficient evidence;
+- lockfile source text is transient and only bounded normalized resolution facts/evidence enter the
+  report.
+
+When no exact current version can be established, OSV acquisition for that declaration is skipped
+and analyzer policy reports insufficient evidence.
 
 ## Resource bounds
 
@@ -112,11 +131,11 @@ See [Persistent Repository Analysis Jobs](repository-jobs.md).
 ## Verification
 
 Synthetic tests cover complete repository → npm → OSV → analyzer → recommendation → score flow,
-graceful npm failure, exact-version-only OSV behavior, skipped OSV for ranges, terminal GitHub
-failure, missing/malformed manifests, progress delivery, report-schema validation, and sentinel
-source/script non-retention.
+graceful npm failure, exact-manifest versions, lockfile-resolved ranged declarations, skipped OSV
+when no exact current version is provable, terminal GitHub failure, missing/malformed manifests,
+progress delivery, report-schema validation, and sentinel source/script/lockfile non-retention.
 
 Normal PR correctness has no live GitHub/npm/OSV dependency.
 
-**Traceability:** FR-003–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-001, NFR-003,
+**Traceability:** FR-003–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-001, NFR-003,
 NFR-004, NFR-005, NFR-008, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008, GOV-007.

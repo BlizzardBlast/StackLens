@@ -440,6 +440,38 @@ Every analysis must communicate material limitations caused by input mode, unsup
 
 Users must be able to perform simple StackLens analysis without creating an account.
 
+### FR-023 — Resolved dependency evidence
+
+**Phase:** MVP  
+**Status:** Accepted
+
+For repository analysis, StackLens must use supported committed root lockfiles as project evidence for
+the exact resolved version of a declared dependency when that resolution can be matched
+deterministically to the corresponding package.json declaration.
+
+Initial supported lockfiles are:
+
+- `package-lock.json`;
+- `pnpm-lock.yaml`; and
+- `yarn.lock`.
+
+**Acceptance criteria**
+
+- package.json remains the authoritative source of dependency declaration intent and dependency group.
+- A lockfile-resolved version is accepted only when StackLens can match the dependency name and
+  declared specifier without guessing.
+- Supported exact package.json declarations remain valid current-version evidence without requiring a
+  lockfile.
+- A matching supported lockfile may satisfy exact-current-version requirements for ranged package.json
+  declarations used by version, deprecation, migration, vulnerability, and scoring rules.
+- Multiple ambiguous lockfiles, package-manager mismatches, stale specifiers, malformed lockfiles,
+  missing direct resolutions, workspace/link targets, and unsupported non-semver resolutions produce
+  limitations rather than inferred versions.
+- Lockfile source text remains transient analysis input; reports expose only bounded normalized
+  resolution facts/evidence and must not copy full lockfile contents.
+- Lockfile evidence does not prove that dependencies were installed or executed in the analyzed
+  runtime environment.
+
 ## 7. Post-MVP functional requirements
 
 ### FR-100 — GitHub authentication and private repositories
@@ -863,6 +895,7 @@ The report must satisfy the deterministic, evidence, scoring, security, and trac
 | Paste/upload analysis            | FR-001, FR-002, FR-004, FR-022                                     |
 | Public GitHub analysis           | FR-003, FR-004, SEC-001, SEC-002                                   |
 | Dependency inventory             | FR-005                                                             |
+| Resolved dependency versions      | FR-023, FR-017, SCORE-003                                          |
 | Outdated packages                | FR-006, DATA-001, DATA-002                                         |
 | Deprecated/unmaintained packages | FR-007, DATA-004                                                   |
 | Overlap/redundancy               | FR-008, PRD-003                                                    |

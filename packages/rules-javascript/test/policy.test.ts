@@ -128,7 +128,7 @@ describe("JavaScript production priority policy [FR-016, FR-020]", () => {
   });
 });
 
-describe("migration evidence boundaries [FR-014, FR-021]", () => {
+describe("migration evidence boundaries [FR-014, FR-021, FR-023]", () => {
   it("discloses insufficient evidence for non-exact current versions", () => {
     const project = normalizePackageManifest({
       dependencies: {
@@ -166,13 +166,13 @@ describe("migration evidence boundaries [FR-014, FR-021]", () => {
       expect.objectContaining({
         kind: "insufficient_evidence",
         ruleIds: ["JS-MIGRATION-014"],
-        message: expect.stringContaining("not an exact semantic version"),
+        message: expect.stringContaining("no supported exact current version"),
       }),
     ]);
   });
 });
 
-describe("score coverage policy [FR-018, FR-019, FR-021, SCORE-003]", () => {
+describe("score coverage policy [FR-018, FR-019, FR-021, FR-023, SCORE-003]", () => {
   it("requires exact current dependency versions before dependency scoring can be complete", () => {
     const manifest = normalizePackageManifest({
       dependencies: {
@@ -206,7 +206,7 @@ describe("score coverage policy [FR-018, FR-019, FR-021, SCORE-003]", () => {
       expect.arrayContaining([
         expect.objectContaining({
           affectedCategories: ["dependencies"],
-          message: expect.stringContaining("not an exact supported semantic version"),
+          message: expect.stringContaining("no supported exact current version"),
         }),
       ]),
     );

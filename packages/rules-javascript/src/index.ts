@@ -5,6 +5,27 @@ export {
   dependencyInventoryRule,
 } from "./dependency-inventory.js";
 
+export {
+  createResolvedDependencyEvidence,
+  isSupportedLockfilePath,
+  normalizeResolvedDependencies,
+  resolvedDependency,
+  resolvedDependencyEvidenceId,
+  resolvedDependencyFactId,
+  resolvedDependencyFactRule,
+  SUPPORTED_LOCKFILE_PATHS,
+} from "./lockfile.js";
+export type {
+  JavaScriptLockfileFile,
+  JavaScriptPackageManager,
+  JavaScriptResolvedDependency,
+  JavaScriptResolvedDependencyIssue,
+  JavaScriptResolvedDependencySnapshot,
+  ResolvedDependencyIssueCode,
+  ResolvedDependencyNormalization,
+  SupportedLockfilePath,
+} from "./lockfile.js";
+
 export { normalizePackageManifest, PACKAGE_DEPENDENCY_GROUPS } from "./manifest.js";
 export type {
   NormalizedDependencyDeclaration,
@@ -99,6 +120,9 @@ export {
   analysisCoverageFactType,
   scoringCoverageFactRule,
 } from "./scoring-coverage.js";
+
+export { effectiveDependencyVersion } from "./rule-support.js";
+export type { EffectiveDependencyVersion } from "./rule-support.js";
 
 export { parseExactSemanticVersion } from "./semver.js";
 export type { ParsedSemanticVersion } from "./semver.js";

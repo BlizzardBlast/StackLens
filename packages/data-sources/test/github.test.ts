@@ -33,6 +33,7 @@ const symlinkSha = "1".repeat(40);
 const submoduleSha = "2".repeat(40);
 const ignoredSha = "3".repeat(40);
 const sourceSha = "4".repeat(40);
+const lockfileSha = "5".repeat(40);
 
 function createAdapter(
   fetchImpl: typeof fetch,
@@ -191,7 +192,7 @@ describe("parsePublicGitHubRepositoryUrl [FR-003, FR-004, SEC-002]", () => {
   });
 });
 
-describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, DATA-006]", () => {
+describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, FR-023, DATA-001, DATA-002, DATA-006]", () => {
   it("resolves the default branch to an immutable commit and acquires only supported static files", async () => {
     const packageJson = JSON.stringify({
       name: "fixture",
@@ -316,6 +317,59 @@ describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, DATA-001, DATA-002, D
     expect(DataSourceSchema.safeParse(result.source).success).toBe(true);
     expect(EvidenceSchema.safeParse(result.evidence[0]).success).toBe(true);
     expect(RepositoryIdentitySchema.safeParse(result.data.repository).success).toBe(true);
+  });
+
+  it("prioritizes supported root lockfiles without changing source-usage coverage", async () => {
+    const packageJson = JSON.stringify({
+      packageManager: "pnpm@11.20.0",
+      dependencies: {
+        react: "^19.0.0",
+      },
+    });
+    const lockfile = `lockfileVersion: '9.0'
+importers:
+  .:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+`;
+    const sourceText = "import React from 'react'; export const value = React.version;";
+    const tree = treePayload([
+      treeEntry("src/index.ts", sourceSha, sourceText.length),
+      treeEntry("pnpm-lock.yaml", lockfileSha, lockfile.length),
+      treeEntry("package.json", manifestSha, packageJson.length),
+    ]);
+    const fetchImpl = successfulBaseFetch(tree, [
+      blobPayload(manifestSha, packageJson),
+      blobPayload(lockfileSha, lockfile),
+      blobPayload(sourceSha, sourceText),
+    ]);
+
+    const result = await createAdapter(fetchImpl).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+
+    expect(result.ok).toBe(true);
+
+    if (!result.ok) {
+      throw new Error("Expected lockfile acquisition to succeed");
+    }
+
+    expect(fetchImpl.mock.calls.map((call) => call[0])).toEqual([
+      githubRepositoryApiUrl(owner, name),
+      githubCommitApiUrl(owner, name, "main"),
+      githubTreeApiUrl(owner, name, treeSha),
+      githubBlobApiUrl(owner, name, manifestSha),
+      githubBlobApiUrl(owner, name, lockfileSha),
+      githubBlobApiUrl(owner, name, sourceSha),
+    ]);
+    expect(result.data.files.map((file) => file.path)).toEqual(["pnpm-lock.yaml", "src/index.ts"]);
+    expect(result.data.sourceCoverage).toEqual({
+      status: "complete",
+      candidateFiles: 1,
+      acquiredFiles: 1,
+    });
   });
 
   it("sends a bearer token only when authenticated public access is configured", async () => {

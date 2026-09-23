@@ -1460,3 +1460,43 @@ quality gate.
 No analysis, validation, API, or scoring behavior changes.
 
 **Traceability:** NFR-006, NFR-007, GOV-002, GOV-007.
+
+## 2026-09-23 — Step 57: Use committed lockfiles as resolved-version evidence
+
+Manual acceptance raised a valid evidence-model problem: real JavaScript projects commonly preserve
+semver intent such as `^19.0.0` or `~57.0.23` in package.json while committing the exact resolved
+version in a package-manager lockfile. StackLens previously treated every non-exact manifest
+specifier as insufficient for version-specific npm/OSV rules, even in repository analysis where the
+matching lockfile was already available.
+
+This step adds FR-023 without weakening the evidence boundary:
+
+- GitHub acquisition retains bounded root `package-lock.json`, `pnpm-lock.yaml`, and `yarn.lock`
+  inputs immediately after package.json in selection priority;
+- `@stacklens/rules-javascript` owns package-manager-specific parsing and emits one normalized,
+  package-manager-neutral resolved-dependency snapshot;
+- package.json remains declaration intent and dependency-group evidence;
+- an exact manifest version remains sufficient without a lockfile;
+- a ranged declaration may use a lockfile version only when package name and exact declared specifier
+  match deterministically;
+- `packageManager` selects among multiple committed lockfiles; absent a recognized hint, StackLens
+  refuses to guess;
+- stale specifiers, malformed inputs, package-manager mismatches, missing direct resolutions,
+  workspace/link targets, and unsupported non-semver resolutions become limitations;
+- `JS-RESOLVED-023@1` emits bounded resolution facts/evidence while raw lockfile text remains
+  transient;
+- outdated/deprecation/vulnerability/migration/coverage rules advance to v2 and share one
+  effective-current-version helper;
+- repository OSV acquisition now queries the resolved exact version, so a declaration such as
+  `react: "^19.0.0"` can safely query the lockfile-resolved `19.2.3`;
+- Dependencies and Security score coverage can become numeric when lockfile resolution plus existing
+  source/npm/OSV coverage is complete.
+
+The numeric deduction formula does not change, so scoring remains `stack-health-v1`. Production
+analyzer and rule-set identities advance to v2 because the accepted evidence semantics changed.
+Quick package.json analysis remains synchronous/provider-free and does not accept lockfiles in this
+milestone.
+
+**Traceability:** FR-003, FR-005–FR-007, FR-010, FR-011, FR-014, FR-017–FR-023, DATA-001–DATA-006,
+SCORE-001–SCORE-004, NFR-001–NFR-005, NFR-008, NFR-009, SEC-001–SEC-003, SEC-007, GOV-002,
+GOV-006, GOV-007.

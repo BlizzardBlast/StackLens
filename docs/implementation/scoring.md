@@ -2,7 +2,7 @@
 
 > **Status:** Accepted implementation baseline  
 > **Date:** 2026-09-20  
-> **Requirements:** FR-016, FR-018–FR-021, DATA-006, SCORE-001–SCORE-004, NFR-001–NFR-005, GOV-007  
+> **Requirements:** FR-016, FR-018–FR-023, DATA-006, SCORE-001–SCORE-004, NFR-001–NFR-005, GOV-007  
 > **Decision:** ADR-0011
 
 ## Package responsibility
@@ -103,7 +103,8 @@ If either Dependencies or Security is N/A, the overall score is N/A and referenc
 
 A 100 Security score means:
 
-- every supported dependency was represented by an exact semantic version;
+- every supported dependency had an exact current semantic version established directly by
+  package.json or by matching FR-023 lockfile evidence;
 - the bound OSV source was complete;
 - every exact-version query completed;
 - every query had explicit provenance evidence; and
@@ -130,4 +131,5 @@ Package tests cover:
 
 The JavaScript policy integration fixture additionally proves the complete analyzer flow from facts through findings, priority, recommendations, scoring, and report validation.
 
-**Traceability:** FR-016, FR-018, FR-019, FR-020, FR-021, DATA-006, SCORE-001, SCORE-002, SCORE-003, SCORE-004, NFR-001, NFR-004, NFR-005, GOV-007.
+**Traceability:** FR-016, FR-018–FR-023, DATA-006, SCORE-001–SCORE-004, NFR-001, NFR-004,
+NFR-005, GOV-007.

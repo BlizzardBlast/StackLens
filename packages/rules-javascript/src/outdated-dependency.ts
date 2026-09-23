@@ -2,11 +2,12 @@ import type { FindingCandidate, FindingRule } from "@stacklens/analyzer-core";
 import type { AnalysisLimitation } from "@stacklens/contracts";
 
 import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
-import type { NormalizedPackageManifest } from "./manifest.js";
 import { latestDistTag, packageVersion, resolveNpmObservation } from "./npm-rule-support.js";
+import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
 import {
   createDependencyRuleLimitation,
   dependencyFactBases,
+  effectiveDependencyVersion,
   truncate,
   uniqueSorted,
 } from "./rule-support.js";
@@ -18,7 +19,7 @@ import {
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-NPM-006";
-const RULE_VERSION = "1";
+const RULE_VERSION = "2";
 
 export function outdatedDependencyFindingId(
   packageName: string,
@@ -37,7 +38,7 @@ function differenceDescription(difference: SemanticVersionDifference): string {
 }
 
 export const outdatedDependencyRule: FindingRule<
-  NormalizedPackageManifest,
+  JavaScriptProjectSnapshot,
   JavaScriptAnalysisMetadata
 > = {
   kind: "finding",
@@ -45,6 +46,7 @@ export const outdatedDependencyRule: FindingRule<
   version: RULE_VERSION,
   requirementIds: [
     "FR-006",
+    "FR-023",
     "DATA-001",
     "DATA-002",
     "DATA-003",
@@ -60,21 +62,31 @@ export const outdatedDependencyRule: FindingRule<
     const limitations: AnalysisLimitation[] = [];
 
     for (const basis of dependencyFactBases(context.facts)) {
-      const declared = parseExactSemanticVersion(basis.declaredSpecifier);
+      const effective = effectiveDependencyVersion(
+        context.project,
+        basis.packageName,
+        basis.declaredSpecifier,
+      );
 
-      if (declared === undefined) {
+      if (effective === undefined) {
         limitations.push(
           createDependencyRuleLimitation(
             RULE_ID,
             "insufficient_evidence",
-            "npm-exact-version-required",
+            "npm-resolved-version-required",
             JSON.stringify([basis.packageName, basis.declaredSpecifier]),
             `Outdated-dependency analysis preserves declared specifier ${JSON.stringify(
               basis.declaredSpecifier,
-            )} for ${basis.packageName}, but it is not an exact semantic version. A resolved exact version is required before comparing it with npm Registry releases.`,
+            )} for ${basis.packageName}, but no supported exact current version can be established from package.json or a matching root lockfile.`,
             [],
           ),
         );
+        continue;
+      }
+
+      const currentVersion = parseExactSemanticVersion(effective.version);
+
+      if (currentVersion === undefined) {
         continue;
       }
 
@@ -92,19 +104,16 @@ export const outdatedDependencyRule: FindingRule<
         continue;
       }
 
-      const declaredVersionRecord = packageVersion(
-        resolved.observation.snapshot,
-        basis.declaredSpecifier,
-      );
+      const currentVersionRecord = packageVersion(resolved.observation.snapshot, effective.version);
 
-      if (declaredVersionRecord === undefined) {
+      if (currentVersionRecord === undefined) {
         limitations.push(
           createDependencyRuleLimitation(
             RULE_ID,
             "external_data",
-            "npm-declared-version-missing",
-            JSON.stringify([basis.packageName, basis.declaredSpecifier]),
-            `npm Registry metadata for ${basis.packageName} does not contain declared exact version ${basis.declaredSpecifier}, so an outdated comparison is not supported.`,
+            "npm-current-version-missing",
+            JSON.stringify([basis.packageName, effective.version]),
+            `npm Registry metadata for ${basis.packageName} does not contain resolved current version ${effective.version}, so an outdated comparison is not supported.`,
             [resolved.observation.source.id],
           ),
         );
@@ -161,7 +170,7 @@ export const outdatedDependencyRule: FindingRule<
         continue;
       }
 
-      const difference = newerVersionDifference(declared, comparison);
+      const difference = newerVersionDifference(currentVersion, comparison);
 
       if (difference === undefined) {
         continue;
@@ -169,6 +178,7 @@ export const outdatedDependencyRule: FindingRule<
 
       const evidenceIds = uniqueSorted([
         ...basis.facts.flatMap((fact) => fact.evidenceIds),
+        ...effective.evidenceIds,
         ...resolved.observation.evidence.map((item) => item.id),
       ]);
 
@@ -182,11 +192,13 @@ export const outdatedDependencyRule: FindingRule<
           path: "package.json",
         },
         title: truncate(
-          `Newer npm release available for ${basis.packageName}: ${basis.declaredSpecifier} → ${latest.version}`,
+          `Newer npm release available for ${basis.packageName}: ${effective.version} → ${latest.version}`,
           500,
         ),
         description: truncate(
-          `The project declares exact version ${basis.declaredSpecifier} for ${basis.packageName}. npm Registry's latest dist-tag points to ${latest.version}, which is newer and represents ${differenceDescription(
+          `package.json declares ${JSON.stringify(
+            basis.declaredSpecifier,
+          )} for ${basis.packageName}; StackLens established current exact version ${effective.version} from ${effective.source === "lockfile" ? "the supported root lockfile" : "the exact manifest declaration"}. npm Registry's latest dist-tag points to ${latest.version}, which is newer and represents ${differenceDescription(
             difference,
           )}.`,
           4_000,
@@ -195,7 +207,7 @@ export const outdatedDependencyRule: FindingRule<
           id: RULE_ID,
           version: RULE_VERSION,
         },
-        requirementIds: ["FR-006", "DATA-001", "DATA-002", "DATA-003"],
+        requirementIds: ["FR-006", "FR-023", "DATA-001", "DATA-002", "DATA-003"],
         evidenceIds: [...evidenceIds],
         factIds: basis.facts.map((fact) => fact.id),
         limitationIds: [...resolved.observation.limitationIds],

@@ -149,6 +149,7 @@ The adapter disables redirects. It does not call repository-supplied URLs.
 This milestone fetches only content required by rules that already exist:
 
 - root `package.json`;
+- root `package-lock.json`, `pnpm-lock.yaml`, and `yarn.lock` for FR-023;
 - TypeScript config names supported by FR-013;
 - legacy/flat ESLint config names supported by FR-013;
 - Prettier config names supported by FR-013;
@@ -174,8 +175,9 @@ Default GitHub acquisition bounds are:
 - maximum decoded bytes across retained files: 2 MiB;
 - maximum requests per acquisition: 40.
 
-`package.json` is always prioritized ahead of optional configuration candidates when file/request
-budgets are tight.
+`package.json` is prioritized first and supported root lockfiles immediately after it, ahead of
+optional configuration/source candidates when file/request budgets are tight. Lockfiles are excluded
+from source-usage coverage counts.
 
 The GitHub recursive-tree API itself can report a truncated tree. StackLens preserves the returned
 supported files but marks the source partial and records the truncation.
@@ -194,10 +196,11 @@ The selected file `path/content` shape is intentionally compatible with
 `JavaScriptStaticProjectFile`. Application/worker orchestration can:
 
 1. parse and normalize the transient root manifest with `@stacklens/rules-javascript`;
-2. discard the raw manifest after normalization;
-3. pass selected config/source `path/content` fields into `createJavaScriptProjectSnapshot`;
-4. map GitHub source coverage into the source-usage parser adapter;
-5. run configuration/source rules without any further GitHub I/O.
+2. normalize any selected supported root lockfile into bounded resolved-dependency project evidence;
+3. discard raw manifest/lockfile text after normalization;
+4. pass selected config/source `path/content` fields into `createJavaScriptProjectSnapshot`;
+5. map GitHub source coverage into the source-usage parser adapter;
+6. run configuration/source rules without any further GitHub I/O.
 
 This adapter does not parse project semantics and does not execute repository content.
 
@@ -231,7 +234,7 @@ limits, and source-content isolation from report provenance.
 
 No live GitHub request is required for normal PR correctness.
 
-**GitHub traceability:** FR-003, FR-004, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-006,
+**GitHub traceability:** FR-003, FR-004, FR-013, FR-017, FR-021, FR-023, DATA-001, DATA-002, DATA-006,
 NFR-001, NFR-003, NFR-004, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008.
 
 ## OSV query evidence

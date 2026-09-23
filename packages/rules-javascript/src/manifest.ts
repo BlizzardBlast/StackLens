@@ -15,6 +15,7 @@ export interface NormalizedDependencyDeclaration {
 
 export interface NormalizedPackageManifest {
   readonly packageName?: string;
+  readonly packageManager?: string;
   readonly dependencies: readonly NormalizedDependencyDeclaration[];
 }
 
@@ -43,6 +44,27 @@ function readPackageName(manifest: UnknownRecord): string | undefined {
   }
 
   return packageName;
+}
+
+function readPackageManager(manifest: UnknownRecord): string | undefined {
+  const packageManager = manifest.packageManager;
+
+  if (packageManager === undefined) {
+    return undefined;
+  }
+
+  if (
+    typeof packageManager !== "string" ||
+    packageManager.trim().length === 0 ||
+    packageManager !== packageManager.trim() ||
+    packageManager.length > 500
+  ) {
+    throw new TypeError(
+      "package.json packageManager must be a non-empty unpadded string of at most 500 characters when present",
+    );
+  }
+
+  return packageManager;
 }
 
 function readDependencyGroup(
@@ -92,16 +114,14 @@ export function normalizePackageManifest(input: unknown): NormalizedPackageManif
   }
 
   const packageName = readPackageName(input);
+  const packageManager = readPackageManager(input);
   const dependencies = PACKAGE_DEPENDENCY_GROUPS.flatMap((group) =>
     readDependencyGroup(input, group),
   );
 
-  if (packageName === undefined) {
-    return { dependencies };
-  }
-
   return {
-    packageName,
+    ...(packageName === undefined ? {} : { packageName }),
+    ...(packageManager === undefined ? {} : { packageManager }),
     dependencies,
   };
 }

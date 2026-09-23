@@ -2,7 +2,7 @@
 
 > **Status:** Accepted implementation baseline
 > **Date:** 2026-09-19
-> **Requirements:** FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013, FR-017, FR-021, DATA-001, DATA-002, DATA-003, DATA-004, DATA-005, NFR-001, NFR-002, NFR-003, NFR-004, NFR-005, SEC-001, SEC-002, GOV-007
+> **Requirements:** FR-004–FR-023, DATA-001–DATA-005, SCORE-003, NFR-001–NFR-005, SEC-001, SEC-002, GOV-007
 > **Related decisions:** ADR-0008, ADR-0009
 
 ## Package responsibility
@@ -84,6 +84,21 @@ The implementation is static and synchronous. It does not:
 This preserves **SEC-001** and **SEC-002**.
 
 
+## FR-023 resolved dependency evidence
+
+Repository analysis can normalize direct root dependency resolutions from `package-lock.json`,
+`pnpm-lock.yaml`, or `yarn.lock`. The normalized project snapshot keeps package.json declaration
+intent separate from the exact resolved version.
+
+`JS-RESOLVED-023@1` emits bounded `dependency.resolution` facts with project evidence pointing to
+the selected lockfile path. Exact manifest versions continue to work without a lockfile. Ranged
+declarations use lockfile evidence only when package name and exact declared specifier match
+deterministically. Ambiguous multiple lockfiles, package-manager mismatches, stale specifiers,
+workspace/link targets, malformed files, missing direct resolutions, and non-semver resolutions fail
+closed as limitations.
+
+Raw lockfile text never enters facts, findings, recommendations, scores, or persisted analysis state.
+
 ## FR-011 known vulnerability finding
 
 The second JavaScript/TypeScript rule slice consumes already-acquired OSV metadata through the
@@ -115,20 +130,12 @@ wrapper from the provider result and for supplying the matching `DataSource`,
 
 ### Correlation basis
 
-`JS-VULN-011@1` runs after `JS-DEP-005@1`.
+`JS-VULN-011@2` runs after `JS-DEP-005@1`.
 
-It groups dependency inventory facts by:
-
-```text
-package name + exact preserved declared specifier
-```
-
-A normalized OSV query result is usable for the current quick-manifest slice only when its package
-name and queried version exactly equal that fact basis.
-
-This intentionally means declarations such as `^4.17.20` do not match an OSV result for
-`4.17.20`. Until an explicit resolved-version source is introduced, such declarations remain
-insufficient evidence rather than being silently treated as installed versions.
+It groups dependency inventory facts by package name + preserved declared specifier, then resolves
+an exact current version through the shared effective-version boundary. Exact manifest versions are
+used directly; ranged declarations may use matching FR-023 lockfile evidence. OSV results are
+correlated only to that exact current version.
 
 ### Factual findings
 
@@ -149,7 +156,7 @@ Every emitted finding:
 - requires the bound OSV `sourceId` to resolve to one usable report-level OSV source;
 - references project dependency evidence and OSV external evidence whose `sourceId` matches that
   bound source exactly;
-- uses stable rule identity `JS-VULN-011@1`;
+- uses stable rule identity `JS-VULN-011@2`;
 - carries traceability for **FR-011**, **DATA-001**, **DATA-002**, and **DATA-003**.
 
 This is a factual detection rule. It does not set priority or create recommendations.
@@ -269,14 +276,14 @@ Partial sources remain usable for observed positive evidence but produce a rule-
 
 ### FR-006 outdated dependency finding
 
-`JS-NPM-006@1` compares exact project declarations with npm's `latest` dist-tag.
+`JS-NPM-006@2` compares exact project declarations with npm's `latest` dist-tag.
 
 Supported factual comparison requires all of the following:
 
-1. the declared specifier parses as an exact Semantic Version;
-2. the exact declared version exists in the normalized registry version records;
+1. an exact current Semantic Version from package.json or matching FR-023 lockfile evidence;
+2. that exact current version exists in normalized registry version records;
 3. a `latest` dist-tag exists;
-4. the version named by `latest` exists in the normalized registry version records;
+4. the version named by `latest` exists in normalized registry version records; and
 5. the comparison value is also a supported exact Semantic Version.
 
 The rule implements Semantic Version precedence for numeric major/minor/patch parts and prerelease
@@ -286,20 +293,18 @@ If `latest` is newer, one factual finding is emitted for the package/declaration
 The finding description explicitly identifies the declared version, comparison version, npm
 Registry basis, and whether the difference is major, minor, patch, or prerelease-to-release.
 
-If the declaration is a range/tag/URL/workspace or otherwise not an exact supported Semantic Version,
-the rule emits an insufficient-evidence limitation rather than interpreting it as an installed
-version.
-
-This slice does not resolve lockfiles and does not claim that the `latest` release is automatically a
-safe or recommended upgrade.
+A range remains insufficient evidence when no matching supported lockfile proves its exact current
+version. Tags, URLs, workspace/link targets, stale lockfile records, and unsupported resolutions are
+never silently interpreted as installed versions. The rule does not claim that npm `latest` is
+automatically a safe or recommended upgrade.
 
 ### FR-007 explicit deprecation finding
 
-`JS-NPM-007@1` implements the mandatory explicit-deprecation portion of FR-007.
+`JS-NPM-007@2` implements the mandatory explicit-deprecation portion of FR-007.
 
 The rule:
 
-- requires an exact declared Semantic Version;
+- requires an exact current Semantic Version from package.json or matching lockfile evidence;
 - requires the exact normalized registry version record;
 - treats a provider-supplied non-empty `deprecatedMessage` as factual evidence;
 - emits one factual dependency finding with the exact npm source/evidence and all matching project
@@ -343,9 +348,10 @@ all declaration evidence.
 Focused fixtures cover:
 
 - exact Semantic Version parsing and prerelease precedence;
+- package-lock/pnpm/Yarn resolved-version normalization and fail-closed ambiguity/staleness;
 - major/minor/patch/prerelease outdated differences;
 - equal/older `latest` versions;
-- ranges/tags as insufficient exact-version evidence;
+- ranges without matching lockfile evidence remaining insufficient;
 - missing declared/comparison registry records;
 - duplicate dependency groups;
 - explicit deprecation and non-deprecated exact versions;
@@ -398,7 +404,7 @@ name/category inference.
 ## Static repository project snapshot
 
 `JavaScriptProjectSnapshot` extends the normalized package manifest with optional
-`JavaScriptStaticProjectFile[]`.
+`JavaScriptStaticProjectFile[]` and a package-manager-neutral resolved-dependency snapshot.
 
 `createJavaScriptProjectSnapshot` is a pure normalizer for files that have already been acquired. It:
 
@@ -532,7 +538,7 @@ No analyzed source or configuration is executed.
 
 ## FR-014 migration opportunities
 
-`JS-MIGRATION-014@1` consumes completed dependency-inventory facts plus source-bound npm Registry
+`JS-MIGRATION-014@2` consumes completed dependency-inventory facts plus source-bound npm Registry
 metadata.
 
 The first supported migration path is intentionally narrow: an exact declared semantic version whose
@@ -580,7 +586,7 @@ priority. Each priority contains explicit factors and finding evidence reference
 
 ## FR-018–FR-021 scoring coverage
 
-`JS-COVERAGE-018@1` is a fact rule that determines whether the generic scorer has sufficient
+`JS-COVERAGE-018@2` is a fact rule that determines whether the generic scorer has sufficient
 JavaScript/TypeScript evidence for a category.
 
 Dependency coverage requires complete project declaration evidence, complete source/config/script

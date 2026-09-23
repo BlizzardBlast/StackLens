@@ -21,7 +21,8 @@ The first FR-014 migration rule is `JS-MIGRATION-014@1`.
 
 It identifies a migration-review opportunity only when:
 
-- the project declares an exact supported semantic version;
+- the project has a supported exact current semantic version, either directly declared or resolved
+  from a matching supported root lockfile;
 - source-bound npm Registry metadata is available;
 - npm's normalized `latest` dist-tag resolves to a supported exact version record; and
 - the current and target versions cross a semantic major-version boundary.
@@ -65,6 +66,22 @@ Recommendations:
   FR-014 major-version migration finding, avoiding duplicate actions for one underlying update;
 - do not execute, install, migrate, or modify analyzed projects.
 
+### Resolved dependency evidence
+
+`JS-RESOLVED-023@1` normalizes direct dependency resolutions from supported committed root
+lockfiles: `package-lock.json`, `pnpm-lock.yaml`, and `yarn.lock`.
+
+`package.json` remains declaration intent. Lockfile evidence is accepted only when StackLens can
+match the dependency name and declared specifier deterministically. A resolved version may replace
+an exact-manifest-version prerequisite for version-specific rules, but it does not replace the
+manifest dependency group or prove runtime installation/execution.
+
+When multiple lockfiles are committed, a recognized `packageManager` field selects the matching
+lockfile. Without a recognized hint, StackLens does not guess. Stale specifiers, malformed formats,
+workspace/link targets, missing direct resolutions, and non-semver resolutions remain limitations.
+
+This normalized boundary keeps package-manager syntax out of npm/OSV/finding/scoring rules.
+
 ### Scoring coverage facts
 
 `JS-COVERAGE-018@1` establishes whether category scoring is supported by the current normalized evidence.
@@ -72,6 +89,8 @@ Recommendations:
 Dependency scoring coverage requires:
 
 - supported dependency declarations and project evidence;
+- a supported exact current version for each declaration, from either an exact package.json
+  specifier or matching normalized lockfile evidence;
 - complete bounded source/configuration/script usage coverage;
 - usable complete npm Registry metadata for each package;
 - a supported `latest` dist-tag plus matching version record; and
@@ -79,7 +98,8 @@ Dependency scoring coverage requires:
 
 Security scoring coverage requires:
 
-- exact semantic-version declarations;
+- a supported exact current version for each declaration, from either package.json or matching
+  normalized lockfile evidence;
 - one complete bound OSV source;
 - complete exact-version OSV query results for every scored dependency; and
 - source-bound query provenance evidence for every exact-version query.
@@ -125,6 +145,8 @@ Score contributions reference the triggering finding evidence and the versioned 
 - every numeric deduction is deterministic and explainable;
 - zero-match OSV observations have explicit positive provenance;
 - missing/unsupported evidence yields N/A instead of a silent penalty;
+- common semver ranges no longer have to be rewritten as exact package.json versions when a matching
+  supported lockfile proves the exact current version;
 - the score version makes future policy changes identifiable under SCORE-004.
 
 ### Negative

@@ -42,6 +42,7 @@ import {
   isCanonicalRepositoryPath,
   isIgnoredRepositoryPath,
   isInitialSupportedSnapshotPath,
+  isSupportedDependencyLockfilePath,
   isSupportedJavaScriptSourcePath,
   isUnsupportedSourceUsagePath,
 } from "./selection.js";
@@ -66,7 +67,7 @@ import { validateGitHubRef, validateObservedAt, validatePositiveInteger } from "
 const CONTRACT_REFERENCE_MAX_LENGTH = 1_000;
 
 interface CandidateEntry extends TreeEntry {
-  readonly kind: "manifest" | "config" | "source";
+  readonly kind: "manifest" | "lockfile" | "config" | "source";
 }
 
 function compareCodeUnits(left: string, right: string): number {
@@ -78,7 +79,11 @@ function candidateRank(kind: CandidateEntry["kind"]): number {
     return 0;
   }
 
-  return kind === "config" ? 1 : 2;
+  if (kind === "lockfile") {
+    return 1;
+  }
+
+  return kind === "config" ? 2 : 3;
 }
 
 function candidateOrder(left: CandidateEntry, right: CandidateEntry): number {
@@ -91,7 +96,12 @@ function safeFailureReference(reference: string, fallback: string): string {
 }
 
 function usageEvidencePathWasAffected(paths: readonly string[]): boolean {
-  return paths.some((path) => path !== "package.json" && isInitialSupportedSnapshotPath(path));
+  return paths.some(
+    (path) =>
+      path !== "package.json" &&
+      !isSupportedDependencyLockfilePath(path) &&
+      isInitialSupportedSnapshotPath(path),
+  );
 }
 
 function hasControlCharacter(value: string): boolean {
@@ -394,9 +404,11 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
         kind:
           entry.path === "package.json"
             ? "manifest"
-            : isSupportedJavaScriptSourcePath(entry.path)
-              ? "source"
-              : "config",
+            : isSupportedDependencyLockfilePath(entry.path)
+              ? "lockfile"
+              : isSupportedJavaScriptSourcePath(entry.path)
+                ? "source"
+                : "config",
       });
     }
 

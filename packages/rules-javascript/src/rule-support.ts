@@ -1,6 +1,12 @@
 import type { AnalysisFact, AnalysisLimitation } from "@stacklens/contracts";
 
+import {
+  resolvedDependency,
+  resolvedDependencyEvidenceId,
+  type JavaScriptResolvedDependencySnapshot,
+} from "./lockfile.js";
 import type { NormalizedDependencyDeclaration, NormalizedPackageManifest } from "./manifest.js";
+import { parseExactSemanticVersion } from "./semver.js";
 import { stableHash } from "./stable-id.js";
 
 export interface DependencyFactBasis {
@@ -13,6 +19,16 @@ export interface DependencyDeclarationBasis {
   readonly packageName: string;
   readonly declarations: readonly NormalizedDependencyDeclaration[];
 }
+
+export interface EffectiveDependencyVersion {
+  readonly version: string;
+  readonly source: "manifest" | "lockfile";
+  readonly evidenceIds: readonly string[];
+}
+
+type ProjectWithResolvedDependencies = NormalizedPackageManifest & {
+  readonly resolvedDependencies?: JavaScriptResolvedDependencySnapshot;
+};
 
 export function compareCodeUnits(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
@@ -36,6 +52,33 @@ export function truncate(value: string, maxLength: number): string {
 
 export function dependencyKey(packageName: string, declaredSpecifier: string): string {
   return JSON.stringify([packageName, declaredSpecifier]);
+}
+
+export function effectiveDependencyVersion(
+  project: ProjectWithResolvedDependencies,
+  packageName: string,
+  declaredSpecifier: string,
+): EffectiveDependencyVersion | undefined {
+  if (parseExactSemanticVersion(declaredSpecifier) !== undefined) {
+    return {
+      version: declaredSpecifier,
+      source: "manifest",
+      evidenceIds: [],
+    };
+  }
+
+  const snapshot = project.resolvedDependencies;
+  const resolution = resolvedDependency(snapshot, packageName, declaredSpecifier);
+
+  if (snapshot === undefined || resolution === undefined) {
+    return undefined;
+  }
+
+  return {
+    version: resolution.version,
+    source: "lockfile",
+    evidenceIds: [resolvedDependencyEvidenceId(snapshot, resolution)],
+  };
 }
 
 export function dependencyRuleLimitationId(ruleId: string, code: string, identity: string): string {
