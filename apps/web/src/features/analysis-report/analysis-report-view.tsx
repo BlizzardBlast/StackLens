@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import type {
+  AnalysisFact,
   AnalysisReport,
   Evidence,
   Finding,
@@ -46,6 +47,123 @@ function ScoreCard({ label, score }: Readonly<ScoreCardProps>) {
       {score.status === "insufficient_evidence" ? (
         <p className="text-xs text-muted-foreground">Insufficient evidence for a numeric score.</p>
       ) : null}
+    </section>
+  );
+}
+
+type DependencyInventoryFact = AnalysisFact & {
+  readonly details: NonNullable<AnalysisFact["details"]>;
+};
+
+const dependencyGroupLabels: Readonly<Record<string, string>> = {
+  dependencies: "Runtime dependencies",
+  devDependencies: "Development dependencies",
+  peerDependencies: "Peer dependencies",
+  optionalDependencies: "Optional dependencies",
+};
+
+const dependencyGroupOrder = [
+  "dependencies",
+  "devDependencies",
+  "peerDependencies",
+  "optionalDependencies",
+] as const;
+
+function isDependencyInventoryFact(fact: AnalysisFact): fact is DependencyInventoryFact {
+  return fact.type === "dependency.inventory" && fact.details?.kind === "dependency_inventory";
+}
+
+function ManifestInsights({ report }: Readonly<{ report: AnalysisReport }>) {
+  const dependencyFacts = report.facts.filter(isDependencyInventoryFact);
+  const toolFacts = report.facts.filter((fact) => fact.type.startsWith("project.tool."));
+  const groups = dependencyGroupOrder
+    .map((group) => ({
+      group,
+      facts: dependencyFacts.filter((fact) => fact.details.dependencyGroup === group),
+    }))
+    .filter(({ facts }) => facts.length > 0);
+
+  return (
+    <section className="grid gap-4" aria-labelledby="manifest-insights-title">
+      <div>
+        <p className="text-xs font-semibold tracking-wide text-primary uppercase">
+          Manifest insights
+        </p>
+        <h2 id="manifest-insights-title" className="mt-1 text-xl font-semibold tracking-tight">
+          Verified from package.json
+        </h2>
+        <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">
+          These are deterministic analyzer facts from the submitted manifest. They remain useful even
+          when repository-only evidence is unavailable for a numeric health score.
+        </p>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <article className="rounded-xl border bg-card p-4">
+          <strong className="text-2xl tabular-nums">{dependencyFacts.length}</strong>
+          <p className="mt-1 text-sm font-medium">Declared dependency entries</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Dependency groups remain distinct when the same package is declared more than once.
+          </p>
+        </article>
+        <article className="rounded-xl border bg-card p-4">
+          <strong className="text-2xl tabular-nums">{toolFacts.length}</strong>
+          <p className="mt-1 text-sm font-medium">Supported frameworks and tools detected</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Detection uses exact supported package identities rather than package-name guessing.
+          </p>
+        </article>
+      </div>
+
+      {toolFacts.length === 0 ? (
+        <p className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
+          No supported framework or tool signatures were detected in the declared dependencies.
+        </p>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {toolFacts.map((fact) => (
+            <article key={fact.id} className="rounded-xl border bg-card p-4">
+              <h3 className="font-semibold">{fact.subject.name}</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{fact.statement}</p>
+            </article>
+          ))}
+        </div>
+      )}
+
+      {dependencyFacts.length === 0 ? (
+        <p className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
+          No supported dependency declarations were present in the submitted manifest.
+        </p>
+      ) : (
+        <details className="rounded-xl border bg-card">
+          <summary className="cursor-pointer px-4 py-3 text-sm font-semibold outline-none focus-visible:ring-3 focus-visible:ring-ring/35">
+            View declared dependencies ({dependencyFacts.length})
+          </summary>
+          <div className="grid gap-5 border-t p-4">
+            {groups.map(({ group, facts }) => (
+              <section key={group} className="grid gap-2" aria-label={dependencyGroupLabels[group]}>
+                <div className="flex items-baseline justify-between gap-3">
+                  <h3 className="text-sm font-semibold">{dependencyGroupLabels[group]}</h3>
+                  <span className="text-xs tabular-nums text-muted-foreground">{facts.length}</span>
+                </div>
+                <ul className="grid gap-2 sm:grid-cols-2">
+                  {facts.map((fact) => (
+                    <li
+                      key={fact.id}
+                      className="flex min-w-0 items-baseline justify-between gap-3 rounded-lg border bg-background px-3 py-2"
+                    >
+                      <span className="truncate text-sm font-medium">{fact.subject.name}</span>
+                      <code className="shrink-0 text-xs text-muted-foreground">
+                        {fact.details.declaredSpecifier}
+                      </code>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        </details>
+      )}
     </section>
   );
 }
@@ -229,6 +347,8 @@ export function AnalysisReportView({
         </AnalysisLimitation>
       ) : null}
 
+      {isManifestAnalysis ? <ManifestInsights report={report} /> : null}
+
       <section className="grid gap-4" aria-labelledby="score-summary-title">
         <div className="grid gap-3 rounded-xl border bg-card p-5">
           <div className="flex flex-wrap items-baseline justify-between gap-4">
@@ -242,6 +362,13 @@ export function AnalysisReportView({
             </strong>
           </div>
           <EvidenceCoverage percent={report.scores.overall.evidenceCoverage} />
+          {isManifestAnalysis ? (
+            <p className="text-sm text-muted-foreground">
+              For quick analysis, this percentage measures evidence available to the numeric scoring
+              policy—not how much of package.json StackLens parsed. The manifest insights above remain
+              analyzer-backed observations.
+            </p>
+          ) : null}
           {report.scores.overall.status === "insufficient_evidence" ? (
             <p className="text-sm text-muted-foreground">
               Overall score is unavailable because the report has insufficient supported evidence.
