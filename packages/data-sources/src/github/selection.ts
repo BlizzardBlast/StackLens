@@ -26,6 +26,8 @@ const CONFIG_PREFIXES = [
   "webpack.config.",
 ] as const;
 
+const SUPPORTED_LOCKFILES = new Set(["package-lock.json", "pnpm-lock.yaml", "yarn.lock"]);
+
 const SOURCE_EXTENSIONS = [".js", ".jsx", ".cjs", ".mjs", ".ts", ".tsx", ".cts", ".mts"] as const;
 const UNSUPPORTED_SOURCE_USAGE_EXTENSIONS = [".astro", ".mdx", ".svelte", ".vue"] as const;
 
@@ -65,8 +67,16 @@ export function isIgnoredRepositoryPath(path: string): boolean {
   return segments.slice(0, -1).some((segment) => IGNORED_DIRECTORY_NAMES.has(segment));
 }
 
+export function isSupportedDependencyLockfilePath(path: string): boolean {
+  return SUPPORTED_LOCKFILES.has(path);
+}
+
 export function isInitialSupportedSnapshotPath(path: string): boolean {
-  if (path === "package.json" || isSupportedJavaScriptSourcePath(path)) {
+  if (
+    path === "package.json" ||
+    isSupportedDependencyLockfilePath(path) ||
+    isSupportedJavaScriptSourcePath(path)
+  ) {
     return true;
   }
 
