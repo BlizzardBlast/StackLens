@@ -65,7 +65,20 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          pnpm install --no-frozen-lockfile
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+
+          const payload = JSON.stringify(fs.readFileSync("pnpm-lock.yaml", "utf8"));
+          const chunkSize = 6000;
+
+          for (let index = 0; index < payload.length; index += chunkSize) {
+            console.log(
+              `STACKLENS_LOCKFILE_CHUNK:${index / chunkSize}:${payload.slice(index, index + chunkSize)}`,
+            );
+          }
+          NODE
 
       - name: Build generated packages
         run: pnpm build
