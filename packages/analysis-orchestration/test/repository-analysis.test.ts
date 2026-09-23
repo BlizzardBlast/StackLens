@@ -526,7 +526,7 @@ importers:
     expect(AnalysisReportSchema.safeParse(result.report).success).toBe(true);
   });
 
-  it("queries OSV only for exact declared versions and exposes a skipped state when none exist", async () => {
+  it("skips OSV when no exact current version is provable", async () => {
     const manifest = JSON.stringify({
       dependencies: {
         react: "^18.2.0",
@@ -572,7 +572,7 @@ importers:
     expect(result.report.scores.categories.security.status).toBe("insufficient_evidence");
     expect(
       result.report.limitations.some((limitation) =>
-        limitation.message.includes("not an exact supported semantic version"),
+        limitation.message.includes("no supported exact current version"),
       ),
     ).toBe(true);
   });
