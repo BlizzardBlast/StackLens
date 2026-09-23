@@ -298,7 +298,7 @@ describe("npmRegistryHealthFactRule [FR-010, DATA-001, DATA-002, NFR-003]", () =
   });
 });
 
-describe("outdatedDependencyRule [FR-006, DATA-001, DATA-002, DATA-003, NFR-003]", () => {
+describe("outdatedDependencyRule [FR-006, FR-023, DATA-001, DATA-002, DATA-003, NFR-003]", () => {
   it("emits one factual major-version finding for duplicate declarations of the same exact version", () => {
     const fixture = createRuleContext({
       manifest: {
@@ -321,9 +321,9 @@ describe("outdatedDependencyRule [FR-006, DATA-001, DATA-002, DATA-003, NFR-003]
       classification: "fact",
       rule: {
         id: "JS-NPM-006",
-        version: "1",
+        version: "2",
       },
-      requirementIds: ["FR-006", "DATA-001", "DATA-002", "DATA-003"],
+      requirementIds: ["FR-006", "FR-023", "DATA-001", "DATA-002", "DATA-003"],
       limitationIds: [],
     });
     expect(result.findings?.[0]?.factIds).toHaveLength(2);
@@ -417,7 +417,7 @@ describe("outdatedDependencyRule [FR-006, DATA-001, DATA-002, DATA-003, NFR-003]
           kind: "insufficient_evidence",
           sourceIds: [],
           ruleIds: ["JS-NPM-006"],
-          message: expect.stringContaining("resolved exact version"),
+          message: expect.stringContaining("exact current version"),
         }),
       ]);
     }
@@ -488,7 +488,7 @@ describe("outdatedDependencyRule [FR-006, DATA-001, DATA-002, DATA-003, NFR-003]
     expect(outdatedDependencyRule.evaluate(missingDeclaredRecord.context).findings).toEqual([]);
     expect(
       outdatedDependencyRule.evaluate(missingDeclaredRecord.context).limitations?.[0]?.message,
-    ).toContain("does not contain declared exact version");
+    ).toContain("does not contain resolved current version");
 
     const missingComparisonRecord = createRuleContext({
       metadata: createMetadata(
@@ -533,7 +533,7 @@ describe("outdatedDependencyRule [FR-006, DATA-001, DATA-002, DATA-003, NFR-003]
   });
 });
 
-describe("deprecatedDependencyRule [FR-007, DATA-001, DATA-002, DATA-003, NFR-003]", () => {
+describe("deprecatedDependencyRule [FR-007, FR-023, DATA-001, DATA-002, DATA-003, NFR-003]", () => {
   it("emits a factual finding for explicit version-specific npm deprecation", () => {
     const fixture = createRuleContext({});
     const result = deprecatedDependencyRule.evaluate(fixture.context);
@@ -546,9 +546,9 @@ describe("deprecatedDependencyRule [FR-007, DATA-001, DATA-002, DATA-003, NFR-00
       classification: "fact",
       rule: {
         id: "JS-NPM-007",
-        version: "1",
+        version: "2",
       },
-      requirementIds: ["FR-007", "DATA-001", "DATA-002", "DATA-003"],
+      requirementIds: ["FR-007", "FR-023", "DATA-001", "DATA-002", "DATA-003"],
       limitationIds: [],
     });
     expect(result.findings?.[0]?.description).toContain("Use 2.x instead.");
@@ -604,7 +604,7 @@ describe("deprecatedDependencyRule [FR-007, DATA-001, DATA-002, DATA-003, NFR-00
       expect.objectContaining({
         kind: "external_data",
         sourceIds: [sourceId],
-        message: expect.stringContaining("does not contain declared exact version"),
+        message: expect.stringContaining("does not contain resolved current version"),
       }),
     ]);
   });
