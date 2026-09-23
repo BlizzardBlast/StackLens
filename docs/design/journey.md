@@ -1445,3 +1445,18 @@ into the report, and no analyzed scripts/configuration are executed.
 **Traceability:** PRD-003, PRD-004, FR-001, FR-002, FR-005, FR-008, FR-012, FR-015, FR-016,
 FR-017, FR-021, FR-022, SCORE-003, NFR-001, NFR-004, NFR-006, NFR-007, SEC-001, SEC-003,
 GOV-002, GOV-006, GOV-007.
+
+## 2026-09-23 — Step 56: Restore visual separation in quick input selection
+
+Manual browser review exposed a small layout issue in the quick-analysis input selector: the
+`fieldset` used grid gap for its children, but browser handling of `legend` means that gap does not
+reliably create visible separation between **Choose your input** and the two input-mode cards.
+
+The legend now owns an explicit bottom margin, keeping the semantic `fieldset`/`legend` structure
+while restoring the intended visual rhythm without changing spacing between the cards themselves.
+A focused component test preserves the spacing class so the regression is visible in the normal
+quality gate.
+
+No analysis, validation, API, or scoring behavior changes.
+
+**Traceability:** NFR-006, NFR-007, GOV-002, GOV-007.
