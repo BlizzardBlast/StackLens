@@ -1,3 +1,4 @@
+import type { JavaScriptResolvedDependencySnapshot } from "./lockfile.js";
 import type { NormalizedPackageManifest } from "./manifest.js";
 import type { JavaScriptSourceUsageSnapshot } from "./source-usage.js";
 
@@ -15,11 +16,13 @@ export interface JavaScriptProjectSnapshot extends NormalizedPackageManifest {
   readonly files?: readonly JavaScriptStaticProjectFile[];
   readonly scripts?: readonly JavaScriptPackageScript[];
   readonly sourceUsage?: JavaScriptSourceUsageSnapshot;
+  readonly resolvedDependencies?: JavaScriptResolvedDependencySnapshot;
 }
 
 export interface JavaScriptProjectSnapshotOptions {
   readonly scripts?: readonly JavaScriptPackageScript[];
   readonly sourceUsage?: JavaScriptSourceUsageSnapshot;
+  readonly resolvedDependencies?: JavaScriptResolvedDependencySnapshot;
 }
 
 function compareCodeUnits(left: string, right: string): number {
@@ -149,9 +152,13 @@ export function createJavaScriptProjectSnapshot(
 
   return {
     ...(manifest.packageName === undefined ? {} : { packageName: manifest.packageName }),
+    ...(manifest.packageManager === undefined ? {} : { packageManager: manifest.packageManager }),
     dependencies: manifest.dependencies.map((dependency) => ({ ...dependency })),
     files: normalizedFiles,
     ...(normalizedScripts.length === 0 ? {} : { scripts: normalizedScripts }),
     ...(options.sourceUsage === undefined ? {} : { sourceUsage: options.sourceUsage }),
+    ...(options.resolvedDependencies === undefined
+      ? {}
+      : { resolvedDependencies: options.resolvedDependencies }),
   };
 }
