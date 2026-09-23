@@ -83,6 +83,12 @@ StackLens owns its visual language. shadcn/ui is source scaffolding for generic 
 - Do not hand-build dialogs, menus, popovers, selects, comboboxes, tooltips, or tabs when the accepted primitive can satisfy the requirement.
 - Generic reusable primitives belong in `packages/ui/src/components/`.
 - StackLens-specific semantics belong in `packages/ui/src/domain/`.
+- Root Oxlint loads `@shadcn/lint` as the design-system policy plugin. Keep
+  `shadcn/no-raw-colors` green; product UI must use StackLens semantic/domain tokens rather than
+  raw Tailwind palette colors.
+- Add additional `@shadcn/lint` rules incrementally only after measuring the current codebase and
+  defining any intentional component contracts/exceptions. Do not globally suppress design-system
+  rules to make CI pass.
 
 ## Design tokens
 
@@ -148,7 +154,11 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
 - Provider-backed JS rules consume normalized analyzer metadata; do not add a `rules-javascript -> data-sources` dependency.
 - Bind provider-backed analyzer metadata to the exact report-level `DataSource.id` that produced it,
   and require external evidence used by a rule to reference that same source.
-- The FR-006/FR-007 npm rules may use version-specific provider metadata only when the project has an exact supported Semantic Version declaration and the matching registry version record. Declared ranges/tags/URLs/workspace specifiers remain insufficient evidence until a resolved-version source exists.
+- The FR-006/FR-007 npm rules may use version-specific provider metadata only when StackLens can
+  establish an exact current Semantic Version from either an exact package.json declaration or
+  matching FR-023 supported root-lockfile evidence, and the corresponding registry version record
+  exists. Ranges without matching lockfile evidence, tags, URLs, workspace/link targets, stale
+  lockfiles, and unsupported resolutions remain insufficient evidence.
 - FR-006 compares supported exact declarations with npm's normalized `latest` dist-tag and must identify major/minor/patch/prerelease difference without implying that the upgrade is automatically recommended.
 - Explicit npm deprecation is factual. Do not create an "unmaintained" heuristic without an accepted deterministic basis, explicit confidence, and insufficient-evidence behavior.
 - FR-010 health facts must remain neutral source-backed signals unless a separate accepted rule defines a combined interpretation.
@@ -160,7 +170,9 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
 - FR-009 may use supported ESM imports/re-exports, static-string require/import(), explicit configuration/plugin conventions, and bounded package-script conventions as positive usage evidence. Never execute any of those inputs.
 - Missing source references are usable for a potentially-unnecessary heuristic only when acquisition and parser coverage are complete. Tree/file/resource truncation, parse failures, unsupported dynamic references, or unavailable source evidence must suppress absence-based findings and remain explicit limitations.
 - Potentially-unnecessary findings must remain heuristic and must not imply that removal is safe. Peer-only declarations are not sufficient candidates for non-use findings.
-- The FR-011 rule may correlate only exact package/version OSV query evidence with dependency inventory facts. Declared ranges/tags remain insufficient evidence until a resolved-version source exists.
+- The FR-011 rule may correlate only exact package/version OSV query evidence with dependency
+  inventory facts. The exact current version may come directly from package.json or matching FR-023
+  lockfile evidence; ranges without such evidence and unsupported targets remain insufficient.
 - Withdrawn advisories are not active findings, incomplete OSV queries remain limited evidence, and complete empty queries never become a "secure" fact.
 - Reuse `@stacklens/contracts` structured fact details rather than encoding required machine-readable
   dependency inventory only in prose.
@@ -184,10 +196,15 @@ External provider integration lives in `packages/data-sources`.
 - Provider/network/schema failures must become typed partial failures, never false facts or silent empty data.
 - Do not include raw provider bodies or low-level network error details in public failure messages/logging.
 - Publisher-controlled URLs such as package repository/homepage values are metadata only until separately validated for presentation under **SEC-008**.
-- OSV npm queries require exact semantic version evidence. Never send a declared range/tag such as `^1.2.3` or `latest` as though it were an installed version.
+- OSV npm queries require exact semantic-version evidence. Exact package.json versions are valid;
+  ranged declarations may query only the exact version deterministically resolved from matching
+  FR-023 lockfile evidence. Never send a declared range/tag such as `^1.2.3` or `latest`
+  directly as though it were installed.
 - Preserve OSV query completeness: incomplete pagination/detail acquisition is partial evidence, and an empty match set is never proof that a package is secure.
 - Public GitHub acquisition must validate github.com repository URLs, resolve an immutable commit before file reads, use fixed api.github.com endpoints, disable redirects, and read selected files by immutable blob SHA.
-- GitHub snapshot acquisition must enforce request/file-count/per-file/aggregate byte bounds. Root package.json is prioritized before optional config files.
+- GitHub snapshot acquisition must enforce request/file-count/per-file/aggregate byte bounds. Root
+  package.json is prioritized first, supported root lockfiles immediately after it, then optional
+  configuration/source files. Lockfiles do not count as source-usage coverage.
 - Never follow repository symlinks, traverse submodules, dereference Git LFS, or fetch generated/vendor analysis files merely because their names match supported configs.
 - Keep GitHub full file bodies transient: do not copy source/config content into provider evidence, limitations, partial failures, or logs. Repository rules consume the already-acquired snapshot later.
 - PR tests use synthetic/recorded provider responses; normal PR correctness must not depend on live external services.
@@ -252,7 +269,9 @@ Shared hosted-analysis composition lives in `packages/analysis-orchestration`.
 - Keep production analyzer composition here rather than reconstructing rule/prioritizer/recommendation/scorer sets in Fastify routes or Worker handlers.
 - Preserve unavailable/partial providers as report sources/partial failures and let rules/scoring emit limitations; never translate missing data into clean conclusions.
 - Repository manifest/source bodies are transient construction input only. Do not place them in progress events, application errors, logs, persistence payloads, or returned reports.
-- OSV orchestration may query only deterministic exact semantic-version declarations; do not reinterpret ranges/tags as installed versions.
+- OSV orchestration may query only deterministic exact current semantic versions established from
+  package.json or matching FR-023 lockfile evidence; do not reinterpret ranges/tags themselves as
+  installed versions.
 - Bound metadata acquisition deterministically. Resource-limit truncation must become an explicit limitation, never negative evidence.
 - Progress events expose phase/count/failure state only. Durable Graphile Worker/PostgreSQL job state is implemented outside this package through `@stacklens/repository-jobs`, `@stacklens/persistence`, and `apps/worker`.
 
@@ -295,7 +314,10 @@ Do not introduce an execution path that violates this boundary.
 - Analysis rules must be independently testable.
 - Heuristics must cover both positive findings and insufficient-evidence cases.
 - UI accessibility semantics must not rely on color alone.
-- Fix lint/type/test failures at the source instead of suppressing them globally unless the rule is genuinely inappropriate for the repository.
+- Fix lint/type/test failures at the source instead of suppressing them globally unless the rule is
+  genuinely inappropriate for the repository.
+- `pnpm lint` includes `@shadcn/lint` through Oxlint. Treat design-system diagnostics as normal
+  quality failures and prefer semantic tokens/component APIs over local visual overrides.
 
 ## Documentation completion gate
 

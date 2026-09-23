@@ -20,6 +20,7 @@
     "ui:info": "pnpm --filter @stacklens/ui exec shadcn info --json"
   },
   "devDependencies": {
+    "@shadcn/lint": "0.2.0",
     "oxfmt": "^0.68.0",
     "oxlint": "^1.83.0",
     "oxlint-tsgolint": "7.0.2001",
