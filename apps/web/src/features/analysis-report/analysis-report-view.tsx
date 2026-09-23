@@ -93,8 +93,8 @@ function ManifestInsights({ report }: Readonly<{ report: AnalysisReport }>) {
           Verified from package.json
         </h2>
         <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">
-          These are deterministic analyzer facts from the submitted manifest. They remain useful even
-          when repository-only evidence is unavailable for a numeric health score.
+          These are deterministic analyzer facts from the submitted manifest. They remain useful
+          even when repository-only evidence is unavailable for a numeric health score.
         </p>
       </div>
 
@@ -144,7 +144,7 @@ function ManifestInsights({ report }: Readonly<{ report: AnalysisReport }>) {
               <section key={group} className="grid gap-2" aria-label={dependencyGroupLabels[group]}>
                 <div className="flex items-baseline justify-between gap-3">
                   <h3 className="text-sm font-semibold">{dependencyGroupLabels[group]}</h3>
-                  <span className="text-xs tabular-nums text-muted-foreground">{facts.length}</span>
+                  <span className="text-xs text-muted-foreground tabular-nums">{facts.length}</span>
                 </div>
                 <ul className="grid gap-2 sm:grid-cols-2">
                   {facts.map((fact) => (
@@ -365,8 +365,8 @@ export function AnalysisReportView({
           {isManifestAnalysis ? (
             <p className="text-sm text-muted-foreground">
               For quick analysis, this percentage measures evidence available to the numeric scoring
-              policy—not how much of package.json StackLens parsed. The manifest insights above remain
-              analyzer-backed observations.
+              policy—not how much of package.json StackLens parsed. The manifest insights above
+              remain analyzer-backed observations.
             </p>
           ) : null}
           {report.scores.overall.status === "insufficient_evidence" ? (
