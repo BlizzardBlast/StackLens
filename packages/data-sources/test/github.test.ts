@@ -192,9 +192,7 @@ describe("parsePublicGitHubRepositoryUrl [FR-003, FR-004, SEC-002]", () => {
   });
 });
 
-describe(
-  "GitHubRepositoryAdapter [FR-003, FR-004, FR-013, FR-023, DATA-001, DATA-002, DATA-006]",
-  () => {
+describe("GitHubRepositoryAdapter [FR-003, FR-004, FR-013, FR-023, DATA-001, DATA-002, DATA-006]", () => {
   it("resolves the default branch to an immutable commit and acquires only supported static files", async () => {
     const packageJson = JSON.stringify({
       name: "fixture",
@@ -366,10 +364,7 @@ importers:
       githubBlobApiUrl(owner, name, lockfileSha),
       githubBlobApiUrl(owner, name, sourceSha),
     ]);
-    expect(result.data.files.map((file) => file.path)).toEqual([
-      "pnpm-lock.yaml",
-      "src/index.ts",
-    ]);
+    expect(result.data.files.map((file) => file.path)).toEqual(["pnpm-lock.yaml", "src/index.ts"]);
     expect(result.data.sourceCoverage).toEqual({
       status: "complete",
       candidateFiles: 1,
