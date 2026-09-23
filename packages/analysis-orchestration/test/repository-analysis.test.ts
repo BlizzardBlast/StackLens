@@ -236,9 +236,7 @@ const baseCommand = {
   repositoryUrl: "https://github.com/acme/demo",
 } as const;
 
-describe(
-  "analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-009]",
-  () => {
+describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-009]", () => {
   it("composes repository, npm, OSV, production rules, recommendations, and scoring", async () => {
     const secretSourceText =
       'import legacy from "legacy-package"; import React from "react"; const TOP_SECRET_SOURCE_VALUE = "never-retain"; export const value = [legacy, React.version, TOP_SECRET_SOURCE_VALUE];';
