@@ -11,7 +11,8 @@
 
 This document is the operational handover for the next StackLens implementation session.
 
-The 2026-09-23 [production visual refinement](design/visual-refinement.md) records the updated
+The 2026-09-23 [production visual refinement](design/visual-refinement.md), delivered in
+[PR #37](https://github.com/BlizzardBlast/StackLens/pull/37), records the updated
 palette, free self-hosted IBM Plex pairing, system themes, responsive input layouts, and motion
 checks. Its screenshot evidence is committed with the review. The full local quality gate passed;
 five database-gated tests require CI's PostgreSQL service. Live-provider/manual release acceptance

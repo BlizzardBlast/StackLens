@@ -1534,6 +1534,8 @@ declarations.
 
 ## 2026-09-23 — Step 59: Refine the production palette, typography, and visual rhythm
 
+**Pull request:** [#37](https://github.com/BlizzardBlast/StackLens/pull/37)
+
 A design review found that the cool neutral baseline suited StackLens's diagnostic purpose, but
 repeated pale cards, long headlines, system-font fallbacks, and implementation-heavy instructions
 made the input pages feel generic. The production design now pairs steel reading surfaces and
