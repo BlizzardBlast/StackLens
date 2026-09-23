@@ -184,6 +184,37 @@ All npm-backed rules are conservative:
 
 Absence of a finding is not promoted into a generic package-health conclusion.
 
+## Resolved dependency evidence
+
+`JS-RESOLVED-023@1` implements **FR-023** for repository analysis.
+
+The package normalizes direct root dependency resolutions from:
+
+- `package-lock.json`;
+- `pnpm-lock.yaml`; and
+- `yarn.lock`.
+
+The normalized snapshot is package-manager-neutral: package name, preserved package.json specifier,
+exact resolved semantic version, selected lockfile path/package manager, and bounded issues.
+Downstream npm/OSV/finding/scoring rules never parse package-manager syntax.
+
+`package.json` remains declaration intent. Exact manifest versions continue to work without a
+lockfile. Ranges may use a matching lockfile resolution only when the package name and exact
+package.json specifier can be matched deterministically. Multiple ambiguous lockfiles, stale
+specifiers, package-manager mismatches, malformed content, missing direct entries, workspace/link
+targets, and unsupported non-semver versions remain limitations instead of guessed resolutions.
+
+The version-sensitive production rules now use the same effective-current-version helper:
+
+- `JS-NPM-006@2` outdated dependency;
+- `JS-NPM-007@2` explicit deprecation;
+- `JS-VULN-011@2` known vulnerability;
+- `JS-MIGRATION-014@2` migration opportunity;
+- `JS-COVERAGE-018@2` score coverage.
+
+Every lockfile-derived conclusion carries project evidence pointing to the lockfile path. Raw
+lockfile text is not copied into report evidence.
+
 ## Dependency overlap
 
 `JS-OVERLAP-008@1` implements **FR-008** as a heuristic finding rule over dependency-inventory
@@ -305,10 +336,11 @@ execute package scripts, import project configuration, or perform provider/netwo
 
 Milestone I adds the first production policy slice:
 
-- `JS-MIGRATION-014@1` — heuristic major-version migration opportunity from exact project/npm evidence;
+- `JS-MIGRATION-014@2` — heuristic major-version migration opportunity from exact
+  manifest/lockfile + npm evidence;
 - `JS-PRIORITY-016@1` — deterministic production priority policy;
 - `JS-RECOMMEND-015@1` — evidence-backed actions from finalized supported findings;
-- `JS-COVERAGE-018@1` — category evidence-coverage facts/limitations for scoring.
+- `JS-COVERAGE-018@2` — category evidence-coverage facts/limitations for scoring.
 
 The package still does not calculate numeric score values; that belongs to `@stacklens/scoring`.
 Missing evidence never becomes a negative score. Migration/recommendation rules do not modify the
