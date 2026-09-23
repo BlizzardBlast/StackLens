@@ -106,7 +106,7 @@ export function QuickAnalysisForm({
   return (
     <form className="grid gap-6" onSubmit={handleSubmit} noValidate aria-busy={isPending}>
       <fieldset className="grid gap-3" disabled={isPending}>
-        <legend className="text-sm font-semibold">Choose your input</legend>
+        <legend className="mb-3 text-sm font-semibold">Choose your input</legend>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="group cursor-pointer" aria-label="Paste manifest">
             <input
