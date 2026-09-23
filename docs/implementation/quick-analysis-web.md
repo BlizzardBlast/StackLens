@@ -2,7 +2,7 @@
 
 > **Status:** Implemented
 > **Date:** 2026-09-22
-> **Requirements:** FR-001, FR-002, FR-004, FR-017, FR-021, FR-022, NFR-006, NFR-007, SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007
+> **Requirements:** FR-001, FR-002, FR-004, FR-005, FR-008, FR-012, FR-015, FR-016, FR-017, FR-021, FR-022, NFR-006, NFR-007, SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007
 > **Architecture:** `apps/web -> public Fastify API -> analyzeQuickManifest`
 
 ## Purpose
@@ -82,8 +82,21 @@ Manifest input receives an explicit early evidence-boundary panel:
 - external provider evidence is unavailable in the quick snapshot;
 - N/A means insufficient evidence, not a healthy result.
 
-The renderer still displays only contract/analyzer-owned scores, findings, priority, confidence,
-evidence, recommendations, limitations, and partial failures.
+Immediately after that boundary, a manifest-specific **Verified from package.json** section surfaces
+only analyzer-owned facts already present in the report:
+
+- total normalized dependency declarations while preserving runtime/dev/peer/optional groups;
+- supported exact-package framework/tool detections;
+- a collapsed dependency declaration browser with preserved specifiers.
+
+Curated overlap findings and any recommendations continue through the existing shared finding/report
+components, so fact/heuristic/priority/evidence semantics remain analyzer-owned. The score section
+also states that 0% in quick mode is **numeric-score evidence coverage**, not manifest parse
+coverage.
+
+The renderer still displays only contract/analyzer-owned scores, facts, findings, priority,
+confidence, evidence, recommendations, limitations, and partial failures. React does not infer
+technologies or recalculate analysis policy.
 
 ## Fastify compatibility
 
@@ -105,6 +118,7 @@ Focused tests cover:
 - pasted-content preservation;
 - local file reading and submission;
 - accessible synchronous busy state with no fake percentage;
-- manifest-only evidence-boundary and N/A messaging.
+- manifest-only evidence-boundary, analyzer-backed insight presentation, and numeric-score coverage
+  clarification.
 
 Repository-wide `pnpm check` remains the merge gate.
