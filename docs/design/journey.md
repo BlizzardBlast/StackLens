@@ -1500,3 +1500,34 @@ milestone.
 **Traceability:** FR-003, FR-005–FR-007, FR-010, FR-011, FR-014, FR-017–FR-023, DATA-001–DATA-006,
 SCORE-001–SCORE-004, NFR-001–NFR-005, NFR-008, NFR-009, SEC-001–SEC-003, SEC-007, GOV-002,
 GOV-006, GOV-007.
+
+## 2026-09-23 — Step 58: Enforce design-system policy through Oxlint
+
+Manual UI acceptance prompted a tooling review of
+[`@shadcn/lint`](https://github.com/shadcn-ui/lint), an agent-oriented Tailwind design-system
+linter that supports Oxlint directly.
+
+StackLens already standardizes on Oxlint, Tailwind CSS v4, shadcn/ui, Base UI, semantic design
+tokens, and shared UI primitives. Instead of adding a second lint process, the repository now loads
+`@shadcn/lint@0.2.0` through Oxlint's JavaScript-plugin boundary.
+
+Initial policy is intentionally narrow and strict:
+
+- shared StackLens components are recognized through the `@stacklens/ui/components` import prefix;
+- `shadcn/no-raw-colors` is an error, matching the existing design-system rule that product UI
+  consumes semantic/domain tokens instead of raw Tailwind palette colors;
+- existing Oxlint type-aware/correctness/import/accessibility rules remain unchanged;
+- `pnpm lint` and the existing CI lint step automatically include the design-system policy;
+- `pnpm ui:info` remains the structural shadcn configuration check and serves a different purpose.
+
+Upstream recommends incremental rule adoption. StackLens also has `denyWarnings: true`, so adding a
+rule as a warning would still fail CI. Additional rules such as `no-restyle`,
+`no-arbitrary-values`, `no-inline-styles`, `require-static-classes`, and
+`no-unknown-classes` should therefore be introduced only after measuring the current codebase and
+defining intentional contracts/exceptions. This avoids either warning debt or broad suppressions.
+
+The agent guidance was also corrected to reflect FR-023: exact current dependency versions may now
+come from matching supported root-lockfile evidence rather than only exact package.json
+declarations.
+
+**Traceability:** NFR-006, NFR-007, GOV-002, GOV-006, GOV-007.
