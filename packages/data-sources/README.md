@@ -210,7 +210,16 @@ Full selected file content exists only in the transient adapter result required 
 snapshot. It is not copied into `DataSource`, `ExternalEvidence`, limitations, or partial-failure
 messages.
 
-Private repository authentication and write access are outside this milestone.
+The adapter may receive an operator-supplied token for authenticated REST reads of public
+repositories. That token only changes GitHub transport/rate-limit capacity: the repository parser
+still rejects private repositories and the adapter performs no writes. User-connected GitHub
+authentication, private repository access, and write access remain outside this milestone.
+
+Rate-limit responses are classified without copying GitHub response bodies into StackLens failures.
+A `429`, or a `403` carrying GitHub rate-limit headers such as
+`x-ratelimit-remaining: 0` / `retry-after`, becomes a terminal `github_<operation>_rate_limited` failure with bounded manual retry guidance.
+StackLens deliberately does not let Graphile auto-retry that request before GitHub's provider reset
+window. Other `403` responses remain non-retryable forbidden provider failures.
 
 ## GitHub tests
 

@@ -17,6 +17,7 @@ import { createRepositoryAnalysisTaskList } from "./task.js";
 export interface WorkerRuntimeOptions {
   readonly connectionString: string;
   readonly concurrency?: number;
+  readonly githubToken?: string;
   readonly onDatabasePoolError?: (error: Error) => void;
 }
 
@@ -42,7 +43,9 @@ export async function startStackLensWorker(
     const taskList = createRepositoryAnalysisTaskList({
       repository,
       analysisDependencies: {
-        githubRepositoryProvider: new GitHubRepositoryAdapter(),
+        githubRepositoryProvider: new GitHubRepositoryAdapter({
+          authToken: options.githubToken,
+        }),
         npmRegistryProvider: new NpmRegistryAdapter(),
         osvProvider: new OsvVulnerabilityAdapter(),
       },

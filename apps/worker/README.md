@@ -38,5 +38,12 @@ pnpm --filter @stacklens/worker dev
 
 The worker defaults to the local Compose `DATABASE_URL` and concurrency 2. Override
 `DATABASE_URL` or `STACKLENS_WORKER_CONCURRENCY` through the process environment when needed.
+
+`STACKLENS_GITHUB_TOKEN` is optional. When present, the worker uses it only to authenticate
+read-only GitHub REST requests for the already-supported **public repository** analysis flow, which
+raises the provider rate-limit ceiling. The token is not persisted, logged, returned by the API, or
+used to enable private-repository access; private repositories remain rejected by the MVP provider
+boundary. Leave the variable unset to keep anonymous public GitHub access.
+
 The runtime owns Graphile/StackLens migrations and provider composition; the process entrypoint owns
 signals and graceful shutdown.

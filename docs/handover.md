@@ -739,6 +739,18 @@ browser and locally running three-process stack:
 - browser console/network review for source-content leakage or unexpected calls;
 - OpenAPI/client request agreement in the running deployment topology.
 
+One concrete live-provider failure has now been identified during this pass: anonymous GitHub REST
+acquisition can return `403` when the public API rate limit is exhausted. The hardening path keeps
+FR-003 public-repository semantics unchanged while allowing an operator/developer
+`STACKLENS_GITHUB_TOKEN` for authenticated read-only public REST calls, classifying rate-limit
+`403`/`429` responses from safe headers, and preserving clear retry guidance without provider-body
+or token leakage. This does not implement FR-100: private repositories remain rejected and there is
+no user-connected GitHub account flow.
+
+Re-run a real public repository analysis after this hardening, including the unauthenticated path
+when quota is available and the optional-token path when repeated live testing would otherwise hit
+anonymous limits.
+
 Fix only concrete acceptance failures. If a fix changes product behavior beyond existing
 requirements, update the requirement first or in the same PR.
 
@@ -749,8 +761,9 @@ Until manual acceptance/release readiness is complete:
 - do not merge the quick synchronous path into repository polling/background jobs;
 - do not add multipart upload when the accepted JSON file contract already serves browser input;
 - do not duplicate analyzer, validation, priority, recommendation, or scoring semantics in React;
-- do not add private GitHub support, authentication, AI analysis, code-writing automation, CLI/IDE
-  surfaces, or monitoring/history;
+- do not add user-connected GitHub authentication/private-repository support beyond the bounded
+  operator token used only for existing public REST acquisition; do not add AI analysis,
+  code-writing automation, CLI/IDE surfaces, or monitoring/history;
 - do not weaken insufficient-evidence/N/A behavior to make the report appear more complete.
 
 ## 21. Pull-request strategy for the next session

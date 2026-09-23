@@ -1381,3 +1381,35 @@ reduced-motion fallback. Analyzer, provider, queue, persistence, API, and scorin
 unchanged.
 
 **Traceability:** FR-017, FR-021, NFR-006, NFR-007, NFR-008, GOV-002, GOV-006, GOV-007.
+
+## 2026-09-22 — Step 54: Harden live GitHub acquisition against API rate limits
+
+Manual browser acceptance against a real public repository exposed a provider-boundary failure that
+synthetic tests had not surfaced: StackLens used anonymous GitHub REST requests only, so a developer
+could exhaust GitHub's anonymous quota and receive a terminal `403`. The persisted message also
+read "during repository repository" because the generic HTTP error template repeated the operation
+name.
+
+This step keeps the accepted MVP product boundary—public repositories only—but makes live
+acquisition operationally reliable and the failure state actionable:
+
+- `GitHubRepositoryAdapter` accepts an optional operator/developer token and forwards it only as a
+  Bearer header to fixed GitHub REST GET requests;
+- the worker reads that secret from `STACKLENS_GITHUB_TOKEN`; it is not queued, persisted, logged,
+  returned to the browser, or used to unlock private repositories;
+- configured tokens are validated as non-empty, trimmed, control-character-free strings before any
+  request is sent;
+- `429`, plus `403` responses carrying `x-ratelimit-remaining: 0` or `retry-after`, are
+  classified as terminal `github_<operation>_rate_limited` failures so Graphile does not hammer a
+  provider that explicitly asked clients to wait;
+- retry guidance prefers `retry-after` and otherwise safely renders `x-ratelimit-reset` as UTC;
+- generic forbidden responses remain non-retryable, provider response bodies stay out of failure
+  messages, and operation wording now names repository metadata/commit/tree/blob work clearly;
+- focused provider tests cover anonymous headers, authenticated headers, malformed-token rejection,
+  primary/secondary rate-limit classification, generic `403`, and provider-detail redaction.
+
+This is an FR-003/NFR-008 acceptance repair, not FR-100 GitHub account integration. User-connected
+authentication, private repository access, and repository writes remain post-MVP.
+
+**Traceability:** FR-003, FR-004, FR-021, NFR-003, NFR-008, NFR-009, SEC-002, SEC-003, SEC-007,
+GOV-002, GOV-006, GOV-007.

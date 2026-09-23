@@ -66,10 +66,19 @@ DATABASE_URL=postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens
 STACKLENS_API_HOST=127.0.0.1
 STACKLENS_API_PORT=3000
 STACKLENS_WORKER_CONCURRENCY=2
+
+# Optional. Keep a real value secret and out of source control.
+# STACKLENS_GITHUB_TOKEN=
 ```
 
 The defaults are intentionally local-only convenience values. Deployed API/Worker processes should
 provide an explicit `DATABASE_URL` through their environment/secret manager.
+
+For repeated live repository analysis, `STACKLENS_GITHUB_TOKEN` can authenticate the worker's
+read-only GitHub REST requests and substantially reduce anonymous-rate-limit failures. It is an
+operator/developer secret for the existing public-repository flow, not a user GitHub connection:
+StackLens still rejects private repositories. Store real tokens in the local environment or a secret
+manager, never in `.env.example`, committed `.env` files, logs, or screenshots.
 
 `VITE_STACKLENS_API_BASE_URL` remains optional. Leave it unset for the development proxy or
 same-origin deployment.
@@ -107,6 +116,8 @@ Local runtime composition does not alter analysis semantics:
 - Fastify does not recalculate priority, recommendations, or scores;
 - no analyzed repository scripts/builds/tests/dependencies are executed;
 - repository source and raw provider bodies remain transient rather than queue/database payloads;
+- the optional GitHub token is passed only to the provider request boundary and is never stored in
+  analysis state or emitted by startup/shutdown logging;
 - startup/shutdown logging emits error names rather than connection strings or source content.
 
 ## Verification

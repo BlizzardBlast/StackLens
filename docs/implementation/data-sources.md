@@ -331,6 +331,38 @@ References:
 The adapter sends `X-GitHub-Api-Version: 2026-03-10`, matching the current documented REST version
 reviewed for this milestone.
 
+### Optional authenticated public reads
+
+Repository acquisition remains a public-repository MVP feature. The worker may supply an optional
+`STACKLENS_GITHUB_TOKEN` deployment secret to the adapter; when configured, requests add
+`Authorization: Bearer <token>` to the fixed GitHub REST origin. This increases GitHub's request
+allowance for public REST reads without changing StackLens product authorization semantics.
+
+This is deliberately **not** FR-100 user-connected GitHub authentication:
+
+- the token belongs to the StackLens runtime/developer environment, not to an analyzed user;
+- private repository metadata is still rejected even if the token could technically read it;
+- the adapter performs only GET requests;
+- the token is never persisted in analysis state, evidence, limitations, failure messages, or logs.
+
+Malformed configured tokens (empty/whitespace/control-character values) fail runtime configuration
+rather than being sent to GitHub.
+
+Rate-limit classification uses response status and safe provider headers rather than response-body
+text:
+
+- `429` is classified as a terminal `github_<operation>_rate_limited` failure with explicit
+  manual retry guidance;
+- `403` is classified as rate-limited when `x-ratelimit-remaining: 0` or `retry-after` is
+  present and is handled the same way;
+- `retry-after` seconds are preferred for guidance, otherwise a valid `x-ratelimit-reset` epoch
+  is rendered as an ISO UTC timestamp;
+- Graphile does not automatically retry provider throttling before GitHub's reset window;
+- other `403` responses remain non-retryable forbidden failures.
+
+The user-facing message therefore distinguishes provider throttling from a generic forbidden
+response and no longer produces wording such as "repository repository."
+
 ### Repository URL boundary
 
 Only HTTPS `github.com/<owner>/<repository>` URLs are accepted.
