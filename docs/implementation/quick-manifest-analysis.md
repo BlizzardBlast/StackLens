@@ -2,7 +2,7 @@
 
 > **Status:** Accepted implementation baseline + HTTP transport + web consumer
 > **Date:** 2026-09-22
-> **Requirements:** FR-001, FR-002, FR-004, FR-005, FR-017, FR-021, FR-022, NFR-001, NFR-004, SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007
+> **Requirements:** FR-001, FR-002, FR-004, FR-005, FR-008, FR-012, FR-015, FR-016, FR-017, FR-021, FR-022, NFR-001, NFR-004, SEC-001, SEC-002, SEC-003, GOV-002, GOV-006, GOV-007
 > **Architecture:** `apps/api -> packages/*`
 
 ## Purpose
@@ -97,7 +97,11 @@ Until the next provider milestones are implemented, quick analysis explicitly re
 - source/configuration evidence is unavailable in manifest-only mode;
 - external package/vulnerability metadata is unavailable in the current analysis snapshot.
 
-Missing evidence is not converted into a positive/negative finding or a perfect score.
+Missing evidence is not converted into a positive/negative finding or a perfect score. Manifest
+evidence that is actually available remains useful: the production quick analyzer emits dependency
+inventory facts, supported exact-package framework/tool facts, and curated dependency-overlap
+heuristics. Overlap findings reuse the shared deterministic priority and recommendation policies
+rather than defining quick-only urgency or advice.
 
 ## HTTP transport
 
@@ -123,9 +127,20 @@ The upload contract is JSON rather than multipart: the web client may read a sel
 and leaves file-selection UX in the browser milestone without creating a second server-side analysis
 path.
 
-A dedicated manifest-only analyzer composition runs dependency inventory and deliberately returns
-insufficient-evidence scores for the quick snapshot. It does not reuse the repository analyzer's
-provider/source-dependent rules or `stack-health-v1` numeric scoring.
+A dedicated manifest-only analyzer composition runs only rules whose evidence requirements can be
+satisfied by the normalized manifest:
+
+- `JS-DEP-005@1` dependency inventory facts;
+- `JS-TOOL-012@1` exact-package framework/tool facts;
+- `JS-OVERLAP-008@1` curated manifest-backed overlap heuristics;
+- shared `JS-PRIORITY-016@1` priority for emitted findings;
+- shared `JS-RECOMMEND-015@1` evidence-backed recommendations.
+
+The quick analyzer deliberately keeps numeric scoring at `insufficient_evidence` with scoring
+coverage 0 because repository source/configuration and external npm/OSV evidence required by the
+accepted score policy are absent. That percentage describes **numeric scoring evidence**, not how
+much of the submitted manifest was parsed. Provider/source-dependent rules and
+`stack-health-v1` scoring remain repository-only.
 
 ## Verification
 
@@ -138,7 +153,9 @@ Focused service and Fastify injection tests cover:
 - no authentication/persistence dependency (**FR-022**, **SEC-003**);
 - ignored manifest fields not retained in the report (**SEC-003**);
 - stable fingerprints across equivalent paste/upload content;
-- contract-valid analyzer output and explicit limitations (**FR-017**, **FR-021**);
+- contract-valid dependency/tool facts, curated overlap findings, shared priority/recommendations,
+  and explicit limitations (**FR-005**, **FR-008**, **FR-012**, **FR-015**, **FR-016**, **FR-017**,
+  **FR-021**);
 - strict request validation and bounded content (**FR-004**, **SEC-002**);
 - OpenAPI publication from the same route schemas (**GOV-006**);
 - HTTP success does not require persistence/background jobs (**FR-022**, **SEC-003**).
@@ -160,8 +177,8 @@ The web implementation remains a client of the public HTTP boundary:
 - successful payloads are runtime-validated with `AnalysisReportSchema`;
 - repository and quick analysis share the report renderer while keeping their execution models
   separate;
-- manifest-only reports show the evidence boundary before scores so N/A cannot be misread as a
-  healthy result.
+- manifest-only reports show the evidence boundary and analyzer-backed manifest insights before
+  scores so N/A cannot be misread as either a healthy result or a failure to parse the manifest.
 
 See [Quick Analysis Web Flow](quick-analysis-web.md).
 
