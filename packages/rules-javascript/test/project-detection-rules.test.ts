@@ -126,6 +126,39 @@ describe("frameworkToolDetectionRule [FR-012, NFR-001, NFR-002]", () => {
     expect(first.facts?.find((fact) => fact.subject.name === "Vite")?.evidenceIds).toHaveLength(2);
   });
 
+  it("detects supported React Native and Expo manifest technology", () => {
+    const fixture = dependencyFacts({
+      dependencies: {
+        "@sentry/react-native": "8.25.0",
+        expo: "~57.0.23",
+        "expo-router": "~57.0.21",
+        react: "19.2.3",
+        "react-native": "0.86.3",
+      },
+    });
+
+    const result = frameworkToolDetectionRule.evaluate({
+      input: {
+        type: "manifest",
+        fingerprint: "fnv1a64:react-native-tools",
+      },
+      project: fixture.project,
+      metadata: {},
+      sources: [],
+      evidence: fixture.evidence,
+      limitations: [],
+      partialFailures: [],
+    });
+
+    expect(result.facts?.map((fact) => [fact.subject.name, fact.type])).toEqual([
+      ["Sentry for React Native", "project.tool.observability"],
+      ["Expo", "project.tool.framework"],
+      ["Expo Router", "project.tool.routing"],
+      ["React", "project.tool.ui_library"],
+      ["React Native", "project.tool.framework"],
+    ]);
+  });
+
   it("does not guess unsupported tools from package names or broad categories", () => {
     const fixture = dependencyFacts({
       dependencies: {
