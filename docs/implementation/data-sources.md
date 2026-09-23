@@ -363,6 +363,26 @@ text:
 The user-facing message therefore distinguishes provider throttling from a generic forbidden
 response and no longer produces wording such as "repository repository."
 
+### Supported root lockfile acquisition
+
+The GitHub snapshot selector now treats these root files as bounded project-evidence inputs:
+
+- `package-lock.json`;
+- `pnpm-lock.yaml`;
+- `yarn.lock`.
+
+They are prioritized immediately after root `package.json` and before configuration/source files so
+normal file-count bounds do not preferentially discard exact-version evidence. Only root lockfiles
+are supported in this milestone; nested workspace lockfiles are not traversed.
+
+Lockfiles are deliberately excluded from static source-usage coverage counts. If a lockfile cannot
+be retained because of file/request/resource bounds, that can limit resolved-version conclusions but
+does not falsely imply missing JavaScript/TypeScript source coverage.
+
+The provider does not parse package-manager syntax. It only acquires bounded text; normalization and
+stale/ambiguous-resolution policy live in `@stacklens/rules-javascript`, preserving the provider
+boundary.
+
 ### Repository URL boundary
 
 Only HTTPS `github.com/<owner>/<repository>` URLs are accepted.
