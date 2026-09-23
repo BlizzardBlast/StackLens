@@ -59,7 +59,7 @@ export interface ResolvedDependencyNormalization {
 interface CandidateResolution {
   readonly packageName: string;
   readonly declaredSpecifier: string;
-  readonly version?: string;
+  readonly version: string | undefined;
   readonly specifierMatches: boolean;
 }
 
