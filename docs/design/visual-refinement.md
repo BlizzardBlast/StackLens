@@ -76,6 +76,10 @@ Review captures:
 - [Repository input, dark, 1440 px](review-assets/stacklens-home-dark.png)
 - [Quick input, light, 390 px](review-assets/stacklens-quick-mobile-light.png)
 
+The [2026-09-24 rendered contrast review](contrast-review.md) extends this verification to dynamic
+states. It corrects faded progress copy, strengthens outlined controls, and keeps evidence text
+opaque during its entrance. The palette and font pairing remain unchanged.
+
 ## Sources
 
 - [IBM Plex and its Open Font License](https://github.com/IBM/plex)

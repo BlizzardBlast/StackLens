@@ -129,4 +129,36 @@ for (const mode of ["light", "dark"]) {
       assertContrast(semantic(role), semantic("brandSurface"), 4.5, `${mode} ${role}`);
     }
   });
+
+  test(`NFR-006: ${mode} selected controls and error messages retain contrast on tinted surfaces`, () => {
+    for (const surface of ["background", "surface"]) {
+      const selected = composite(semantic("primary"), semantic(surface), 0.05);
+      for (const role of ["foreground", "mutedForeground", "primary"]) {
+        assertContrast(semantic(role), selected, 4.5, `${mode} ${role} on selected ${surface}`);
+      }
+      for (const role of ["input", "focus"]) {
+        assertContrast(semantic(role), selected, 3, `${mode} ${role} on selected ${surface}`);
+      }
+      const error = composite(semantic("danger"), semantic(surface), 0.05);
+      assertContrast(semantic("danger"), error, 4.5, `${mode} error copy on ${surface}`);
+    }
+    assertContrast(
+      semantic("primary"),
+      semantic("surfaceMuted"),
+      3,
+      `${mode} evidence coverage bar against its track`,
+    );
+  });
+
+  test(`NFR-006: ${mode} progress copy stays readable throughout the activity pulse`, () => {
+    const row = composite(semantic("primary"), semantic("surface"), 0.05);
+    // The pulse varies between half and full opacity over the row's existing 5% tint.
+    // Include the untinted row and sample the complete animation, not just its resting state.
+    for (let step = 0; step <= 20; step += 1) {
+      const background = composite(semantic("primary"), row, step / 200);
+      for (const role of ["foreground", "mutedForeground"]) {
+        assertContrast(semantic(role), background, 4.5, `${mode} ${role} at pulse step ${step}`);
+      }
+    }
+  });
 }

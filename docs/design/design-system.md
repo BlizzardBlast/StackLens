@@ -228,7 +228,8 @@ Motion communicates state, not personality.
 - analysis progress should not use fake indeterminate motion that suggests measurable progress.
 
 Controls transition color/border/background feedback; newly opened evidence detail has one 180 ms
-fade with a 4 px movement. Reading content and decorative evidence diagrams do not animate on load.
+movement of 4 px with fully opaque text throughout. Reading content and decorative evidence diagrams
+do not animate on load.
 The shared stylesheet disables all animations/transitions under reduced motion while status text
 remains available. Existing stage activity never changes into a percentage or score animation.
 
@@ -315,7 +316,15 @@ Input pages share one `main` landmark and a visible-on-focus skip link. Selected
 have checkmarks as well as borders and native checked/current-page semantics. Focus indicators use
 an opaque outline; hidden radio inputs expose a full-contrast ring on their visible label surface.
 Token tests verify 4.5:1 text contrast (including tinted domain badges, limitation copy/icons, and
-button hover states) and 3:1 input/focus contrast against light and dark surfaces.
+button hover states) and 3:1 input/focus contrast against light and dark surfaces. Selected/error
+surfaces and the layered progress pulse are included. Readable secondary copy uses the opaque
+muted-foreground token; do not dim it with additional opacity. Outlined actions use the input
+border token, including their hover state. Decorative card dividers may retain the softer border
+token because text and structure carry their meaning.
+
+Token checks must be supplemented by rendered-state contrast review: CSS opacity and layered
+backgrounds can invalidate a passing token pair. See the [contrast audit](contrast-review.md) for
+the September 2026 light/dark browser measurements and coverage.
 
 Base UI provides significant keyboard/ARIA/focus behavior, but StackLens remains responsible for correct composition, labels, copy, contrast, and semantics.
 

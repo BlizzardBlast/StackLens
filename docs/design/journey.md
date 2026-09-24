@@ -1577,3 +1577,29 @@ analyzer/scoring behavior are unchanged. The disposable original prototype remai
 
 **Traceability:** PRD-004, FR-001–FR-003, FR-017, FR-021, FR-022, NFR-006–NFR-008, GOV-002,
 GOV-006, GOV-007.
+
+## 2026-09-24 — Step 60: Verify contrast in rendered interaction states
+
+**Pull request:** [#37](https://github.com/BlizzardBlast/StackLens/pull/37)
+
+A follow-up contrast audit found that the passing palette was weakened by 80% opacity on waiting
+and completed progress descriptions: light-mode text measured 4.04:1. The copy now uses opaque
+muted foreground at 6.41:1. Outlined actions use the input-border token, and the evidence entrance
+keeps its 4 px movement while preserving fully opaque text.
+
+Chromium/axe review covered both themes, input and error states, selected/upload controls, busy
+feedback, all priority/confidence report badges, limitations, expanded evidence, recovery actions,
+and four progress-pulse positions. No text violations remained; control borders, focus, and the
+glyphs flagged for manual review were checked separately. A 320 px upload view remained readable
+and had no document overflow in either theme. The token suite now has ten tests, adding selected
+and error surfaces, coverage bars, and layered activity-pulse contrast. `pnpm check` passed, including
+21 web tests and ten token tests; five existing database-gated tests skipped locally without
+`TEST_DATABASE_URL`. Evidence text stayed fully opaque at 0/90/180 ms, and reduced motion disabled
+its animation.
+
+The [contrast review](contrast-review.md) records methods, measured pairs, and scope. The design
+system now explicitly requires opaque secondary copy and rendered-state checks in addition to
+token calculations. Accepted behavior, font licensing, palette values, scoring, and architecture
+remain unchanged.
+
+**Traceability:** NFR-006, NFR-007, NFR-008, GOV-002, GOV-007.
