@@ -89,7 +89,7 @@ same-origin deployment.
 
 `apps/api/src/runtime.ts` owns infrastructure composition:
 
-1. create a PostgreSQL pool;
+1. create a PostgreSQL pool with pool- and connection-level error handlers;
 2. apply StackLens persistence bootstrap;
 3. initialize/migrate Graphile Worker utilities;
 4. bind `DrizzleAnalysisRepository`;
@@ -106,6 +106,19 @@ GitHub/npm/OSV/orchestration composition. It now leaves OS signals to the execut
 runtime can close both Graphile and its PostgreSQL pool deterministically.
 
 `apps/worker/src/main.ts` owns environment values and process shutdown only.
+
+### PostgreSQL connection errors
+
+Both runtimes use `createStackLensPool` from `@stacklens/persistence`. It installs the pool's
+`error` handler and a `connect` handler that attaches an `error` listener to each new client before
+any migrations or Graphile initialization. Reusing a client does not register another listener.
+Handlers remain installed through pool shutdown so a late connection error is still handled.
+
+Both event paths use the runtime's existing `onDatabasePoolError` callback. Process entrypoints
+report only the error name, preserving the existing logging boundary; the shared pool factory
+does not log raw database messages. Graphile no longer needs to supply fallback error handlers or
+emit its missing-pool-handler warning. This handles asynchronous connection errors; query failures
+still reject and follow their existing caller/queue failure paths.
 
 ## Safety
 
@@ -130,6 +143,9 @@ queue adapters and verifies both public API execution models without live provid
   manifest report with explicit limitations, and does not create durable repository-analysis state.
 
 See [MVP Acceptance Hardening](mvp-acceptance.md) for the cross-surface smoke coverage.
+
+Focused persistence tests also cover first-connection and pool error delivery, multiple clients,
+client reuse, shutdown, and omission of the optional reporter without a live database dependency.
 
 The repository-wide completion gate remains:
 

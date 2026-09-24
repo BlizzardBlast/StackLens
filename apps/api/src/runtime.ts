@@ -1,9 +1,9 @@
 import type { FastifyInstance } from "fastify";
 import { makeWorkerUtils } from "graphile-worker";
-import { Pool } from "pg";
 
 import {
   createStackLensDatabase,
+  createStackLensPool,
   DrizzleAnalysisRepository,
   migrateStackLensDatabase,
 } from "@stacklens/persistence";
@@ -29,9 +29,7 @@ export interface StackLensApiRuntime {
 export async function createStackLensApiRuntime(
   options: StackLensApiRuntimeOptions,
 ): Promise<StackLensApiRuntime> {
-  const pool = new Pool({ connectionString: options.connectionString });
-  const onDatabasePoolError = options.onDatabasePoolError ?? (() => undefined);
-  pool.on("error", onDatabasePoolError);
+  const pool = createStackLensPool(options.connectionString, options.onDatabasePoolError);
 
   try {
     const database = createStackLensDatabase(pool);
@@ -71,7 +69,6 @@ export async function createStackLensApiRuntime(
             try {
               await workerUtils.release();
             } finally {
-              pool.off("error", onDatabasePoolError);
               await pool.end();
             }
           }
@@ -82,7 +79,6 @@ export async function createStackLensApiRuntime(
       throw error;
     }
   } catch (error) {
-    pool.off("error", onDatabasePoolError);
     await pool.end();
     throw error;
   }

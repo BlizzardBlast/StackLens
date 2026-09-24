@@ -1603,3 +1603,32 @@ token calculations. Accepted behavior, font licensing, palette values, scoring, 
 remain unchanged.
 
 **Traceability:** NFR-006, NFR-007, NFR-008, GOV-002, GOV-007.
+
+## 2026-09-24 — Step 61: Own PostgreSQL pool and client error handling
+
+**Pull request:** [#37](https://github.com/BlizzardBlast/StackLens/pull/37)
+
+Startup logs exposed incomplete database error handling in both API and Worker. Each runtime
+handled pool errors but omitted listeners on checked-out clients, leaving Graphile to install
+fallback listeners after StackLens had already opened connections for migrations.
+
+The shared persistence pool factory now attaches both handlers before the first connection and
+routes errors through the existing runtime callback. Connection listeners are registered only for
+new clients, and handlers remain present through shutdown. Entry-point logging continues to emit
+error names rather than raw messages. Query errors, analyzer policy, queue retries, and accepted
+product behavior remain unchanged.
+
+Four focused tests cover pool/first-client error delivery, multiple clients and reuse, shutdown,
+and the optional reporter. The local-development guide documents the ownership and lifecycle.
+
+A PostgreSQL 18 smoke check used a temporary database and started both composed runtimes without
+the missing-handler warning. Terminating only the smoke check's own idle API connection and
+checked-out Worker connection delivered errors to the configured reporters; subsequent API reads
+and Worker queries reconnected successfully. No external providers were called.
+
+`pnpm check` passed with `TEST_DATABASE_URL` pointing to the temporary PostgreSQL database,
+including all seven persistence tests and 22 API tests, with no database-test skips. The initial
+parallel run exceeded the existing API runtime test's five-second timeout; it passed on rerun
+without changing that timeout. The final build, typecheck, tests, lint, and formatting all passed.
+
+**Traceability:** FR-003, NFR-009, SEC-007, GOV-002, GOV-007; ADR-0004.
