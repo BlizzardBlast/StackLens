@@ -4,9 +4,10 @@ import type { AnalysisFact, AnalysisLimitation, ProjectEvidence } from "@stackle
 import type { JavaScriptProjectSnapshot, JavaScriptStaticProjectFile } from "./project-snapshot.js";
 import { compareCodeUnits, truncate } from "./rule-support.js";
 import { stableHash } from "./stable-id.js";
+import { inspectStaticConfiguration } from "./static-configuration-parser.js";
 
 const RULE_ID = "JS-CONFIG-013";
-const RULE_VERSION = "1";
+const RULE_VERSION = "2";
 const MAX_STATIC_CONFIG_CONTENT_LENGTH = 512 * 1024;
 const DYNAMIC_EXTENSIONS = ["js", "cjs", "mjs", "ts", "cts", "mts"] as const;
 
@@ -416,7 +417,7 @@ function createFact(
   const { descriptor, file } = inspected;
   const baseStatement =
     descriptor.inspectionMode === "dynamic_code"
-      ? `Detected ${descriptor.displayName} at ${file.path}. The file contains executable configuration code and was not executed or evaluated.`
+      ? `Detected ${descriptor.displayName} at ${file.path} through static syntax inspection. Configuration code was not executed.`
       : descriptor.inspectionMode === "unsupported_format"
         ? `Detected ${descriptor.displayName} at ${file.path}, but this file format is not supported by the current static inspector.`
         : `Detected ${descriptor.displayName} at ${file.path} through static file inspection.`;
@@ -474,12 +475,30 @@ export const projectConfigurationRule: FactRule<JavaScriptProjectSnapshot, unkno
       let limitation: AnalysisLimitation | undefined;
 
       if (descriptor.inspectionMode === "dynamic_code") {
-        limitation = createLimitation(
-          file,
-          "dynamic-configuration-unexecuted",
-          "unsupported_configuration",
-          `${descriptor.displayName} at ${file.path} is JavaScript/TypeScript configuration code. StackLens identified the file but did not import, execute, or resolve dynamic values.`,
-        );
+        const parsed = inspectStaticConfiguration(file.path, file.content);
+        const objects = Array.isArray(parsed.value)
+          ? parsed.value.filter(isRecord)
+          : isRecord(parsed.value)
+            ? [parsed.value]
+            : [];
+        inspection = {
+          characteristics:
+            objects.length > 0
+              ? [
+                  `literal configuration objects=${objects.length}`,
+                  `literal rule entries=${objects.reduce((count, value) => count + (isRecord(value.rules) ? Object.keys(value.rules).length : 0), 0)}`,
+                ]
+              : [],
+          ...(parsed.partialReason === undefined ? {} : { partialReason: parsed.partialReason }),
+        };
+        if (parsed.partialReason !== undefined) {
+          limitation = createLimitation(
+            file,
+            "dynamic-configuration-unresolved",
+            "unsupported_configuration",
+            `${descriptor.displayName} at ${file.path} was partially inspected. ${parsed.partialReason}`,
+          );
+        }
       } else if (descriptor.inspectionMode === "unsupported_format") {
         limitation = createLimitation(
           file,

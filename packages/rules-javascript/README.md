@@ -22,7 +22,7 @@ It currently owns:
 - the `JS-VULN-011@1` factual finding rule for exact-version OSV matches;
 - `JS-OVERLAP-008@1` curated medium-confidence dependency-overlap heuristics;
 - `JS-TOOL-012@1` manifest-backed framework/tool facts;
-- `JS-CONFIG-013@1` repository-only static configuration facts/limitations;
+- `JS-CONFIG-013@2` repository-only static configuration facts/limitations;
 - a parser-adapter boundary for bounded JS/TS/JSX/TSX syntax inspection;
 - `JS-USAGE-009@1` static dependency-usage facts and conservative coverage limitations;
 - `JS-UNNECESSARY-009@1` potentially-unnecessary dependency heuristics;
@@ -210,7 +210,7 @@ The version-sensitive production rules now use the same effective-current-versio
 - `JS-NPM-007@2` explicit deprecation;
 - `JS-VULN-011@2` known vulnerability;
 - `JS-MIGRATION-014@2` migration opportunity;
-- `JS-COVERAGE-018@2` score coverage.
+- `JS-COVERAGE-018@3` score coverage.
 
 Every lockfile-derived conclusion carries project evidence pointing to the lockfile path. Raw
 lockfile text is not copied into report evidence.
@@ -300,7 +300,8 @@ This helper is not a GitHub acquisition adapter. GitHub acquisition is supplied 
 
 ## Project configuration detection
 
-`JS-CONFIG-013@1` implements the static rule layer for **FR-013**.
+`JS-CONFIG-013@2` implements the static rule layer for **FR-013**, including bounded literal
+ESM/CommonJS configuration inspection. Imported presets and runtime values remain partial.
 
 Supported declarative files currently include:
 
@@ -314,8 +315,10 @@ strictness/module/target, ESLint extends/plugins/rule counts, Prettier formattin
 Biome formatter/linter/assist enablement.
 
 Known JavaScript/TypeScript configuration files such as Vite, Vitest, webpack, Rollup, Jest, ESLint
-flat/legacy config, Next.js, Prettier, and Tailwind config are identified by path only. Their code is
-never imported, executed, or evaluated; a rule limitation records that inspection is partial.
+flat/legacy config, Next.js, Prettier, and Tailwind config are parsed statically. Literal exports,
+immutable local constants, and supported `defineConfig` wrappers can expose high-level object/rule
+counts. Their code is never imported or executed; imported presets, runtime values, mutations, and
+unsupported expressions retain explicit partial limitations.
 
 Recognized config-family filenames with unsupported extensions/formats are still emitted as detected
 configuration facts with an `unsupported_configuration` limitation rather than being silently
@@ -334,17 +337,19 @@ execute package scripts, import project configuration, or perform provider/netwo
 
 ## Migration, recommendation, priority, and scoring coverage
 
-Milestone I adds the first production policy slice:
+The current production policy builds on Milestone I:
 
 - `JS-MIGRATION-014@2` — heuristic major-version migration opportunity from exact
   manifest/lockfile + npm evidence;
 - `JS-PRIORITY-016@1` — deterministic production priority policy;
-- `JS-RECOMMEND-015@1` — evidence-backed actions from finalized supported findings;
-- `JS-COVERAGE-018@2` — category evidence-coverage facts/limitations for scoring.
+- `JS-RECOMMEND-015@2` — evidence-backed actions from finalized supported findings;
+- `JS-COVERAGE-018@3` — dependency, security, and migration coverage facts/limitations;
+- `JS-READINESS-019@1` — repository acquisition provenance and static testing/tooling coverage;
+- `JS-SETUP-019@1` — heuristic missing-setup findings from complete relevant evidence.
 
 The package still does not calculate numeric score values; that belongs to `@stacklens/scoring`.
 Missing evidence never becomes a negative score. Migration/recommendation rules do not modify the
 analyzed project.
 
 See [JavaScript Rules implementation](../../docs/implementation/rules-javascript.md),
-[Scoring Policy v1](../../docs/implementation/scoring.md), and ADR-0011.
+[Scoring Policy v2](../../docs/implementation/scoring.md), and ADR-0012.

@@ -1,6 +1,6 @@
-/* Reference mapping for the design prototype.
- * Canonical design-phase source: stacklens.tokens.json.
- * Production should generate CSS from tokens instead of maintaining both manually.
+/* Historical Design v1 mapping for the disposable prototype.
+ * Production generates CSS from stacklens.tokens.json through packages/design-tokens.
+ * This snapshot intentionally predates the September 2026 production visual refinement.
  */
 
 :root {

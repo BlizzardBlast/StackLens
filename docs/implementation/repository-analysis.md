@@ -20,18 +20,21 @@ Graphile Worker without either application importing the other.
 `productionJavaScriptAnalyzer` binds the current JavaScript/TypeScript production policy:
 
 - dependency inventory, resolved-dependency, framework/tool, npm-health, configuration, source-usage,
-  and scoring-coverage facts;
-- overlap, deprecation, vulnerability, migration, outdated, and potentially-unnecessary findings;
+  readiness, and scoring-coverage facts;
+- overlap, deprecation, vulnerability, migration, outdated, potentially-unnecessary, and static
+  setup findings;
 - `JS-PRIORITY-016@1`;
-- `JS-RECOMMEND-015@1`;
-- `stackHealthScorer` / `stack-health-v1`.
+- `JS-RECOMMEND-015@2`;
+- `stackHealthScorer` / `stack-health-v2`.
 
 The composition root owns no formula itself. Detection/priority/recommendation policy remains in
 `@stacklens/rules-javascript`; numeric scoring remains in `@stacklens/scoring`.
 
-Production identities are `javascript-production-v2`, `javascript-rules-v2`, and
-`stack-health-v1`. The analyzer/rule-set version changed because accepted project evidence now
-includes normalized lockfile resolutions; the numeric deduction formula remains scoring v1.
+Production identities are `javascript-production-v3`, `javascript-rules-v3`, and
+`stack-health-v2`. The versioned policy now covers all five explicit category scopes under ADR-0012.
+Transient project metadata includes acquisition counts/completeness, acquired lockfile paths, and
+lockfile normalization issue counts. These support evidence-backed setup checks; file/script bodies
+remain transient and only high-level observations enter the report.
 
 ## Repository flow
 

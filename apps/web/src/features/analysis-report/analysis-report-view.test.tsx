@@ -168,8 +168,63 @@ describe("AnalysisReportView [FR-017, FR-021, SCORE-003, NFR-006, NFR-007]", () 
     expect(screen.getByText("ESLint")).toBeInTheDocument();
     expect(screen.getByText("View declared dependencies (3)")).toBeInTheDocument();
     expect(
-      screen.getByText(/percentage measures evidence available to the numeric scoring policy/),
+      screen.getByText(/It does not measure the percentage of repository evidence inspected/),
     ).toBeInTheDocument();
     expect(screen.getAllByText("N/A").length).toBeGreaterThan(0);
+  });
+
+  it("groups duplicate notices and links blocked scores to the shared cause", () => {
+    const report = manifestReport();
+    const original = report.limitations[0]!;
+    report.limitations.push({ ...original, id: "duplicate-limitation", ruleIds: ["JS-NPM-007"] });
+    render(<AnalysisReportView report={report} />);
+    expect(screen.getByText("Grouped from 2 rule notices.")).toBeInTheDocument();
+    const links = screen.getAllByRole("link", { name: original.message });
+    for (const link of links)
+      expect(document.querySelector(link.getAttribute("href")!)).toBeInTheDocument();
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+  });
+
+  it("distinguishes legacy unimplemented policies from incomplete current evidence", () => {
+    const report = manifestReport();
+    report.analyzer.scoringVersion = "stack-health-v1";
+    const { rerender } = render(<AnalysisReportView report={report} />);
+    expect(screen.getAllByText("Scoring not implemented in this report’s version")).toHaveLength(3);
+    rerender(
+      <AnalysisReportView
+        report={{ ...report, analyzer: { ...report.analyzer, scoringVersion: "stack-health-v2" } }}
+      />,
+    );
+    expect(
+      screen.queryByText("Scoring not implemented in this report’s version"),
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByText("Analysis incomplete for this score")).toHaveLength(5);
+    expect(
+      screen.getByText("Static test-command and test-file setup. Tests were not run."),
+    ).toBeInTheDocument();
+  });
+  it("distinguishes zero from missing evidence and leaves unrelated limitations visible", () => {
+    const report = manifestReport();
+    report.analyzer.scoringVersion = "stack-health-v2";
+    const available = {
+      status: "available" as const,
+      evidenceCoverage: 100,
+      value: 0,
+      contributionIds: [],
+    };
+    report.scores.categories = {
+      dependencies: available,
+      security: available,
+      maintainability: available,
+      testing: available,
+      tooling: available,
+    };
+    report.scores.overall = available;
+    render(<AnalysisReportView report={report} />);
+    expect(screen.getAllByText(/Deductions reached the score floor of zero/)).toHaveLength(5);
+    expect(
+      screen.getByText("This limitation does not block the completed scoring checks."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("N/A")).not.toBeInTheDocument();
   });
 });

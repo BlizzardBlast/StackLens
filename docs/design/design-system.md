@@ -121,12 +121,20 @@ Components should consume semantic/domain tokens, not raw palette tokens, except
 
 ## 5. Color direction
 
-The UI is neutral-first with a restrained cool accent.
+The UI is neutral-first with a restrained cool accent. The September 2026 production refinement
+uses steel `#F3F6F8`, paper `#FFFFFF`, ink `#172D38`, and action blue `#3156C8` as the core light
+palette. Dark mode uses distinct blue-gray background, surface, and raised-surface values.
+
+A dedicated brand surface (`#163744`) with pale cyan detail (`#8DD8E7`) explains the path from
+evidence to action. Its foreground, muted text, accent, and border have named semantic tokens.
+These brand colors communicate identity, not analysis success or a score. Status hues remain
+red, orange, amber, green, and violet with independently tuned light/dark values.
 
 Rules:
 
 - background and surface hierarchy carries most visual structure;
-- accent is used for interactive emphasis, not decoration;
+- primary blue is used for interactive emphasis; brand tokens are reserved for the mark and
+  evidence-explanation panels;
 - red/orange/yellow are reserved for semantic status;
 - successful/healthy state should not dominate the screen with green;
 - unknown/N/A remains neutral;
@@ -136,12 +144,18 @@ The v1 semantic token values are accepted as the implementation baseline. Brand-
 
 ## 6. Typography
 
-Initial stack:
+Production pairing:
 
-- UI: system sans stack;
-- technical identifiers/package names: system monospace stack.
+- UI, headings, and prose: IBM Plex Sans Variable, with system sans fallbacks;
+- technical identifiers, paths, manifest input, and code: IBM Plex Mono, with system mono fallbacks.
 
-Production implementation may adopt a bundled/web font later, but typography hierarchy must not depend on a specific proprietary font.
+Both are free OFL-1.1 fonts. The web application bundles them through Fontsource; no visitor font
+request goes to Google Fonts or another font CDN. Use `font-display: swap`, and ship the license
+notices with the application. The variable sans supports the existing weight hierarchy; mono loads
+only normal Latin 400/500/600. Unsupported characters retain the declared system fallbacks.
+
+The shared base stylesheet uses the generated `--sl-font-sans`/`--sl-font-mono` variables directly
+so font inheritance does not depend on Tailwind emitting an otherwise unused utility variable.
 
 Type roles:
 
@@ -156,6 +170,10 @@ Type roles:
 - code/mono.
 
 Dense technical tables use a slightly tighter body scale while preserving readability.
+
+Input-page display text scales from 40 to 72 px, uses medium weight and a short line length, and
+remains left aligned. Body copy stays 14–18 px; labels use sentence case. Technical mono is a role,
+not a decorative treatment for every caption.
 
 ## 7. Spacing
 
@@ -209,9 +227,19 @@ Motion communicates state, not personality.
 - respect `prefers-reduced-motion`;
 - analysis progress should not use fake indeterminate motion that suggests measurable progress.
 
+Controls transition color/border/background feedback; newly opened evidence detail has one 180 ms
+movement of 4 px with fully opaque text throughout. Reading content and decorative evidence diagrams
+do not animate on load.
+The shared stylesheet disables all animations/transitions under reduced motion while status text
+remains available. Existing stage activity never changes into a percentage or score animation.
+
 ## 11. Dark mode
 
 Light and dark are token modes, not separate component designs.
+
+The production theme follows the system color preference. Explicit `.light` / `data-theme="light"`
+and `.dark` / `data-theme="dark"` remain supported, without adding a stored theme preference or a
+new settings flow. Brand explanation panels keep the same intentional dark surface in both modes.
 
 Dark mode rules:
 
@@ -264,7 +292,11 @@ Initial visual states:
 - poor;
 - unknown/N/A.
 
-Do not hardcode product conclusions such as "healthy" solely from color. Score copy should remain descriptive and always expose evidence coverage.
+Do not hardcode product conclusions such as "healthy" solely from color. Score copy must state its
+scope, availability, and explanation. A binary scoring-eligibility field must never appear as a
+measured evidence-coverage percentage. Actual acquisition counts retain their own denominator.
+See [report evidence presentation](report-evidence.md) for v2 scopes, disclosures, and grouped
+limitations; missing evidence remains structurally distinct from a numeric zero.
 
 ## 14. Accessibility
 
@@ -283,6 +315,20 @@ Baseline:
 - no critical evidence only on hover;
 - minimum interactive target should generally be ~40–44 px where layout permits;
 - reduced-motion mode.
+
+Input pages share one `main` landmark and a visible-on-focus skip link. Selected input choices
+have checkmarks as well as borders and native checked/current-page semantics. Focus indicators use
+an opaque outline; hidden radio inputs expose a full-contrast ring on their visible label surface.
+Token tests verify 4.5:1 text contrast (including tinted domain badges, limitation copy/icons, and
+button hover states) and 3:1 input/focus contrast against light and dark surfaces. Selected/error
+surfaces and the layered progress pulse are included. Readable secondary copy uses the opaque
+muted-foreground token; do not dim it with additional opacity. Outlined actions use the input
+border token, including their hover state. Decorative card dividers may retain the softer border
+token because text and structure carry their meaning.
+
+Token checks must be supplemented by rendered-state contrast review: CSS opacity and layered
+backgrounds can invalidate a passing token pair. See the [contrast audit](contrast-review.md) for
+the September 2026 light/dark browser measurements and coverage.
 
 Base UI provides significant keyboard/ARIA/focus behavior, but StackLens remains responsible for correct composition, labels, copy, contrast, and semantics.
 
@@ -348,13 +394,17 @@ When adding a shadcn component:
 
 The implementation path is now active:
 
-`DTCG JSON → packages/design-tokens generator → generated semantic CSS/JS → packages/ui → future apps/web`
+`DTCG JSON → packages/design-tokens generator → generated semantic CSS/JS → packages/ui → apps/web`
 
 `design/tokens/stacklens.tokens.json` remains canonical. Generated files under `packages/design-tokens/dist/` must not be hand-edited.
 
 The generator also emits shadcn-compatible CSS variables and Tailwind CSS v4 `@theme inline` aliases so generic primitives and StackLens domain components consume the same semantic system.
 
 See [Design infrastructure implementation](../implementation/design-infrastructure.md) and ADR-0007.
+
+The production palette, font, and layout rationale is recorded in
+[Visual refinement](visual-refinement.md). The original disposable prototype retains its historical
+Design v1 palette; its hand-authored CSS is not a production token source.
 
 ## 20. External references
 

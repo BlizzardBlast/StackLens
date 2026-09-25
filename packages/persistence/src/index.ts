@@ -1,6 +1,8 @@
 export { createStackLensDatabase } from "./database.js";
 export type { StackLensDatabase } from "./database.js";
 
+export { createStackLensPool } from "./pool.js";
+
 export { migrateStackLensDatabase } from "./migrate.js";
 
 export { DrizzleAnalysisRepository } from "./repository.js";

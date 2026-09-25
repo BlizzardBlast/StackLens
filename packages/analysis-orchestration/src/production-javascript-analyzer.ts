@@ -12,6 +12,8 @@ import {
   outdatedDependencyRule,
   potentiallyUnnecessaryDependencyRule,
   projectConfigurationRule,
+  projectReadinessFactRule,
+  projectReadinessFindingRule,
   resolvedDependencyFactRule,
   scoringCoverageFactRule,
   sourceUsageFactRule,
@@ -22,8 +24,8 @@ import type {
 } from "@stacklens/rules-javascript";
 import { stackHealthScorer } from "@stacklens/scoring";
 
-export const PRODUCTION_JAVASCRIPT_ANALYZER_VERSION = "javascript-production-v2";
-export const PRODUCTION_JAVASCRIPT_RULE_SET_VERSION = "javascript-rules-v2";
+export const PRODUCTION_JAVASCRIPT_ANALYZER_VERSION = "javascript-production-v3";
+export const PRODUCTION_JAVASCRIPT_RULE_SET_VERSION = "javascript-rules-v3";
 
 export const productionJavaScriptAnalyzer = {
   version: PRODUCTION_JAVASCRIPT_ANALYZER_VERSION,
@@ -34,6 +36,7 @@ export const productionJavaScriptAnalyzer = {
       frameworkToolDetectionRule,
       npmRegistryHealthFactRule,
       projectConfigurationRule,
+      projectReadinessFactRule,
       resolvedDependencyFactRule,
       scoringCoverageFactRule,
       sourceUsageFactRule,
@@ -45,6 +48,7 @@ export const productionJavaScriptAnalyzer = {
       migrationOpportunityRule,
       outdatedDependencyRule,
       potentiallyUnnecessaryDependencyRule,
+      projectReadinessFindingRule,
     ],
     prioritizer: javascriptFindingPrioritizer,
     recommendationRules: [evidenceBackedRecommendationRule],

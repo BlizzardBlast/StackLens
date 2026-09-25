@@ -171,16 +171,10 @@ describe("project detection analyzer integration [FR-008, FR-012, FR-013]", () =
         },
       },
     });
-    expect(report.limitations).toEqual(
-      expect.arrayContaining([
-        scoreLimitation,
-        expect.objectContaining({
-          kind: "unsupported_configuration",
-          ruleIds: ["JS-CONFIG-013"],
-          message: expect.stringContaining("did not import, execute, or resolve dynamic values"),
-        }),
-      ]),
-    );
+    expect(report.limitations).toEqual([scoreLimitation]);
+    expect(
+      report.facts.find((fact) => fact.subject.path === "vite.config.ts")?.statement,
+    ).toContain("literal configuration objects=1");
     expect(report.recommendations).toEqual([]);
     expect(report.scores.overall.status).toBe("insufficient_evidence");
     expect(AnalysisReportSchema.safeParse(report).success).toBe(true);

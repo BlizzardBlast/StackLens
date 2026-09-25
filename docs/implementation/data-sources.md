@@ -97,6 +97,11 @@ The adapter fails closed when:
 
 Malformed provider data does not become a partial fact.
 
+Deprecation accepts a string, an omitted field, or npm's historical `deprecated: false`
+representation. Explicit false means no deprecation notice; it must not invalidate every version
+of a package such as React. True, null, numbers, arrays, and objects remain invalid provider data.
+Compatibility tests cover both the selected version and older version records (FR-007, DATA-003).
+
 ## Resource limits
 
 Defaults:
@@ -427,10 +432,9 @@ This identity is directly compatible with `RepositoryAnalysisInput.repository`.
 
 ### Static file selection
 
-The current policy intentionally matches only already-implemented manifest/configuration analysis.
-It selects root `package.json` plus configuration filename families supported by FR-013.
-
-General JS/TS source acquisition is not implemented in this slice; that expansion belongs to FR-009.
+The current policy selects root `package.json`, supported root lockfiles (FR-023), configuration
+filename families (FR-013), and supported JS/TS source paths (FR-009). Manifest and lockfiles
+receive deterministic priority ahead of optional configuration/source files.
 
 Selection excludes recognized files under generated/vendor directory segments.
 
@@ -459,13 +463,20 @@ Defaults:
 
 - timeout per request: 8 seconds;
 - maximum provider JSON response: 8 MiB;
-- maximum retained selected files: 32;
+- maximum retained selected files: 512;
 - maximum decoded bytes per selected file: 512 KiB;
-- maximum total decoded bytes: 2 MiB;
-- maximum network requests: 40.
+- maximum total decoded bytes: 8 MiB;
+- maximum network requests: 520;
+- concurrent blob reads: at most four, reserved against the remaining budget and retained in
+  deterministic candidate order. Already-started requests may finish after a rate limit; no new
+  batch starts, and the provider's safe retry/configuration guidance remains visible.
 
 The root manifest is ordered before optional configuration files so a tight file/request budget does
 not accidentally sacrifice the primary JavaScript project identity first.
+
+The coordinated budget supports ordinary multi-hundred-file repositories. Unauthenticated GitHub
+quotas may still stop acquisition; configure the existing `STACKLENS_GITHUB_TOKEN` option where
+needed. Unknown-size entries reserve the per-file maximum before a batch starts.
 
 Tree truncation, file-count limits, oversized files, aggregate/request exhaustion, generated/vendor
 skips, unsafe paths, symlinks/submodules, binary/LFS content, missing manifest, and file-level
@@ -605,4 +616,3 @@ that exact package/version query. It is never emitted or described as a general 
 Advisory evidence remains separate and continues to use the OSV advisory identifier/reference.
 
 **Traceability:** FR-011, FR-017–FR-021, DATA-001, DATA-002, SCORE-002, SCORE-003, SEC-008, GOV-007.
-

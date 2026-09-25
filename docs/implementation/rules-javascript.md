@@ -420,7 +420,7 @@ acquisition early.
 
 ## FR-013 static project configuration
 
-`JS-CONFIG-013@1` is a repository-oriented fact rule.
+`JS-CONFIG-013@2` is a repository-oriented fact rule.
 
 Supported configuration paths are identified statically. `createProjectConfigurationEvidence`
 creates path-only `ProjectEvidence`; source content is not copied into evidence/report output.
@@ -437,8 +437,10 @@ configuration limitation instead of coercion.
 
 Known JS/TS config families are identified by filename for ESLint flat/legacy config, Jest, Next.js,
 Prettier, Rollup, Tailwind, Vite, Vitest, and webpack. Supported JS/CJS/MJS/TS/CTS/MTS variants are
-never imported or executed; a separate rule-level limitation explains that dynamic values were not
-resolved.
+never imported or executed. The static parser adapter now inspects literal ESM/CommonJS exports,
+immutable local constants, and recognized `defineConfig` wrappers from `eslint/config`, `vite`, and
+`vitest/config`. It reports literal object/rule-entry counts. Imported presets, runtime expressions,
+mutations, unsupported syntax, and inspection bounds remain explicit partial limitations.
 
 Recognized config-family filenames with unsupported extensions/formats still become configuration
 facts plus `unsupported_configuration` limitations instead of being silently ignored. JSONC/comments
@@ -551,10 +553,10 @@ behavior still require review.
 
 ## FR-015 evidence-backed recommendations
 
-`JS-RECOMMEND-015@1` runs after priority and consumes finalized findings.
+`JS-RECOMMEND-015@2` runs after priority and consumes finalized findings.
 
 It currently maps supported vulnerability, deprecation, outdated-version, major migration, overlap,
-and potentially-unnecessary findings into bounded actions. It:
+potentially-unnecessary findings, and static setup gaps into bounded actions. It:
 
 - reuses finding/evidence references;
 - preserves factual vs heuristic basis;
@@ -586,24 +588,29 @@ priority. Each priority contains explicit factors and finding evidence reference
 
 ## FR-018–FR-021 scoring coverage
 
-`JS-COVERAGE-018@2` is a fact rule that determines whether the generic scorer has sufficient
+`JS-COVERAGE-018@3` is a fact rule that determines whether the generic scorer has sufficient
 JavaScript/TypeScript evidence for a category.
 
-Dependency coverage requires complete project declaration evidence, complete source/config/script
-usage coverage, and complete usable npm latest metadata for every declared package.
+Dependency version-health coverage requires complete project declaration evidence, exact current
+versions, and complete usable bound npm current/latest metadata for every declared package.
+Source/config/script usage coverage remains required for absence-based unused-dependency findings,
+which are outside the v2 version-health score.
 
 Security coverage requires exact supported dependency versions, one available bound OSV source,
 complete exact-version query results for every dependency, and query-level OSV provenance evidence.
 
-The rule explicitly marks Maintainability, Testing, and Tooling insufficient in scoring policy v1.
-Findings in those categories remain visible/prioritized/recommendable but do not create numeric score
-deductions.
+Maintainability uses the same complete metadata gate for its explicit major-version migration
+scope. `JS-READINESS-019@1` establishes Testing and Tooling setup coverage using acquired repository
+metadata, root scripts, conventional test paths, a package-manager pin, and normalized lockfiles.
+`JS-SETUP-019@1` emits medium-confidence, low-priority setup-gap heuristics only from complete
+relevant observations. Unsupported custom scripts/managers and partial lockfiles remain N/A.
 
-Any material configuration limitation from FR-013 now affects both Tooling and Dependencies because
-unsupported/dynamic configuration may hide dependency/plugin usage.
+Configuration limitations remain related to Tooling and Dependencies because dynamic values may
+hide usage. They do not block unrelated complete scoring scopes. Rule/priority failures that could
+suppress scored findings still block scoring.
 
 The concrete score formula lives in `@stacklens/scoring`, not this ecosystem package. See
-`docs/implementation/scoring.md` and ADR-0011.
+`docs/implementation/scoring.md` and ADR-0012.
 
 ### Milestone I verification
 
@@ -616,4 +623,3 @@ Focused fixtures cover:
 - end-to-end analyzer flow through priority, recommendation, scoring, and report validation;
 - N/A behavior for unsupported/missing evidence;
 - complete zero-match OSV query provenance without a "secure" claim.
-

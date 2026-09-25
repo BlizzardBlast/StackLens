@@ -23,7 +23,7 @@ export function AnalysisStatusView({ snapshot }: Readonly<AnalysisStatusViewProp
         </div>
         <Link
           to="/"
-          className="inline-flex min-h-11 w-fit items-center rounded-md border px-4 text-sm font-semibold outline-none hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/35"
+          className="inline-flex min-h-11 w-fit items-center rounded-md border border-input px-4 text-sm font-semibold outline-none hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/35"
         >
           Start a new analysis
         </Link>

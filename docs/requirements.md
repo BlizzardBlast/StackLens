@@ -336,6 +336,9 @@ For repository analysis, StackLens must identify supported project configuration
 
 - Detection does not execute configuration code.
 - Unsupported or dynamic configuration is reported as unsupported/partially inspected rather than guessed.
+- Supported literal JavaScript/TypeScript exports, immutable local constants, and explicitly
+  recognized configuration wrappers may be inspected through the static parser. Imported presets
+  and runtime-dependent values remain unresolved; no configuration code is executed.
 
 ### FR-014 — Migration opportunity detection
 
@@ -412,6 +415,14 @@ StackLens must support category-level scores for:
 
 A category with insufficient evidence must be shown as **N/A / insufficient evidence** rather than automatically receiving a low score.
 
+The initial complete five-category policy uses explicit scopes: dependency version health, known
+dependency advisories, major-version migration readiness, static test setup, and tooling
+reproducibility. Testing checks supported declared test commands and conventional test-file
+presence. Tooling checks an exact supported package-manager pin and matching root lockfile evidence.
+Absence-based setup findings require complete relevant acquisition, remain heuristic, and do not
+claim that tests/tools were executed. Unsupported custom commands or lockfile formats remain N/A.
+Precise gates, deductions, and overall aggregation are versioned in ADR-0012 and the scoring policy.
+
 ### FR-020 — Explain scoring
 
 **Phase:** MVP  
@@ -425,6 +436,11 @@ Users must be able to understand why a health score has its value.
 - Weighting/rules are documented.
 - Missing evidence is not silently converted into a penalty.
 - The same evidence and scoring-rule version produce the same score.
+- Each category states the supported scope and exposes the reasons it cannot be scored.
+- Score eligibility and the number of available category scores must not be labeled as the
+  percentage of source files, packages, or repository evidence inspected.
+- Stored reports retain their original scoring version and values; unimplemented policies in
+  historical reports are distinguished from incomplete evidence in supported policies.
 
 ### FR-021 — Analysis limitations
 
@@ -432,6 +448,12 @@ Users must be able to understand why a health score has its value.
 **Status:** Accepted
 
 Every analysis must communicate material limitations caused by input mode, unsupported configuration, unavailable external data, or insufficient evidence.
+
+Equivalent repeated limitation messages should be grouped for presentation while retaining all
+affected categories, rules, and score links. Repository acquisition must support ordinary
+multi-hundred-file projects within coordinated finite request, file, and byte budgets, and report
+truncation honestly. A limitation outside a score's documented scope must not invalidate complete
+evidence for that scope; failures capable of suppressing a scored finding must still block it.
 
 ### FR-022 — Anonymous quick use
 

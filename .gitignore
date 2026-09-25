@@ -22,6 +22,7 @@ report.*.json
 # Tool caches
 .cache/
 .nyc_output/
+.playwright-mcp/
 
 # Editor and OS files
 .idea/

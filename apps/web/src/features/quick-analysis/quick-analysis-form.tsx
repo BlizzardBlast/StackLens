@@ -117,13 +117,15 @@ export function QuickAnalysisForm({
               checked={mode === "paste"}
               onChange={() => selectMode("paste")}
             />
-            <span className="grid min-h-24 gap-2 rounded-xl border bg-background p-4 transition-[background-color,border-color,box-shadow] group-hover:border-primary/25 peer-checked:border-primary/45 peer-checked:bg-primary/5 peer-focus-visible:ring-3 peer-focus-visible:ring-ring/35">
+            <span className="grid min-h-24 gap-2 rounded-xl border border-input bg-background p-4 transition-[background-color,border-color,box-shadow] group-hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5 peer-focus-visible:ring-3 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background">
               <span className="flex items-center justify-between gap-3">
                 <span className="text-sm font-semibold">Paste manifest</span>
                 <span
                   aria-hidden="true"
-                  className="size-2.5 rounded-full border border-primary/35 bg-primary/10 peer-checked:bg-primary"
-                />
+                  className="flex size-5 items-center justify-center rounded-full border border-input text-xs text-primary"
+                >
+                  {mode === "paste" ? "✓" : null}
+                </span>
               </span>
               <span className="text-xs leading-5 text-muted-foreground">
                 Best when package.json is already open in your editor.
@@ -140,13 +142,15 @@ export function QuickAnalysisForm({
               checked={mode === "upload"}
               onChange={() => selectMode("upload")}
             />
-            <span className="grid min-h-24 gap-2 rounded-xl border bg-background p-4 transition-[background-color,border-color,box-shadow] group-hover:border-primary/25 peer-checked:border-primary/45 peer-checked:bg-primary/5 peer-focus-visible:ring-3 peer-focus-visible:ring-ring/35">
+            <span className="grid min-h-24 gap-2 rounded-xl border border-input bg-background p-4 transition-[background-color,border-color,box-shadow] group-hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5 peer-focus-visible:ring-3 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background">
               <span className="flex items-center justify-between gap-3">
                 <span className="text-sm font-semibold">Choose local file</span>
                 <span
                   aria-hidden="true"
-                  className="size-2.5 rounded-full border border-primary/35 bg-primary/10 peer-checked:bg-primary"
-                />
+                  className="flex size-5 items-center justify-center rounded-full border border-input text-xs text-primary"
+                >
+                  {mode === "upload" ? "✓" : null}
+                </span>
               </span>
               <span className="text-xs leading-5 text-muted-foreground">
                 Read package.json locally, then send only its text to StackLens.
@@ -181,11 +185,10 @@ export function QuickAnalysisForm({
             aria-invalid={error === undefined ? undefined : true}
             aria-describedby={errorId ?? "manifest-content-help"}
             disabled={isPending}
-            className="min-h-72 w-full resize-y rounded-xl border bg-background px-4 py-4 font-mono text-sm leading-6 transition-[border-color,box-shadow,background-color] outline-none placeholder:text-muted-foreground/70 focus-visible:ring-3 focus-visible:ring-ring/35 disabled:cursor-not-allowed disabled:bg-muted/50 disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
+            className="min-h-72 w-full min-w-0 resize-y rounded-xl border border-input bg-background px-4 py-4 font-mono text-sm leading-6 transition-[border-color,box-shadow,background-color] outline-none placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/35 disabled:cursor-not-allowed disabled:bg-muted/50 disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
           />
           <p id="manifest-content-help" className="text-xs leading-5 text-muted-foreground">
-            Server validation is authoritative. StackLens does not execute scripts or install
-            dependencies from this manifest.
+            StackLens inspects the manifest without running scripts or installing dependencies.
           </p>
         </div>
       ) : (
@@ -200,7 +203,7 @@ export function QuickAnalysisForm({
               </p>
               <p className="text-xs leading-5 text-muted-foreground">
                 {selectedManifest === undefined
-                  ? "The browser reads the file locally. StackLens sends the filename and text through the existing JSON API."
+                  ? "Choose a file to read in your browser. Its text is sent only when you run the analysis."
                   : `${fileSizeLabel(selectedManifest.size)} ready for analysis`}
               </p>
             </div>
@@ -219,8 +222,7 @@ export function QuickAnalysisForm({
             />
           </div>
           <p id="manifest-file-help" className="text-xs leading-5 text-muted-foreground">
-            The API accepts only an uploaded file named package.json; that filename rule remains
-            authoritative on the server.
+            Choose a JSON file named package.json.
           </p>
         </div>
       )}
@@ -236,7 +238,7 @@ export function QuickAnalysisForm({
       )}
 
       <div className="grid gap-3">
-        <Button type="submit" disabled={isPending} size="lg" className="w-full sm:w-fit">
+        <Button type="submit" disabled={isPending} size="lg" className="w-full">
           {isPending ? (
             <>
               <span
@@ -262,14 +264,13 @@ export function QuickAnalysisForm({
             <span className="grid gap-0.5">
               <span className="text-sm font-semibold">Analyzing package.json</span>
               <span className="text-xs leading-5 text-muted-foreground">
-                This synchronous request validates the manifest and assembles an evidence-backed
-                report. No background job or polling is created.
+                Checking your manifest and preparing the report. Results will appear here.
               </span>
             </span>
           </output>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Anonymous · Synchronous · No repository access · No project code execution
+            No account required. Your project code is never executed.
           </p>
         )}
       </div>
