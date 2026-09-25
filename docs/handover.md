@@ -1,11 +1,11 @@
 # StackLens Session Handover
 
 > **Status:** Active implementation handover  
-> **Prepared:** 2026-09-22  
+> **Prepared:** 2026-09-25<br>
 > **Baseline branch:** `main`  
 > **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
-> **Architecture:** v0.1.13  
-> **Completed milestone:** MVP automated acceptance hardening  
+> **Architecture:** v0.1.14<br>
+> **Completed milestone:** Scoped scoring v2 and evidence recovery<br>
 > **Immediate milestone:** Manual browser acceptance and release-readiness review (no new product behavior)  
 > **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
 
@@ -14,10 +14,19 @@ This document is the operational handover for the next StackLens implementation 
 The 2026-09-23 [production visual refinement](design/visual-refinement.md), delivered in
 [PR #37](https://github.com/BlizzardBlast/StackLens/pull/37), records the updated
 palette, free self-hosted IBM Plex pairing, system themes, responsive input layouts, and motion
-checks. Its screenshot evidence is committed with the review. The full local quality gate passed;
-five database-gated tests require CI's PostgreSQL service. Live-provider/manual release acceptance
-remains a separate checkpoint. Resolve and verify the current `main` HEAD before the next change;
+checks. Its screenshot evidence is committed with the review. Follow-up work in the same PR fixes
+PostgreSQL pool/client handlers and the real-report evidence gaps documented in
+[evidence improvements](implementation/evidence-improvements.md). The current local quality gate
+passed with 319 tests, including all database tests in an isolated PostgreSQL database. Resolve and
+verify the current `main` HEAD and the PR's merge status before the next change;
 the visual review is not a pinned release commit.
+
+Current repository reports use `javascript-production-v3` / `javascript-rules-v3` and
+`stack-health-v2` (ADR-0012). All five categories have limited, explicit scopes. Stored v1 reports
+retain their values; restart `pnpm dev` and create a new analysis to use the changed collector and
+policy. Quick manifest scoring remains N/A and provider-free; its v3 composition records the shared
+recommendation rule v2. Historical milestone sections below preserve the earlier implementation
+sequence; current policy is defined by ADR-0012 and the scoring implementation document.
 
 It is intentionally more prescriptive than the general architecture documentation. The next session should begin here, then use the linked source-of-truth documents before changing code.
 
@@ -32,6 +41,7 @@ Before implementing anything:
    - `docs/adr/0008-analysis-report-contract-v1.md`;
    - `docs/adr/0009-deterministic-staged-analyzer-core.md`;
    - `docs/adr/0011-deterministic-priority-recommendation-scoring-v1.md`;
+   - `docs/adr/0012-scoped-scoring-and-evidence-recovery.md`;
    - `docs/implementation/analysis-contracts.md`;
    - `docs/implementation/analyzer-core.md`;
    - `docs/implementation/repository-analysis.md`;
@@ -67,7 +77,7 @@ Before implementing anything:
 The repository already has the following accepted foundations:
 
 - canonical product/system requirements;
-- architecture v0.1.13;
+- architecture v0.1.14;
 - Product Design v1;
 - generated design-token infrastructure;
 - shared UI package;
@@ -137,7 +147,7 @@ K3 quick analysis uses synchronous paste/local-file submission and shared report
 
 The npm Registry, OSV, and public GitHub acquisition adapters are implemented, including explicit
 bounded source-coverage state. Static source usage, migration/recommendation policy, production
-priority, scoring v1, shared repository orchestration, PostgreSQL analysis/report persistence,
+priority, scoped scoring v2, shared repository orchestration, PostgreSQL analysis/report persistence,
 Graphile Worker jobs, both Fastify analysis transports, and both public React input flows are
 implemented. Automated acceptance coverage now verifies production-router composition across both
 web flows and composed-runtime behavior across both API execution models.
@@ -240,8 +250,8 @@ Accepted implementation:
 - numeric scoring remains insufficient evidence rather than inventing health from manifest-only data;
 - no authentication, persistence, provider I/O, repository source analysis, or project execution is introduced;
 - ignored manifest fields are not copied into the report, supporting minimum-retention behavior;
-- the web report surfaces verified manifest facts before score cards and explains that quick-mode 0%
-  means numeric-score evidence coverage, not manifest parse coverage.
+- the web report surfaces verified manifest facts before score cards and displays score
+  availability without implying a measured manifest-parse percentage.
 
 Primary traceability:
 
@@ -773,15 +783,18 @@ dependency name and exact package.json specifier match deterministically. Exact 
 still work without a lockfile. Ambiguous/stale/malformed/workspace/non-semver lockfile states remain
 limitations rather than guesses.
 
-Repository analysis now uses the resolved exact current version for npm version-specific rules, OSV
-queries, migration comparison, and Dependencies/Security score coverage. The scoring formula remains
-`stack-health-v1`; production analyzer/rule-set identities advance to v2 because their evidence
-semantics changed. Quick analysis remains package.json-only and provider-free.
+Repository analysis uses the resolved exact current version for npm version-specific rules, OSV
+queries, migration comparison, and version-health coverage. The later evidence-recovery work in
+PR #37 advances production analyzer/rule-set identities to v3 and scoring to v2 under ADR-0012.
+Quick analysis remains package.json-only and provider-free.
 
 Manual acceptance must therefore also re-run a public repository that commits a supported lockfile
 and uses ranged dependency declarations, confirming that resolved-version evidence is visible and
-numeric Dependencies/Security scores become available only when the remaining source/npm/OSV
-coverage is complete.
+numeric categories become available only when their documented required evidence is complete.
+The same KerjaLog commit was reanalyzed with all 351 supported source files and all 47 npm packages
+available, no provider failures, and one honest unresolved ESLint preset limitation. Its five v2
+scores are available; this does not imply general code quality or passing tests. See the
+implementation record for the immutable commit and verification scope.
 
 Fix only concrete acceptance failures. If a fix changes product behavior beyond existing
 requirements, update the requirement first or in the same PR.

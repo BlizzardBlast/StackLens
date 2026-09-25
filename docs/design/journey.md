@@ -1632,3 +1632,45 @@ parallel run exceeded the existing API runtime test's five-second timeout; it pa
 without changing that timeout. The final build, typecheck, tests, lint, and formatting all passed.
 
 **Traceability:** FR-003, NFR-009, SEC-007, GOV-002, GOV-007; ADR-0004.
+
+## 2026-09-25 — Step 62: Recover evidence and explain five scoped scores
+
+**Pull request:** [#37](https://github.com/BlizzardBlast/StackLens/pull/37)
+
+The real KerjaLog report had 11 limitations: a 32-file ceiling, rejected historical npm
+`deprecated: false` metadata for React, unresolved configuration, repeated provider notices, and
+three scoring policies that were intentionally unimplemented. Accepted requirements and ADR-0012
+now define five bounded scoring scopes before implementation changes.
+
+The npm adapter accepts explicit false while rejecting other malformed values. GitHub collection
+uses coordinated 512-file/520-request/8 MiB budgets, four concurrent blob requests, deterministic
+retention, and explicit rate-limit/resource failures. A bounded parser inspects literal config
+exports, immutable constants, and recognized wrappers without executing repository code; imported
+presets and runtime values remain partial.
+
+Repository analyzer/rule-set v3 uses `stack-health-v2`: version health, known advisories, major
+migration readiness, static test setup, and tooling reproducibility. Each score requires its own
+complete evidence, and overall requires all five. Missing evidence never becomes a penalty.
+Unused-dependency heuristics keep their strict completeness gate and are outside the version-health
+score. Quick composition v3 records recommendation rule v2 while retaining manifest-only N/A.
+
+The report states scope and available-category counts instead of misleading evidence percentages.
+Disclosures expose deductions or linked blocking causes. Duplicate notices are grouped ahead of
+findings, distinguishing related areas from actually blocked scores. Legacy reports retain their
+values and explicitly identify their unimplemented policies. Zero has its own score-floor
+explanation. Existing palette, free fonts, and motion remain consistent.
+
+`pnpm check` passed with 319 tests, including PostgreSQL integration tests in a temporary database
+that was removed afterward. Browser review covered both themes at 320 and 1440 px, keyboard
+disclosure/focus links, no horizontal overflow, and passing axe text-contrast checks. A fresh run of
+the same immutable KerjaLog commit acquired all 351 source files and 47 npm packages in 51 seconds,
+with no provider failures and one honest unresolved ESLint preset limitation. All five scores were
+available; overall was 68. The original report was not rewritten.
+
+Requirements, ADRs/architecture, package and implementation guides, report design, and handover
+were updated. The [implementation record](../implementation/evidence-improvements.md) includes
+scope, captures, and verification; new analyses require restarting the local composition. The next
+session must check this PR's merge status and resolve/verify the current `main` HEAD.
+
+**Traceability:** FR-003, FR-006–FR-010, FR-013–FR-021, FR-023, DATA-001–DATA-006,
+SCORE-001–SCORE-004, SEC-001, SEC-002, NFR-001–NFR-008, GOV-002–GOV-007; ADR-0012.

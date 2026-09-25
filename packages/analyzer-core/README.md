@@ -140,7 +140,8 @@ Given equivalent inputs, rule set, prioritizer, scorer, and analyzer versions/im
 Milestone I adds the first production implementations behind the existing abstractions:
 
 - `JS-PRIORITY-016@1` in `@stacklens/rules-javascript`;
-- `JS-RECOMMEND-015@1` in `@stacklens/rules-javascript`;
-- `stackHealthScorer` / `stack-health-v1` in `@stacklens/scoring`.
+- `JS-RECOMMEND-015@2` in `@stacklens/rules-javascript`;
+- `stackHealthScorer` / `stack-health-v2` in `@stacklens/scoring`.
 
-Analyzer-core still contains none of their mappings, weights, or category coverage decisions. See ADR-0011.
+Analyzer-core still contains none of their mappings, weights, or category coverage decisions.
+See ADR-0011 for the original integration and ADR-0012 for current scoped coverage.

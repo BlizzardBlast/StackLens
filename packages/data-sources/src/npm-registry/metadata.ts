@@ -130,10 +130,10 @@ function parseVersions(
       const deprecatedRaw = versionValue.deprecated;
       let deprecatedMessage: string | undefined;
 
-      if (deprecatedRaw !== undefined) {
+      if (deprecatedRaw !== undefined && deprecatedRaw !== false) {
         if (typeof deprecatedRaw !== "string") {
           throw new NpmRegistryPayloadError(
-            `versions.${version}.deprecated must be a string when provided`,
+            `versions.${version}.deprecated must be a string or false when provided`,
           );
         }
 

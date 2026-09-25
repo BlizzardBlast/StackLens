@@ -310,9 +310,9 @@ describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-
       },
     });
     expect(result.report.analyzer).toEqual({
-      version: "javascript-production-v2",
-      ruleSetVersion: "javascript-rules-v2",
-      scoringVersion: "stack-health-v1",
+      version: "javascript-production-v3",
+      ruleSetVersion: "javascript-rules-v3",
+      scoringVersion: "stack-health-v2",
     });
 
     const migration = result.report.findings.find(
@@ -329,8 +329,11 @@ describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-
         },
       },
     });
-    expect(result.report.recommendations).toHaveLength(1);
-    expect(result.report.recommendations[0]?.findingIds).toContain(migration?.id ?? "");
+    expect(
+      result.report.recommendations.some((recommendation) =>
+        recommendation.findingIds.includes(migration?.id ?? ""),
+      ),
+    ).toBe(true);
     expect(result.report.scores.categories.dependencies).toMatchObject({
       status: "available",
       value: 88,
@@ -343,8 +346,8 @@ describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-
     });
     expect(result.report.scores.overall).toMatchObject({
       status: "available",
-      value: 94,
-      evidenceCoverage: 40,
+      value: 91.2,
+      evidenceCoverage: 100,
     });
     expect(osvProvider.fetchMock).toHaveBeenCalledWith({
       queries: [
@@ -448,7 +451,7 @@ importers:
     });
     expect(result.report.scores.overall).toMatchObject({
       status: "available",
-      evidenceCoverage: 40,
+      evidenceCoverage: 100,
     });
     expect(JSON.stringify(result.report)).not.toContain(lockfile);
   });

@@ -292,7 +292,11 @@ Initial visual states:
 - poor;
 - unknown/N/A.
 
-Do not hardcode product conclusions such as "healthy" solely from color. Score copy should remain descriptive and always expose evidence coverage.
+Do not hardcode product conclusions such as "healthy" solely from color. Score copy must state its
+scope, availability, and explanation. A binary scoring-eligibility field must never appear as a
+measured evidence-coverage percentage. Actual acquisition counts retain their own denominator.
+See [report evidence presentation](report-evidence.md) for v2 scopes, disclosures, and grouped
+limitations; missing evidence remains structurally distinct from a numeric zero.
 
 ## 14. Accessibility
 

@@ -18,11 +18,11 @@ import {
   truncate,
   uniqueSorted,
 } from "./rule-support.js";
-import { sourceUsageCoverageEvidenceId } from "./source-usage.js";
+import { parseExactSemanticVersion } from "./semver.js";
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-COVERAGE-018";
-const RULE_VERSION = "2";
+const RULE_VERSION = "3";
 const OSV_PROVIDER_ID = "osv";
 
 export function analysisCoverageFactType(category: ScoreCategory): string {
@@ -102,20 +102,6 @@ function dependencyCoverage(
     };
   }
 
-  const sourceUsage = context.project.sourceUsage;
-
-  if (sourceUsage?.coverage !== "complete") {
-    return {
-      limitations: [
-        coverageLimitation(
-          "dependencies",
-          "source-usage-incomplete",
-          "Dependency health scoring requires complete supported static source/configuration/script usage coverage so missing usage cannot be converted into a score penalty.",
-        ),
-      ],
-    };
-  }
-
   const limitations: AnalysisLimitation[] = [];
   const evidenceIds: string[] = [];
   let complete = true;
@@ -136,21 +122,6 @@ function dependencyCoverage(
     } else {
       evidenceIds.push(evidenceId);
     }
-  }
-
-  const sourceCoverageEvidenceId = sourceUsageCoverageEvidenceId(sourceUsage);
-
-  if (!knownEvidence.has(sourceCoverageEvidenceId)) {
-    complete = false;
-    limitations.push(
-      coverageLimitation(
-        "dependencies",
-        "source-coverage-evidence-missing",
-        "Dependency scoring coverage is missing the static source-usage coverage evidence record.",
-      ),
-    );
-  } else {
-    evidenceIds.push(sourceCoverageEvidenceId);
   }
 
   for (const basis of dependencyDeclarationBases(context.project)) {
@@ -230,7 +201,11 @@ function dependencyCoverage(
         ? undefined
         : packageVersion(resolved.observation.snapshot, latest.version);
 
-    if (latest === undefined || latestVersion === undefined) {
+    if (
+      latest === undefined ||
+      latestVersion === undefined ||
+      parseExactSemanticVersion(latest.version) === undefined
+    ) {
       complete = false;
       limitations.push(
         createDependencyRuleLimitation(
@@ -259,7 +234,7 @@ function dependencyCoverage(
   return {
     fact: createCoverageFact(
       "dependencies",
-      `Dependency scoring coverage is complete for ${context.project.dependencies.length} supported declaration(s): manifest evidence, exact current versions from package.json or matching lockfile evidence, npm latest metadata, and static source/configuration/script usage coverage are available.`,
+      `Dependency version-health coverage is complete for ${context.project.dependencies.length} supported declaration(s): manifest evidence, exact current versions, and bound npm current/latest metadata are available. Source-usage heuristics are outside this score's scope.`,
       evidenceIds,
     ),
     limitations: [],
@@ -439,28 +414,29 @@ export const scoringCoverageFactRule: FactRule<
   evaluate(context) {
     const dependencies = dependencyCoverage(context);
     const security = securityCoverage(context);
-    const unsupportedCategories: readonly ScoreCategory[] = [
-      "maintainability",
-      "testing",
-      "tooling",
-    ];
-    const unsupportedLimitations = unsupportedCategories.map((category) =>
-      coverageLimitation(
-        category,
-        "category-policy-not-implemented",
-        `${category} scoring is N/A in scoring policy v1 because StackLens does not yet have accepted complete evidence coverage and deductions for that category. Missing evidence is not converted into a penalty.`,
-      ),
-    );
+    const maintainability =
+      dependencies.fact === undefined
+        ? undefined
+        : createCoverageFact(
+            "maintainability",
+            "Major-version migration coverage is complete for every supported dependency declaration. This scope does not measure general code maintainability.",
+            dependencies.fact.evidenceIds,
+          );
 
     return {
       facts: [
         ...(dependencies.fact === undefined ? [] : [dependencies.fact]),
         ...(security.fact === undefined ? [] : [security.fact]),
+        ...(maintainability === undefined ? [] : [maintainability]),
       ],
       limitations: [
         ...dependencies.limitations,
         ...security.limitations,
-        ...unsupportedLimitations,
+        ...dependencies.limitations.map((limitation) => ({
+          ...limitation,
+          id: `${limitation.id}-maintainability`,
+          affectedCategories: ["maintainability" as const],
+        })),
       ],
     };
   },

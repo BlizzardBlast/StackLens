@@ -1,8 +1,8 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.13  
-> **Date:** 2026-09-22  
+> **Architecture version:** 0.1.14
+> **Date:** 2026-09-25
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
@@ -345,7 +345,13 @@ Outputs:
 - N/A states for insufficient evidence;
 - scoring rule version.
 
-The concrete `@stacklens/scoring` package now implements scoring policy v1 under ADR-0011. Numeric scoring is gated by explicit ecosystem coverage facts plus the absence of material category limitations. Dependencies and Security are the only numeric categories in v1; Maintainability, Testing, and Tooling remain N/A until accepted complete-coverage policy exists. The overall score is the mean of Dependencies and Security only when both are available. Missing evidence never becomes a deduction.
+The concrete `@stacklens/scoring` package implements scoring policy v2 under ADR-0012. Coverage
+facts establish complete evidence for five bounded scopes: dependency version health, known
+advisories, migration readiness, static test setup, and tooling reproducibility. Material failures
+within each scope block scoring; unrelated source-usage limitations remain visible. The overall
+score requires all five categories and is their arithmetic mean. Missing evidence never becomes a
+deduction. Stored v1 reports preserve their original version and values. The serialized report
+shape is unchanged; score-eligibility percentages must not be presented as measured file coverage.
 
 This directly implements **FR-018–FR-020** and **SCORE-001–SCORE-004**.
 
@@ -517,7 +523,7 @@ StackLens/
 │  ├─ rules-javascript/    # JS/TS rules + priority/recommendation/coverage policy
 │  ├─ contracts/           # Zod schemas + public domain/API contracts
 │  ├─ data-sources/        # npm, OSV, GitHub adapters
-│  ├─ scoring/             # deterministic score engine/configuration (implemented v1)
+│  ├─ scoring/             # deterministic score engine/configuration (implemented v2)
 │  ├─ database/            # schema/repositories/migrations
 │  ├─ design-tokens/       # generated semantic design tokens
 │  ├─ ui/                  # generic primitives + StackLens domain components

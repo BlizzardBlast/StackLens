@@ -162,13 +162,13 @@ See [JavaScript Rules](docs/implementation/rules-javascript.md).
 
 The concrete deterministic scorer lives in **`packages/scoring`**.
 
-Scoring policy v1 uses finalized finding priority to produce evidence-linked deductions only when an
-ecosystem coverage fact proves the category is supported. Dependencies and Security are numeric when
-their evidence is complete; Maintainability, Testing, and Tooling remain N/A instead of receiving
-invented penalties. The overall score is available only when both currently supported numeric
-categories are available.
+Scoring policy v2 provides five explicit scopes: dependency version health, known advisories,
+major-version migration readiness, static test setup, and tooling reproducibility. Each numeric
+score requires complete evidence for its scope and exposes its deductions. The overall score
+requires all five categories. Source-usage limitations remain visible without invalidating unrelated
+complete checks, and missing evidence stays N/A. Stored v1 reports retain their original values.
 
-See [Scoring Policy v1](docs/implementation/scoring.md) and **ADR-0011**.
+See [Scoring Policy v2](docs/implementation/scoring.md) and **ADR-0012**.
 
 ## Quick manifest application boundary
 

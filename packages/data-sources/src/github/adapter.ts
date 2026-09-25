@@ -515,8 +515,10 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
     const binaryPaths: string[] = [];
     const lfsPointerPaths: string[] = [];
     const failedPaths: string[] = [];
+    let rateLimited = false;
 
-    const acquireEntry = async (entry: CandidateEntry): Promise<void> => {
+    type BlobResult = { readonly payload: unknown } | { readonly error: unknown };
+    const retainEntry = (entry: CandidateEntry, result: BlobResult): void => {
       if (entry.size !== undefined && entry.size > this.#maxFileBytes) {
         oversizedPaths.push(entry.path);
         return;
@@ -527,15 +529,11 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
         return;
       }
 
-      if (client.requestCount >= client.maxRequests) {
-        aggregateLimitedPaths.push(entry.path);
-        return;
-      }
-
       const endpoint = githubBlobApiUrl(repository.owner, repository.name, entry.sha);
 
       try {
-        const payload = await client.getJson(endpoint, "blob");
+        if ("error" in result) throw result.error;
+        const payload = result.payload;
         let blob;
 
         try {
@@ -611,12 +609,15 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
               );
 
         failedPaths.push(entry.path);
+        rateLimited ||= failure.code.endsWith("_rate_limited");
         partialFailures.push(
           createPartialFailure(
             sourceId,
             validateObservedAt(this.#now()),
             failure.code,
-            `GitHub could not acquire selected file ${JSON.stringify(entry.path)}.`,
+            failure.code.endsWith("_rate_limited")
+              ? failure.message
+              : `GitHub could not acquire selected file ${JSON.stringify(entry.path)}.`,
             failure.retryable,
             entry.path,
           ),
@@ -624,18 +625,47 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
       }
     };
 
-    const acquireSequentially = async (index: number): Promise<void> => {
-      const entry = retainedCandidates[index];
-
-      if (entry === undefined) {
-        return;
+    let candidateIndex = 0;
+    while (candidateIndex < retainedCandidates.length) {
+      const batch: CandidateEntry[] = [];
+      let reservedBytes = 0;
+      while (batch.length < 4 && candidateIndex < retainedCandidates.length) {
+        const entry = retainedCandidates[candidateIndex]!;
+        const reservation = entry.size ?? this.#maxFileBytes;
+        if (rateLimited || client.requestCount + batch.length >= client.maxRequests) {
+          aggregateLimitedPaths.push(entry.path);
+          candidateIndex += 1;
+        } else if (reservation > this.#maxFileBytes) {
+          oversizedPaths.push(entry.path);
+          candidateIndex += 1;
+        } else if (totalBytes + reservedBytes + reservation > this.#maxTotalFileBytes) {
+          if (batch.length > 0) break;
+          aggregateLimitedPaths.push(entry.path);
+          candidateIndex += 1;
+        } else {
+          batch.push(entry);
+          reservedBytes += reservation;
+          candidateIndex += 1;
+        }
       }
-
-      await acquireEntry(entry);
-      return acquireSequentially(index + 1);
-    };
-
-    await acquireSequentially(0);
+      // Reserve before starting requests, then retain in candidate order so timing cannot select files.
+      // eslint-disable-next-line no-await-in-loop -- The next batch requires the prior batch's byte usage and rate-limit result.
+      const results = await Promise.all(
+        batch.map(async (entry): Promise<BlobResult> => {
+          try {
+            return {
+              payload: await client.getJson(
+                githubBlobApiUrl(repository.owner, repository.name, entry.sha),
+                "blob",
+              ),
+            };
+          } catch (error) {
+            return { error };
+          }
+        }),
+      );
+      batch.forEach((entry, index) => retainEntry(entry, results[index]!));
+    }
 
     if (oversizedPaths.length > 0) {
       limitations.push(
@@ -656,7 +686,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
           sourceId,
           "github_total_or_request_limit",
           "resource_limit",
-          `Selected repository files could not be retained within the ${this.#maxTotalFileBytes}-byte aggregate/${this.#maxRequests}-request acquisition bounds: ${samplePaths(
+          `Selected repository files were skipped after a request/byte budget or provider rate limit was reached (${this.#maxTotalFileBytes}-byte aggregate/${this.#maxRequests}-request bounds): ${samplePaths(
             aggregateLimitedPaths,
           )}.`,
         ),

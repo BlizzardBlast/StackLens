@@ -164,6 +164,115 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+describe("realistic bounded repository acquisition [FR-003, FR-009, FR-021, SEC-002]", () => {
+  it("bounds in-flight blob reads and retains candidate order after reversed completion", async () => {
+    const entries = Array.from({ length: 9 }, (_, index) => ({
+      path: index === 0 ? "package.json" : `src/file-${index}.ts`,
+      sha: (index + 100).toString(16).padStart(40, "0"),
+      text: index === 0 ? "{}" : "export {};",
+    }));
+    const pending: (() => void)[] = [];
+    let active = 0;
+    let peak = 0;
+    const fetchImpl = successfulBaseFetch(
+      treePayload(entries.map((entry) => treeEntry(entry.path, entry.sha, entry.text.length))),
+      [],
+    ).mockImplementation((input) => {
+      const url = input instanceof Request ? input.url : input.toString();
+      const entry = entries.find((item) => url.endsWith(item.sha));
+      if (entry === undefined) throw new Error("Unexpected fixture blob");
+      active += 1;
+      peak = Math.max(peak, active);
+      return new Promise<Response>((resolve) =>
+        pending.push(() => {
+          active -= 1;
+          resolve(jsonResponse(blobPayload(entry.sha, entry.text)));
+        }),
+      );
+    });
+    const acquisition = createAdapter(fetchImpl).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+    const finishBatch = async (start: number, expected: number) => {
+      await vi.waitFor(() => expect(pending).toHaveLength(expected));
+      pending
+        .slice(start, expected)
+        .toReversed()
+        .forEach((resolve) => resolve());
+    };
+    await finishBatch(0, 4);
+    await finishBatch(4, 8);
+    await finishBatch(8, 9);
+    const result = await acquisition;
+    expect(peak).toBe(4);
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected complete acquisition");
+    expect(result.data.manifest?.path).toBe("package.json");
+    expect(result.data.files.map((file) => file.path)).toEqual(
+      entries.slice(1).map((entry) => entry.path),
+    );
+    expect(result.data.limitations).toEqual([]);
+  });
+  it.each([355, 520])(
+    "handles %s supported files with coordinated default budgets",
+    async (count) => {
+      const entries = Array.from({ length: count - 1 }, (_, index) => ({
+        path: `src/file-${String(index).padStart(4, "0")}.ts`,
+        sha: (index + 100).toString(16).padStart(40, "0"),
+      }));
+      const text = "export const value = 1;";
+      const retained = Math.min(entries.length, 511);
+      const fetchImpl = successfulBaseFetch(
+        treePayload([
+          treeEntry("package.json", manifestSha, 2),
+          ...entries.map((entry) => treeEntry(entry.path, entry.sha, text.length)),
+        ]),
+        [
+          blobPayload(manifestSha, "{}"),
+          ...entries.slice(0, retained).map((entry) => blobPayload(entry.sha, text)),
+        ],
+      );
+      const result = await createAdapter(fetchImpl).fetch({
+        repositoryUrl: `https://github.com/${owner}/${name}`,
+      });
+      expect(result.ok).toBe(true);
+      if (!result.ok) throw new Error("Expected bounded acquisition result");
+      expect(result.data.files).toHaveLength(retained);
+      expect(result.data.sourceCoverage).toEqual({
+        status: count > 512 ? "partial" : "complete",
+        candidateFiles: count - 1,
+        acquiredFiles: retained,
+      });
+      expect(fetchImpl).toHaveBeenCalledTimes(retained + 4);
+      expect(result.data.limitations.some((item) => item.kind === "resource_limit")).toBe(
+        count > 512,
+      );
+    },
+  );
+
+  it("stops blob requests after throttling and preserves an actionable cause", async () => {
+    const fetchImpl = successfulBaseFetch(
+      treePayload([
+        treeEntry("package.json", manifestSha, 2),
+        treeEntry("src/a.ts", sourceSha, 2),
+        treeEntry("src/b.ts", tsconfigSha, 2),
+      ]),
+      [blobPayload(manifestSha, "{}")],
+    );
+    fetchImpl.mockResolvedValueOnce(
+      new Response("{}", { status: 429, headers: { "retry-after": "60" } }),
+    );
+    const result = await createAdapter(fetchImpl).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected partial acquisition");
+    expect(fetchImpl).toHaveBeenCalledTimes(6);
+    expect(result.data.sourceCoverage.status).toBe("partial");
+    expect(result.partialFailures[0]?.message).toContain("Retry after 60 seconds");
+  });
+});
+
 describe("parsePublicGitHubRepositoryUrl [FR-003, FR-004, SEC-002]", () => {
   it("accepts canonical public GitHub repository URLs and normalizes clone suffix/trailing slash", () => {
     expect(parsePublicGitHubRepositoryUrl("https://github.com/Owner/repository")).toEqual({
@@ -720,9 +829,7 @@ importers:
         content: firstConfig,
       },
     ]);
-    expect(aggregateResult.data.limitations[0]?.message).toContain(
-      "aggregate/40-request acquisition bounds",
-    );
+    expect(aggregateResult.data.limitations[0]?.message).toContain("aggregate/520-request bounds");
 
     const requestFetch = successfulBaseFetch(tree, [blobPayload(manifestSha, packageJson)]);
     const requestResult = await createAdapter(requestFetch, {
@@ -740,9 +847,7 @@ importers:
     expect(requestFetch).toHaveBeenCalledTimes(4);
     expect(requestResult.data.manifest?.content).toBe(packageJson);
     expect(requestResult.data.files).toEqual([]);
-    expect(requestResult.data.limitations[0]?.message).toContain(
-      "aggregate/4-request acquisition bounds",
-    );
+    expect(requestResult.data.limitations[0]?.message).toContain("aggregate/4-request bounds");
   });
 
   it("skips oversized selected files before fetching their blobs", async () => {
