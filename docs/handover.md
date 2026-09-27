@@ -3,6 +3,7 @@
 > **Prepared:** 2026-09-27
 > **Architecture:** v0.1.15
 > **Milestone:** Workspace inspection and scoring v3 (ADR-0013)
+> **Milestone PR:** [#38](https://github.com/BlizzardBlast/StackLens/pull/38)
 > **Branch:** `codex/workspace-inspection-scoring`, stacked on open PR #37
 > **Baseline:** `8fe68e0e065f08b0ffdf9aaf0e664b9b7103d2e2`
 > **Traceability:** FR-005–FR-009, FR-011–FR-023, DATA-001–006, SCORE-001–004, SEC-001/002, NFR-006–008, GOV-002–007

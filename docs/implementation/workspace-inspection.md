@@ -196,3 +196,7 @@ Final release verification (2026-09-27): pnpm check passed with TEST_DATABASE_UR
 isolated database: build, shadcn project inspection, 21-task typecheck, 413 tests across the
 workspace (including PostgreSQL and API runtime tests), lint and formatting. Turbo reused
 unchanged successful tasks; changed suites ran freshly. git diff --check passed.
+
+Delivery: [PR #38](https://github.com/BlizzardBlast/StackLens/pull/38) is stacked on PR #37's
+`codex/design-palette-typography` branch. GitHub's quality workflow passed for implementation
+commit `e91ed4c4d8eb54f72a848fc84cd0486aaca6e385`. The same PR includes the release handover.

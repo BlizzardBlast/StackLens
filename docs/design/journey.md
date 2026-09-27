@@ -1693,7 +1693,8 @@ readers preserve saved reports. React renders bands/checklists, package filters 
 limitations using existing semantic colors and free IBM Plex fonts. Fastify/OpenAPI and storage
 share the versioned schemas. Compatible readers precede writer activation; rollback retains both.
 
-The branch codex/workspace-inspection-scoring follows open PR #37 without another worktree.
+[PR #38](https://github.com/BlizzardBlast/StackLens/pull/38), on branch
+`codex/workspace-inspection-scoring`, follows open PR #37 without another worktree.
 Each phase has a scoped review and bounded remediation ledger in the
 [implementation record](../implementation/workspace-inspection.md). Pinned recorded KerjaLog/Frey-ui
 inputs with synthetic provider/test evidence verify four manifests/catalogs, supported JSONC/MDX
