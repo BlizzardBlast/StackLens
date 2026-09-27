@@ -6,7 +6,10 @@ import * as z from "zod";
 
 import type { AnalyzerDefinition } from "@stacklens/analyzer-core";
 import { AnalysisReportSchema } from "@stacklens/contracts";
-import type { NormalizedPackageManifest } from "@stacklens/rules-javascript";
+import type {
+  JavaScriptProjectSnapshot,
+  JavaScriptAnalysisMetadata,
+} from "@stacklens/rules-javascript";
 
 import { ApiErrorSchema } from "./http-contracts.js";
 import type { QuickManifestInput } from "./manifest-input.js";
@@ -34,7 +37,10 @@ export const QuickManifestAnalysisResponseSchema = z.strictObject({
 });
 
 export interface QuickManifestAnalysisHttpDependencies {
-  readonly quickManifestAnalyzer?: AnalyzerDefinition<NormalizedPackageManifest, unknown>;
+  readonly quickManifestAnalyzer?: AnalyzerDefinition<
+    JavaScriptProjectSnapshot,
+    JavaScriptAnalysisMetadata
+  >;
   readonly createAnalysisId?: () => string;
   readonly now?: () => string;
 }

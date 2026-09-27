@@ -6,9 +6,12 @@ import type { DataSource, ExternalEvidence } from "@stacklens/contracts";
 import { stackHealthScorer } from "@stacklens/scoring";
 
 import {
-  createDependencyInventoryEvidence,
+  createWorkspaceEvidence,
+  workspaceInspectionRule,
+  scopeFactRule,
+  scopeFindingRule,
+  scopeRecommendationRule,
   createJavaScriptProjectSnapshot,
-  createSourceUsageEvidence,
   dependencyInventoryRule,
   evidenceBackedRecommendationRule,
   javascriptFindingPrioritizer,
@@ -16,8 +19,6 @@ import {
   migrationOpportunityRule,
   normalizePackageManifest,
   outdatedDependencyRule,
-  scoringCoverageFactRule,
-  projectReadinessFactRule,
   sourceUsageFactRule,
   withJavaScriptSourceUsage,
 } from "../src/index.js";
@@ -54,8 +55,8 @@ describe("production analysis policy integration [FR-014–FR-021, SCORE-001–S
         react: "18.2.0",
       },
     });
-    const project = withJavaScriptSourceUsage(
-      createJavaScriptProjectSnapshot(manifest, [
+    const member = withJavaScriptSourceUsage(
+      createJavaScriptProjectSnapshot({ ...manifest, packagePath: "." }, [
         {
           path: "src/index.ts",
           content:
@@ -64,6 +65,7 @@ describe("production analysis policy integration [FR-014–FR-021, SCORE-001–S
       ]),
       "complete",
     );
+    const project = { ...member, workspacePackages: [member] };
     const legacySource = npmSource("source-npm-legacy", "legacy-package");
     const reactSource = npmSource("source-npm-react", "react");
     const osvSource: DataSource = {
@@ -74,8 +76,7 @@ describe("production analysis policy integration [FR-014–FR-021, SCORE-001–S
       reference: "https://api.osv.dev/v1/querybatch",
     };
     const evidence = [
-      ...createDependencyInventoryEvidence(project),
-      ...createSourceUsageEvidence(project),
+      ...createWorkspaceEvidence(project),
       npmEvidence("evidence-npm-legacy", legacySource.id, "legacy-package"),
       npmEvidence("evidence-npm-react", reactSource.id, "react"),
       {
@@ -137,18 +138,22 @@ describe("production analysis policy integration [FR-014–FR-021, SCORE-001–S
     };
     const report = runAnalyzer(
       {
-        version: "javascript-policy-v1",
+        version: "javascript-policy-v3",
+        reportSchemaVersion: "2.0.0",
         ruleSet: {
           version: "javascript-policy-rules-v1",
           factRules: [
-            dependencyInventoryRule,
-            scoringCoverageFactRule,
-            sourceUsageFactRule,
-            projectReadinessFactRule,
+            scopeFactRule(dependencyInventoryRule),
+            scopeFactRule(sourceUsageFactRule),
+            workspaceInspectionRule,
           ],
-          findingRules: [knownVulnerabilityRule, migrationOpportunityRule, outdatedDependencyRule],
+          findingRules: [
+            knownVulnerabilityRule,
+            migrationOpportunityRule,
+            outdatedDependencyRule,
+          ].map(scopeFindingRule),
           prioritizer: javascriptFindingPrioritizer,
-          recommendationRules: [evidenceBackedRecommendationRule],
+          recommendationRules: [evidenceBackedRecommendationRule].map(scopeRecommendationRule),
         },
         scorer: stackHealthScorer,
       },
@@ -181,10 +186,10 @@ describe("production analysis policy integration [FR-014–FR-021, SCORE-001–S
         name: "legacy-package",
       },
       priority: {
-        level: "medium",
+        level: "low",
         rule: {
           id: "JS-PRIORITY-016",
-          version: "1",
+          version: "2",
         },
       },
     });
@@ -201,42 +206,17 @@ describe("production analysis policy integration [FR-014–FR-021, SCORE-001–S
     expect(report.recommendations[0]?.findingIds).toContain(migration?.id ?? "");
     expect(report.recommendations[0]?.suggestion).toContain("major-version migration");
 
-    expect(report.scores.categories.dependencies).toEqual({
+    expect(report.scores.categories.dependencies).toMatchObject({
       status: "available",
-      evidenceCoverage: 100,
-      value: 88,
-      contributionIds: [expect.any(String)],
-    });
-    expect(report.scores.categories.security).toEqual({
-      status: "available",
-      evidenceCoverage: 100,
       value: 100,
-      contributionIds: [],
     });
-    expect(report.scores.categories.maintainability).toMatchObject({
-      status: "available",
-      evidenceCoverage: 100,
-      value: 88,
-    });
-    expect(report.scores.overall).toEqual({
-      status: "insufficient_evidence",
-      evidenceCoverage: 60,
-      limitationIds: expect.any(Array),
-    });
-    expect(report.scores.contributions).toHaveLength(2);
+    expect(report.scores.categories.security).toMatchObject({ status: "available", value: 100 });
+    expect(report.scores.categories.maintainability.status).toBe("insufficient_evidence");
+    expect(report.scores.overall.status).toBe("insufficient_evidence");
     expect(
-      report.scores.contributions.find((item) => item.category === "dependencies"),
-    ).toMatchObject({
-      category: "dependencies",
-      direction: "deduction",
-      points: 12,
-      findingIds: [expect.any(String)],
-      rule: {
-        id: "SCORE-STACK-001",
-        version: "2",
-      },
-    });
-    expect(report.analyzer.scoringVersion).toBe("stack-health-v2");
+      report.scores.contributions.every((item) => !item.findingIds.includes(migration!.id)),
+    ).toBe(true);
+    expect(report.analyzer.scoringVersion).toBe("stack-health-v3");
     expect(JSON.stringify(report).toLowerCase()).not.toContain('"secure"');
     expect(AnalysisReportSchema.safeParse(report).success).toBe(true);
   });

@@ -1,5 +1,17 @@
 # @stacklens/rules-javascript
 
+## Current v4 workspace inspection
+
+ADR-0013 and [workspace inspection](../../docs/implementation/workspace-inspection.md) define
+current behavior. Named four-state package checks replace scoring-coverage eligibility. JSONC,
+MDX, pnpm catalogs/importers, bounded local configs and static script delegation are supported.
+External presets and callbacks remain opaque. CVSS severity is normalized without reachability
+claims. Priority v2 and recommendations v3 keep ordinary updates and optional migrations low-priority
+and unscored. Scoring policy is [v3](../../docs/implementation/scoring.md), owned by packages/scoring.
+
+The individual milestone descriptions below preserve historical slice behavior; references to
+unsupported JSONC and scoring v2 describe earlier releases superseded by ADR-0013.
+
 Deterministic JavaScript/TypeScript normalization and analysis rules for StackLens.
 
 ## Responsibility

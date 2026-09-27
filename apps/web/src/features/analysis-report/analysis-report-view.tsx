@@ -7,11 +7,13 @@ import type {
   Finding,
   ScoreCategory,
   ScoreResult,
+  ScoreResultV2,
 } from "@stacklens/contracts";
 import { Button } from "@stacklens/ui/components/button";
 import { AnalysisLimitation } from "@stacklens/ui/domain/analysis-limitation";
 import { FindingCard } from "@stacklens/ui/domain/finding-card";
 
+import { FactLinks, InspectionChecks, SupportingEvidence } from "./inspection-details";
 import { groupLimitations } from "./report-limitations";
 import type { LimitationGroup } from "./report-limitations";
 
@@ -33,7 +35,7 @@ const categories = [
 
 interface ScoreCardProps {
   readonly label: string;
-  readonly score: ScoreResult;
+  readonly score: ScoreResult | ScoreResultV2;
   readonly category: ScoreCategory;
   readonly report: AnalysisReport;
   readonly limitationGroups: readonly LimitationGroup[];
@@ -63,22 +65,33 @@ function ScoreCard({ label, score, category, report, limitationGroups }: Readonl
       ? report.scores.contributions.filter((item) => score.contributionIds.includes(item.id))
       : [];
   return (
-    <section className="grid gap-3 self-start rounded-xl border bg-card p-4" aria-label={label}>
+    <section
+      id={`score-${category}`}
+      className="grid min-w-0 gap-3 self-start rounded-xl border bg-card p-4"
+      aria-label={label}
+    >
       <div className="flex items-baseline justify-between gap-4">
         <h3 className="font-semibold">{label}</h3>
         <strong className="text-xl">
-          {score.status === "available" ? `${score.value}/100` : "N/A"}
+          {score.status === "available"
+            ? `${Number(score.value.toFixed(1))}/100`
+            : score.status === "not_applicable"
+              ? "—"
+              : "N/A"}
         </strong>
       </div>
       {report.analyzer.scoringVersion === "stack-health-v2" ? (
         <p className="text-xs leading-5 text-muted-foreground">{scoreScopes[category]}</p>
       ) : null}
+      {"checkFactIds" in score ? <InspectionChecks score={score} report={report} /> : null}
       <p className="text-sm font-medium">
         {unimplemented
           ? "Scoring not implemented in this report’s version"
           : score.status === "available"
             ? "Supported scoring checks complete"
-            : "Analysis incomplete for this score"}
+            : score.status === "not_applicable"
+              ? "Not applicable to this scope"
+              : "Analysis incomplete for this score"}
       </p>
       {unimplemented ? (
         <p className="text-xs text-muted-foreground">
@@ -107,7 +120,8 @@ function ScoreCard({ label, score, category, report, limitationGroups }: Readonl
       {score.status === "available" ? (
         <details className="text-sm">
           <summary className="cursor-pointer rounded-md py-2 font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring">
-            Score explanation ({contributions.length} deductions)
+            Score explanation ({contributions.length}{" "}
+            {"checkFactIds" in score ? "decisions" : "deductions"})
           </summary>
           {report.analyzer.scoringVersion === "stack-health-v2" && score.value === 0 ? (
             <p className="mt-2 text-muted-foreground">
@@ -123,7 +137,9 @@ function ScoreCard({ label, score, category, report, limitationGroups }: Readonl
             <ul className="mt-2 grid gap-3">
               {contributions.map((contribution) => (
                 <li key={contribution.id}>
-                  <strong>−{contribution.points} points.</strong> {contribution.rationale}
+                  {"kind" in contribution ? null : <strong>−{contribution.points} points. </strong>}
+                  {contribution.rationale}
+                  {"kind" in contribution ? <FactLinks ids={contribution.factIds} /> : null}
                 </li>
               ))}
             </ul>
@@ -135,7 +151,7 @@ function ScoreCard({ label, score, category, report, limitationGroups }: Readonl
 }
 
 type DependencyInventoryFact = AnalysisFact & {
-  readonly details: NonNullable<AnalysisFact["details"]>;
+  readonly details: Extract<NonNullable<AnalysisFact["details"]>, { kind: "dependency_inventory" }>;
 };
 
 const dependencyGroupLabels: Readonly<Record<string, string>> = {
@@ -369,6 +385,42 @@ export function AnalysisReportView({
   completedWithLimitations = false,
 }: Readonly<AnalysisReportViewProps>) {
   const [selectedFindingId, setSelectedFindingId] = useState<string>();
+  const [packagePath, setPackagePath] = useState<string>();
+  const packages = report.facts.flatMap((fact) =>
+    fact.details?.kind === "workspace_package" ? [fact.details.package] : [],
+  );
+  const selectedPackage = packages.some((item) => item.path === packagePath)
+    ? packagePath
+    : undefined;
+  const findings: readonly Finding[] = report.findings;
+  const visibleFindings = findings.filter(
+    (finding) =>
+      selectedPackage === undefined ||
+      ("packagePath" in finding && finding.packagePath === selectedPackage),
+  );
+  const visibleFindingIds = new Set(visibleFindings.map((finding) => finding.id));
+  const visibleRecommendations = report.recommendations.filter((item) =>
+    item.findingIds.some((id) => visibleFindingIds.has(id)),
+  );
+  const findingGroups =
+    report.schemaVersion === "2.0.0"
+      ? [
+          {
+            title: "Confirmed issues",
+            items: visibleFindings.filter((item) => item.disposition === "issue"),
+          },
+          {
+            title: "Update opportunities",
+            items: visibleFindings.filter((item) => item.disposition === "opportunity"),
+          },
+          {
+            title: "Review advice",
+            items: visibleFindings.filter(
+              (item) => item.disposition === "advice" || item.disposition === undefined,
+            ),
+          },
+        ]
+      : [{ title: "Findings", items: visibleFindings }];
 
   const selectedFinding = report.findings.find((finding) => finding.id === selectedFindingId);
   const selectedEvidence =
@@ -456,13 +508,18 @@ export function AnalysisReportView({
             </h2>
             <strong className="text-3xl">
               {report.scores.overall.status === "available"
-                ? `${report.scores.overall.value}/100`
-                : "N/A"}
+                ? `${Number(report.scores.overall.value.toFixed(1))}/100`
+                : report.scores.overall.status === "not_applicable"
+                  ? "Not applicable"
+                  : "N/A"}
             </strong>
           </div>
           <p className="text-sm font-medium">
             {availableCategoryCount} of {categories.length} category scores available
           </p>
+          {"rationale" in report.scores.overall ? (
+            <p className="text-sm leading-6">{report.scores.overall.rationale}</p>
+          ) : null}
           {acquisition === undefined ? null : (
             <p className="text-sm text-muted-foreground">{acquisition.statement}</p>
           )}
@@ -533,7 +590,33 @@ export function AnalysisReportView({
                         : "Evidence limitation"
                   }
                 >
-                  <p>{group.message}</p>
+                  {[...new Set(group.limitations.map((item) => item.message))].map((message) => (
+                    <p key={message}>{message}</p>
+                  ))}
+                  {group.limitations.some((item) => item.packagePaths !== undefined) ? (
+                    <p className="mt-2 font-mono text-xs">
+                      Packages:{" "}
+                      {[
+                        ...new Set(group.limitations.flatMap((item) => item.packagePaths ?? [])),
+                      ].join(", ")}
+                    </p>
+                  ) : null}
+                  {group.limitations.some((item) => item.paths !== undefined) ? (
+                    <p className="mt-1 font-mono text-xs">
+                      Files:{" "}
+                      {[...new Set(group.limitations.flatMap((item) => item.paths ?? []))].join(
+                        ", ",
+                      )}
+                    </p>
+                  ) : null}
+                  {group.limitations.some((item) => item.checkKeys !== undefined) ? (
+                    <p className="mt-1 text-xs">
+                      Affected checks:{" "}
+                      {[...new Set(group.limitations.flatMap((item) => item.checkKeys ?? []))].join(
+                        ", ",
+                      )}
+                    </p>
+                  ) : null}
                   {affected.length === 0 ? null : (
                     <p className="mt-2 text-xs">
                       Related analysis areas:{" "}
@@ -545,6 +628,19 @@ export function AnalysisReportView({
                       ? `Blocks scoring: ${blockedScores.map((category) => categoryLabels[category]).join(", ")}.`
                       : "This limitation does not block the completed scoring checks."}
                   </p>
+                  {blockedScores.length > 0 ? (
+                    <div className="mt-2 flex flex-wrap gap-3 text-xs">
+                      {blockedScores.map((category) => (
+                        <a
+                          className="rounded-sm font-semibold underline outline-none focus-visible:ring-3 focus-visible:ring-ring"
+                          href={`#score-${category}`}
+                          key={category}
+                        >
+                          {categoryLabels[category]} score
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
                   {group.limitations.length > 1 ? (
                     <p className="mt-1 text-xs">
                       Grouped from {group.limitations.length} rule notices.
@@ -585,30 +681,93 @@ export function AnalysisReportView({
           </p>
         </div>
 
-        {report.findings.length === 0 ? (
+        {packages.length > 1 ? (
+          <fieldset className="min-w-0 rounded-xl border p-4">
+            <legend className="px-2 text-sm font-semibold">
+              Filter findings and recommendations by package
+            </legend>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant={selectedPackage === undefined ? "default" : "outline"}
+                aria-pressed={selectedPackage === undefined}
+                onClick={() => {
+                  setPackagePath(undefined);
+                  setSelectedFindingId(undefined);
+                }}
+              >
+                All packages
+              </Button>
+              {packages.map((item) => (
+                <Button
+                  key={item.id}
+                  type="button"
+                  size="sm"
+                  className="h-auto max-w-full min-w-0 whitespace-normal"
+                  variant={selectedPackage === item.path ? "default" : "outline"}
+                  aria-pressed={selectedPackage === item.path}
+                  onClick={() => {
+                    setPackagePath(item.path);
+                    setSelectedFindingId(undefined);
+                  }}
+                >
+                  {item.name ?? "Root"} · {item.path}
+                </Button>
+              ))}
+            </div>
+          </fieldset>
+        ) : null}
+
+        {visibleFindings.length === 0 ? (
           <p className="rounded-xl border bg-card p-5 text-sm text-muted-foreground">
-            No supported findings were emitted for this analysis.
+            No supported findings were emitted for this selection.
           </p>
         ) : (
           <div className="grid gap-4">
-            {report.findings.map((finding) => (
-              <FindingCard
-                key={finding.id}
-                classification={finding.classification}
-                priority={finding.priority.level}
-                {...(finding.classification === "heuristic"
-                  ? { confidence: finding.confidence.level }
-                  : {})}
-                subject={finding.subject.name}
-                title={finding.title}
-                description={finding.description}
-                category={finding.category}
-                ruleId={finding.rule.id}
-                onViewEvidence={() => {
-                  setSelectedFindingId(finding.id);
-                }}
-              />
-            ))}
+            {findingGroups
+              .filter((group) => group.items.length > 0)
+              .map((group) => (
+                <section key={group.title} className="grid gap-4" aria-label={group.title}>
+                  {report.schemaVersion === "2.0.0" ? (
+                    <h3 className="text-lg font-semibold">
+                      {group.title} ({group.items.length})
+                    </h3>
+                  ) : null}
+                  {group.items.map((finding) => (
+                    <div
+                      key={finding.id}
+                      id={`finding-${finding.id}`}
+                      className="grid min-w-0 gap-2"
+                    >
+                      {"details" in finding && finding.details?.kind === "advisory" ? (
+                        <p className="text-sm font-semibold">
+                          Advisory severity: {finding.details.severity} ·{" "}
+                          {finding.details.advisoryId}
+                          {finding.details.aliases.length > 0
+                            ? ` · Aliases: ${finding.details.aliases.join(", ")}`
+                            : ""}
+                        </p>
+                      ) : null}
+                      <FindingCard
+                        classification={finding.classification}
+                        priority={finding.priority.level}
+                        {...(finding.classification === "heuristic"
+                          ? { confidence: finding.confidence.level }
+                          : {})}
+                        subject={finding.subject.name}
+                        title={finding.title}
+                        description={finding.description}
+                        category={finding.category}
+                        ruleId={finding.rule.id}
+                        onViewEvidence={() => {
+                          setSelectedFindingId(finding.id);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </section>
+              ))}
           </div>
         )}
 
@@ -625,7 +784,7 @@ export function AnalysisReportView({
         )}
       </section>
 
-      {report.recommendations.length === 0 ? null : (
+      {visibleRecommendations.length === 0 ? null : (
         <section className="grid gap-4" aria-labelledby="recommendations-title">
           <div>
             <h2 id="recommendations-title" className="text-xl font-semibold tracking-tight">
@@ -636,7 +795,7 @@ export function AnalysisReportView({
             </p>
           </div>
           <div className="grid gap-4">
-            {report.recommendations.map((recommendation) => (
+            {visibleRecommendations.map((recommendation) => (
               <article key={recommendation.id} className="grid gap-3 rounded-xl border bg-card p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <h3 className="font-semibold">{recommendation.title}</h3>
@@ -654,6 +813,7 @@ export function AnalysisReportView({
           </div>
         </section>
       )}
+      {report.schemaVersion === "2.0.0" ? <SupportingEvidence report={report} /> : null}
     </article>
   );
 }

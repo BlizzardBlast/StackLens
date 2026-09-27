@@ -17,6 +17,7 @@ import type { AnalysisScorer, ScoringContext } from "./scoring.js";
 
 export interface AnalyzerDefinition<TProjectSnapshot, TMetadataSnapshot> {
   readonly version: string;
+  readonly reportSchemaVersion?: "1.0.0" | "2.0.0";
   readonly ruleSet: AnalysisRuleSet<TProjectSnapshot, TMetadataSnapshot>;
   readonly scorer: AnalysisScorer;
 }
@@ -75,6 +76,9 @@ export function runAnalyzer<TProjectSnapshot, TMetadataSnapshot>(
   const scores = definition.scorer.score(scoringContext);
 
   return assembleAnalysisReport({
+    ...(definition.reportSchemaVersion === undefined
+      ? {}
+      : { schemaVersion: definition.reportSchemaVersion }),
     analysisId: runInput.analysisId,
     createdAt: runInput.createdAt,
     input: runInput.input,

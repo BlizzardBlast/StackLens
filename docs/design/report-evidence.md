@@ -1,33 +1,34 @@
 # Report evidence and scoring explanations
 
-Date: 2026-09-25. Requirements: FR-017–FR-021, SCORE-001–SCORE-004, NFR-006–NFR-008,
-GOV-002, GOV-007. Policy: ADR-0012.
+Date: 2026-09-27. Requirements: FR-017–FR-021, SCORE-001–SCORE-004, NFR-006–NFR-008,
+GOV-002, GOV-007. Policy: ADR-0013.
 
-The report distinguishes useful completed checks from evidence still missing. Score cards state
-their limited scope: version health, known advisories, major-version migration readiness, static
-test setup, and tooling reproducibility. A numeric score is never a claim that tests ran or that
-the repository is universally secure or maintainable.
+Each category shows its supplied scope, rationale and either a risk band or readiness checklist.
+Risk counts describe affected package names and distinct advisories. Four textual check states
+remain separate: Passed, Failed, Unknown, Not applicable. Numeric zero is a valid result;
+insufficient evidence displays N/A; not applicable displays an em dash with its full label.
+The overall rationale explains the risk ceiling. The UI never recalculates policy.
 
-The summary shows how many category scores are available and the analyzer's observed source-file
-counts. The serialized 0/100 eligibility field is not a measured evidence percentage, so the
-report no longer renders it as a coverage bar. Overall v2 requires all five categories. A zero
-score remains a valid numeric result and includes an explanation when deductions reach the floor.
+The summary shows available category scores and observed source-file counts separately from
+check completeness. No percentage suggests the application was executed or shown to be secure.
+Historical schema 1 reports retain their original scoring values and explanation model.
 
-Each card has a native details/summary disclosure with a visible keyboard focus indicator. Available
-scores show their analyzer-owned contribution ledger. N/A scores link directly to their blocking
-limitation groups. Older v1 reports explicitly identify the three unimplemented policies and retain
-their original scores; a new analysis is needed to use v2.
+Native disclosures reveal checks, scoring decisions, supporting facts and evidence. Fragment links
+connect decisions to facts, evidence and blocking limitation groups. Targets have visible focus.
+Package controls filter findings and recommendations only; scores and limitations describe the
+whole report. React derives filtered lists during rendering. Analyzer-supplied dispositions separate
+confirmed issues, update opportunities and review advice. TanStack Query retains remote-state,
+cancellation and terminal-polling ownership.
 
-Limitations appear ahead of findings. Notices with identical kind and message are grouped; their
-category and rule references remain accessible. Groups distinguish related analysis areas from
-scores actually blocked. A dynamic ESLint preset can therefore remain an honest limitation while
-independent version checks are available. Transient provider issues suggest retrying after recovery;
-unsupported formats describe the missing support without promising that a retry alone fixes it.
+Limitations precede findings and group by structured reason and package scope, preserving every
+message, affected file/check and score link. A known lint configuration can satisfy existence while
+its external preset internals stay opaque. Unsupported selection settings still block checks that
+need them. Provider failures remain visible and are never presented as clean results.
 
-The view uses existing semantic surfaces, text, warning, and focus tokens in both themes. It adds
-no score thresholds, new color meaning, or animation. Disclosures keep the initial view compact;
-narrow layouts stack the same content and retain native keyboard semantics. No repository content
-or configuration source is copied into report evidence.
+Both themes reuse semantic surface, text, warning and focus tokens plus the existing free,
+self-hosted IBM Plex Sans/Mono pairing. This change needs no new motion or color meanings.
+Controls wrap at narrow widths and preserve keyboard operation and reduced-motion preferences.
+Source/configuration bodies never appear in stored evidence.
 
 Verification results and captures are recorded in the PR journey entry and
-[implementation record](../implementation/evidence-improvements.md).
+[phase review](../implementation/workspace-inspection.md).

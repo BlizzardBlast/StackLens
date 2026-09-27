@@ -118,3 +118,19 @@ export type { AnalysisSubject } from "./subject.js";
 
 export { IsoDateTimeSchema } from "./time.js";
 export type { IsoDateTime } from "./time.js";
+
+export * from "./inspection.js";
+export {
+  ANALYSIS_REPORT_V2_SCHEMA_VERSION,
+  AnalysisReportV1Schema,
+  AnalysisReportV2Schema,
+} from "./analysis-report.js";
+export type { AnalysisReportV1, AnalysisReportV2 } from "./analysis-report.js";
+export {
+  AnalysisScoresV2Schema,
+  ScoreResultV2Schema,
+  NotApplicableScoreSchema,
+  LegacyAnalysisScoresSchema,
+  ScoreExplanationSchema,
+} from "./score.js";
+export type { AnalysisScoresV2, ScoreResultV2, ScoreExplanation } from "./score.js";

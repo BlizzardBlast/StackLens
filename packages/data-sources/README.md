@@ -177,7 +177,7 @@ Default GitHub acquisition bounds are:
 - at most four in-flight blob reads, with byte/request reservations before dispatch and retention
   in candidate order. A rate-limit response prevents further batches.
 
-`package.json` is prioritized first and supported root lockfiles immediately after it, ahead of
+Root/workspace declarations, member manifests, shared lockfiles and bounded local configuration references are prioritized before
 optional configuration/source candidates when file/request budgets are tight. Lockfiles are excluded
 from source-usage coverage counts.
 

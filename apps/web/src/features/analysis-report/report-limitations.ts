@@ -10,7 +10,11 @@ export interface LimitationGroup {
 export function groupLimitations(limitations: readonly AnalysisLimitation[]): LimitationGroup[] {
   const groups = new Map<string, AnalysisLimitation[]>();
   for (const limitation of limitations) {
-    const key = JSON.stringify([limitation.kind, limitation.message]);
+    const key = JSON.stringify([
+      limitation.kind,
+      limitation.reasonCode ?? limitation.message,
+      [...(limitation.packagePaths ?? [])].toSorted(),
+    ]);
     const group = groups.get(key) ?? [];
     group.push(limitation);
     groups.set(key, group);

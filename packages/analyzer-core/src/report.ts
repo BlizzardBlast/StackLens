@@ -11,6 +11,7 @@ import type {
 import type { RulePipelineResult } from "./pipeline.js";
 
 export interface AnalysisReportAssemblyInput {
+  readonly schemaVersion?: "1.0.0" | "2.0.0";
   readonly analysisId: string;
   readonly createdAt: string;
   readonly input: AnalysisInput;
@@ -23,7 +24,7 @@ export interface AnalysisReportAssemblyInput {
 
 export function assembleAnalysisReport(input: AnalysisReportAssemblyInput): AnalysisReport {
   return AnalysisReportSchema.parse({
-    schemaVersion: ANALYSIS_REPORT_SCHEMA_VERSION,
+    schemaVersion: input.schemaVersion ?? ANALYSIS_REPORT_SCHEMA_VERSION,
     analysisId: input.analysisId,
     createdAt: input.createdAt,
     input: input.input,

@@ -158,7 +158,7 @@ describe("project detection analyzer integration [FR-008, FR-012, FR-013]", () =
       category: "dependencies",
       rule: {
         id: "JS-OVERLAP-008",
-        version: "1",
+        version: "2",
       },
       confidence: {
         level: "medium",

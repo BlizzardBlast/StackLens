@@ -20,6 +20,17 @@ export const AnalysisLimitationSchema = z.strictObject({
   affectedCategories: z.array(ScoreCategorySchema).default([]),
   sourceIds: z.array(IdentifierSchema).default([]),
   ruleIds: z.array(IdentifierSchema).default([]),
+  reasonCode: IdentifierSchema.optional(),
+  packagePaths: z.array(z.string().min(1).max(1000)).optional(),
+  checkKeys: z.array(IdentifierSchema).optional(),
+  paths: z.array(z.string().min(1).max(1000)).optional(),
+});
+
+export const LegacyAnalysisLimitationSchema = AnalysisLimitationSchema.omit({
+  reasonCode: true,
+  packagePaths: true,
+  checkKeys: true,
+  paths: true,
 });
 
 export const SourcePartialFailureSchema = z.strictObject({

@@ -1,8 +1,8 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.14
-> **Date:** 2026-09-25
+> **Architecture version:** 0.1.15
+> **Date:** 2026-09-27
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
@@ -345,13 +345,19 @@ Outputs:
 - N/A states for insufficient evidence;
 - scoring rule version.
 
-The concrete `@stacklens/scoring` package implements scoring policy v2 under ADR-0012. Coverage
-facts establish complete evidence for five bounded scopes: dependency version health, known
-advisories, migration readiness, static test setup, and tooling reproducibility. Material failures
-within each scope block scoring; unrelated source-usage limitations remain visible. The overall
-score requires all five categories and is their arithmetic mean. Missing evidence never becomes a
-deduction. Stored v1 reports preserve their original version and values. The serialized report
-shape is unchanged; score-eligibility percentages must not be presented as measured file coverage.
+The concrete `@stacklens/scoring` package implements `stack-health-v3` under ADR-0013.
+Dependencies selects the medium risk band for explicit npm deprecation; Security selects the worst
+supported active exact-version CVSS severity. Update availability and optional advice are unscored.
+Maintainability, Testing and Tooling aggregate named static readiness checks. Unknown required
+checks prevent a number; not-applicable checks are excluded. Overall is the applicable category
+mean capped by Dependencies and Security. Formula and bands live only in the scoring package.
+Workspace packages own their checks; an orchestration-only root does not duplicate member setup.
+Source acquisition counts and check completeness are separate observations.
+
+Both repository and provider-free quick compositions live in analysis-orchestration and use v4
+identities. Schema 2.0.0 adds check states, package identity, resolution provenance, advisory
+severity and machine-readable limitations. Strict 1.0.0 readers retain historical values without
+rescoring. Ship compatible readers first, then enable writers; rollback retains schema 2 support.
 
 This directly implements **FR-018–FR-020** and **SCORE-001–SCORE-004**.
 
@@ -503,7 +509,18 @@ limitations[]
 partialFailures[]
 ```
 
-The report schema is versioned independently of the application release so stored/exported reports can remain interpretable (**DATA-006**, **SCORE-004**, **NFR-005**). The accepted v1 shape and invariants are defined by [ADR-0008](adr/0008-analysis-report-contract-v1.md) and implemented in `@stacklens/contracts`.
+The report schema is versioned independently of the application release so stored/exported reports
+remain interpretable (**DATA-006**, **SCORE-004**, **NFR-005**). ADR-0008 defines the historical v1
+shape; [ADR-0013](adr/0013-workspace-inspection-and-scoring-v3.md) defines schema 2.0.0. Both strict
+readers are implemented in `@stacklens/contracts` and reused by Fastify/OpenAPI, persistence and
+React. No historical JSONB rewrite or database migration is needed.
+
+Repository acquisition prioritizes workspace declarations/member manifests, shared lockfiles and
+referenced local configuration before ordinary source. Immutable-tree resolution stops at 16
+levels/128 config files within existing global limits. JSONC uses diagnostic-checked jsonc-parser;
+MDX uses fixed remark parsers without compiling. Script tracing stops at depth 16/256 nodes.
+CVSS normalization uses a pure adapter over @pandatix/js-cvss. None of these adapters execute
+repository code, install dependencies, fetch external preset sources or infer runtime reachability.
 
 ## 10. Workspace structure
 
@@ -523,7 +540,7 @@ StackLens/
 │  ├─ rules-javascript/    # JS/TS rules + priority/recommendation/coverage policy
 │  ├─ contracts/           # Zod schemas + public domain/API contracts
 │  ├─ data-sources/        # npm, OSV, GitHub adapters
-│  ├─ scoring/             # deterministic score engine/configuration (implemented v2)
+│  ├─ scoring/             # risk-band and readiness scoring (implemented v3)
 │  ├─ database/            # schema/repositories/migrations
 │  ├─ design-tokens/       # generated semantic design tokens
 │  ├─ ui/                  # generic primitives + StackLens domain components
@@ -850,3 +867,5 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0010 — Static source parser compatibility under TypeScript 7](adr/0010-static-source-parser-typescript-7.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).
+
+ADR-0013: [Workspace inspection and risk/readiness scoring](adr/0013-workspace-inspection-and-scoring-v3.md).

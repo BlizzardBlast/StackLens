@@ -1,12 +1,13 @@
 import type { FindingCandidate, FindingRule } from "@stacklens/analyzer-core";
 import type { AnalysisFact } from "@stacklens/contracts";
 
-import type { NormalizedPackageManifest } from "./manifest.js";
+import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
 import { compareCodeUnits, truncate, uniqueSorted } from "./rule-support.js";
+import { staticCommands } from "./script-graph.js";
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-OVERLAP-008";
-const RULE_VERSION = "1";
+const RULE_VERSION = "2";
 
 interface OverlapDescriptor {
   readonly packages: readonly [string, string];
@@ -129,7 +130,53 @@ function createFinding(
   };
 }
 
-export const dependencyOverlapRule: FindingRule<NormalizedPackageManifest, unknown> = {
+function disjointExplicitScopes(
+  project: JavaScriptProjectSnapshot,
+  pair: readonly [string, string],
+): boolean {
+  if (!project.repositoryCoverage?.complete) return false;
+  const binaries: Readonly<Record<string, string>> = {
+    "@biomejs/biome": "biome",
+    eslint: "eslint",
+    prettier: "prettier",
+    jest: "jest",
+    vitest: "vitest",
+  };
+  function scope(packageName: string): Set<string> | undefined {
+    const binary = binaries[packageName];
+    if (binary === undefined) return undefined;
+    const targets: string[] = [];
+    for (const script of project.scripts ?? [])
+      for (const words of staticCommands(script.command) ?? []) {
+        if (words[0] !== binary) continue;
+        const args = words
+          .slice(1)
+          .filter((arg) => !["lint", "format", "check", "run"].includes(arg));
+        if (
+          args.length === 0 ||
+          args.some((arg) => !/^(?:\.|(?:\.\/)?[A-Za-z0-9_/-]+)$/u.test(arg))
+        )
+          return undefined;
+        targets.push(...args.map((arg) => arg.replace(/^\.\//u, "").replace(/\/$/u, "")));
+      }
+    if (targets.length === 0) return undefined;
+    const files = (project.files ?? []).filter(
+      (file) =>
+        /\.[cm]?[jt]sx?$/u.test(file.path) &&
+        targets.some(
+          (target) => target === "." || file.path === target || file.path.startsWith(target + "/"),
+        ),
+    );
+    return files.length > 0 ? new Set(files.map((file) => file.path)) : undefined;
+  }
+  const first = scope(pair[0]);
+  const second = scope(pair[1]);
+  return (
+    first !== undefined && second !== undefined && ![...first].some((file) => second.has(file))
+  );
+}
+
+export const dependencyOverlapRule: FindingRule<JavaScriptProjectSnapshot, unknown> = {
   kind: "finding",
   id: RULE_ID,
   version: RULE_VERSION,
@@ -150,7 +197,9 @@ export const dependencyOverlapRule: FindingRule<NormalizedPackageManifest, unkno
       const firstFacts = byPackage.get(descriptor.packages[0]);
       const secondFacts = byPackage.get(descriptor.packages[1]);
 
-      return firstFacts === undefined || secondFacts === undefined
+      return firstFacts === undefined ||
+        secondFacts === undefined ||
+        disjointExplicitScopes(context.project, descriptor.packages)
         ? []
         : [createFinding(descriptor, firstFacts, secondFacts)];
     });

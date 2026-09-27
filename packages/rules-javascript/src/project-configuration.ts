@@ -1,13 +1,14 @@
 import type { FactRule } from "@stacklens/analyzer-core";
 import type { AnalysisFact, AnalysisLimitation, ProjectEvidence } from "@stacklens/contracts";
 
+import { parseConfigurationJson, inspectTypeScriptConfiguration } from "./json-configuration.js";
 import type { JavaScriptProjectSnapshot, JavaScriptStaticProjectFile } from "./project-snapshot.js";
 import { compareCodeUnits, truncate } from "./rule-support.js";
 import { stableHash } from "./stable-id.js";
 import { inspectStaticConfiguration } from "./static-configuration-parser.js";
 
 const RULE_ID = "JS-CONFIG-013";
-const RULE_VERSION = "2";
+const RULE_VERSION = "3";
 const MAX_STATIC_CONFIG_CONTENT_LENGTH = 512 * 1024;
 const DYNAMIC_EXTENSIONS = ["js", "cjs", "mjs", "ts", "cts", "mts"] as const;
 
@@ -27,6 +28,10 @@ interface InspectedConfiguration {
 interface InspectionResult {
   readonly characteristics: readonly string[];
   readonly partialReason?: string;
+  readonly details?: Extract<
+    NonNullable<AnalysisFact["details"]>,
+    { kind: "configuration_inspection" }
+  >;
 }
 
 const DYNAMIC_CONFIG_PREFIXES = [
@@ -366,6 +371,7 @@ function inspectBiome(value: Record<string, unknown>): InspectionResult {
 function inspectDeclarativeConfiguration(
   descriptor: ConfigurationDescriptor,
   file: JavaScriptStaticProjectFile,
+  files: readonly JavaScriptStaticProjectFile[],
 ): InspectionResult {
   if (file.content.length > MAX_STATIC_CONFIG_CONTENT_LENGTH) {
     return {
@@ -377,12 +383,30 @@ function inspectDeclarativeConfiguration(
   let parsed: unknown;
 
   try {
-    parsed = JSON.parse(file.content) as unknown;
+    if (descriptor.kind === "typescript") {
+      const result = inspectTypeScriptConfiguration(file.path, file.content, files);
+      const inspected = isRecord(result.value)
+        ? inspectTypeScript(result.value)
+        : { characteristics: [] };
+      return {
+        ...inspected,
+        details: {
+          kind: "configuration_inspection",
+          unresolvedFields: result.unresolvedFields
+            .slice(0, 256)
+            .map((field) => field.slice(0, 1000)),
+          provenancePaths: result.provenance.slice(0, 128),
+          configuredPlugins: [],
+          affectedChecks: ["typecheck"],
+        },
+        ...(result.partialReason === undefined ? {} : { partialReason: result.partialReason }),
+      };
+    }
+    parsed = parseConfigurationJson(file.content, descriptor.kind === "biome");
   } catch {
     return {
       characteristics: [],
-      partialReason:
-        "File could not be parsed as strict JSON. JSONC/comments or malformed content are not interpreted by this static slice.",
+      partialReason: "File could not be parsed as a valid configuration document.",
     };
   }
 
@@ -475,13 +499,35 @@ export const projectConfigurationRule: FactRule<JavaScriptProjectSnapshot, unkno
       let limitation: AnalysisLimitation | undefined;
 
       if (descriptor.inspectionMode === "dynamic_code") {
-        const parsed = inspectStaticConfiguration(file.path, file.content);
+        const repositoryPath =
+          context.project.packagePath === undefined || context.project.packagePath === "."
+            ? file.path
+            : context.project.packagePath + "/" + file.path;
+        const parsed = inspectStaticConfiguration(
+          repositoryPath,
+          file.content,
+          context.project.repositoryFiles ?? context.project.files,
+        );
         const objects = Array.isArray(parsed.value)
           ? parsed.value.filter(isRecord)
           : isRecord(parsed.value)
             ? [parsed.value]
             : [];
         inspection = {
+          details: {
+            kind: "configuration_inspection",
+            unresolvedFields: parsed.unresolvedFields
+              .slice(0, 256)
+              .map((field) => field.slice(0, 1000)),
+            provenancePaths: parsed.provenance.slice(0, 128),
+            configuredPlugins: parsed.configuredPlugins.slice(0, 128),
+            affectedChecks:
+              descriptor.kind === "eslint"
+                ? ["lint"]
+                : descriptor.kind === "vitest" || descriptor.kind === "jest"
+                  ? ["test.execution", "test.files"]
+                  : [],
+          },
           characteristics:
             objects.length > 0
               ? [
@@ -507,7 +553,15 @@ export const projectConfigurationRule: FactRule<JavaScriptProjectSnapshot, unkno
           `${descriptor.displayName} at ${file.path} uses a recognized configuration filename but an unsupported file format. StackLens identified the file without interpreting its contents.`,
         );
       } else {
-        inspection = inspectDeclarativeConfiguration(descriptor, file);
+        const repositoryPath =
+          context.project.packagePath === undefined || context.project.packagePath === "."
+            ? file.path
+            : context.project.packagePath + "/" + file.path;
+        inspection = inspectDeclarativeConfiguration(
+          descriptor,
+          { ...file, path: repositoryPath },
+          context.project.repositoryFiles ?? context.project.files ?? [],
+        );
 
         if (inspection.partialReason !== undefined) {
           limitation = createLimitation(
@@ -524,12 +578,25 @@ export const projectConfigurationRule: FactRule<JavaScriptProjectSnapshot, unkno
       }
 
       if (limitation !== undefined) {
-        limitations.push(limitation);
+        limitations.push(
+          context.project.packagePath === undefined
+            ? limitation
+            : {
+                ...limitation,
+                reasonCode: "configuration_fields_unresolved",
+                packagePaths: [context.project.packagePath],
+                paths: [file.path],
+                checkKeys: inspection.details?.affectedChecks ?? [],
+              },
+        );
       }
 
-      facts.push(
-        createFact(inspected, inspection, limitation === undefined ? [] : [limitation.id]),
-      );
+      facts.push({
+        ...createFact(inspected, inspection, limitation === undefined ? [] : [limitation.id]),
+        ...(context.project.packagePath !== undefined && inspection.details !== undefined
+          ? { details: inspection.details }
+          : {}),
+      });
     }
 
     return {

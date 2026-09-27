@@ -1,10 +1,12 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
 import type { AnalysisReport } from "@stacklens/contracts";
 
 import { createRepositoryReportFixture } from "../repository-analysis/test-fixture.js";
 import { AnalysisReportView } from "./analysis-report-view.js";
+import { reportV2Fixture } from "./v2-test-fixture.js";
 
 function manifestReport(): AnalysisReport {
   const report = createRepositoryReportFixture();
@@ -151,6 +153,37 @@ function manifestReport(): AnalysisReport {
 }
 
 describe("AnalysisReportView [FR-017, FR-021, SCORE-003, NFR-006, NFR-007]", () => {
+  it("renders v2 check states and filters supplied package dispositions without rescoring", async () => {
+    const report = reportV2Fixture();
+    const user = userEvent.setup();
+    render(<AnalysisReportView report={report} />);
+    expect(screen.getByRole("heading", { name: "Update opportunities (1)" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Confirmed issues (1)" })).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("region", { name: "Testing" })).getByText("0/100"),
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("region", { name: "Security" })).getByText(
+        "Not applicable to this scope",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("region", { name: "Tooling" })).getByText("N/A"),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "ui · packages/ui" }));
+    expect(screen.queryByText("Update package opportunity")).not.toBeInTheDocument();
+    expect(screen.getByText("Confirmed package issue")).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("region", { name: "Dependencies" })).getByText("100/100"),
+    ).toBeInTheDocument();
+    const button = screen.getByRole("button", { name: "All packages" });
+    button.focus();
+    await user.keyboard("{Enter}");
+    expect(screen.getByText("Update package opportunity")).toBeInTheDocument();
+    expect(button).toHaveAttribute("aria-pressed", "true");
+    for (const link of screen.getAllByRole("link", { name: /Supporting fact/u, hidden: true }))
+      expect(document.querySelector(link.getAttribute("href")!)).toBeInTheDocument();
+  });
   it("makes the manifest evidence boundary explicit instead of presenting N/A as healthy", () => {
     render(<AnalysisReportView report={manifestReport()} completedWithLimitations />);
 

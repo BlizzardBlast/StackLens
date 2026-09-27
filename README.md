@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v1, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority/scoring policy v1, the framework-independent quick-manifest service plus Fastify/OpenAPI transport, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, persistent PostgreSQL/Graphile Worker repository jobs, the Fastify REST/OpenAPI repository-analysis transport, the React repository-analysis plus quick-manifest web flows, and automated MVP acceptance smoke coverage for the production router and composed API runtime are implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v2 with historical v1 read support, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority v2 and risk/readiness scoring v3, the framework-independent quick-manifest service plus Fastify/OpenAPI transport, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, persistent PostgreSQL/Graphile Worker repository jobs, the Fastify REST/OpenAPI repository-analysis transport, the React repository-analysis plus quick-manifest web flows, and automated MVP acceptance smoke coverage for the production router and composed API runtime are implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -133,7 +133,8 @@ Sans/Mono fonts, system light/dark themes, and reduced-motion-aware interaction 
 
 The shared runtime-validatable analysis model lives in **`packages/contracts`**. It defines evidence, facts, factual/heuristic findings, separate recommendations, limitations, partial failures, and explainable score states for all future consumers.
 
-See [Analysis Contracts v1](docs/implementation/analysis-contracts.md) and **ADR-0008**.
+New reports use schema **2.0.0**; strict **1.0.0** readers preserve saved reports unchanged.
+See [Analysis contracts](docs/implementation/analysis-contracts.md), **ADR-0008** and **ADR-0013**.
 
 ## Analyzer core
 
@@ -152,7 +153,7 @@ explicit npm deprecation detection, **FR-008** curated dependency-overlap heuris
 **FR-010** npm Registry health facts, **FR-011** known-vulnerability detection, **FR-012**
 framework/tool detection, **FR-013** static configuration detection, **FR-014** major-version
 migration opportunities, **FR-015** evidence-backed recommendations, **FR-016** deterministic
-priority, and explicit category scoring-coverage facts for **FR-018–FR-021**. Provider-backed rules
+priority, and named workspace inspection checks for **FR-018–FR-021**. Provider-backed rules
 consume source-bound normalized analyzer metadata, and project configuration is inspected without
 executing configuration code.
 
@@ -162,13 +163,20 @@ See [JavaScript Rules](docs/implementation/rules-javascript.md).
 
 The concrete deterministic scorer lives in **`packages/scoring`**.
 
-Scoring policy v2 provides five explicit scopes: dependency version health, known advisories,
-major-version migration readiness, static test setup, and tooling reproducibility. Each numeric
-score requires complete evidence for its scope and exposes its deductions. The overall score
-requires all five categories. Source-usage limitations remain visible without invalidating unrelated
-complete checks, and missing evidence stays N/A. Stored v1 reports retain their original values.
+**stack-health-v3** uses evidence-based risk bands for explicit dependency deprecation and known
+advisory severity. Updates, overlap and optional migrations have no numerical impact.
+Maintainability, Testing and Tooling score named static setup checks with equal weight. Unknown
+evidence blocks the relevant score; not-applicable checks are distinct. Overall is the applicable
+mean capped by Dependencies and Security. These are product bands, not percentages of safety.
 
-See [Scoring Policy v2](docs/implementation/scoring.md) and **ADR-0012**.
+The v4 analyzer supports workspace manifests, pnpm catalogs/importers, JSONC, MDX, bounded local
+configuration imports and script delegation. It supplies checklists, package scopes and linked
+explanations to the report. Opaque presets and dynamic commands retain precise limitations.
+
+Saved reports retain their original scores. Restart the applications and request a new analysis to
+use v3. Deploy compatible readers before enabling writers; rollback must keep schema 2 support.
+See [Scoring Policy v3](docs/implementation/scoring.md), **ADR-0013**, and the
+[phase reviews and acceptance record](docs/implementation/workspace-inspection.md).
 
 ## Quick manifest application boundary
 

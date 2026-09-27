@@ -286,42 +286,75 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
     expect(response.body).not.toContain("job");
   });
 
-  it("returns the contract-valid report for completed repository analysis", async () => {
-    const completedAt = "2026-09-21T12:00:05.000Z";
-    const analysisReport = report("analysis-test-001");
-    const persistence = repositoryHarness(
-      record({
+  it.each(["1.0.0", "2.0.0"] as const)(
+    "returns the stored schema %s unchanged for completed repository analysis",
+    async (schemaVersion) => {
+      const completedAt = "2026-09-21T12:00:05.000Z";
+      const legacy = report("analysis-test-001");
+      const score = {
+        status: "not_applicable" as const,
+        scope: "Synthetic empty scope",
+        rationale: "No applicable checks in this fixture.",
+        checkCounts: { passed: 0, failed: 0, unknown: 0, notApplicable: 0 },
+        checkFactIds: [],
+      };
+      const analysisReport: AnalysisReport =
+        schemaVersion === "1.0.0"
+          ? legacy
+          : {
+              ...legacy,
+              schemaVersion,
+              analyzer: {
+                version: "javascript-production-v4",
+                ruleSetVersion: "javascript-rules-v4",
+                scoringVersion: "stack-health-v3",
+              },
+              scores: {
+                overall: score,
+                categories: {
+                  dependencies: score,
+                  security: score,
+                  maintainability: score,
+                  testing: score,
+                  tooling: score,
+                },
+                contributions: [],
+              },
+            };
+      const persistence = repositoryHarness(
+        record({
+          status: "completed",
+          progressStage: "completed",
+          startedAt: "2026-09-21T12:00:01.000Z",
+          completedAt,
+          updatedAt: completedAt,
+        }),
+        {
+          analysisId: "analysis-test-001",
+          reportSchemaVersion: schemaVersion,
+          report: analysisReport,
+          createdAt: completedAt,
+        },
+      );
+      const jobs = queueHarness();
+      const app = await testApi(persistence.repository, jobs.queue);
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/v1/analyses/analysis-test-001",
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        analysisId: "analysis-test-001",
         status: "completed",
         progressStage: "completed",
-        startedAt: "2026-09-21T12:00:01.000Z",
         completedAt,
-        updatedAt: completedAt,
-      }),
-      {
-        analysisId: "analysis-test-001",
-        reportSchemaVersion: "1.0.0",
         report: analysisReport,
-        createdAt: completedAt,
-      },
-    );
-    const jobs = queueHarness();
-    const app = await testApi(persistence.repository, jobs.queue);
-
-    const response = await app.inject({
-      method: "GET",
-      url: "/v1/analyses/analysis-test-001",
-    });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toMatchObject({
-      analysisId: "analysis-test-001",
-      status: "completed",
-      progressStage: "completed",
-      completedAt,
-      report: analysisReport,
-    });
-    expect(persistence.findReport).toHaveBeenCalledWith("analysis-test-001");
-  });
+      });
+      expect(persistence.findReport).toHaveBeenCalledWith("analysis-test-001");
+    },
+  );
 
   it("returns typed terminal failure and does not expose a report", async () => {
     const completedAt = "2026-09-21T12:00:05.000Z";
@@ -389,6 +422,8 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
     });
 
     expect(response.statusCode).toBe(200);
+    expect(response.body).toContain('"1.0.0"');
+    expect(response.body).toContain('"2.0.0"');
     expect(response.json()).toMatchObject({
       openapi: "3.1.0",
       paths: {

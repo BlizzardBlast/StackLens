@@ -23,6 +23,7 @@ export interface JavaScriptOsvAffectedPackage {
 
 export interface JavaScriptOsvVulnerability {
   readonly id: string;
+  readonly aliases?: readonly string[];
   readonly withdrawnAt?: string;
   readonly severities: readonly JavaScriptOsvSeverity[];
   readonly affected: readonly JavaScriptOsvAffectedPackage[];

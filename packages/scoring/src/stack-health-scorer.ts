@@ -1,271 +1,318 @@
 import type { AnalysisScorer, ScoringContext } from "@stacklens/analyzer-core";
 import type {
   AnalysisFact,
-  AnalysisLimitation,
-  AnalysisScores,
-  AvailableScore,
-  Finding,
-  InsufficientEvidenceScore,
-  PriorityLevel,
+  AnalysisScoresV2,
+  InspectionCheckDetails,
+  RiskBand,
   ScoreCategory,
-  ScoreContribution,
-  ScoreResult,
+  ScoreExplanation,
+  ScoreResultV2,
 } from "@stacklens/contracts";
 
-const SCORE_RULE_ID = "SCORE-STACK-001";
-export const STACK_HEALTH_SCORING_VERSION = "stack-health-v2";
-
-const CATEGORY_ORDER: readonly ScoreCategory[] = [
-  "dependencies",
-  "security",
-  "maintainability",
-  "testing",
-  "tooling",
-];
-
-const SUPPORTED_OVERALL_CATEGORIES = CATEGORY_ORDER;
-
-const SCORED_RULES: Readonly<Record<ScoreCategory, readonly string[]>> = {
-  dependencies: ["JS-NPM-006", "JS-NPM-007", "JS-OVERLAP-008"],
-  security: ["JS-VULN-011"],
-  maintainability: ["JS-MIGRATION-014"],
-  testing: ["JS-SETUP-019"],
-  tooling: ["JS-SETUP-019"],
+export const STACK_HEALTH_SCORING_VERSION = "stack-health-v3";
+const ORDER = ["dependencies", "security", "maintainability", "testing", "tooling"] as const;
+const BANDS: Readonly<Record<RiskBand, number>> = {
+  none: 100,
+  low: 90,
+  medium: 70,
+  high: 40,
+  critical: 0,
 };
-
-const PRIORITY_DEDUCTIONS: Readonly<Record<PriorityLevel, number>> = {
-  critical: 40,
-  high: 25,
-  medium: 12,
-  low: 5,
+const SCOPES: Readonly<Record<ScoreCategory, string>> = {
+  dependencies: "Explicit npm deprecation of supported exact dependency versions.",
+  security:
+    "Active exact-version OSV matches with supported CVSS base severity; no reachability or transitive audit.",
+  maintainability:
+    "Declared static lint and applicable type-check safeguards across workspace packages.",
+  testing:
+    "Declared test execution paths and matching file presence, not test success or runtime coverage.",
+  tooling: "Shared repository package-manager pin and matching workspace lockfile.",
 };
-
-const FNV_OFFSET_BASIS_64 = 0xcbf29ce484222325n;
-const FNV_PRIME_64 = 0x100000001b3n;
-const UINT64_MASK = 0xffffffffffffffffn;
-
-function stableHash(value: string): string {
-  let hash = FNV_OFFSET_BASIS_64;
-
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= BigInt(value.charCodeAt(index));
-    hash = (hash * FNV_PRIME_64) & UINT64_MASK;
-  }
-
-  return hash.toString(16).padStart(16, "0");
-}
-
-function compareCodeUnits(left: string, right: string): number {
-  return left < right ? -1 : left > right ? 1 : 0;
-}
-
-function coverageFactType(category: ScoreCategory): string {
-  return `analysis.coverage.${category}`;
-}
-
-function categoryCoverageFacts(
-  facts: readonly AnalysisFact[],
-  category: ScoreCategory,
-): readonly AnalysisFact[] {
-  return facts
+type CheckFact = AnalysisFact & { readonly details: InspectionCheckDetails };
+function checks(context: ScoringContext, category: ScoreCategory): CheckFact[] {
+  return context.facts
     .filter(
-      (fact) =>
-        fact.type === coverageFactType(category) && fact.subject.type === "analysis_coverage",
+      (fact): fact is CheckFact =>
+        fact.details?.kind === "inspection_check" && fact.details.category === category,
     )
-    .toSorted((left, right) => compareCodeUnits(left.id, right.id));
+    .toSorted((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 }
-
-function categoryLimitations(
-  limitations: readonly AnalysisLimitation[],
-  category: ScoreCategory,
-): readonly AnalysisLimitation[] {
-  return limitations
-    .filter(
-      (limitation) =>
-        (limitation.kind === "partial_failure" &&
-          limitation.ruleIds.length > 0 &&
-          limitation.affectedCategories.length === 0) ||
-        limitation.ruleIds.some(
-          (id) => id !== "JS-SETUP-019" && SCORED_RULES[category].includes(id),
-        ) ||
-        (limitation.affectedCategories.includes(category) &&
-          (limitation.ruleIds.some(
-            (id) =>
-              id === "JS-COVERAGE-018" ||
-              id === "JS-READINESS-019" ||
-              SCORED_RULES[category].includes(id),
-          ) ||
-            (limitation.kind === "partial_failure" && limitation.ruleIds.length > 0))),
-    )
-    .toSorted((left, right) => compareCodeUnits(left.id, right.id));
-}
-
-function contributionId(finding: Finding): string {
-  return `score-contribution-${stableHash(
-    JSON.stringify([STACK_HEALTH_SCORING_VERSION, finding.id]),
-  )}`;
-}
-
-function findingContribution(finding: Finding): ScoreContribution {
-  const points = PRIORITY_DEDUCTIONS[finding.priority.level];
-
+function counts(facts: readonly CheckFact[]) {
   return {
-    id: contributionId(finding),
-    category: finding.category,
+    passed: facts.filter((fact) => fact.details.state === "pass").length,
+    failed: facts.filter((fact) => fact.details.state === "fail").length,
+    unknown: facts.filter((fact) => fact.details.state === "unknown").length,
+    notApplicable: facts.filter((fact) => fact.details.state === "not_applicable").length,
+  };
+}
+function explanation(
+  id: string,
+  category: ScoreCategory,
+  kind: ScoreExplanation["kind"],
+  points: number,
+  rationale: string,
+  facts: readonly AnalysisFact[],
+  findingIds: string[] = [],
+): ScoreExplanation {
+  return {
+    id,
+    category,
+    kind,
     direction: "deduction",
     points,
-    rationale:
-      `${finding.title} Priority ${finding.priority.level} deducts ${points} point(s) ` +
-      `from the ${finding.category} category.`,
-    rule: {
-      id: SCORE_RULE_ID,
-      version: "2",
-    },
-    findingIds: [finding.id],
-    factIds: [],
-    evidenceIds: [...finding.evidenceIds],
+    rationale,
+    rule: { id: "SCORE-STACK-001", version: "3" },
+    factIds: facts.map((fact) => fact.id),
+    findingIds,
+    evidenceIds: [...new Set(facts.flatMap((fact) => fact.evidenceIds))],
   };
 }
-
-function insufficientScore(limitations: readonly AnalysisLimitation[]): InsufficientEvidenceScore {
-  if (limitations.length === 0) {
-    throw new Error(
-      "StackLens scoring requires an explicit category limitation when coverage is unavailable.",
-    );
-  }
-
-  return {
-    status: "insufficient_evidence",
-    evidenceCoverage: 0,
-    limitationIds: limitations.map((limitation) => limitation.id),
-  };
-}
-
-function availableCategoryScore(
-  category: ScoreCategory,
-  findings: readonly Finding[],
-): { readonly score: AvailableScore; readonly contributions: readonly ScoreContribution[] } {
-  const contributions = findings
-    .filter(
-      (finding) =>
-        finding.category === category && SCORED_RULES[category].includes(finding.rule.id),
-    )
-    .toSorted((left, right) => compareCodeUnits(left.id, right.id))
-    .map(findingContribution);
-  const deductions = contributions.reduce((total, contribution) => total + contribution.points, 0);
-
-  return {
-    score: {
-      status: "available",
-      evidenceCoverage: 100,
-      value: Math.max(0, 100 - deductions),
-      contributionIds: contributions.map((contribution) => contribution.id),
-    },
-    contributions,
-  };
-}
-
-function scoreCategory(
-  context: ScoringContext,
-  category: ScoreCategory,
-): { readonly score: ScoreResult; readonly contributions: readonly ScoreContribution[] } {
-  const limitations = categoryLimitations(context.limitations, category);
-  const coverageFacts = categoryCoverageFacts(context.facts, category);
-
-  if (limitations.length > 0 || coverageFacts.length === 0) {
-    return {
-      score: insufficientScore(
-        limitations.length > 0
-          ? limitations
-          : context.limitations.filter((limitation) =>
-              limitation.affectedCategories.includes(category),
-            ),
-      ),
-      contributions: [],
-    };
-  }
-
-  return availableCategoryScore(category, context.findings);
-}
-
-function availableScoreValue(score: ScoreResult): number | undefined {
-  return score.status === "available" ? score.value : undefined;
-}
-
-function overallScore(
-  categories: Record<ScoreCategory, ScoreResult>,
-  contributions: readonly ScoreContribution[],
-): ScoreResult {
-  const requiredScores = SUPPORTED_OVERALL_CATEGORIES.map((category) => categories[category]);
-  const availableValues = requiredScores.flatMap((score) => {
-    const value = availableScoreValue(score);
-    return value === undefined ? [] : [value];
-  });
-
-  if (availableValues.length !== SUPPORTED_OVERALL_CATEGORIES.length) {
-    const limitationIds = requiredScores.flatMap((score) =>
-      score.status === "insufficient_evidence" ? score.limitationIds : [],
-    );
-
-    if (limitationIds.length === 0) {
-      throw new Error(
-        "Overall scoring requires explicit limitations when a supported category is unavailable.",
-      );
-    }
-
-    return {
-      status: "insufficient_evidence",
-      evidenceCoverage: (availableValues.length / CATEGORY_ORDER.length) * 100,
-      limitationIds: [...new Set(limitationIds)].toSorted(compareCodeUnits),
-    };
-  }
-
-  const value =
-    Math.round(
-      (availableValues.reduce((total, categoryValue) => total + categoryValue, 0) /
-        availableValues.length) *
-        100,
-    ) / 100;
-  const supportedContributionIds = contributions
-    .filter((contribution) => SUPPORTED_OVERALL_CATEGORIES.includes(contribution.category))
-    .map((contribution) => contribution.id);
-
-  return {
-    status: "available",
-    evidenceCoverage: (SUPPORTED_OVERALL_CATEGORIES.length / CATEGORY_ORDER.length) * 100,
-    value,
-    contributionIds: supportedContributionIds,
-  };
-}
-
 export const stackHealthScorer: AnalysisScorer = {
   version: STACK_HEALTH_SCORING_VERSION,
-  score(context): AnalysisScores {
-    const categoryResults = {
-      dependencies: scoreCategory(context, "dependencies"),
-      security: scoreCategory(context, "security"),
-      maintainability: scoreCategory(context, "maintainability"),
-      testing: scoreCategory(context, "testing"),
-      tooling: scoreCategory(context, "tooling"),
-    } satisfies Record<
-      ScoreCategory,
-      { readonly score: ScoreResult; readonly contributions: readonly ScoreContribution[] }
-    >;
-    const contributions = CATEGORY_ORDER.flatMap(
-      (category) => categoryResults[category].contributions,
-    ).toSorted((left, right) => compareCodeUnits(left.id, right.id));
-    const categories: Record<ScoreCategory, ScoreResult> = {
-      dependencies: categoryResults.dependencies.score,
-      security: categoryResults.security.score,
-      maintainability: categoryResults.maintainability.score,
-      testing: categoryResults.testing.score,
-      tooling: categoryResults.tooling.score,
+  score(context): AnalysisScoresV2 {
+    const contributions: ScoreExplanation[] = [];
+    function categoryScore(category: ScoreCategory): ScoreResultV2 {
+      const facts = checks(context, category);
+      const checkCounts = counts(facts);
+      const base = {
+        scope: SCOPES[category],
+        checkCounts,
+        checkFactIds: facts.map((fact) => fact.id),
+      };
+      const unknownLimitations = facts.flatMap((fact) =>
+        fact.details.state === "unknown" ? fact.details.limitationIds : [],
+      );
+      const failedRules = context.limitations.filter(
+        (item) => item.kind === "partial_failure" && item.ruleIds.includes("JS-INSPECTION-018"),
+      );
+      if (checkCounts.unknown > 0 || facts.length === 0 || failedRules.length > 0) {
+        const limitationIds = [
+          ...new Set([
+            ...unknownLimitations,
+            ...failedRules.map((item) => item.id),
+            ...(facts.length === 0
+              ? context.limitations
+                  .filter(
+                    (item) =>
+                      item.affectedCategories.includes(category) || item.kind === "partial_failure",
+                  )
+                  .map((item) => item.id)
+              : []),
+          ]),
+        ].toSorted();
+        if (limitationIds.length === 0)
+          throw new Error("Missing inspection checks require explicit limitations.");
+        return {
+          ...base,
+          status: "insufficient_evidence",
+          rationale:
+            "Required inspection checks remain unknown; they are neither passes nor failures.",
+          limitationIds,
+        };
+      }
+      const applicable = facts.filter((fact) => fact.details.state !== "not_applicable");
+      if (applicable.length === 0)
+        return {
+          ...base,
+          status: "not_applicable",
+          rationale: "No checks apply in the inspected category scope.",
+        };
+      if (category === "dependencies" || category === "security") {
+        const failed = applicable.filter((fact) => fact.details.state === "fail");
+        let band: RiskBand = category === "dependencies" && failed.length > 0 ? "medium" : "none";
+        if (category === "security")
+          for (const fact of applicable) {
+            const severity = fact.details.observedSeverity;
+            if (severity !== undefined && BANDS[severity] < BANDS[band]) band = severity;
+          }
+        const findings = context.findings.filter(
+          (finding) =>
+            finding.category === category &&
+            finding.classification === "fact" &&
+            (category === "dependencies"
+              ? finding.rule.id === "JS-NPM-007"
+              : finding.rule.id === "JS-VULN-011"),
+        );
+        const id = "score-v3-" + category + "-band";
+        const affectedPackageCount = new Set(
+          failed.flatMap((fact) =>
+            fact.details.packageName === undefined ? [] : [fact.details.packageName],
+          ),
+        ).size;
+        const groups: Set<string>[] = [];
+        for (const finding of findings)
+          if (finding.details?.kind === "advisory") {
+            const ids = [finding.details.advisoryId, ...finding.details.aliases];
+            const group = new Set(ids);
+            for (let i = groups.length - 1; i >= 0; i -= 1)
+              if ([...groups[i]!].some((alias) => group.has(alias))) {
+                for (const alias of groups[i]!) group.add(alias);
+                groups.splice(i, 1);
+              }
+            groups.push(group);
+          }
+        const affectedAdvisoryCount = groups.length;
+        const rationale =
+          "The worst supported " +
+          band +
+          " band selects " +
+          BANDS[band] +
+          ". Repeated causes in the same band change affected counts, not this score. These are product bands, not percentages of safety.";
+        contributions.push(
+          explanation(
+            id,
+            category,
+            "risk_band",
+            100 - BANDS[band],
+            rationale,
+            applicable,
+            findings.map((finding) => finding.id),
+          ),
+        );
+        return {
+          ...base,
+          checkCounts: { ...checkCounts, unknown: 0 },
+          status: "available",
+          value: BANDS[band],
+          band,
+          rationale,
+          affectedPackageCount,
+          ...(category === "security" ? { affectedAdvisoryCount } : {}),
+          contributionIds: [id],
+        };
+      }
+      const weight = 100 / applicable.length;
+      const value = (100 * checkCounts.passed) / applicable.length;
+      const ids: string[] = [];
+      for (const fact of applicable) {
+        const id = "score-v3-" + fact.id;
+        ids.push(id);
+        contributions.push(
+          explanation(
+            id,
+            category,
+            "readiness_check",
+            fact.details.state === "pass" ? 0 : weight,
+            "Check " +
+              fact.details.key +
+              " at " +
+              fact.details.packagePath +
+              " is " +
+              fact.details.state +
+              "; each applicable check has equal weight (" +
+              weight +
+              " points).",
+            [fact],
+          ),
+        );
+      }
+      return {
+        ...base,
+        checkCounts: { ...checkCounts, unknown: 0 },
+        status: "available",
+        value,
+        rationale:
+          checkCounts.passed +
+          " of " +
+          applicable.length +
+          " applicable checks passed. Unknown checks cannot receive a numeric score.",
+        contributionIds: ids,
+      };
+    }
+    const categories = {
+      dependencies: categoryScore("dependencies"),
+      security: categoryScore("security"),
+      maintainability: categoryScore("maintainability"),
+      testing: categoryScore("testing"),
+      tooling: categoryScore("tooling"),
     };
-
-    return {
-      overall: overallScore(categories, contributions),
-      categories,
-      contributions,
+    const allChecks = ORDER.flatMap((category) => checks(context, category));
+    const checkCounts = counts(allChecks);
+    const base = {
+      scope: "Mean applicable categories, capped by applicable Dependencies and Security scores.",
+      checkCounts,
+      checkFactIds: allChecks.map((fact) => fact.id),
     };
+    const unknowns = ORDER.flatMap((category) =>
+      categories[category].status === "insufficient_evidence" ? [categories[category]] : [],
+    );
+    let overall: ScoreResultV2;
+    if (unknowns.length > 0)
+      overall = {
+        ...base,
+        status: "insufficient_evidence",
+        rationale: "A required category is unknown. Overall scoring remains unavailable.",
+        limitationIds: [
+          ...new Set(
+            unknowns.flatMap((score) =>
+              score.status === "insufficient_evidence" ? score.limitationIds : [],
+            ),
+          ),
+        ].toSorted(),
+      };
+    else {
+      const available = ORDER.flatMap((category) =>
+        categories[category].status === "available"
+          ? [{ category, score: categories[category] }]
+          : [],
+      );
+      if (available.length === 0)
+        overall = {
+          ...base,
+          status: "not_applicable",
+          rationale: "No category applies to the inspected scope.",
+        };
+      else {
+        const mean =
+          available.reduce(
+            (total, item) => total + (item.score.status === "available" ? item.score.value : 0),
+            0,
+          ) / available.length;
+        const ceilings = available.filter(
+          (item) => item.category === "dependencies" || item.category === "security",
+        );
+        const value = Math.min(
+          mean,
+          ...ceilings.map((item) => (item.score.status === "available" ? item.score.value : 100)),
+        );
+        const rationale =
+          "Overall = min(mean of applicable categories " +
+          mean +
+          (ceilings.length === 0
+            ? ""
+            : ", " +
+              ceilings
+                .map(
+                  (item) =>
+                    item.category +
+                    " " +
+                    (item.score.status === "available" ? item.score.value : ""),
+                )
+                .join(", ")) +
+          ") = " +
+          value +
+          ". Setup scores cannot raise a lower dependency or security band.";
+        const id = "score-v3-overall-ceiling";
+        contributions.push(
+          explanation(
+            id,
+            ceilings[0]?.category ?? available[0]!.category,
+            "overall_ceiling",
+            mean - value,
+            rationale,
+            allChecks,
+          ),
+        );
+        overall = {
+          ...base,
+          checkCounts: { ...checkCounts, unknown: 0 },
+          status: "available",
+          value,
+          rationale,
+          contributionIds: [id],
+        };
+      }
+    }
+    return { overall, categories, contributions };
   },
 };

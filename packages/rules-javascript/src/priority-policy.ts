@@ -2,7 +2,7 @@ import type { FindingCandidate, FindingPrioritizer } from "@stacklens/analyzer-c
 import type { FindingPriority, PriorityLevel } from "@stacklens/contracts";
 
 const RULE_ID = "JS-PRIORITY-016";
-const RULE_VERSION = "1";
+const RULE_VERSION = "2";
 
 interface PriorityDescriptor {
   readonly level: PriorityLevel;
@@ -18,25 +18,25 @@ const PRIORITY_BY_RULE: Readonly<Record<string, PriorityDescriptor>> = {
       "An exact dependency version is matched to a known vulnerability, so this deserves prompt attention before lower-risk maintenance findings.",
   },
   "JS-NPM-007": {
-    level: "high",
+    level: "medium",
     key: "explicit-deprecation",
     rationale:
       "The package registry explicitly marks the exact dependency version deprecated, increasing maintenance and future-compatibility risk.",
   },
   "JS-MIGRATION-014": {
-    level: "medium",
+    level: "low",
     key: "major-version-migration",
     rationale:
       "A deterministic major-version target exists, but migration work requires compatibility review and planned testing.",
   },
   "JS-NPM-006": {
-    level: "medium",
+    level: "low",
     key: "outdated-version",
     rationale:
       "A newer exact npm latest version exists; update work is important but does not by itself establish an urgent failure or vulnerability.",
   },
   "JS-OVERLAP-008": {
-    level: "medium",
+    level: "low",
     key: "overlapping-responsibility",
     rationale:
       "Supported package overlap can increase configuration and maintenance surface, but actual consolidation depends on project usage.",
@@ -61,6 +61,19 @@ function lowerPriority(left: PriorityLevel, right: PriorityLevel): PriorityLevel
 }
 
 function descriptorFor(finding: FindingCandidate): PriorityDescriptor {
+  if (finding.details?.kind === "advisory") {
+    const severity = finding.details.severity;
+    return {
+      level: severity === "unknown" || severity === "none" ? "low" : severity,
+      key: severity === "unknown" ? "advisory-severity-unknown" : "advisory-cvss-severity",
+      rationale:
+        severity === "unknown"
+          ? "CVSS severity is unknown. This review notice receives no inferred severity and cannot establish a security score."
+          : "Supported CVSS base severity is " +
+            severity +
+            "; this is advisory severity, not demonstrated application exploitability.",
+    };
+  }
   const descriptor = PRIORITY_BY_RULE[finding.rule.id];
 
   if (descriptor !== undefined) {

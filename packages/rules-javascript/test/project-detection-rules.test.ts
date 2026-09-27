@@ -219,7 +219,7 @@ describe("dependencyOverlapRule [FR-008, DATA-003, DATA-004, NFR-002]", () => {
       },
       rule: {
         id: "JS-OVERLAP-008",
-        version: "1",
+        version: "2",
       },
       requirementIds: ["FR-008", "DATA-003", "DATA-004"],
       confidence: {
@@ -444,7 +444,7 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
       },
       rule: {
         id: "JS-CONFIG-013",
-        version: "2",
+        version: "3",
       },
     });
     expect(result.facts?.[0]?.statement).toContain("was not executed");
@@ -453,12 +453,12 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
         kind: "unsupported_configuration",
         affectedCategories: ["dependencies", "tooling"],
         ruleIds: ["JS-CONFIG-013"],
-        message: expect.stringContaining("outside the supported immutable export subset"),
+        message: expect.stringContaining("mutations"),
       }),
     ]);
   });
 
-  it("reports JSONC/comments as partial static inspection rather than guessing", () => {
+  it("inspects supported JSONC comments without a false limitation", () => {
     const project = createJavaScriptProjectSnapshot(normalizePackageManifest({}), [
       {
         path: "biome.jsonc",
@@ -477,14 +477,9 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
     });
 
     expect(result.facts).toHaveLength(1);
-    expect(result.facts?.[0]?.statement).toContain("Inspection is partial");
+    expect(result.facts?.[0]?.statement).toContain("formatter.enabled=true");
     expect(result.facts?.[0]?.statement).not.toContain("executable configuration code");
-    expect(result.limitations).toEqual([
-      expect.objectContaining({
-        kind: "unsupported_configuration",
-        message: expect.stringContaining("JSONC/comments"),
-      }),
-    ]);
+    expect(result.limitations).toEqual([]);
   });
 
   it("reports recognized configuration families with unsupported formats instead of ignoring them", () => {
@@ -527,7 +522,7 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
       expect.arrayContaining([
         expect.objectContaining({
           kind: "unsupported_configuration",
-          message: expect.stringContaining("outside the supported immutable export subset"),
+          message: expect.stringContaining("mutations"),
         }),
         expect.objectContaining({
           kind: "unsupported_configuration",

@@ -1,4 +1,5 @@
 export {
+  quickManifestJavaScriptAnalyzer,
   PRODUCTION_JAVASCRIPT_ANALYZER_VERSION,
   PRODUCTION_JAVASCRIPT_RULE_SET_VERSION,
   productionJavaScriptAnalyzer,

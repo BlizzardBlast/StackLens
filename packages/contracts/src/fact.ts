@@ -1,6 +1,12 @@
 import * as z from "zod";
 
 import { IdentifierSchema, RequirementIdSchema, RuleReferenceSchema } from "./identifiers.js";
+import {
+  ConfigurationInspectionDetailsSchema,
+  DependencyResolutionDetailsSchema,
+  InspectionCheckDetailsSchema,
+  WorkspacePackageDetailsSchema,
+} from "./inspection.js";
 import { AnalysisSubjectSchema } from "./subject.js";
 
 export const DependencyInventoryFactDetailsSchema = z.strictObject({
@@ -9,7 +15,15 @@ export const DependencyInventoryFactDetailsSchema = z.strictObject({
   declaredSpecifier: z.string().min(1).max(2000),
 });
 
-export const AnalysisFactDetailsSchema = DependencyInventoryFactDetailsSchema;
+export const AnalysisFactDetailsSchema = z.discriminatedUnion("kind", [
+  DependencyInventoryFactDetailsSchema.extend({
+    packagePath: z.string().min(1).max(1000).optional(),
+  }),
+  DependencyResolutionDetailsSchema,
+  InspectionCheckDetailsSchema,
+  WorkspacePackageDetailsSchema,
+  ConfigurationInspectionDetailsSchema,
+]);
 
 export const AnalysisFactSchema = z.strictObject({
   id: IdentifierSchema,
@@ -20,6 +34,10 @@ export const AnalysisFactSchema = z.strictObject({
   rule: RuleReferenceSchema,
   requirementIds: z.array(RequirementIdSchema).min(1),
   evidenceIds: z.array(IdentifierSchema).min(1),
+});
+
+export const LegacyAnalysisFactSchema = AnalysisFactSchema.extend({
+  details: DependencyInventoryFactDetailsSchema.optional(),
 });
 
 export type DependencyInventoryFactDetails = z.infer<typeof DependencyInventoryFactDetailsSchema>;

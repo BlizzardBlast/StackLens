@@ -13,6 +13,17 @@ export interface JavaScriptPackageScript {
 }
 
 export interface JavaScriptProjectSnapshot extends NormalizedPackageManifest {
+  /** Transient inline Jest settings; never serialized into report evidence. */
+  readonly jestConfiguration?: unknown;
+  readonly workspaceDiscoveryComplete?: boolean;
+  readonly workspacePackages?: readonly JavaScriptProjectSnapshot[];
+  readonly workspaceIssues?: readonly {
+    readonly code: string;
+    readonly path: string;
+    readonly message: string;
+  }[];
+  readonly role?: "package" | "orchestrator";
+  readonly repositoryFiles?: readonly JavaScriptStaticProjectFile[];
   readonly repositoryCoverage?: JavaScriptRepositoryCoverage;
   readonly files?: readonly JavaScriptStaticProjectFile[];
   readonly scripts?: readonly JavaScriptPackageScript[];
@@ -161,6 +172,7 @@ export function createJavaScriptProjectSnapshot(
     .toSorted((left, right) => compareCodeUnits(left.name, right.name));
 
   return {
+    ...(manifest.packagePath === undefined ? {} : { packagePath: manifest.packagePath }),
     ...(manifest.packageName === undefined ? {} : { packageName: manifest.packageName }),
     ...(manifest.packageManager === undefined ? {} : { packageManager: manifest.packageManager }),
     dependencies: manifest.dependencies.map((dependency) => ({ ...dependency })),

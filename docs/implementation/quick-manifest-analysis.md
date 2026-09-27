@@ -92,7 +92,7 @@ This keeps the existing dependency-inversion boundaries intact.
 
 ## Current limitations
 
-Until the next provider milestones are implemented, quick analysis explicitly records:
+Provider-free quick analysis explicitly records:
 
 - source/configuration evidence is unavailable in manifest-only mode;
 - external package/vulnerability metadata is unavailable in the current analysis snapshot.
@@ -130,18 +130,14 @@ path.
 A dedicated manifest-only analyzer composition runs only rules whose evidence requirements can be
 satisfied by the normalized manifest:
 
-- `JS-DEP-005@1` dependency inventory facts;
-- `JS-TOOL-012@1` exact-package framework/tool facts;
-- `JS-OVERLAP-008@1` curated manifest-backed overlap heuristics;
-- shared `JS-PRIORITY-016@1` priority for emitted findings;
-- shared `JS-RECOMMEND-015@2` evidence-backed recommendations.
+The v4 quick composition is exported by `@stacklens/analysis-orchestration` and injected into the
+API service. It uses shared inventory/tool rules, named inspection checks, overlap advice, priority
+v2, recommendations v3 and `stack-health-v3`, writing schema 2.0.0. It performs no provider I/O.
 
-The quick analyzer keeps numeric scoring at `insufficient_evidence` with eligibility 0 because
-repository setup and external npm/OSV evidence required by the accepted score policy are absent.
-The UI displays score availability, not a percentage of the submitted manifest parsed.
-Provider/source-dependent rules and `stack-health-v2` scoring remain repository-only.
-Quick analyzer/rule-set identities advance to v3 to record the shared recommendation-rule version;
-the `quick-manifest-insufficient-evidence-v1` scoring policy and provider-free behavior are unchanged.
+Required repository/provider evidence remains unknown. Dependency/security checks are not applicable
+when there are no external installation declarations. Quick mode never invents complete repository
+coverage or a healthy score from a manifest alone. Existing endpoint URLs and strict v1 read support
+remain unchanged.
 
 ## Verification
 

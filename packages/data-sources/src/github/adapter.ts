@@ -87,6 +87,8 @@ function candidateRank(kind: CandidateEntry["kind"]): number {
 }
 
 function candidateOrder(left: CandidateEntry, right: CandidateEntry): number {
+  if (left.path === "package.json") return -1;
+  if (right.path === "package.json") return 1;
   const rankOrder = candidateRank(left.kind) - candidateRank(right.kind);
   return rankOrder === 0 ? compareCodeUnits(left.path, right.path) : rankOrder;
 }
@@ -402,11 +404,17 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
       candidates.push({
         ...entry,
         kind:
-          entry.path === "package.json"
+          entry.path === "package.json" ||
+          entry.path.endsWith("/package.json") ||
+          entry.path === "pnpm-workspace.yaml"
             ? "manifest"
             : isSupportedDependencyLockfilePath(entry.path)
               ? "lockfile"
-              : isSupportedJavaScriptSourcePath(entry.path)
+              : isSupportedJavaScriptSourcePath(entry.path) &&
+                  !(
+                    request.selectConfigurationPaths !== undefined &&
+                    /(?:^|\/)[^/]*config\.[cm]?[jt]s$/u.test(entry.path)
+                  )
                 ? "source"
                 : "config",
       });
@@ -493,6 +501,15 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
     const orderedCandidates = candidates.toSorted(candidateOrder);
     const retainedCandidates = orderedCandidates.slice(0, this.#maxFiles);
+    const queuedPaths = new Set(retainedCandidates.map((entry) => entry.path));
+    const availableConfigurationEntries = tree.entries.filter(
+      (entry) =>
+        entry.type === "blob" &&
+        entry.mode !== "120000" &&
+        isCanonicalRepositoryPath(entry.path) &&
+        !isIgnoredRepositoryPath(entry.path) &&
+        /\.(?:jsonc?|[cm]?[jt]s)$/u.test(entry.path),
+    );
     const sourceCandidateCount = candidates.filter(
       (candidate) => candidate.kind === "source",
     ).length;
@@ -588,7 +605,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
         };
         totalBytes += decoded.byteLength;
 
-        if (entry.kind === "manifest") {
+        if (entry.path === "package.json") {
           manifest = acquiredFile;
         } else {
           files.push(acquiredFile);
@@ -665,6 +682,39 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
         }),
       );
       batch.forEach((entry, index) => retainEntry(entry, results[index]!));
+      if (request.selectConfigurationPaths !== undefined) {
+        const selected = request.selectConfigurationPaths(
+          files,
+          availableConfigurationEntries.map((entry) => entry.path),
+        );
+        const additions: CandidateEntry[] = [];
+        for (const path of selected.slice(0, 128)) {
+          if (queuedPaths.has(path)) {
+            const pending = retainedCandidates.findIndex(
+              (entry, index) => index >= candidateIndex && entry.path === path,
+            );
+            if (pending >= 0) additions.push(...retainedCandidates.splice(pending, 1));
+            continue;
+          }
+          const entry = availableConfigurationEntries.find((candidate) => candidate.path === path);
+          if (entry === undefined) continue;
+          if (retainedCandidates.length + additions.length >= this.#maxFiles) {
+            const replaceable = retainedCandidates.findLastIndex(
+              (candidate, index) => index >= candidateIndex && candidate.kind === "source",
+            );
+            if (replaceable < 0) {
+              aggregateLimitedPaths.push(path);
+              continue;
+            }
+            const replaced = retainedCandidates.splice(replaceable, 1)[0]!;
+            aggregateLimitedPaths.push(replaced.path);
+            queuedPaths.delete(replaced.path);
+          }
+          queuedPaths.add(path);
+          additions.push({ ...entry, kind: "config" });
+        }
+        retainedCandidates.splice(candidateIndex, 0, ...additions);
+      }
     }
 
     if (oversizedPaths.length > 0) {
@@ -785,6 +835,19 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
         repository: repositoryIdentity,
         ...(manifest === undefined ? {} : { manifest }),
         files: files.toSorted((left, right) => compareCodeUnits(left.path, right.path)),
+        manifestPaths: tree.entries
+          .filter(
+            (entry) =>
+              isCanonicalRepositoryPath(entry.path) &&
+              !isIgnoredRepositoryPath(entry.path) &&
+              entry.path.endsWith("/package.json"),
+          )
+          .map((entry) => entry.path)
+          .toSorted(),
+        workspaceDiscoveryComplete:
+          !tree.truncated &&
+          (!tree.entries.some((entry) => entry.path === "pnpm-workspace.yaml") ||
+            files.some((file) => file.path === "pnpm-workspace.yaml")),
         sourceCoverage: {
           status: sourceCoveragePartial ? "partial" : "complete",
           candidateFiles: sourceCandidateCount,

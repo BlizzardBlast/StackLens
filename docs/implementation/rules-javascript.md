@@ -1,5 +1,17 @@
 # JavaScript Rules
 
+## Current v4 behavior (2026-09-27)
+
+ADR-0013 supersedes historical priority/deduction/coverage slices below. Production reports use
+schema 2.0.0 with package-scoped workspace checks and stack-health-v3. Workspace catalogs/importers,
+JSONC, local immutable config graphs, MDX, lexical require.resolve aliases and script delegation
+are supported without execution. Validated CVSS severity and npm deprecation drive risk bands;
+update/migration/overlap advice is unscored. Partial fields block only checks requiring them.
+
+See [workspace phase record](workspace-inspection.md) and [scoring v3](scoring.md) for current
+contracts, bounds, verification and uncertainty. Earlier slices below document their original
+implementation and remain useful for legacy tests, not current scoring policy.
+
 > **Status:** Accepted implementation baseline
 > **Date:** 2026-09-19
 > **Requirements:** FR-004–FR-023, DATA-001–DATA-005, SCORE-003, NFR-001–NFR-005, SEC-001, SEC-002, GOV-007

@@ -8,6 +8,7 @@ import type {
 } from "./manifest.js";
 import { parseExactSemanticVersion } from "./semver.js";
 import { stableHash } from "./stable-id.js";
+import { parseStaticYaml } from "./static-data.js";
 
 export const SUPPORTED_LOCKFILE_PATHS = [
   "package-lock.json",
@@ -22,6 +23,10 @@ export interface JavaScriptResolvedDependency {
   readonly packageName: string;
   readonly declaredSpecifier: string;
   readonly version: string;
+  readonly effectiveSpecifier?: string;
+  readonly dependencyGroup?: PackageDependencyGroup;
+  readonly packagePath?: string;
+  readonly catalog?: string;
 }
 
 export type ResolvedDependencyIssueCode =
@@ -41,6 +46,7 @@ export interface JavaScriptResolvedDependencyIssue {
 
 export interface JavaScriptResolvedDependencySnapshot {
   readonly path: SupportedLockfilePath;
+  readonly packagePath?: string;
   readonly packageManager: JavaScriptPackageManager;
   readonly resolutions: readonly JavaScriptResolvedDependency[];
   readonly issues: readonly JavaScriptResolvedDependencyIssue[];
@@ -76,7 +82,9 @@ function uniqueDeclarations(
 ): readonly NormalizedDependencyDeclaration[] {
   const unique = new Map<string, NormalizedDependencyDeclaration>();
 
-  for (const declaration of manifest.dependencies) {
+  for (const declaration of manifest.dependencies.filter(
+    (item) => !item.peerOnly && item.internalPackagePath === undefined,
+  )) {
     unique.set(
       JSON.stringify([declaration.name, declaration.declaredSpecifier, declaration.group]),
       declaration,
@@ -161,7 +169,12 @@ function uniqueResolutions(
 
   for (const resolution of resolutions) {
     unique.set(
-      JSON.stringify([resolution.packageName, resolution.declaredSpecifier, resolution.version]),
+      JSON.stringify([
+        resolution.packageName,
+        resolution.declaredSpecifier,
+        resolution.version,
+        resolution.dependencyGroup,
+      ]),
       resolution,
     );
   }
@@ -222,18 +235,34 @@ function resolutionFromCandidate(
     packageName: declaration.name,
     declaredSpecifier: declaration.declaredSpecifier,
     version,
+    ...(declaration.effectiveSpecifier === undefined ? {} : { dependencyGroup: declaration.group }),
+    ...(declaration.effectiveSpecifier === undefined
+      ? {}
+      : { effectiveSpecifier: declaration.effectiveSpecifier }),
+    ...(declaration.catalog === undefined ? {} : { catalog: declaration.catalog }),
   };
 }
 
 function packageLockCandidate(
   parsed: Record<string, unknown>,
   declaration: NormalizedDependencyDeclaration,
+  packagePath = ".",
 ): CandidateResolution | undefined {
   const packages = parsed.packages;
 
   if (isRecord(packages)) {
-    const root = packages[""];
-    const installed = packages[`node_modules/${declaration.name}`];
+    const root = packages[packagePath === "." ? "" : packagePath];
+    let directory = packagePath === "." ? "" : packagePath;
+    let installed: unknown;
+    for (;;) {
+      const key = (directory === "" ? "" : directory + "/") + "node_modules/" + declaration.name;
+      if (Object.hasOwn(packages, key)) {
+        installed = packages[key];
+        break;
+      }
+      if (directory === "") break;
+      directory = directory.includes("/") ? directory.slice(0, directory.lastIndexOf("/")) : "";
+    }
 
     if (!isRecord(root) || !isRecord(installed)) {
       return undefined;
@@ -311,7 +340,7 @@ function parsePackageLock(
   const resolutions = uniqueDeclarations(manifest).flatMap((declaration) => {
     const resolution = resolutionFromCandidate(
       declaration,
-      packageLockCandidate(parsed, declaration),
+      packageLockCandidate(parsed, declaration, manifest.packagePath),
       issues,
     );
 
@@ -322,6 +351,7 @@ function parsePackageLock(
     snapshot: {
       path: "package-lock.json",
       packageManager: "npm",
+      ...(manifest.packagePath === undefined ? {} : { packagePath: manifest.packagePath }),
       resolutions: uniqueResolutions(resolutions),
       issues,
     },
@@ -348,165 +378,6 @@ function yamlScalar(value: string): string {
   return trimmed;
 }
 
-function yamlKey(line: string): string | undefined {
-  const trimmed = line.trim();
-
-  if (!trimmed.endsWith(":")) {
-    return undefined;
-  }
-
-  return yamlScalar(trimmed.slice(0, -1));
-}
-
-function leadingSpaces(line: string): number {
-  let count = 0;
-
-  while (count < line.length && line[count] === " ") {
-    count += 1;
-  }
-
-  return count;
-}
-
-interface PnpmEntry {
-  readonly group: PackageDependencyGroup;
-  readonly packageName: string;
-  specifier?: string;
-  version?: string;
-}
-
-function isPackageDependencyGroup(value: string | undefined): value is PackageDependencyGroup {
-  return (
-    value === "dependencies" ||
-    value === "devDependencies" ||
-    value === "peerDependencies" ||
-    value === "optionalDependencies"
-  );
-}
-
-function parsePnpmEntries(content: string): readonly PnpmEntry[] {
-  const lines = content.split(/\r?\n/u);
-  const entries: PnpmEntry[] = [];
-  let inImporters = false;
-  let inRootImporter = false;
-  let currentGroup: PackageDependencyGroup | undefined;
-  let currentEntry: PnpmEntry | undefined;
-
-  for (const line of lines) {
-    if (line.includes("\t")) {
-      continue;
-    }
-
-    const indent = leadingSpaces(line);
-    const trimmed = line.trim();
-
-    if (trimmed.length === 0 || trimmed.startsWith("#")) {
-      continue;
-    }
-
-    if (indent === 0 && trimmed === "importers:") {
-      inImporters = true;
-      inRootImporter = false;
-      currentGroup = undefined;
-      currentEntry = undefined;
-      continue;
-    }
-
-    if (inImporters) {
-      if (indent === 2) {
-        inRootImporter = yamlKey(line) === ".";
-        currentGroup = undefined;
-        currentEntry = undefined;
-        continue;
-      }
-
-      if (!inRootImporter) {
-        continue;
-      }
-
-      if (indent === 4) {
-        const key = yamlKey(line);
-        currentGroup = isPackageDependencyGroup(key) ? key : undefined;
-        currentEntry = undefined;
-        continue;
-      }
-
-      if (currentGroup !== undefined && indent === 6) {
-        const packageName = yamlKey(line);
-
-        if (packageName !== undefined) {
-          currentEntry = {
-            group: currentGroup,
-            packageName,
-          };
-          entries.push(currentEntry);
-        }
-
-        continue;
-      }
-
-      if (currentEntry !== undefined && indent === 8) {
-        const separator = trimmed.indexOf(":");
-
-        if (separator === -1) {
-          continue;
-        }
-
-        const key = trimmed.slice(0, separator);
-        const value = yamlScalar(trimmed.slice(separator + 1));
-
-        if (key === "specifier") {
-          currentEntry.specifier = value;
-        } else if (key === "version") {
-          currentEntry.version = value;
-        }
-      }
-
-      continue;
-    }
-
-    if (indent === 0) {
-      const key = yamlKey(line);
-      currentGroup = isPackageDependencyGroup(key) ? key : undefined;
-      currentEntry = undefined;
-      continue;
-    }
-
-    if (currentGroup !== undefined && indent === 2) {
-      const packageName = yamlKey(line);
-
-      if (packageName !== undefined) {
-        currentEntry = {
-          group: currentGroup,
-          packageName,
-        };
-        entries.push(currentEntry);
-      }
-
-      continue;
-    }
-
-    if (currentEntry !== undefined && indent === 4) {
-      const separator = trimmed.indexOf(":");
-
-      if (separator === -1) {
-        continue;
-      }
-
-      const key = trimmed.slice(0, separator);
-      const value = yamlScalar(trimmed.slice(separator + 1));
-
-      if (key === "specifier") {
-        currentEntry.specifier = value;
-      } else if (key === "version") {
-        currentEntry.version = value;
-      }
-    }
-  }
-
-  return entries;
-}
-
 function pnpmVersion(value: string | undefined): string | undefined {
   if (value === undefined) {
     return undefined;
@@ -521,31 +392,60 @@ function parsePnpmLock(
   content: string,
   manifest: NormalizedPackageManifest,
 ): ResolvedDependencyNormalization {
-  const entries = parsePnpmEntries(content);
+  let parsed: unknown;
+  try {
+    parsed = parseStaticYaml(content);
+  } catch {
+    return {
+      issues: [issue("lockfile_invalid", "pnpm-lock.yaml is malformed or uses unsupported YAML.")],
+    };
+  }
+  if (!isRecord(parsed))
+    return { issues: [issue("lockfile_invalid", "pnpm-lock.yaml requires an object root.")] };
+  const importerPath = manifest.packagePath ?? ".";
+  const importer = isRecord(parsed.importers)
+    ? parsed.importers[importerPath]
+    : importerPath === "."
+      ? parsed
+      : undefined;
   const issues: JavaScriptResolvedDependencyIssue[] = [];
   const resolutions = uniqueDeclarations(manifest).flatMap((declaration) => {
-    const entry = entries.find(
-      (candidate) =>
-        candidate.group === declaration.group && candidate.packageName === declaration.name,
-    );
+    const group = isRecord(importer) ? importer[declaration.group] : undefined;
+    const value = isRecord(group) ? group[declaration.name] : undefined;
+    const entry = isRecord(value) ? value : undefined;
+    const effective = declaration.effectiveSpecifier ?? declaration.declaredSpecifier;
+    let catalogMatches = true;
+    if (declaration.catalog !== undefined) {
+      const catalog = isRecord(parsed.catalogs) ? parsed.catalogs[declaration.catalog] : undefined;
+      const record = isRecord(catalog) ? catalog[declaration.name] : undefined;
+      catalogMatches =
+        isRecord(record) &&
+        record.specifier === effective &&
+        typeof record.version === "string" &&
+        typeof entry?.version === "string" &&
+        pnpmVersion(record.version) === pnpmVersion(entry.version) &&
+        !effective.startsWith("catalog:");
+    }
     const candidate =
       entry === undefined
         ? undefined
         : {
             packageName: declaration.name,
             declaredSpecifier: declaration.declaredSpecifier,
-            version: pnpmVersion(entry.version),
-            specifierMatches: entry.specifier === declaration.declaredSpecifier,
+            version: pnpmVersion(typeof entry.version === "string" ? entry.version : undefined),
+            specifierMatches:
+              catalogMatches &&
+              (entry.specifier === declaration.declaredSpecifier || entry.specifier === effective),
           };
     const resolution = resolutionFromCandidate(declaration, candidate, issues);
     return resolution === undefined ? [] : [resolution];
   });
 
-  if (entries.length === 0 && manifest.dependencies.length > 0) {
+  if (!isRecord(importer) && uniqueDeclarations(manifest).length > 0) {
     issues.unshift(
       issue(
         "lockfile_invalid",
-        "pnpm-lock.yaml does not contain a supported root importer dependency shape.",
+        "pnpm-lock.yaml does not contain a supported matching importer dependency shape.",
       ),
     );
   }
@@ -554,6 +454,7 @@ function parsePnpmLock(
     snapshot: {
       path: "pnpm-lock.yaml",
       packageManager: "pnpm",
+      ...(manifest.packagePath === undefined ? {} : { packagePath: manifest.packagePath }),
       resolutions: uniqueResolutions(resolutions),
       issues,
     },
@@ -663,6 +564,7 @@ function parseYarnLock(
     snapshot: {
       path: "yarn.lock",
       packageManager: "yarn",
+      ...(manifest.packagePath === undefined ? {} : { packagePath: manifest.packagePath }),
       resolutions: uniqueResolutions(resolutions),
       issues,
     },
@@ -747,9 +649,11 @@ function resolutionIdentity(
 ): string {
   return JSON.stringify([
     snapshot.path,
+    snapshot.packagePath ?? ".",
     resolution.packageName,
     resolution.declaredSpecifier,
     resolution.version,
+    resolution.dependencyGroup ?? "",
   ]);
 }
 
@@ -785,10 +689,15 @@ export function resolvedDependency(
   packageName: string,
   declaredSpecifier: string,
 ): JavaScriptResolvedDependency | undefined {
-  return snapshot?.resolutions.find(
-    (resolution) =>
-      resolution.packageName === packageName && resolution.declaredSpecifier === declaredSpecifier,
-  );
+  const matches =
+    snapshot?.resolutions.filter(
+      (resolution) =>
+        resolution.packageName === packageName &&
+        resolution.declaredSpecifier === declaredSpecifier,
+    ) ?? [];
+  return new Set(matches.map((resolution) => resolution.version)).size === 1
+    ? matches[0]
+    : undefined;
 }
 
 export const resolvedDependencyFactRule: FactRule<
@@ -799,7 +708,7 @@ export const resolvedDependencyFactRule: FactRule<
 > = {
   kind: "fact",
   id: "JS-RESOLVED-023",
-  version: "1",
+  version: "2",
   requirementIds: ["FR-023", "FR-017", "NFR-001"],
   evaluate(context) {
     const snapshot = context.project.resolvedDependencies;
@@ -811,6 +720,20 @@ export const resolvedDependencyFactRule: FactRule<
     const facts: AnalysisFact[] = snapshot.resolutions.map((resolution) => ({
       id: resolvedDependencyFactId(snapshot, resolution),
       type: "dependency.resolution",
+      ...(snapshot.packagePath === undefined
+        ? {}
+        : {
+            details: {
+              kind: "dependency_resolution" as const,
+              packagePath: snapshot.packagePath,
+              dependencyGroup: resolution.dependencyGroup ?? "dependencies",
+              declaredSpecifier: resolution.declaredSpecifier,
+              effectiveSpecifier: resolution.effectiveSpecifier ?? resolution.declaredSpecifier,
+              version: resolution.version,
+              lockfilePath: snapshot.path,
+              ...(resolution.catalog === undefined ? {} : { catalog: resolution.catalog }),
+            },
+          }),
       subject: {
         type: "dependency",
         name: resolution.packageName,
@@ -819,7 +742,7 @@ export const resolvedDependencyFactRule: FactRule<
       statement: `${snapshot.path} resolves ${resolution.packageName} declared as ${JSON.stringify(resolution.declaredSpecifier)} to exact version ${resolution.version}.`,
       rule: {
         id: "JS-RESOLVED-023",
-        version: "1",
+        version: "2",
       },
       requirementIds: ["FR-023"],
       evidenceIds: [resolvedDependencyEvidenceId(snapshot, resolution)],

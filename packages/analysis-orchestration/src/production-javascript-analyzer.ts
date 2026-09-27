@@ -12,11 +12,13 @@ import {
   outdatedDependencyRule,
   potentiallyUnnecessaryDependencyRule,
   projectConfigurationRule,
-  projectReadinessFactRule,
   projectReadinessFindingRule,
   resolvedDependencyFactRule,
-  scoringCoverageFactRule,
   sourceUsageFactRule,
+  workspaceInspectionRule,
+  scopeFactRule,
+  scopeFindingRule,
+  scopeRecommendationRule,
 } from "@stacklens/rules-javascript";
 import type {
   JavaScriptAnalysisMetadata,
@@ -24,22 +26,24 @@ import type {
 } from "@stacklens/rules-javascript";
 import { stackHealthScorer } from "@stacklens/scoring";
 
-export const PRODUCTION_JAVASCRIPT_ANALYZER_VERSION = "javascript-production-v3";
-export const PRODUCTION_JAVASCRIPT_RULE_SET_VERSION = "javascript-rules-v3";
+export const PRODUCTION_JAVASCRIPT_ANALYZER_VERSION = "javascript-production-v4";
+export const PRODUCTION_JAVASCRIPT_RULE_SET_VERSION = "javascript-rules-v4";
 
 export const productionJavaScriptAnalyzer = {
+  reportSchemaVersion: "2.0.0",
   version: PRODUCTION_JAVASCRIPT_ANALYZER_VERSION,
   ruleSet: {
     version: PRODUCTION_JAVASCRIPT_RULE_SET_VERSION,
     factRules: [
-      dependencyInventoryRule,
-      frameworkToolDetectionRule,
-      npmRegistryHealthFactRule,
-      projectConfigurationRule,
-      projectReadinessFactRule,
-      resolvedDependencyFactRule,
-      scoringCoverageFactRule,
-      sourceUsageFactRule,
+      ...[
+        dependencyInventoryRule,
+        frameworkToolDetectionRule,
+        npmRegistryHealthFactRule,
+        projectConfigurationRule,
+        resolvedDependencyFactRule,
+        sourceUsageFactRule,
+      ].map(scopeFactRule),
+      workspaceInspectionRule,
     ],
     findingRules: [
       dependencyOverlapRule,
@@ -49,9 +53,27 @@ export const productionJavaScriptAnalyzer = {
       outdatedDependencyRule,
       potentiallyUnnecessaryDependencyRule,
       projectReadinessFindingRule,
-    ],
+    ].map(scopeFindingRule),
     prioritizer: javascriptFindingPrioritizer,
-    recommendationRules: [evidenceBackedRecommendationRule],
+    recommendationRules: [evidenceBackedRecommendationRule].map(scopeRecommendationRule),
+  },
+  scorer: stackHealthScorer,
+} satisfies AnalyzerDefinition<JavaScriptProjectSnapshot, JavaScriptAnalysisMetadata>;
+
+/** Manifest-only composition shares scoring policy; absent repository/provider evidence stays unknown. */
+export const quickManifestJavaScriptAnalyzer = {
+  reportSchemaVersion: "2.0.0",
+  version: "javascript-quick-manifest-v4",
+  ruleSet: {
+    version: "javascript-quick-manifest-rules-v4",
+    factRules: [
+      scopeFactRule(dependencyInventoryRule),
+      scopeFactRule(frameworkToolDetectionRule),
+      workspaceInspectionRule,
+    ],
+    findingRules: [scopeFindingRule(dependencyOverlapRule)],
+    prioritizer: javascriptFindingPrioritizer,
+    recommendationRules: [scopeRecommendationRule(evidenceBackedRecommendationRule)],
   },
   scorer: stackHealthScorer,
 } satisfies AnalyzerDefinition<JavaScriptProjectSnapshot, JavaScriptAnalysisMetadata>;
