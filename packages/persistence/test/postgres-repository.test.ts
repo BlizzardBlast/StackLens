@@ -83,6 +83,59 @@ describeWithDatabase("PostgreSQL analysis persistence [FR-003, FR-021, DATA-006,
     await pool.end();
   });
 
+  it.each(["1.0.0", "2.0.0"] as const)(
+    "round trips schema %s without changing its stored policy or scores",
+    async (schemaVersion) => {
+      const legacy = report();
+      const score = {
+        status: "not_applicable" as const,
+        scope: "Synthetic empty scope",
+        rationale: "No applicable checks in this fixture.",
+        checkCounts: { passed: 0, failed: 0, unknown: 0, notApplicable: 0 },
+        checkFactIds: [],
+      };
+      const payload: AnalysisReport =
+        schemaVersion === "1.0.0"
+          ? legacy
+          : {
+              ...legacy,
+              schemaVersion,
+              analyzer: {
+                version: "javascript-production-v4",
+                ruleSetVersion: "javascript-rules-v4",
+                scoringVersion: "stack-health-v3",
+              },
+              scores: {
+                overall: score,
+                categories: {
+                  dependencies: score,
+                  security: score,
+                  maintainability: score,
+                  testing: score,
+                  tooling: score,
+                },
+                contributions: [],
+              },
+            };
+      await repository.createQueuedRepositoryAnalysis({
+        id: payload.analysisId,
+        repositoryUrl: "https://github.com/acme/demo",
+        createdAt: payload.createdAt,
+      });
+      await repository.claimForExecution(payload.analysisId, "roundtrip-job", payload.createdAt);
+      await repository.complete({
+        id: payload.analysisId,
+        jobId: "roundtrip-job",
+        report: payload,
+        completedAt: payload.createdAt,
+        status: "completed",
+      });
+      const stored = await repository.findReport(payload.analysisId);
+      expect(stored?.reportSchemaVersion).toBe(schemaVersion);
+      expect(stored?.report).toEqual(payload);
+    },
+  );
+
   it("persists idempotent queued input and enforces execution ownership", async () => {
     const queued = await repository.createQueuedRepositoryAnalysis({
       id: "analysis-001",

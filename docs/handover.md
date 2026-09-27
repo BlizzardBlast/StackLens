@@ -1,34 +1,43 @@
 # StackLens Session Handover
 
-> **Status:** Active implementation handover  
-> **Prepared:** 2026-09-25<br>
-> **Baseline branch:** `main`  
-> **Baseline verification:** Resolve the current `main` HEAD and confirm its quality workflow is green before changing code.  
-> **Architecture:** v0.1.14<br>
-> **Completed milestone:** Scoped scoring v2 and evidence recovery<br>
-> **Immediate milestone:** Manual browser acceptance and release-readiness review (no new product behavior)  
-> **Traceability:** FR-001–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-002–GOV-007
+> **Prepared:** 2026-09-27
+> **Architecture:** v0.1.15
+> **Milestone:** Workspace inspection and scoring v3 (ADR-0013)
+> **Branch:** `codex/workspace-inspection-scoring`, stacked on open PR #37
+> **Baseline:** `8fe68e0e065f08b0ffdf9aaf0e664b9b7103d2e2`
+> **Traceability:** FR-005–FR-009, FR-011–FR-023, DATA-001–006, SCORE-001–004, SEC-001/002, NFR-006–008, GOV-002–007
 
-This document is the operational handover for the next StackLens implementation session.
+## Current handover
 
-The 2026-09-23 [production visual refinement](design/visual-refinement.md), delivered in
-[PR #37](https://github.com/BlizzardBlast/StackLens/pull/37), records the updated
-palette, free self-hosted IBM Plex pairing, system themes, responsive input layouts, and motion
-checks. Its screenshot evidence is committed with the review. Follow-up work in the same PR fixes
-PostgreSQL pool/client handlers and the real-report evidence gaps documented in
-[evidence improvements](implementation/evidence-improvements.md). The current local quality gate
-passed with 319 tests, including all database tests in an isolated PostgreSQL database. Resolve and
-verify the current `main` HEAD and the PR's merge status before the next change;
-the visual review is not a pinned release commit.
+Repository and quick-manifest compositions are v4 in analysis-orchestration. Reports use schema
+2.0.0 and stack-health-v3. Readers strictly preserve historical schema 1.0.0 reports and scores.
+There is no database migration/backfill. Deploy compatible client/API readers before v4 writers;
+rollback must keep schema 2 read support. Restart applications and request a new analysis to see
+the new policy. Resolve and verify the current main HEAD and both PR merge states before new work.
 
-Current repository reports use `javascript-production-v3` / `javascript-rules-v3` and
-`stack-health-v2` (ADR-0012). All five categories have limited, explicit scopes. Stored v1 reports
-retain their values; restart `pnpm dev` and create a new analysis to use the changed collector and
-policy. Quick manifest scoring remains N/A and provider-free; its v3 composition records the shared
-recommendation rule v2. Historical milestone sections below preserve the earlier implementation
-sequence; current policy is defined by ADR-0012 and the scoring implementation document.
+Risk bands replace accumulated priority deductions. Updates and optional migrations are unscored;
+Maintainability now measures lint/type-check safeguards. Workspace manifests/catalogs/importers,
+JSONC/MDX, bounded local configs and script delegation preserve package ownership and uncertainty.
+React presents supplied checks, package filters and linked explanations without policy duplication.
 
-It is intentionally more prescriptive than the general architecture documentation. The next session should begin here, then use the linked source-of-truth documents before changing code.
+[Phase review and verification](implementation/workspace-inspection.md),
+[scoring policy](implementation/scoring.md), [report contract](implementation/analysis-contracts.md),
+[report design](design/report-evidence.md) and ADR-0013 are authoritative for this milestone.
+Pinned acceptance uses recorded KerjaLog/Frey-ui inputs and synthetic provider/test evidence;
+it is not a full live audit. External presets/callbacks, complex selectors and ambiguous execution
+targets remain bounded static limitations. No repository code is executed.
+
+Final pnpm check passed with 413 tests, including PostgreSQL/API compatibility, and git diff
+--check passed. All six scoped phase review gates are approved.
+
+The PR includes its handover and journey before merge. The isolated local test database is named
+`stacklens_workspace_v3_test`; normal application data is untouched. Browser screenshots use
+synthetic contract-valid fixtures and emulated viewports, not physical-device evidence.
+
+## Historical milestone context
+
+The sections below retain earlier implementation context. Their old versions, test counts and
+next-step descriptions are historical; use the current handover and linked review for release state.
 
 ## 1. Start here in the next session
 
@@ -77,7 +86,7 @@ Before implementing anything:
 The repository already has the following accepted foundations:
 
 - canonical product/system requirements;
-- architecture v0.1.14;
+- architecture v0.1.15;
 - Product Design v1;
 - generated design-token infrastructure;
 - shared UI package;

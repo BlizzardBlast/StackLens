@@ -96,7 +96,7 @@ describe("JavaScript production priority policy [FR-016, FR-020]", () => {
       level: "high",
       rule: {
         id: "JS-PRIORITY-016",
-        version: "1",
+        version: "2",
       },
       factors: [
         expect.objectContaining({
@@ -107,7 +107,7 @@ describe("JavaScript production priority policy [FR-016, FR-020]", () => {
     expect(
       javascriptFindingPrioritizer.prioritize(priorityContext(deprecation), deprecation),
     ).toMatchObject({
-      level: "high",
+      level: "medium",
       factors: [
         expect.objectContaining({
           key: "explicit-deprecation",

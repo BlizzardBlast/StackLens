@@ -131,3 +131,18 @@ export {
   projectReadinessFactRule,
   projectReadinessFindingRule,
 } from "./project-readiness.js";
+
+export { createWorkspaceProject, workspacePackages, externalDeclarations } from "./workspace.js";
+
+export {
+  scopeFactRule,
+  scopeFindingRule,
+  scopeRecommendationRule,
+  createWorkspaceEvidence,
+  packageEvidenceId,
+  packagePrefix,
+} from "./workspace-rules.js";
+export { createConfigurationPathSelector } from "./configuration-acquisition.js";
+export { withWorkspaceSourceUsage } from "./source-usage.js";
+export { workspaceInspectionRule } from "./workspace-inspection.js";
+export { traceScripts, declaredTool, staticCommands } from "./script-graph.js";

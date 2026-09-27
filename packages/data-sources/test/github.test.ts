@@ -165,6 +165,77 @@ afterEach(() => {
 });
 
 describe("realistic bounded repository acquisition [FR-003, FR-009, FR-021, SEC-002]", () => {
+  it("acquires referenced config blobs from the immutable tree within the same file budget", async () => {
+    const entries = [
+      { path: "package.json", sha: manifestSha, content: "{}" },
+      { path: "tsconfig.json", sha: tsconfigSha, content: '{"extends":"./shared/options"}' },
+      { path: "shared/options.json", sha: viteSha, content: '{"compilerOptions":{"strict":true}}' },
+      ...Array.from({ length: 6 }, (_, index) => ({
+        path: "src/" + index + ".ts",
+        sha: String(index + 10).padStart(40, "0"),
+        content: "export {};",
+      })),
+      { path: "symlink.json", sha: symlinkSha, content: "{}" },
+      { path: "vendor/secret.json", sha: ignoredSha, content: "{}" },
+    ];
+    const fetchImpl = successfulBaseFetch(
+      treePayload(
+        entries.map((entry) =>
+          treeEntry(
+            entry.path,
+            entry.sha,
+            entry.content.length,
+            entry.path === "symlink.json" ? { mode: "120000" } : {},
+          ),
+        ),
+      ),
+      [],
+    ).mockImplementation(async (input) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      const entry = entries.find((item) => url.endsWith(item.sha));
+      if (entry === undefined) throw new Error("Unexpected immutable blob");
+      return jsonResponse(blobPayload(entry.sha, entry.content));
+    });
+    const result = await createAdapter(fetchImpl, { maxFiles: 7 }).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+      selectConfigurationPaths: () => [
+        "shared/options.json",
+        "symlink.json",
+        "vendor/secret.json",
+        "../secret.json",
+        "https://example.invalid/config",
+      ],
+    });
+    if (!result.ok) throw new Error("Expected bounded snapshot");
+    expect(result.data.files.some((file) => file.path === "shared/options.json")).toBe(true);
+    expect(result.data.files).toHaveLength(6);
+    expect(
+      result.data.files.some(
+        (file) => file.path.includes("secret") || file.path === "symlink.json",
+      ),
+    ).toBe(false);
+    expect(fetchImpl).toHaveBeenCalledTimes(10);
+    expect(result.data.sourceCoverage.status).toBe("partial");
+  });
+  it("prioritizes workspace manifests before source and retains discovery when truncated", async () => {
+    const fetchImpl = successfulBaseFetch(
+      treePayload([
+        treeEntry("apps/a/package.json", sourceSha, 2),
+        treeEntry("apps/b/package.json", tsconfigSha, 2),
+        treeEntry("package.json", manifestSha, 2),
+        treeEntry("src/index.ts", viteSha, 2),
+      ]),
+      [blobPayload(manifestSha, "{}"), blobPayload(sourceSha, "{}")],
+    );
+    const result = await createAdapter(fetchImpl, { maxFiles: 2 }).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+    if (!result.ok) throw new Error("Expected bounded snapshot");
+    expect(result.data.manifest?.path).toBe("package.json");
+    expect(result.data.files.map((file) => file.path)).toEqual(["apps/a/package.json"]);
+    expect(result.data.manifestPaths).toEqual(["apps/a/package.json", "apps/b/package.json"]);
+    expect(result.data.sourceCoverage.status).toBe("partial");
+  });
   it("bounds in-flight blob reads and retains candidate order after reversed completion", async () => {
     const entries = Array.from({ length: 9 }, (_, index) => ({
       path: index === 0 ? "package.json" : `src/file-${index}.ts`,

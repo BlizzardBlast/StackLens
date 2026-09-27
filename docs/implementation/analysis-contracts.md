@@ -1,9 +1,30 @@
-# Analysis Contracts v1
+# Analysis contracts: current v2 and historical v1
 
 > **Status:** Accepted implementation baseline
-> **Date:** 2026-09-19
+> **Date:** 2026-09-27
 > **Requirements:** FR-015–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-001–NFR-005, GOV-007
-> **Decision:** ADR-0008
+> **Decisions:** ADR-0008, ADR-0013
+
+## Current serialized contract
+
+`AnalysisReportSchema` is a strict versioned union of `1.0.0` and `2.0.0`. Unknown versions and
+cross-version fields are rejected. Saved values and analyzer/scoring versions are never upgraded
+or recomputed during reads. Fastify response validation/OpenAPI and persistence use this same union.
+
+Schema 2 adds workspace identity, dependency-resolution provenance, configuration inspection,
+normalized advisory severity and named check facts. Checks have `pass`, `fail`, `unknown` and
+`not_applicable` states. Scores distinguish numeric zero, insufficient evidence and not applicable.
+Unknown checks require linked limitations. Check counts must agree with referenced facts and their
+categories. Security failures require supported severity. Risk, readiness and overall explanations
+reference their supporting entities. `evidenceCoverage` is deliberately absent from new reports.
+
+Findings may carry analyzer-owned package paths and issue/opportunity/advice disposition. Limitations
+carry reason codes, package/file paths and affected check keys. `inspection.ts` owns this shared
+vocabulary. No React, provider, database or policy implementation belongs in these contracts.
+
+Reader deployment precedes writer activation. This release includes both readers and new writers;
+deploy compatible client/API artifacts before enabling the v4 writer. Rollback builds must retain
+both readers. No backfill or historical report rewrite is required.
 
 ## Package
 
@@ -120,8 +141,8 @@ The generic fact subject continues to carry the dependency name. `declaredSpecif
 uses neutral terminology because valid declarations can be exact versions, ranges, tags, workspace
 references, file references, or URLs.
 
-The extension is optional and existing reports without `details` remain valid, so the report
-schema version stays `1.0.0`.
+That historical extension was optional and retained schema `1.0.0`. New inspection detail variants
+are accepted only by the `2.0.0` reader.
 
 ## Dependency version
 

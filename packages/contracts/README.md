@@ -1,5 +1,13 @@
 # @stacklens/contracts
 
+## Current report schemas
+
+The strict AnalysisReportSchema union reads historical 1.0.0 and current 2.0.0. Version 2 adds
+workspace identity, resolution/config/advisory details, structured limitations and four-state
+inspection checks. Scores distinguish zero, unknown and not applicable, with linked risk/readiness
+explanations and validated check counts. It omits evidenceCoverage. Saved reports retain original
+values. See [contracts](../../docs/implementation/analysis-contracts.md) and ADR-0013.
+
 Runtime-validatable StackLens domain contracts.
 
 ## Responsibility

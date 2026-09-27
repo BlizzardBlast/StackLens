@@ -285,18 +285,26 @@ export const projectReadinessFactRule: FactRule<JavaScriptProjectSnapshot, unkno
 export const projectReadinessFindingRule: FindingRule<JavaScriptProjectSnapshot, unknown> = {
   kind: "finding",
   id: FINDING_RULE_ID,
-  version: "1",
+  version: "2",
   requirementIds: ["FR-019", "FR-020", "FR-017", "DATA-004"],
   evaluate(context) {
     return {
       findings: context.facts.flatMap((fact) => {
         const category =
-          fact.type === "project.readiness.testing.missing"
-            ? "testing"
-            : fact.type === "project.readiness.tooling.missing"
-              ? "tooling"
-              : undefined;
-        if (category === undefined || fact.rule.id !== FACT_RULE_ID) return [];
+          fact.details?.kind === "inspection_check" &&
+          fact.details.state === "fail" &&
+          ["maintainability", "testing", "tooling"].includes(fact.details.category)
+            ? fact.details.category
+            : fact.type === "project.readiness.testing.missing"
+              ? "testing"
+              : fact.type === "project.readiness.tooling.missing"
+                ? "tooling"
+                : undefined;
+        if (
+          category === undefined ||
+          (fact.rule.id !== FACT_RULE_ID && fact.rule.id !== "JS-INSPECTION-018")
+        )
+          return [];
         return [
           {
             id: `finding-js-setup-${category}-${fact.subject.name}`,
@@ -305,7 +313,7 @@ export const projectReadinessFindingRule: FindingRule<JavaScriptProjectSnapshot,
             subject: fact.subject,
             title: `Review ${category} setup: ${fact.subject.name}`,
             description: fact.statement,
-            rule: { id: FINDING_RULE_ID, version: "1" },
+            rule: { id: FINDING_RULE_ID, version: "2" },
             requirementIds: ["FR-019", "FR-020", "FR-017", "DATA-004"],
             factIds: [fact.id],
             evidenceIds: [...fact.evidenceIds],

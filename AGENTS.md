@@ -156,7 +156,7 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
   and require external evidence used by a rule to reference that same source.
 - The FR-006/FR-007 npm rules may use version-specific provider metadata only when StackLens can
   establish an exact current Semantic Version from either an exact package.json declaration or
-  matching FR-023 supported root-lockfile evidence, and the corresponding registry version record
+  matching FR-023 package-scoped shared-lockfile evidence, and the corresponding registry version record
   exists. Ranges without matching lockfile evidence, tags, URLs, workspace/link targets, stale
   lockfiles, and unsupported resolutions remain insufficient evidence.
 - FR-006 compares supported exact declarations with npm's normalized `latest` dist-tag and must identify major/minor/patch/prerelease difference without implying that the upgrade is automatically recommended.
@@ -164,7 +164,9 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
 - FR-010 health facts must remain neutral source-backed signals unless a separate accepted rule defines a combined interpretation.
 - FR-008 overlap findings must come from explicit supported capability-pair rules, remain heuristic when declaration evidence cannot establish actual redundant usage, and must not imply a package is unnecessary merely because another package is in the same broad category.
 - FR-012 framework/tool facts must use deterministic supported evidence (currently exact declared package identities); do not guess roles from fuzzy package names.
-- FR-013 configuration analysis is static only. Repository-file snapshots are already-acquired input; never import/execute JS/TS config. Dynamic/JSONC/unsupported shapes must remain partial/limited rather than guessed.
+- FR-013 configuration analysis is static only. Use diagnostic-checked JSONC for supported configs
+  and strict JSON for manifests. Never import/execute JS/TS config. Resolve only bounded immutable
+  local-tree references; opaque presets and dynamic fields remain unresolved at field level.
 - Static project evidence for configuration should retain path/high-level findings only; do not copy configuration source content into report evidence.
 - FR-009 source parsing must stay behind the StackLens parser adapter; parser-specific AST shapes must not leak into finding rules.
 - FR-009 may use supported ESM imports/re-exports, static-string require/import(), explicit configuration/plugin conventions, and bounded package-script conventions as positive usage evidence. Never execute any of those inputs.
@@ -180,9 +182,18 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
 - FR-014 migration opportunities must name deterministic current/target states and remain optional/heuristic unless evidence proves a migration is required. Do not turn every minor/patch update into a separate migration finding.
 - Production priority is owned only by the configured `FindingPrioritizer`; detector rules must not embed urgency. Heuristic uncertainty may lower/cap priority but must never increase it.
 - Recommendation rules consume finalized findings and their evidence. Keep advice separate from facts and do not imply an automatic repository change is safe.
-- Category scores require explicit coverage facts plus no material limitation within the versioned
-  scoring scope. Under ADR-0012, version-health and migration scores do not require source-usage
-  completeness; unused-dependency heuristics still do. Missing required evidence must produce N/A.
+- ADR-0013 supersedes the affected ADR-0012 scoring policy. Production v4 emits schema 2.0.0 and
+  stack-health-v3. Risk bands depend on explicit deprecation or supported exact-version advisory
+  severity, never finding priority. Updates, migrations, overlap and non-use advice are unscored.
+- Named checks have pass/fail/unknown/not_applicable states. Missing required evidence blocks the
+  category; not-applicable checks are excluded. Overall is the applicable mean capped by Dependencies
+  and Security. Keep formulas exclusively in scoring and render supplied explanations in apps.
+- Workspace paths define identity even when package names collide. Keep catalog constraints,
+  importer resolutions, internal edges and peer constraints separate. Deduplicate provider requests
+  without collapsing affected declarations. Non-use needs complete package/shared source coverage.
+- MDX is parsed, never compiled. Bound config graphs to 16 levels/128 files and script graphs to
+  16 levels/256 nodes within the global acquisition budget. Hidden config fields block only checks
+  requiring them. Unsupported script binaries and ambiguous test selection prevent absence claims.
 - Testing/Tooling scores describe supported static setup and reproducibility, never test results or
   runtime coverage. Custom scripts, unsupported package managers, and partial lockfile evidence stay
   limited. Absence-based test-file/lockfile findings require complete relevant acquisition.
@@ -207,9 +218,9 @@ External provider integration lives in `packages/data-sources`.
   directly as though it were installed.
 - Preserve OSV query completeness: incomplete pagination/detail acquisition is partial evidence, and an empty match set is never proof that a package is secure.
 - Public GitHub acquisition must validate github.com repository URLs, resolve an immutable commit before file reads, use fixed api.github.com endpoints, disable redirects, and read selected files by immutable blob SHA.
-- GitHub snapshot acquisition must enforce request/file-count/per-file/aggregate byte bounds. Root
-  package.json is prioritized first, supported root lockfiles immediately after it, then optional
-  configuration/source files. Lockfiles do not count as source-usage coverage.
+- GitHub snapshot acquisition must enforce request/file-count/per-file/aggregate byte bounds.
+  Prioritize root/workspace declarations, member manifests, shared lockfiles and bounded referenced
+  configuration before ordinary sources. Lockfiles do not count as source-usage coverage.
 - Never follow repository symlinks, traverse submodules, dereference Git LFS, or fetch generated/vendor analysis files merely because their names match supported configs.
 - Keep GitHub full file bodies transient: do not copy source/config content into provider evidence, limitations, partial failures, or logs. Repository rules consume the already-acquired snapshot later.
 - PR tests use synthetic/recorded provider responses; normal PR correctness must not depend on live external services.
@@ -272,6 +283,9 @@ Shared hosted-analysis composition lives in `packages/analysis-orchestration`.
 - Keep it transport- and persistence-independent so API and Worker can both consume it.
 - This package may sequence injected GitHub/npm/OSV providers before analyzer-core; it must not hide provider I/O inside rules.
 - Keep production analyzer composition here rather than reconstructing rule/prioritizer/recommendation/scorer sets in Fastify routes or Worker handlers.
+- Both repository and provider-free quick-manifest v4 compositions live here. Strict report readers
+  accept schemas 1.0.0 and 2.0.0; never rescore stored reports or rewrite historical JSONB. Deploy
+  compatible readers before new writers, and preserve both readers in rollback builds.
 - Preserve unavailable/partial providers as report sources/partial failures and let rules/scoring emit limitations; never translate missing data into clean conclusions.
 - Repository manifest/source bodies are transient construction input only. Do not place them in progress events, application errors, logs, persistence payloads, or returned reports.
 - OSV orchestration may query only deterministic exact current semantic versions established from

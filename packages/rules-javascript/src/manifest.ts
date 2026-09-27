@@ -11,9 +11,14 @@ export interface NormalizedDependencyDeclaration {
   readonly name: string;
   readonly declaredSpecifier: string;
   readonly group: PackageDependencyGroup;
+  readonly effectiveSpecifier?: string;
+  readonly catalog?: string;
+  readonly internalPackagePath?: string;
+  readonly peerOnly?: boolean;
 }
 
 export interface NormalizedPackageManifest {
+  readonly packagePath?: string;
   readonly packageName?: string;
   readonly packageManager?: string;
   readonly dependencies: readonly NormalizedDependencyDeclaration[];

@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@fastify/swagger": "9.8.1",
+    "@stacklens/analysis-orchestration": "workspace:*",
     "@stacklens/analyzer-core": "workspace:*",
     "@stacklens/contracts": "workspace:*",
     "@stacklens/data-sources": "workspace:*",

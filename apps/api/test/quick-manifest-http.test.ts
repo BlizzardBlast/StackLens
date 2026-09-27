@@ -99,7 +99,12 @@ describe("quick manifest Fastify transport [FR-001, FR-002, FR-004, FR-021]", ()
       ruleSetVersion: QUICK_MANIFEST_RULE_SET_VERSION,
       scoringVersion: QUICK_MANIFEST_SCORING_VERSION,
     });
-    expect(body.report.facts).toHaveLength(2);
+    expect(body.report.schemaVersion).toBe("2.0.0");
+    expect(
+      body.report.facts.filter(
+        (fact: { type: string }) => fact.type === "project.inspection.check",
+      ),
+    ).toHaveLength(8);
     expect(body.report.facts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -113,7 +118,7 @@ describe("quick manifest Fastify transport [FR-001, FR-002, FR-004, FR-021]", ()
       ]),
     );
     expect(body.report.scores.overall.status).toBe("insufficient_evidence");
-    expect(body.report.limitations).toHaveLength(2);
+    expect(body.report.limitations.length).toBeGreaterThanOrEqual(2);
     expect(JSON.stringify(body.report)).not.toContain(secretScript);
     expect(AnalysisReportSchema.safeParse(body.report).success).toBe(true);
   });
@@ -170,13 +175,13 @@ describe("quick manifest Fastify transport [FR-001, FR-002, FR-004, FR-021]", ()
         category: "dependencies",
         rule: {
           id: "JS-OVERLAP-008",
-          version: "1",
+          version: "2",
         },
         priority: expect.objectContaining({
-          level: "medium",
+          level: "low",
           rule: {
             id: "JS-PRIORITY-016",
-            version: "1",
+            version: "2",
           },
         }),
       }),
@@ -186,13 +191,13 @@ describe("quick manifest Fastify transport [FR-001, FR-002, FR-004, FR-021]", ()
         basis: "heuristic",
         rule: {
           id: "JS-RECOMMEND-015",
-          version: "2",
+          version: "3",
         },
       }),
     ]);
     expect(report.scores.overall).toMatchObject({
       status: "insufficient_evidence",
-      evidenceCoverage: 0,
+      checkCounts: { unknown: 18 },
     });
   });
 
@@ -214,6 +219,7 @@ describe("quick manifest Fastify transport [FR-001, FR-002, FR-004, FR-021]", ()
       kind: "dependency_inventory",
       dependencyGroup: "devDependencies",
       declaredSpecifier: "^5.0.1",
+      packagePath: ".",
     });
   });
 

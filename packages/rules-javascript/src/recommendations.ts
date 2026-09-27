@@ -5,7 +5,7 @@ import { compareCodeUnits, truncate } from "./rule-support.js";
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-RECOMMEND-015";
-const RULE_VERSION = "2";
+const RULE_VERSION = "3";
 
 interface RecommendationDescriptor {
   readonly suggestion: (finding: Finding) => string;
@@ -138,6 +138,26 @@ export const evidenceBackedRecommendationRule: RecommendationRule<unknown, unkno
         }
 
         const recommendation = recommendationFor(finding);
+        const expo = context.facts.some(
+          (fact) => fact.type === "dependency.inventory" && fact.subject.name === "expo",
+        );
+        if (
+          recommendation !== undefined &&
+          expo &&
+          ["JS-NPM-006", "JS-MIGRATION-014"].includes(finding.rule.id)
+        ) {
+          return [
+            {
+              ...recommendation,
+              suggestion:
+                "Review " +
+                finding.subject.name +
+                " against this project's Expo SDK compatibility requirements. For SDK-managed dependencies, use Expo's supported upgrade/install workflow. npm latest availability alone does not justify an independent upgrade.",
+              impact:
+                "Preserves SDK compatibility while keeping update opportunities visible as optional advice.",
+            },
+          ];
+        }
         return recommendation === undefined ? [] : [recommendation];
       });
 

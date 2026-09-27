@@ -1,4 +1,9 @@
 import { parse } from "@babel/parser";
+import traverseModule from "@babel/traverse";
+import type { NodePath } from "@babel/traverse";
+
+import { mdxExecutableSource } from "./mdx-source.js";
+import { isNodeRequire, isPotentialRequire, resolvedModuleAlias } from "./module-bindings.js";
 
 export const SUPPORTED_JAVASCRIPT_SOURCE_EXTENSIONS = [
   ".js",
@@ -9,6 +14,7 @@ export const SUPPORTED_JAVASCRIPT_SOURCE_EXTENSIONS = [
   ".tsx",
   ".cts",
   ".mts",
+  ".mdx",
 ] as const;
 
 export type JavaScriptSourceReferenceKind =
@@ -160,7 +166,7 @@ function parserPlugins(path: string): ("typescript" | "jsx")[] {
     plugins.push("typescript");
   }
 
-  if (extension === ".jsx" || extension === ".tsx") {
+  if (extension === ".jsx" || extension === ".tsx" || extension === ".mdx") {
     plugins.push("jsx");
   }
 
@@ -184,6 +190,7 @@ function walkAst(
   value: unknown,
   references: JavaScriptSourceReference[],
   issues: JavaScriptSourceParseIssue[],
+  path?: NodePath,
 ): void {
   if (Array.isArray(value)) {
     for (const item of value) {
@@ -223,8 +230,17 @@ function walkAst(
     const args = Array.isArray(value.arguments) ? value.arguments : [];
     const firstArgument = args[0];
 
-    if (isRecord(callee) && callee.type === "Identifier" && callee.name === "require") {
-      const specifier = staticString(firstArgument);
+    if (
+      isRecord(callee) &&
+      callee.type === "Identifier" &&
+      typeof callee.name === "string" &&
+      path !== undefined &&
+      isPotentialRequire(path, callee.name)
+    ) {
+      const specifier = isNodeRequire(path, callee.name)
+        ? (staticString(firstArgument) ??
+          resolvedModuleAlias(path, path.isCallExpression() ? path.node.arguments[0] : undefined))
+        : undefined;
 
       if (specifier === undefined) {
         appendDynamicIssue(issues, value, "require() uses a non-static module specifier.");
@@ -242,6 +258,7 @@ function walkAst(
     }
   }
 
+  if (path !== undefined) return;
   for (const [key, child] of Object.entries(value)) {
     if (
       key === "loc" ||
@@ -268,7 +285,9 @@ export const babelSourceReferenceParser: JavaScriptSourceReferenceParser = {
     let ast;
 
     try {
-      ast = parse(content, {
+      if (content.length > 512 * 1024) throw new TypeError("Source size limit");
+      const source = path.endsWith(".mdx") ? mdxExecutableSource(content) : content;
+      ast = parse(source, {
         sourceType: "unambiguous",
         sourceFilename: path,
         errorRecovery: false,
@@ -290,7 +309,56 @@ export const babelSourceReferenceParser: JavaScriptSourceReferenceParser = {
 
     const references: JavaScriptSourceReference[] = [];
     const issues: JavaScriptSourceParseIssue[] = [];
-    walkAst(ast, references, issues);
+    try {
+      let nodes = 0;
+      const queue = [{ node: ast as unknown, depth: 0 }];
+      while (queue.length > 0) {
+        const current = queue.pop()!;
+        if (++nodes > 100000 || current.depth > 128) throw new TypeError("Source structure limit");
+        if (Array.isArray(current.node))
+          for (const child of current.node) queue.push({ node: child, depth: current.depth + 1 });
+        else if (isRecord(current.node))
+          for (const [key, child] of Object.entries(current.node))
+            if (
+              !["loc", "comments", "tokens", "extra"].includes(key) &&
+              typeof child === "object" &&
+              child !== null
+            )
+              queue.push({ node: child, depth: current.depth + 1 });
+      }
+      const traverse =
+        typeof traverseModule === "function" ? traverseModule : traverseModule.default;
+      traverse(ast, {
+        Identifier(nodePath: NodePath) {
+          if (
+            !nodePath.isIdentifier({ name: "require" }) ||
+            nodePath.scope.getBinding("require") !== undefined
+          )
+            return;
+          const parent = nodePath.parentPath;
+          const direct = parent?.isCallExpression() && parent.node.callee === nodePath.node;
+          const resolve =
+            parent?.isMemberExpression() &&
+            !parent.node.computed &&
+            isRecord(parent.node.property) &&
+            parent.node.property.name === "resolve" &&
+            parent.parentPath?.isCallExpression() &&
+            parent.parentPath.node.callee === parent.node;
+          if (!direct && !resolve)
+            nodePath.scope.getProgramParent().path.setData("unsafeGlobalRequire", true);
+        },
+      });
+      traverse(ast, {
+        enter(nodePath: NodePath) {
+          walkAst(nodePath.node, references, issues, nodePath);
+        },
+      });
+    } catch {
+      issues.push({
+        kind: "parse_failure",
+        message: "Source exceeded bounded static scope inspection.",
+      });
+    }
 
     return {
       references: references.toSorted((left, right) => {

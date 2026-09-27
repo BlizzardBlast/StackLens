@@ -76,11 +76,21 @@
   },
   "dependencies": {
     "@babel/parser": "7.29.8",
+    "@babel/traverse": "7.29.8",
+    "@babel/types": "7.29.8",
+    "@pandatix/js-cvss": "0.4.4",
     "@stacklens/analyzer-core": "workspace:*",
-    "@stacklens/contracts": "workspace:*"
+    "@stacklens/contracts": "workspace:*",
+    "jsonc-parser": "3.3.1",
+    "minimatch": "10.2.6",
+    "remark-mdx": "3.1.1",
+    "remark-parse": "11.0.0",
+    "unified": "11.0.5",
+    "yaml": "2.9.1"
   },
   "devDependencies": {
     "@stacklens/scoring": "workspace:*",
+    "@types/babel__traverse": "7.28.0",
     "vitest": "^5.0.1"
   }
 }

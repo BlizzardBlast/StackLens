@@ -21,6 +21,11 @@ export interface ParsedGitHubRepositoryUrl {
 export interface GitHubRepositoryRequest {
   readonly repositoryUrl: string;
   readonly ref?: string;
+  /** Trusted orchestration selector only; never serialized from a public request. */
+  readonly selectConfigurationPaths?: (
+    files: readonly GitHubRepositoryFile[],
+    availablePaths: readonly string[],
+  ) => readonly string[];
 }
 
 export interface GitHubRepositoryFile {
@@ -37,6 +42,8 @@ export interface GitHubSourceCoverage {
 }
 
 export interface GitHubRepositorySnapshot {
+  readonly workspaceDiscoveryComplete?: boolean;
+  readonly manifestPaths?: readonly string[];
   readonly repository: RepositoryIdentity;
   readonly manifest?: GitHubRepositoryFile;
   readonly files: readonly GitHubRepositoryFile[];

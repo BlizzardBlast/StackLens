@@ -1,6 +1,6 @@
-import type { AnalysisReport } from "@stacklens/contracts";
+import type { AnalysisReportV1 } from "@stacklens/contracts";
 
-export function createRepositoryReportFixture(): AnalysisReport {
+export function createRepositoryReportFixture(): AnalysisReportV1 {
   const insufficientScore = {
     status: "insufficient_evidence" as const,
     evidenceCoverage: 20,

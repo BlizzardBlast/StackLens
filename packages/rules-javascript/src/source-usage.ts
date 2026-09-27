@@ -7,6 +7,7 @@ import type {
   JavaScriptStaticProjectFile,
 } from "./project-snapshot.js";
 import { compareCodeUnits, truncate, uniqueSorted } from "./rule-support.js";
+import { staticCommands } from "./script-graph.js";
 import {
   babelSourceReferenceParser,
   isSupportedJavaScriptSourcePath,
@@ -19,7 +20,7 @@ import type {
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-USAGE-009";
-const RULE_VERSION = "1";
+const RULE_VERSION = "2";
 
 export type JavaScriptSourceAcquisitionCoverage = "complete" | "partial" | "unavailable";
 export type JavaScriptDependencyReferenceKind =
@@ -83,6 +84,7 @@ const SCRIPT_EXECUTABLES: Readonly<Record<string, readonly string[]>> = {
   vite: ["vite"],
   vitest: ["vitest"],
   webpack: ["webpack"],
+  turbo: ["turbo"],
 };
 
 function baseName(path: string): string {
@@ -309,10 +311,6 @@ function eslintPluginReferences(
   });
 }
 
-function commandTokens(command: string): readonly string[] {
-  return command.split(/[\s;&|]+/).filter((token) => token.length > 0);
-}
-
 function scriptReferences(
   scripts: readonly JavaScriptPackageScript[],
   declaredPackages: ReadonlySet<string>,
@@ -320,7 +318,15 @@ function scriptReferences(
   const references: JavaScriptDependencyReference[] = [];
 
   for (const script of scripts) {
-    const tokens = new Set(commandTokens(script.command));
+    const tokens = new Set(
+      (staticCommands(script.command) ?? []).flatMap((words) => {
+        if (words[0] === "pnpm" || words[0] === "yarn")
+          return [words[1] === "exec" ? words[2] : words[1]];
+        if (words[0] === "npm")
+          return words[1] === "exec" ? [words[2] === "--" ? words[3] : words[2]] : [];
+        return [words[0]];
+      }),
+    );
 
     for (const [packageName, executables] of Object.entries(SCRIPT_EXECUTABLES)) {
       if (
@@ -345,6 +351,87 @@ function scriptReferences(
   }
 
   return references;
+}
+
+/** Resolve each positive reference to the closest declared owner, preserving sibling isolation. */
+export function withWorkspaceSourceUsage(
+  project: JavaScriptProjectSnapshot,
+  acquisitionCoverage: JavaScriptSourceAcquisitionCoverage,
+): JavaScriptProjectSnapshot {
+  if (project.workspacePackages === undefined)
+    return withJavaScriptSourceUsage(project, acquisitionCoverage);
+  const members = project.workspacePackages;
+  const references = new Map<string, JavaScriptDependencyReference[]>();
+  const snapshots = new Map<string, JavaScriptSourceUsageSnapshot>();
+  for (const member of members) {
+    const path = member.packagePath ?? ".";
+    const ancestors = members
+      .filter((candidate) => {
+        const parent = candidate.packagePath ?? ".";
+        return parent === path || parent === "." || path.startsWith(parent + "/");
+      })
+      .toSorted((a, b) => (b.packagePath?.length ?? 0) - (a.packagePath?.length ?? 0));
+    const snapshot = createJavaScriptSourceUsageSnapshot(
+      { ...member, dependencies: ancestors.flatMap((ancestor) => ancestor.dependencies) },
+      acquisitionCoverage,
+    );
+    snapshots.set(path, snapshot);
+    for (const reference of snapshot.references) {
+      const owner = ancestors.find((candidate) =>
+        candidate.dependencies.some((dependency) => dependency.name === reference.packageName),
+      );
+      if (owner === undefined) continue;
+      const ownerPath = owner.packagePath ?? ".";
+      const fullPath = path === "." ? reference.path : path + "/" + reference.path;
+      const relative = ownerPath === "." ? fullPath : fullPath.slice(ownerPath.length + 1);
+      references.set(ownerPath, [
+        ...(references.get(ownerPath) ?? []),
+        { ...reference, path: relative },
+      ]);
+    }
+  }
+  const rootSnapshot = snapshots.get(".");
+  const sharedIssues = rootSnapshot?.issues.filter((issue) => issue.kind !== "acquisition") ?? [];
+  const packages = members.map((member) => {
+    const path = member.packagePath ?? ".";
+    const snapshot = snapshots.get(path)!;
+    const descendants = path === "." ? [...snapshots.values()] : [snapshot];
+    const issues =
+      path === "." && member.role === "orchestrator"
+        ? descendants.flatMap((item) =>
+            item.issues.filter(
+              (issue) =>
+                !(
+                  item === snapshot &&
+                  issue.kind === "acquisition" &&
+                  snapshot.parsedSourceFiles === 0 &&
+                  acquisitionCoverage === "complete"
+                ),
+            ),
+          )
+        : [...snapshot.issues, ...sharedIssues.filter((issue) => !snapshot.issues.includes(issue))];
+    return {
+      ...member,
+      sourceUsage: {
+        ...snapshot,
+        references: (references.get(path) ?? []).toSorted(referenceOrder),
+        issues,
+        coverage:
+          acquisitionCoverage === "complete" && issues.length === 0
+            ? ("complete" as const)
+            : ("partial" as const),
+        parsedSourceFiles:
+          path === "." && member.role === "orchestrator"
+            ? descendants.reduce((total, item) => total + item.parsedSourceFiles, 0)
+            : snapshot.parsedSourceFiles,
+      },
+    };
+  });
+  return {
+    ...packages[0]!,
+    workspacePackages: packages,
+    ...(project.workspaceIssues === undefined ? {} : { workspaceIssues: project.workspaceIssues }),
+  };
 }
 
 function referenceOrder(
@@ -441,6 +528,40 @@ export function createJavaScriptSourceUsageSnapshot(
 
   const declaredPackages = new Set(project.dependencies.map((dependency) => dependency.name));
   references.push(...scriptReferences(project.scripts ?? [], declaredPackages));
+  const supportedCommands = new Set([
+    ...Object.values(SCRIPT_EXECUTABLES).flat(),
+    "node",
+    "npm",
+    "pnpm",
+    "yarn",
+    "echo",
+    "printf",
+    "true",
+    "exit",
+  ]);
+  if (
+    (project.scripts ?? []).some((script) => {
+      const commands = staticCommands(script.command);
+      return (
+        commands === undefined ||
+        commands.some((words) => {
+          if (!supportedCommands.has(words[0] ?? "")) return true;
+          if (["npm", "pnpm", "yarn"].includes(words[0] ?? "") && words[1] === "exec") {
+            const binary = words[2] === "--" ? words[3] : words[2];
+            return !supportedCommands.has(binary ?? "");
+          }
+          return false;
+        })
+      );
+    })
+  ) {
+    issues.push({
+      path: "package.json",
+      kind: "dynamic_reference",
+      message:
+        "A package script uses unsupported shell expressions or executable conventions; absence of a dependency reference is inconclusive.",
+    });
+  }
 
   if (acquisitionCoverage === "partial") {
     issues.push({

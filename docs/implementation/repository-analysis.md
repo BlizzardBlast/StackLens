@@ -20,18 +20,19 @@ Graphile Worker without either application importing the other.
 `productionJavaScriptAnalyzer` binds the current JavaScript/TypeScript production policy:
 
 - dependency inventory, resolved-dependency, framework/tool, npm-health, configuration, source-usage,
-  readiness, and scoring-coverage facts;
+  workspace identity and named inspection-check facts;
 - overlap, deprecation, vulnerability, migration, outdated, potentially-unnecessary, and static
   setup findings;
-- `JS-PRIORITY-016@1`;
-- `JS-RECOMMEND-015@2`;
-- `stackHealthScorer` / `stack-health-v2`.
+- `JS-PRIORITY-016@2`;
+- `JS-RECOMMEND-015@3`;
+- `stackHealthScorer` / `stack-health-v3`.
 
 The composition root owns no formula itself. Detection/priority/recommendation policy remains in
 `@stacklens/rules-javascript`; numeric scoring remains in `@stacklens/scoring`.
 
-Production identities are `javascript-production-v3`, `javascript-rules-v3`, and
-`stack-health-v2`. The versioned policy now covers all five explicit category scopes under ADR-0012.
+Production identities are `javascript-production-v4`, `javascript-rules-v4`, and
+`stack-health-v3`, writing schema 2.0.0 under ADR-0013. The same package exports the provider-free
+quick-manifest composition so the API does not reconstruct priority or scoring policy.
 Transient project metadata includes acquisition counts/completeness, acquired lockfile paths, and
 lockfile normalization issue counts. These support evidence-backed setup checks; file/script bodies
 remain transient and only high-level observations enter the report.
@@ -42,14 +43,13 @@ The service performs the following bounded sequence:
 
 1. acquire a public immutable repository snapshot through an injected GitHub provider;
 2. fail clearly when the repository cannot be resolved or a supported root `package.json` is absent;
-3. parse the root manifest as untrusted JSON;
-4. normalize dependency declarations, package-manager intent, and package scripts without executing
-   them;
+3. discover declared pnpm/npm/Yarn workspace members with exclusions and parse manifests as strict JSON;
+4. normalize package-scoped declarations, catalog constraints, internal links and scripts without execution;
 5. select and normalize at most one supported root lockfile
    (`package-lock.json`, `pnpm-lock.yaml`, or `yarn.lock`) when deterministically attributable;
-6. create the static project snapshot from already-acquired GitHub files while keeping raw lockfile
-   text outside analyzer-visible static files;
-7. run bounded static source-usage parsing using the provider source-coverage state;
+6. resolve per-package pnpm importers, npm hoisted records or exact Yarn descriptors and create
+   the static project snapshots from acquired files;
+7. inspect bounded local configuration graphs, JSONC, MDX and scripts using package source ownership;
 8. create local manifest/lockfile/configuration/source evidence;
 9. fetch npm Registry metadata for a deterministic bounded set of package identities;
 10. submit OSV queries for exact current versions established either directly by package.json or by
@@ -86,12 +86,18 @@ StackLens never treats a lockfile as permission to guess:
 
 - multiple supported lockfiles require a recognized `packageManager` hint to select one;
 - package-manager mismatch, stale specifiers, malformed lockfiles, missing direct resolutions,
-  workspace/link targets, and non-semver resolutions remain insufficient evidence;
+  unsupported link targets and non-semver resolutions remain insufficient evidence;
 - lockfile source text is transient and only bounded normalized resolution facts/evidence enter the
   report.
 
 When no exact current version can be established, OSV acquisition for that declaration is skipped
 and analyzer policy reports insufficient evidence.
+
+Internal workspace edges and peer-only compatibility declarations never become external installed
+versions. Provider acquisition deduplicates npm names and OSV exact package/version pairs while
+retaining each affected declaration. Missing manifests, stale catalogs/importers and truncated
+discovery produce scoped limitations. Positive source references survive partial coverage; absence
+cannot establish non-use until relevant package/shared coverage is complete.
 
 ## Resource bounds
 
@@ -139,6 +145,12 @@ when no exact current version is provable, terminal GitHub failure, missing/malf
 progress delivery, report-schema validation, and sentinel source/script/lockfile non-retention.
 
 Normal PR correctness has no live GitHub/npm/OSV dependency.
+
+Pinned acceptance fixtures record selected files from KerjaLog
+`9e5f869bbcf5b9d582f8e1453395ea2c06c79f83` and Frey-ui
+`6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf`, with minimal synthetic npm/OSV data and test files.
+They verify workspace/catalog/config/script behavior and unscored update notices; they are not
+claims of full live repository or runtime testing. See the phase review for exact verification.
 
 **Traceability:** FR-003–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-001, NFR-003,
 NFR-004, NFR-005, NFR-008, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, SEC-008, GOV-007.

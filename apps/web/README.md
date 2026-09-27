@@ -1,5 +1,13 @@
 # StackLens web
 
+## Workspace report presentation
+
+Both schema versions are runtime-validated using the shared union. Schema 2 renders supplied
+risk bands, readiness checklists, package counts and overall ceilings. Package buttons filter
+findings/recommendations; structured limitation groups and fact/evidence links explain uncertainty.
+Filtering is derived during render. No scoring policy lives in React. Existing query cancellation
+and terminal polling remain unchanged. See [report design](../../docs/design/report-evidence.md).
+
 The production React 19 + Vite client for StackLens.
 
 ## Responsibility

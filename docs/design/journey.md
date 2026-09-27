@@ -1674,3 +1674,36 @@ session must check this PR's merge status and resolve/verify the current `main` 
 
 **Traceability:** FR-003, FR-006–FR-010, FR-013–FR-021, FR-023, DATA-001–DATA-006,
 SCORE-001–SCORE-004, SEC-001, SEC-002, NFR-001–NFR-008, GOV-002–GOV-007; ADR-0012.
+
+## Step 63 — Workspace inspection and evidence-based scoring v3 (2026-09-27)
+
+The previous policy let 25 KerjaLog updates and an overlap suggestion accumulate 312 dependency
+points of deductions and counted major upgrades again under Maintainability. ADR-0013 replaces
+that model with explicit deprecation/advisory risk bands and named static readiness checks.
+Updates, optional migrations and heuristics remain visible without numerical penalties. Overall
+cannot exceed an applicable dependency/security score. Unknown and not applicable stay distinct.
+
+The v4 compositions inspect workspace manifests, catalogs/importers, exact resolutions, JSONC,
+MDX, immutable local config graphs and static script delegation. Package ownership prevents sibling
+usage from proving unrelated declarations are used. External preset internals, callbacks, custom
+selectors and ambiguous target settings stay honestly unknown. Repository code is never executed.
+
+Schema 2.0.0 carries inspection/provenance details and check-linked explanations; strict 1.0.0
+readers preserve saved reports. React renders bands/checklists, package filters and grouped scoped
+limitations using existing semantic colors and free IBM Plex fonts. Fastify/OpenAPI and storage
+share the versioned schemas. Compatible readers precede writer activation; rollback retains both.
+
+The branch codex/workspace-inspection-scoring follows open PR #37 without another worktree.
+Each phase has a scoped review and bounded remediation ledger in the
+[implementation record](../implementation/workspace-inspection.md). Pinned recorded KerjaLog/Frey-ui
+inputs with synthetic provider/test evidence verify four manifests/catalogs, supported JSONC/MDX
+and actual Turbo member scripts, plus 25 unscored update notices. This is deterministic acceptance,
+not a full live repository audit. Both report schemas round-trip through PostgreSQL and Fastify.
+
+Browser checks cover keyboard disclosures, package filters, fact/evidence focus links, both themes
+at 320/1440 px without horizontal overflow, and reduced motion. Captures are committed; no new
+color meanings or fonts were introduced. Requirements, ADR/architecture, implementation/design
+guides, AGENTS, README and same-PR handover were updated. Final quality results are in the phase record.
+
+**Traceability:** FR-005–FR-009, FR-011–FR-023, DATA-001–006, SCORE-001–004, SEC-001/002,
+NFR-006–008, GOV-002–007; ADR-0013.

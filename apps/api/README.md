@@ -1,5 +1,12 @@
 # @stacklens/api
 
+## Report compatibility and quick composition
+
+Existing URLs serve the shared strict schema 1.0.0/2.0.0 response union in Zod and OpenAPI. Quick
+manifest analysis injects the v4 provider-free composition from analysis-orchestration; the API
+does not reconstruct scoring. Saved reports round-trip unchanged. Deploy compatible readers before
+new writers; rollback must retain schema 2 support.
+
 Application-layer orchestration for the StackLens hosted API.
 
 `apps/api` owns the Fastify REST/OpenAPI transport for both synchronous quick-manifest analysis and

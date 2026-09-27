@@ -8,7 +8,10 @@ import type {
   ScoreCategory,
 } from "@stacklens/contracts";
 
-import { STACK_HEALTH_SCORING_VERSION, stackHealthScorer } from "../src/index.js";
+import {
+  LEGACY_STACK_HEALTH_SCORING_VERSION as STACK_HEALTH_SCORING_VERSION,
+  legacyStackHealthScorer as stackHealthScorer,
+} from "../src/index.js";
 
 function coverageFact(category: ScoreCategory): AnalysisFact {
   return {

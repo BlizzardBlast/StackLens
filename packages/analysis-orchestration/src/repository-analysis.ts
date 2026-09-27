@@ -19,6 +19,10 @@ import type {
   ProviderResult,
 } from "@stacklens/data-sources";
 import {
+  createWorkspaceProject,
+  workspacePackages,
+  externalDeclarations,
+  createWorkspaceEvidence,
   createDependencyInventoryEvidence,
   createJavaScriptProjectSnapshot,
   createProjectConfigurationEvidence,
@@ -159,7 +163,7 @@ function lockfileLimitations(
     id: `limitation-repository-lockfile-${issue.code}-${index + 1}`,
     kind: "insufficient_evidence",
     message: issue.message,
-    affectedCategories: ["dependencies", "security", "maintainability"],
+    affectedCategories: ["dependencies", "security"],
     sourceIds: [],
     ruleIds: ["JS-RESOLVED-023"],
   }));
@@ -180,7 +184,7 @@ function metadataLimitations(
       message:
         `Repository metadata acquisition is bounded to ${REPOSITORY_ANALYSIS_MAX_METADATA_PACKAGES} unique package(s) per analysis. ` +
         `${totalPackages - selectedPackages} additional package(s) were not enriched, so affected dependency/security conclusions remain limited rather than being treated as negative evidence.`,
-      affectedCategories: ["dependencies", "security", "maintainability"],
+      affectedCategories: ["dependencies", "security"],
       sourceIds: [],
       ruleIds: [],
     });
@@ -208,28 +212,29 @@ function exactOsvQueries(
 ): readonly { readonly packageName: string; readonly version: string }[] {
   const queries = new Map<string, { readonly packageName: string; readonly version: string }>();
 
-  for (const declaration of project.dependencies) {
-    if (!selectedPackages.has(declaration.name)) {
-      continue;
+  for (const member of workspacePackages(project)) {
+    for (const declaration of externalDeclarations(member)) {
+      if (!selectedPackages.has(declaration.name)) {
+        continue;
+      }
+
+      const effective = effectiveDependencyVersion(
+        member,
+        declaration.name,
+        declaration.declaredSpecifier,
+      );
+
+      if (effective === undefined) {
+        continue;
+      }
+
+      const key = JSON.stringify([declaration.name, effective.version]);
+      queries.set(key, {
+        packageName: declaration.name,
+        version: effective.version,
+      });
     }
-
-    const effective = effectiveDependencyVersion(
-      project,
-      declaration.name,
-      declaration.declaredSpecifier,
-    );
-
-    if (effective === undefined) {
-      continue;
-    }
-
-    const key = JSON.stringify([declaration.name, effective.version]);
-    queries.set(key, {
-      packageName: declaration.name,
-      version: effective.version,
-    });
   }
-
   return [...queries.values()].toSorted((left, right) => {
     const packageOrder = compareCodeUnits(left.packageName, right.packageName);
     return packageOrder === 0 ? compareCodeUnits(left.version, right.version) : packageOrder;
@@ -238,11 +243,36 @@ function exactOsvQueries(
 
 function parseRepositoryManifest(
   snapshot: GitHubRepositorySnapshot,
+  workspaceEnabled = false,
 ): ParsedRepositoryManifest | undefined {
   if (snapshot.manifest === undefined) {
     return undefined;
   }
 
+  if (workspaceEnabled) {
+    const normalized = createWorkspaceProject(
+      snapshot.manifest.content,
+      snapshot.files,
+      {
+        complete: snapshot.sourceCoverage.status === "complete",
+        candidateSourceFiles: snapshot.sourceCoverage.candidateFiles,
+        acquiredSourceFiles: snapshot.sourceCoverage.acquiredFiles,
+        lockfilePaths: snapshot.files
+          .filter((file) => isSupportedLockfilePath(file.path))
+          .map((file) => file.path),
+        lockfileIssueCount: 0,
+      },
+      snapshot.manifestPaths,
+    );
+    return {
+      project: {
+        ...withWorkspaceSourceUsage(normalized, snapshot.sourceCoverage.status),
+        workspaceDiscoveryComplete:
+          snapshot.workspaceDiscoveryComplete ?? snapshot.sourceCoverage.status === "complete",
+      },
+      lockfileIssues: [],
+    };
+  }
   const rawManifest = JSON.parse(snapshot.manifest.content) as unknown;
   const manifest = normalizePackageManifest(rawManifest);
   const scripts = normalizePackageScripts(rawManifest);
@@ -311,6 +341,9 @@ export async function analyzePublicGitHubRepository(
 
   const repositoryResult = await dependencies.githubRepositoryProvider.fetch({
     repositoryUrl: command.repositoryUrl,
+    ...((dependencies.analyzer ?? productionJavaScriptAnalyzer).reportSchemaVersion === "2.0.0"
+      ? { selectConfigurationPaths: createConfigurationPathSelector() }
+      : {}),
     ...(command.ref === undefined ? {} : { ref: command.ref }),
   });
 
@@ -363,7 +396,10 @@ export async function analyzePublicGitHubRepository(
   let parsedManifest: ParsedRepositoryManifest;
 
   try {
-    const parsed = parseRepositoryManifest(repositoryResult.data);
+    const parsed = parseRepositoryManifest(
+      repositoryResult.data,
+      (dependencies.analyzer ?? productionJavaScriptAnalyzer).reportSchemaVersion === "2.0.0",
+    );
 
     if (parsed === undefined) {
       throw new TypeError("manifest unavailable");
@@ -393,25 +429,46 @@ export async function analyzePublicGitHubRepository(
     status: "completed",
   });
 
-  const packageNames = uniquePackageNames(parsedManifest.project.dependencies);
+  const packageNames = uniquePackageNames(
+    workspacePackages(parsedManifest.project).flatMap(externalDeclarations),
+  );
   const selectedPackageNames = packageNames.slice(0, REPOSITORY_ANALYSIS_MAX_METADATA_PACKAGES);
   const selectedPackageSet = new Set(selectedPackageNames);
   const npmMetadata: NonNullable<JavaScriptAnalysisMetadata["npmRegistry"]>[number][] = [];
   const sources: DataSource[] = [repositoryResult.source];
   const evidence: Evidence[] = [
     ...repositoryResult.evidence,
-    ...createDependencyInventoryEvidence(parsedManifest.project),
-    ...(parsedManifest.project.resolvedDependencies === undefined
-      ? []
-      : createResolvedDependencyEvidence(parsedManifest.project.resolvedDependencies)),
-    ...createProjectConfigurationEvidence(parsedManifest.project),
-    ...createReadinessEvidence(parsedManifest.project),
-    ...createSourceUsageEvidence(parsedManifest.project),
+    ...(parsedManifest.project.workspacePackages === undefined
+      ? [
+          ...createDependencyInventoryEvidence(parsedManifest.project),
+          ...(parsedManifest.project.resolvedDependencies === undefined
+            ? []
+            : createResolvedDependencyEvidence(parsedManifest.project.resolvedDependencies)),
+          ...createProjectConfigurationEvidence(parsedManifest.project),
+          ...createReadinessEvidence(parsedManifest.project),
+          ...createSourceUsageEvidence(parsedManifest.project),
+        ]
+      : createWorkspaceEvidence(parsedManifest.project)),
   ];
   const partialFailures: PartialFailure[] = [...repositoryResult.partialFailures];
   const limitations: AnalysisLimitation[] = [
     ...repositoryResult.data.limitations,
     ...lockfileLimitations(parsedManifest.lockfileIssues),
+    ...(parsedManifest.project.workspaceIssues ?? []).map((issue, index): AnalysisLimitation => ({
+      id: "limitation-workspace-" + index,
+      kind: "insufficient_evidence",
+      reasonCode: issue.code,
+      message: issue.message,
+      paths: [issue.path],
+      packagePaths: [
+        issue.path === "package.json" ? "." : issue.path.replace(/\/package\.json$/u, ""),
+      ],
+      affectedCategories: issue.code.startsWith("workspace_")
+        ? ["dependencies", "security", "maintainability", "testing", "tooling"]
+        : ["dependencies", "security", "tooling"],
+      sourceIds: [],
+      ruleIds: [],
+    })),
   ];
 
   await recordProgress({
@@ -573,3 +630,7 @@ export async function analyzePublicGitHubRepository(
     progress,
   };
 }
+import {
+  createConfigurationPathSelector,
+  withWorkspaceSourceUsage,
+} from "@stacklens/rules-javascript";

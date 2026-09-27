@@ -18,7 +18,11 @@ describe("bounded static configuration [FR-013, SEC-001, SEC-002]", () => {
       [{ rules: { semi: "error" } }, { ignores: ["dist/**"] }],
     ],
   ])("inspects supported literal exports without execution: %s", (content, value) => {
-    expect(inspectStaticConfiguration("eslint.config.mjs", content)).toEqual({ value });
+    expect(inspectStaticConfiguration("eslint.config.mjs", content)).toMatchObject({
+      value,
+      unresolvedFields: [],
+    });
+    expect(inspectStaticConfiguration("eslint.config.mjs", content).partialReason).toBeUndefined();
   });
 
   it("preserves observed literals while imported presets remain partial", () => {

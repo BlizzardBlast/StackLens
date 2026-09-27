@@ -28,8 +28,18 @@ const CONFIG_PREFIXES = [
 
 const SUPPORTED_LOCKFILES = new Set(["package-lock.json", "pnpm-lock.yaml", "yarn.lock"]);
 
-const SOURCE_EXTENSIONS = [".js", ".jsx", ".cjs", ".mjs", ".ts", ".tsx", ".cts", ".mts"] as const;
-const UNSUPPORTED_SOURCE_USAGE_EXTENSIONS = [".astro", ".mdx", ".svelte", ".vue"] as const;
+const SOURCE_EXTENSIONS = [
+  ".js",
+  ".jsx",
+  ".cjs",
+  ".mjs",
+  ".ts",
+  ".tsx",
+  ".cts",
+  ".mts",
+  ".mdx",
+] as const;
+const UNSUPPORTED_SOURCE_USAGE_EXTENSIONS = [".astro", ".svelte", ".vue"] as const;
 
 function baseName(path: string): string {
   return path.slice(path.lastIndexOf("/") + 1);
@@ -73,7 +83,9 @@ export function isSupportedDependencyLockfilePath(path: string): boolean {
 
 export function isInitialSupportedSnapshotPath(path: string): boolean {
   if (
-    path === "package.json" ||
+    baseName(path) === "package.json" ||
+    path === "pnpm-workspace.yaml" ||
+    path === "turbo.json" ||
     isSupportedDependencyLockfilePath(path) ||
     isSupportedJavaScriptSourcePath(path)
   ) {

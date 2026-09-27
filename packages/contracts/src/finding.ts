@@ -2,6 +2,7 @@ import * as z from "zod";
 
 import { ScoreCategorySchema } from "./category.js";
 import { IdentifierSchema, RequirementIdSchema, RuleReferenceSchema } from "./identifiers.js";
+import { AdvisoryDetailsSchema } from "./inspection.js";
 import { AnalysisSubjectSchema } from "./subject.js";
 
 export const FindingClassificationSchema = z.enum(["fact", "heuristic"]);
@@ -39,6 +40,9 @@ const FindingBaseShape = {
   factIds: z.array(IdentifierSchema).default([]),
   limitationIds: z.array(IdentifierSchema).default([]),
   priority: FindingPrioritySchema,
+  details: AdvisoryDetailsSchema.optional(),
+  disposition: z.enum(["issue", "opportunity", "advice"]).optional(),
+  packagePath: z.string().min(1).max(1000).optional(),
 } as const;
 
 export const FactualFindingSchema = z.strictObject({
@@ -55,6 +59,11 @@ export const HeuristicFindingSchema = z.strictObject({
 export const FindingSchema = z.discriminatedUnion("classification", [
   FactualFindingSchema,
   HeuristicFindingSchema,
+]);
+
+export const LegacyFindingSchema = z.discriminatedUnion("classification", [
+  FactualFindingSchema.omit({ details: true, disposition: true, packagePath: true }),
+  HeuristicFindingSchema.omit({ details: true, disposition: true, packagePath: true }),
 ]);
 
 export type FindingClassification = z.infer<typeof FindingClassificationSchema>;

@@ -171,10 +171,12 @@ The MVP does **not** require:
 - automatic pull requests;
 - continuous monitoring;
 - notifications;
-- full cross-workspace monorepo intelligence;
+- runtime execution and arbitrary external preset implementation inspection;
 - executing package scripts, builds, tests, or arbitrary repository code.
 
-Workspace/monorepo configuration may be detected in MVP, but complete multi-package analysis is a later capability.
+MVP includes bounded static analysis of declared JavaScript/TypeScript workspace members and MDX.
+Arbitrary package ecosystems, runtime behavior and external preset implementation inspection remain
+outside this supported workspace scope.
 
 ## 6. MVP functional requirements
 
@@ -415,13 +417,13 @@ StackLens must support category-level scores for:
 
 A category with insufficient evidence must be shown as **N/A / insufficient evidence** rather than automatically receiving a low score.
 
-The initial complete five-category policy uses explicit scopes: dependency version health, known
-dependency advisories, major-version migration readiness, static test setup, and tooling
-reproducibility. Testing checks supported declared test commands and conventional test-file
-presence. Tooling checks an exact supported package-manager pin and matching root lockfile evidence.
-Absence-based setup findings require complete relevant acquisition, remain heuristic, and do not
-claim that tests/tools were executed. Unsupported custom commands or lockfile formats remain N/A.
-Precise gates, deductions, and overall aggregation are versioned in ADR-0012 and the scoring policy.
+The current five-category policy uses explicit scopes: confirmed dependency support concerns,
+known dependency advisory severity, static lint/type-check safeguards, static test setup, and
+workspace tooling reproducibility. ADR-0013 defines the exact bands and readiness formula.
+Updates and optional migrations do not deduct points. Testing and Tooling never imply execution.
+Checks distinguish pass, fail, unknown and not applicable. Any unknown required check prevents
+a numeric score; genuinely non-applicable checks are excluded with an explanation. Overall
+averages applicable categories and cannot exceed applicable Dependencies or Security scores.
 
 ### FR-020 — Explain scoring
 
@@ -467,7 +469,7 @@ Users must be able to perform simple StackLens analysis without creating an acco
 **Phase:** MVP  
 **Status:** Accepted
 
-For repository analysis, StackLens must use supported committed root lockfiles as project evidence for
+For repository analysis, StackLens must use supported committed workspace lockfiles as project evidence for
 the exact resolved version of a declared dependency when that resolution can be matched
 deterministically to the corresponding package.json declaration.
 
@@ -487,12 +489,31 @@ Initial supported lockfiles are:
 - A matching supported lockfile may satisfy exact-current-version requirements for ranged package.json
   declarations used by version, deprecation, migration, vulnerability, and scoring rules.
 - Multiple ambiguous lockfiles, package-manager mismatches, stale specifiers, malformed lockfiles,
-  missing direct resolutions, workspace/link targets, and unsupported non-semver resolutions produce
+  missing direct resolutions and unsupported non-semver resolutions produce
   limitations rather than inferred versions.
 - Lockfile source text remains transient analysis input; reports expose only bounded normalized
   resolution facts/evidence and must not copy full lockfile contents.
 - Lockfile evidence does not prove that dependencies were installed or executed in the analyzed
   runtime environment.
+
+### Workspace and static inspection acceptance (FR-005–FR-014, FR-018–FR-023)
+
+- Discover declared pnpm/npm/Yarn workspace members and preserve package paths, dependency groups,
+  original specifiers, catalog constraints and exact resolution provenance. Recognize internal
+  workspace links without sending them to external version/advisory providers.
+- Peer-only declarations are compatibility constraints, not installed versions.
+- Support JSONC where the configuration format permits it, MDX executable syntax, immutable local
+  configuration references and known plugin identities. External preset internals remain opaque.
+- Trace bounded supported package-script and Turbo delegation to member commands. Never execute
+  scripts/configuration, MDX, plugins, tests, builds, or dependency installation.
+- Preserve known fields and positive references during partial inspection. Unknown spreads,
+  mutation, missing imports, truncation or dynamic references suppress dependent conclusions.
+- Attach limitations to machine-readable reasons, affected paths/packages and check keys. Show
+  which checks are blocked separately from informational uncertainty.
+- Score only supported evidence under the versioned ADR-0013 policy. Source acquisition counts,
+  check completeness, finding priority and score values are distinct.
+- Report 2.0.0 adds structured inspection and score explanations; retain strict report 1.0.0
+  readers and original historical values. Update readers before enabling new writers.
 
 ## 7. Post-MVP functional requirements
 
@@ -945,4 +966,7 @@ Technology and architecture decisions are intentionally kept outside the product
 
 The accepted architecture and current technology selections are documented in [architecture.md](architecture.md) and the architecture decision records under [adr/](adr/).
 
-Some lower-level choices remain intentionally deferred, including exact scoring weights, exact priority coefficients, hosted cloud provider, authentication provider details, cache infrastructure, and future monorepo-expansion behavior. These may be selected only insofar as they satisfy the accepted requirements.
+Some lower-level choices remain intentionally deferred, including hosted cloud and authentication
+providers, cache infrastructure and workspace behavior beyond the supported static scope. Current
+scoring bands/check weights are versioned in ADR-0013; future policies and priority changes must
+satisfy the accepted requirements and receive versioned review.

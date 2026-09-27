@@ -1,13 +1,17 @@
 import * as z from "zod";
 
 import { DataSourceSchema, EvidenceSchema } from "./evidence.js";
-import { AnalysisFactSchema } from "./fact.js";
-import { FindingSchema } from "./finding.js";
+import { AnalysisFactSchema, LegacyAnalysisFactSchema } from "./fact.js";
+import { FindingSchema, LegacyFindingSchema } from "./finding.js";
 import { IdentifierSchema } from "./identifiers.js";
 import { AnalysisInputSchema } from "./input.js";
-import { AnalysisLimitationSchema, PartialFailureSchema } from "./limitation.js";
+import {
+  AnalysisLimitationSchema,
+  LegacyAnalysisLimitationSchema,
+  PartialFailureSchema,
+} from "./limitation.js";
 import { RecommendationSchema } from "./recommendation.js";
-import { AnalysisScoresSchema } from "./score.js";
+import { AnalysisScoresV2Schema, LegacyAnalysisScoresSchema } from "./score.js";
 import { IsoDateTimeSchema } from "./time.js";
 
 export const ANALYSIS_REPORT_SCHEMA_VERSION = "1.0.0" as const;
@@ -26,11 +30,11 @@ const AnalysisReportBaseSchema = z.strictObject({
   analyzer: AnalyzerMetadataSchema,
   sources: z.array(DataSourceSchema),
   evidence: z.array(EvidenceSchema),
-  facts: z.array(AnalysisFactSchema),
-  findings: z.array(FindingSchema),
+  facts: z.array(LegacyAnalysisFactSchema),
+  findings: z.array(LegacyFindingSchema),
   recommendations: z.array(RecommendationSchema),
-  scores: AnalysisScoresSchema,
-  limitations: z.array(AnalysisLimitationSchema),
+  scores: LegacyAnalysisScoresSchema,
+  limitations: z.array(LegacyAnalysisLimitationSchema),
   partialFailures: z.array(PartialFailureSchema),
 });
 
@@ -71,7 +75,18 @@ function validateUniqueIds(
   });
 }
 
-export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report, ctx) => {
+export const ANALYSIS_REPORT_V2_SCHEMA_VERSION = "2.0.0" as const;
+const AnalysisReportV2BaseSchema = AnalysisReportBaseSchema.extend({
+  schemaVersion: z.literal(ANALYSIS_REPORT_V2_SCHEMA_VERSION),
+  facts: z.array(AnalysisFactSchema),
+  findings: z.array(FindingSchema),
+  limitations: z.array(AnalysisLimitationSchema),
+  scores: AnalysisScoresV2Schema,
+});
+type ReportForValidation =
+  | z.infer<typeof AnalysisReportBaseSchema>
+  | z.infer<typeof AnalysisReportV2BaseSchema>;
+function validateReport(report: ReportForValidation, ctx: z.RefinementCtx) {
   const sourceIds = idsOf(report.sources);
   const sourcesById = new Map(report.sources.map((source) => [source.id, source]));
   const evidenceIds = idsOf(report.evidence);
@@ -305,13 +320,67 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
 
   const scoreEntries = [
     { path: ["scores", "overall"], score: report.scores.overall },
-    ...Object.entries(report.scores.categories).map(([category, score]) => ({
-      path: ["scores", "categories", category],
-      score,
-    })),
+    ...(["dependencies", "security", "maintainability", "testing", "tooling"] as const).map(
+      (category) => ({
+        path: ["scores", "categories", category],
+        score: report.scores.categories[category],
+      }),
+    ),
   ] as const;
 
   scoreEntries.forEach(({ path, score }) => {
+    if ("checkFactIds" in score) {
+      const seenChecks = new Set<string>();
+      const actual = { passed: 0, failed: 0, unknown: 0, notApplicable: 0 };
+      score.checkFactIds.forEach((id, index) => {
+        if (seenChecks.has(id))
+          ctx.addIssue({
+            code: "custom",
+            path: [...path, "checkFactIds", index],
+            message: "Duplicate inspection check reference",
+          });
+        seenChecks.add(id);
+        const fact = report.facts.find((item) => item.id === id);
+        if (fact === undefined || fact.details?.kind !== "inspection_check")
+          addMissingReferenceIssue(
+            ctx,
+            [...path, "checkFactIds", index],
+            "inspection check fact",
+            id,
+          );
+        else {
+          const check = fact.details;
+          actual[
+            check.state === "pass"
+              ? "passed"
+              : check.state === "fail"
+                ? "failed"
+                : check.state === "unknown"
+                  ? "unknown"
+                  : "notApplicable"
+          ] += 1;
+          if (path[1] === "categories" && check.category !== path[2])
+            ctx.addIssue({
+              code: "custom",
+              path: [...path, "checkFactIds", index],
+              message: "Inspection check belongs to another category",
+            });
+        }
+      });
+      for (const key of ["passed", "failed", "unknown", "notApplicable"] as const)
+        if (actual[key] !== score.checkCounts[key])
+          ctx.addIssue({
+            code: "custom",
+            path: [...path, "checkCounts", key],
+            message: "Check count disagrees with referenced inspection checks",
+          });
+      if (score.status === "not_applicable" && actual.passed + actual.failed + actual.unknown > 0)
+        ctx.addIssue({
+          code: "custom",
+          path: [...path, "status"],
+          message: "Not-applicable scores cannot contain applicable checks",
+        });
+    }
     if (score.status === "available") {
       score.contributionIds.forEach((contributionId, referenceIndex) => {
         if (!contributionIds.has(contributionId)) {
@@ -323,7 +392,7 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
           );
         }
       });
-    } else {
+    } else if (score.status === "insufficient_evidence") {
       score.limitationIds.forEach((limitationId, referenceIndex) => {
         if (!limitationIds.has(limitationId)) {
           addMissingReferenceIssue(
@@ -360,7 +429,30 @@ export const AnalysisReportSchema = AnalysisReportBaseSchema.superRefine((report
       );
     }
   });
-});
+  if (report.schemaVersion === "2.0.0") {
+    report.facts.forEach((fact, index) => {
+      if (fact.details?.kind === "inspection_check") {
+        fact.details.limitationIds.forEach((id, i) => {
+          if (!limitationIds.has(id))
+            addMissingReferenceIssue(
+              ctx,
+              ["facts", index, "details", "limitationIds", i],
+              "limitation",
+              id,
+            );
+        });
+      }
+    });
+  }
+}
+export const AnalysisReportV1Schema = AnalysisReportBaseSchema.superRefine(validateReport);
+export const AnalysisReportV2Schema = AnalysisReportV2BaseSchema.superRefine(validateReport);
+export const AnalysisReportSchema = z.discriminatedUnion("schemaVersion", [
+  AnalysisReportV1Schema,
+  AnalysisReportV2Schema,
+]);
+export type AnalysisReportV1 = z.infer<typeof AnalysisReportV1Schema>;
+export type AnalysisReportV2 = z.infer<typeof AnalysisReportV2Schema>;
 
 export type AnalyzerMetadata = z.infer<typeof AnalyzerMetadataSchema>;
 export type AnalysisReport = z.infer<typeof AnalysisReportSchema>;

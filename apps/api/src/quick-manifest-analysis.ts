@@ -1,8 +1,14 @@
 import { runAnalyzer } from "@stacklens/analyzer-core";
 import type { AnalyzerDefinition } from "@stacklens/analyzer-core";
 import type { AnalysisLimitation, AnalysisReport } from "@stacklens/contracts";
-import { createDependencyInventoryEvidence } from "@stacklens/rules-javascript";
-import type { NormalizedPackageManifest } from "@stacklens/rules-javascript";
+import {
+  createDependencyInventoryEvidence,
+  createWorkspaceEvidence,
+} from "@stacklens/rules-javascript";
+import type {
+  JavaScriptProjectSnapshot,
+  JavaScriptAnalysisMetadata,
+} from "@stacklens/rules-javascript";
 
 import { createManifestFingerprint } from "./manifest-fingerprint.js";
 import { validateQuickManifestInput } from "./manifest-input.js";
@@ -18,7 +24,7 @@ export interface QuickManifestAnalysisCommand {
 }
 
 export interface QuickManifestAnalysisDependencies {
-  readonly analyzer: AnalyzerDefinition<NormalizedPackageManifest, unknown>;
+  readonly analyzer: AnalyzerDefinition<JavaScriptProjectSnapshot, JavaScriptAnalysisMetadata>;
 }
 
 export type QuickManifestAnalysisResult =
@@ -47,7 +53,7 @@ function createQuickManifestLimitations(): AnalysisLimitation[] {
       kind: "external_data",
       message:
         "External package and vulnerability metadata is not available in this analysis snapshot.",
-      affectedCategories: ["dependencies", "security", "maintainability"],
+      affectedCategories: ["dependencies", "security"],
       sourceIds: [],
       ruleIds: [],
     },
@@ -65,7 +71,15 @@ export function analyzeQuickManifest(
   }
 
   const fingerprint = createManifestFingerprint(command.input.content);
-  const evidence = createDependencyInventoryEvidence(validation.project);
+  const member = { ...validation.project, packagePath: ".", role: "package" as const };
+  const project =
+    dependencies.analyzer.reportSchemaVersion === "2.0.0"
+      ? { ...member, workspacePackages: [member] }
+      : validation.project;
+  const evidence =
+    dependencies.analyzer.reportSchemaVersion === "2.0.0"
+      ? createWorkspaceEvidence(project)
+      : createDependencyInventoryEvidence(project);
 
   const report = runAnalyzer(dependencies.analyzer, {
     analysisId: command.analysisId,
@@ -74,7 +88,7 @@ export function analyzeQuickManifest(
       type: "manifest",
       fingerprint,
     },
-    project: validation.project,
+    project,
     metadata: {},
     sources: [],
     evidence,
