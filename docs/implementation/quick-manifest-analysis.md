@@ -134,13 +134,14 @@ satisfied by the normalized manifest:
 - `JS-TOOL-012@1` exact-package framework/tool facts;
 - `JS-OVERLAP-008@1` curated manifest-backed overlap heuristics;
 - shared `JS-PRIORITY-016@1` priority for emitted findings;
-- shared `JS-RECOMMEND-015@1` evidence-backed recommendations.
+- shared `JS-RECOMMEND-015@2` evidence-backed recommendations.
 
-The quick analyzer deliberately keeps numeric scoring at `insufficient_evidence` with scoring
-coverage 0 because repository source/configuration and external npm/OSV evidence required by the
-accepted score policy are absent. That percentage describes **numeric scoring evidence**, not how
-much of the submitted manifest was parsed. Provider/source-dependent rules and
-`stack-health-v1` scoring remain repository-only.
+The quick analyzer keeps numeric scoring at `insufficient_evidence` with eligibility 0 because
+repository setup and external npm/OSV evidence required by the accepted score policy are absent.
+The UI displays score availability, not a percentage of the submitted manifest parsed.
+Provider/source-dependent rules and `stack-health-v2` scoring remain repository-only.
+Quick analyzer/rule-set identities advance to v3 to record the shared recommendation-rule version;
+the `quick-manifest-insufficient-evidence-v1` scoring policy and provider-free behavior are unchanged.
 
 ## Verification
 

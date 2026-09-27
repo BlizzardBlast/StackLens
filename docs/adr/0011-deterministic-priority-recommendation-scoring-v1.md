@@ -4,6 +4,8 @@
 - **Date:** 2026-09-20
 - **Requirements:** FR-014–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-001–NFR-005, GOV-006, GOV-007
 - **Related:** ADR-0008, ADR-0009, ADR-0010
+- **Partially superseded (2026-09-25):** ADR-0012 replaces scoring coverage and the overall formula
+  with v2. Existing priority mappings remain. The v1 behavior below records historical policy.
 
 ## Context
 

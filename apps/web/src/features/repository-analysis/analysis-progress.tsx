@@ -197,13 +197,7 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
                       {isComplete ? "Done" : isCurrent ? "In progress" : "Waiting"}
                     </span>
                   </div>
-                  <p
-                    className={
-                      isCurrent
-                        ? "text-xs leading-5 text-muted-foreground"
-                        : "text-xs leading-5 text-muted-foreground/80"
-                    }
-                  >
+                  <p className="text-xs leading-5 text-muted-foreground">
                     {stageContent[progressStage].shortDetail}
                   </p>
                 </div>

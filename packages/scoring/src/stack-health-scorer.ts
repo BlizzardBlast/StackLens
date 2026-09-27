@@ -13,7 +13,7 @@ import type {
 } from "@stacklens/contracts";
 
 const SCORE_RULE_ID = "SCORE-STACK-001";
-export const STACK_HEALTH_SCORING_VERSION = "stack-health-v1";
+export const STACK_HEALTH_SCORING_VERSION = "stack-health-v2";
 
 const CATEGORY_ORDER: readonly ScoreCategory[] = [
   "dependencies",
@@ -23,7 +23,15 @@ const CATEGORY_ORDER: readonly ScoreCategory[] = [
   "tooling",
 ];
 
-const SUPPORTED_OVERALL_CATEGORIES: readonly ScoreCategory[] = ["dependencies", "security"];
+const SUPPORTED_OVERALL_CATEGORIES = CATEGORY_ORDER;
+
+const SCORED_RULES: Readonly<Record<ScoreCategory, readonly string[]>> = {
+  dependencies: ["JS-NPM-006", "JS-NPM-007", "JS-OVERLAP-008"],
+  security: ["JS-VULN-011"],
+  maintainability: ["JS-MIGRATION-014"],
+  testing: ["JS-SETUP-019"],
+  tooling: ["JS-SETUP-019"],
+};
 
 const PRIORITY_DEDUCTIONS: Readonly<Record<PriorityLevel, number>> = {
   critical: 40,
@@ -72,7 +80,23 @@ function categoryLimitations(
   category: ScoreCategory,
 ): readonly AnalysisLimitation[] {
   return limitations
-    .filter((limitation) => limitation.affectedCategories.includes(category))
+    .filter(
+      (limitation) =>
+        (limitation.kind === "partial_failure" &&
+          limitation.ruleIds.length > 0 &&
+          limitation.affectedCategories.length === 0) ||
+        limitation.ruleIds.some(
+          (id) => id !== "JS-SETUP-019" && SCORED_RULES[category].includes(id),
+        ) ||
+        (limitation.affectedCategories.includes(category) &&
+          (limitation.ruleIds.some(
+            (id) =>
+              id === "JS-COVERAGE-018" ||
+              id === "JS-READINESS-019" ||
+              SCORED_RULES[category].includes(id),
+          ) ||
+            (limitation.kind === "partial_failure" && limitation.ruleIds.length > 0))),
+    )
     .toSorted((left, right) => compareCodeUnits(left.id, right.id));
 }
 
@@ -91,12 +115,11 @@ function findingContribution(finding: Finding): ScoreContribution {
     direction: "deduction",
     points,
     rationale:
-      `Finding ${finding.id} has deterministic priority ${finding.priority.level}; ` +
-      `${STACK_HEALTH_SCORING_VERSION} deducts ${points} point(s) from the ${finding.category} category. ` +
-      "The contribution is tied to the same finding evidence and priority policy rather than an opaque model judgment.",
+      `${finding.title} Priority ${finding.priority.level} deducts ${points} point(s) ` +
+      `from the ${finding.category} category.`,
     rule: {
       id: SCORE_RULE_ID,
-      version: "1",
+      version: "2",
     },
     findingIds: [finding.id],
     factIds: [],
@@ -123,7 +146,10 @@ function availableCategoryScore(
   findings: readonly Finding[],
 ): { readonly score: AvailableScore; readonly contributions: readonly ScoreContribution[] } {
   const contributions = findings
-    .filter((finding) => finding.category === category)
+    .filter(
+      (finding) =>
+        finding.category === category && SCORED_RULES[category].includes(finding.rule.id),
+    )
     .toSorted((left, right) => compareCodeUnits(left.id, right.id))
     .map(findingContribution);
   const deductions = contributions.reduce((total, contribution) => total + contribution.points, 0);
@@ -148,7 +174,13 @@ function scoreCategory(
 
   if (limitations.length > 0 || coverageFacts.length === 0) {
     return {
-      score: insufficientScore(limitations),
+      score: insufficientScore(
+        limitations.length > 0
+          ? limitations
+          : context.limitations.filter((limitation) =>
+              limitation.affectedCategories.includes(category),
+            ),
+      ),
       contributions: [],
     };
   }

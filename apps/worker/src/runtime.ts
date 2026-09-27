@@ -1,5 +1,5 @@
 import { run, runMigrations, type Runner } from "graphile-worker";
-import { Pool } from "pg";
+import type { Pool } from "pg";
 
 import {
   GitHubRepositoryAdapter,
@@ -8,6 +8,7 @@ import {
 } from "@stacklens/data-sources";
 import {
   createStackLensDatabase,
+  createStackLensPool,
   DrizzleAnalysisRepository,
   migrateStackLensDatabase,
 } from "@stacklens/persistence";
@@ -30,9 +31,7 @@ export interface StackLensWorkerRuntime {
 export async function startStackLensWorker(
   options: WorkerRuntimeOptions,
 ): Promise<StackLensWorkerRuntime> {
-  const pool = new Pool({ connectionString: options.connectionString });
-  const onDatabasePoolError = options.onDatabasePoolError ?? (() => undefined);
-  pool.on("error", onDatabasePoolError);
+  const pool = createStackLensPool(options.connectionString, options.onDatabasePoolError);
 
   try {
     const database = createStackLensDatabase(pool);
@@ -73,13 +72,11 @@ export async function startStackLensWorker(
         try {
           await runner.stop();
         } finally {
-          pool.off("error", onDatabasePoolError);
           await pool.end();
         }
       },
     };
   } catch (error) {
-    pool.off("error", onDatabasePoolError);
     await pool.end();
     throw error;
   }

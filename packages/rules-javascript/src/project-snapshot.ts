@@ -13,6 +13,7 @@ export interface JavaScriptPackageScript {
 }
 
 export interface JavaScriptProjectSnapshot extends NormalizedPackageManifest {
+  readonly repositoryCoverage?: JavaScriptRepositoryCoverage;
   readonly files?: readonly JavaScriptStaticProjectFile[];
   readonly scripts?: readonly JavaScriptPackageScript[];
   readonly sourceUsage?: JavaScriptSourceUsageSnapshot;
@@ -20,9 +21,18 @@ export interface JavaScriptProjectSnapshot extends NormalizedPackageManifest {
 }
 
 export interface JavaScriptProjectSnapshotOptions {
+  readonly repositoryCoverage?: JavaScriptRepositoryCoverage;
   readonly scripts?: readonly JavaScriptPackageScript[];
   readonly sourceUsage?: JavaScriptSourceUsageSnapshot;
   readonly resolvedDependencies?: JavaScriptResolvedDependencySnapshot;
+}
+
+export interface JavaScriptRepositoryCoverage {
+  readonly complete: boolean;
+  readonly candidateSourceFiles: number;
+  readonly acquiredSourceFiles: number;
+  readonly lockfilePaths: readonly string[];
+  readonly lockfileIssueCount: number;
 }
 
 function compareCodeUnits(left: string, right: string): number {
@@ -154,6 +164,9 @@ export function createJavaScriptProjectSnapshot(
     ...(manifest.packageName === undefined ? {} : { packageName: manifest.packageName }),
     ...(manifest.packageManager === undefined ? {} : { packageManager: manifest.packageManager }),
     dependencies: manifest.dependencies.map((dependency) => ({ ...dependency })),
+    ...(options.repositoryCoverage === undefined
+      ? {}
+      : { repositoryCoverage: options.repositoryCoverage }),
     files: normalizedFiles,
     ...(normalizedScripts.length === 0 ? {} : { scripts: normalizedScripts }),
     ...(options.sourceUsage === undefined ? {} : { sourceUsage: options.sourceUsage }),

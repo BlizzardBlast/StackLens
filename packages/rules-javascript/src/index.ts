@@ -126,3 +126,8 @@ export type { EffectiveDependencyVersion } from "./rule-support.js";
 
 export { parseExactSemanticVersion } from "./semver.js";
 export type { ParsedSemanticVersion } from "./semver.js";
+export {
+  createReadinessEvidence,
+  projectReadinessFactRule,
+  projectReadinessFindingRule,
+} from "./project-readiness.js";

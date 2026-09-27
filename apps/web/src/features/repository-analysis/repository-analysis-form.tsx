@@ -81,10 +81,11 @@ export function RepositoryAnalysisForm({
           aria-invalid={error === undefined ? undefined : true}
           aria-describedby={errorId ?? "repository-url-help"}
           disabled={isPending}
-          className="min-h-12 w-full rounded-lg border bg-background px-4 py-3 font-mono text-sm transition-[border-color,box-shadow,background-color] outline-none placeholder:font-sans placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/35 disabled:cursor-not-allowed disabled:bg-muted/50 disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
+          className="min-h-12 w-full min-w-0 rounded-lg border border-input bg-background px-4 py-3 font-mono text-sm transition-[border-color,box-shadow,background-color] outline-none placeholder:font-sans placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/35 disabled:cursor-not-allowed disabled:bg-muted/50 disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
         />
         <p id="repository-url-help" className="text-xs leading-5 text-muted-foreground">
-          Server validation remains authoritative. The repository must be publicly accessible.
+          Use the repository URL, such as github.com/owner/repository. It must be publicly
+          accessible.
         </p>
         {error === undefined ? null : (
           <p id="repository-url-error" role="alert" className="text-sm text-destructive">
@@ -94,7 +95,7 @@ export function RepositoryAnalysisForm({
       </div>
 
       <div className="grid gap-3">
-        <Button type="submit" disabled={isPending} className="min-h-11 w-full sm:w-fit">
+        <Button type="submit" disabled={isPending} className="min-h-12 w-full">
           {isPending ? (
             <>
               <span
@@ -120,13 +121,13 @@ export function RepositoryAnalysisForm({
             <span className="grid gap-0.5">
               <span className="text-sm font-semibold">Creating analysis</span>
               <span className="text-xs leading-5 text-muted-foreground">
-                Preparing the durable analysis state before opening live progress.
+                Your repository is being submitted. Live progress will open next.
               </span>
             </span>
           </output>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Static inspection only · Public repositories · No project code execution
+            Your project code is never installed or executed.
           </p>
         )}
       </div>

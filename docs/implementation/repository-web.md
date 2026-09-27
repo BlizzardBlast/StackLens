@@ -88,18 +88,29 @@ The report screen consumes analyzer-owned data as-is.
 It renders:
 
 - overall and category score values or explicit `N/A`;
-- evidence coverage;
+- available-category count, stated scoring scopes, and observed repository acquisition counts;
 - finding classification, priority, confidence, rule identity, and description;
 - evidence referenced by each finding;
 - separate recommendations;
-- limitations and partial failures.
+- grouped limitations and actionable partial failures, before the long findings list.
 
 React does not reorder findings by a new local priority policy, calculate scores, assign score
 categories, infer finding confidence, or convert missing evidence into numeric values.
 
 The existing `@stacklens/ui` domain components remain the shared product vocabulary. K1 uses
-`FindingCard`, `EvidenceCoverage`, and `AnalysisLimitation` while keeping screen composition in
+`FindingCard` and `AnalysisLimitation` while keeping screen composition in
 `apps/web`.
+
+Under ADR-0012, score eligibility is not displayed as a measured evidence percentage. Each category
+states its supported scope and exposes a native keyboard-accessible disclosure: the analyzer's
+contribution ledger for available scores, or links to blocking limitations for N/A. Equal
+kind/message notices share one display group while retaining their original IDs and rule/category
+references. Each group distinguishes related analysis areas from scores actually blocked, using
+the report's limitation references rather than inferring policy in React.
+
+Stored `stack-health-v1` reports keep their values. Their three unimplemented category policies are
+explicitly labeled rather than suggesting that more repository data would unlock them. A fresh
+analysis is required for v2; reports are not rewritten on read. See [report evidence design](../design/report-evidence.md).
 
 ## Accessibility and responsive behavior
 

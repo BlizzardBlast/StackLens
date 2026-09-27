@@ -144,9 +144,10 @@ Invalid analyzer configuration—such as duplicate rule IDs, invalid versions, o
 
 The scorer version is copied into `AnalysisReport.analyzer.scoringVersion`.
 
-Milestone I now supplies the first concrete implementation in `packages/scoring` as
-`stack-health-v1`. Analyzer-core still never chooses score weights, bands, deductions, supported
-categories, or evidence-coverage rules; those remain policy owned outside this package under ADR-0011.
+The current concrete implementation in `packages/scoring` is `stack-health-v2` under ADR-0012.
+Analyzer-core never chooses score weights, bands, deductions, supported categories, or
+evidence-coverage rules; those remain policy owned outside this package. Milestone I's original
+v1 integration below records the initial dependency-inversion milestone.
 
 ## Report assembly
 
@@ -197,3 +198,7 @@ The production JavaScript/TypeScript analyzer can now compose the existing core 
 - `stackHealthScorer` (`stack-health-v1`) from `@stacklens/scoring`.
 
 This confirms the dependency-inversion design: analyzer-core required no priority/scoring formula change for production policy to become concrete.
+
+The current production composition advances recommendations to `JS-RECOMMEND-015@2`, coverage to
+`JS-COVERAGE-018@3`, and scoring to v2, adding `JS-READINESS-019@1` facts and `JS-SETUP-019@1`
+findings. These additions likewise require no core policy changes.

@@ -232,6 +232,49 @@ describe("NpmRegistryAdapter [FR-006, FR-007, FR-010, DATA-001, DATA-002]", () =
     });
   });
 
+  it.each(["1.0.0", "1.1.0"])(
+    "accepts explicit false deprecation on %s without losing package metadata [FR-006, FR-007]",
+    async (version) => {
+      const packument = createPackument();
+      const payload = {
+        ...packument,
+        versions: {
+          ...packument.versions,
+          [version]: { name: packument.name, version, deprecated: false },
+        },
+      };
+      const result = await createAdapter(
+        vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify(payload))),
+      ).fetch({ packageName: packument.name });
+      expect(result.ok).toBe(true);
+      if (!result.ok) throw new Error("Expected false deprecation metadata to be supported");
+      expect(result.data.versions).toHaveLength(3);
+      expect(result.data.versions.find((item) => item.version === version)).not.toHaveProperty(
+        "deprecatedMessage",
+      );
+      expect(
+        result.data.versions.find((item) => item.version === "2.0.0")?.deprecatedMessage,
+      ).toBeDefined();
+    },
+  );
+
+  it.each([true, null, 0, {}])(
+    "rejects ambiguous malformed deprecation metadata %j [FR-007, SEC-002]",
+    async (deprecated) => {
+      const packument = createPackument();
+      const payload = {
+        ...packument,
+        versions: { ...packument.versions, "1.0.0": { version: "1.0.0", deprecated } },
+      };
+      const result = await createAdapter(
+        vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify(payload))),
+      ).fetch({ packageName: packument.name });
+      expect(result.ok).toBe(false);
+      if (result.ok) throw new Error("Expected invalid deprecation metadata to fail");
+      expect(result.failure.code).toBe("npm_invalid_response");
+    },
+  );
+
   it("normalizes equivalent provider objects deterministically", async () => {
     const first = createPackument();
     const second = {

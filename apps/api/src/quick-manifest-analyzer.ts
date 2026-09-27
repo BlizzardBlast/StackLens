@@ -9,8 +9,8 @@ import {
   type NormalizedPackageManifest,
 } from "@stacklens/rules-javascript";
 
-export const QUICK_MANIFEST_ANALYZER_VERSION = "javascript-quick-manifest-v2";
-export const QUICK_MANIFEST_RULE_SET_VERSION = "javascript-quick-manifest-rules-v2";
+export const QUICK_MANIFEST_ANALYZER_VERSION = "javascript-quick-manifest-v3";
+export const QUICK_MANIFEST_RULE_SET_VERSION = "javascript-quick-manifest-rules-v3";
 export const QUICK_MANIFEST_SCORING_VERSION = "quick-manifest-insufficient-evidence-v1";
 
 function createInsufficientEvidenceScores(limitationIds: readonly string[]): AnalysisScores {

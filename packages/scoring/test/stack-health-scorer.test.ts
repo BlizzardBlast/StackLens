@@ -56,7 +56,13 @@ function finding(
     title: id,
     description: `Fixture finding ${id}.`,
     rule: {
-      id: "TEST-FINDING",
+      id: {
+        dependencies: "JS-NPM-006",
+        security: "JS-VULN-011",
+        maintainability: "JS-MIGRATION-014",
+        testing: "JS-SETUP-019",
+        tooling: "JS-SETUP-019",
+      }[category],
       version: "1",
     },
     requirementIds: ["FR-016"],
@@ -119,10 +125,9 @@ describe("stack health scorer [FR-018, FR-019, FR-020, SCORE-001, SCORE-002, SCO
       limitationIds: ["limitation-maintainability"],
     });
     expect(scores.overall).toEqual({
-      status: "available",
+      status: "insufficient_evidence",
       evidenceCoverage: 40,
-      value: 85,
-      contributionIds: expect.any(Array),
+      limitationIds: ["limitation-maintainability", "limitation-testing", "limitation-tooling"],
     });
     expect(scores.contributions).toHaveLength(2);
     expect(scores.contributions.map((item) => item.points).toSorted((a, b) => a - b)).toEqual([
@@ -160,7 +165,12 @@ describe("stack health scorer [FR-018, FR-019, FR-020, SCORE-001, SCORE-002, SCO
     expect(scores.overall).toEqual({
       status: "insufficient_evidence",
       evidenceCoverage: 20,
-      limitationIds: ["limitation-dependencies"],
+      limitationIds: [
+        "limitation-dependencies",
+        "limitation-maintainability",
+        "limitation-testing",
+        "limitation-tooling",
+      ],
     });
     expect(scores.contributions).toHaveLength(1);
     expect(AnalysisScoresSchema.safeParse(scores).success).toBe(true);
@@ -183,6 +193,86 @@ describe("stack health scorer [FR-018, FR-019, FR-020, SCORE-001, SCORE-002, SCO
       partialFailures: [],
     };
 
-    expect(stackHealthScorer.score(context)).toEqual(stackHealthScorer.score(context));
+    expect(stackHealthScorer.score(context)).toEqual(
+      stackHealthScorer.score({
+        ...context,
+        facts: context.facts.toReversed(),
+        findings: context.findings.toReversed(),
+        limitations: context.limitations.toReversed(),
+      }),
+    );
+  });
+
+  it("averages all five scoped scores and excludes unscored source-usage heuristics [SCORE-004]", () => {
+    const unused = {
+      ...finding("unused", "dependencies", "low"),
+      rule: { id: "JS-UNNECESSARY-009", version: "1" },
+    };
+    const scores = stackHealthScorer.score({
+      sources: [],
+      evidence: [],
+      partialFailures: [],
+      facts: (["dependencies", "security", "maintainability", "testing", "tooling"] as const).map(
+        coverageFact,
+      ),
+      findings: [
+        finding("migration", "maintainability", "medium"),
+        finding("test-setup", "testing", "low"),
+        unused,
+      ],
+      limitations: [
+        { ...unavailableCategory("dependencies"), id: "source-partial", ruleIds: ["JS-USAGE-009"] },
+      ],
+    });
+    expect(scores.categories.dependencies).toMatchObject({ status: "available", value: 100 });
+    expect(scores.categories.maintainability).toMatchObject({ status: "available", value: 88 });
+    expect(scores.categories.testing).toMatchObject({ status: "available", value: 95 });
+    expect(scores.overall).toMatchObject({
+      status: "available",
+      value: 96.6,
+      evidenceCoverage: 100,
+    });
+    expect(scores.contributions).toHaveLength(2);
+    expect(scores.contributions.every((item) => item.rule.version === "2")).toBe(true);
+  });
+
+  it("blocks a score when a rule failure could hide findings even with a coverage fact", () => {
+    const scores = stackHealthScorer.score({
+      sources: [],
+      evidence: [],
+      partialFailures: [],
+      findings: [],
+      facts: (["dependencies", "security", "maintainability", "testing", "tooling"] as const).map(
+        coverageFact,
+      ),
+      limitations: [
+        {
+          ...unavailableCategory("dependencies"),
+          kind: "partial_failure",
+          ruleIds: ["JS-NPM-006"],
+          affectedCategories: [],
+        },
+      ],
+    });
+    expect(scores.categories.dependencies.status).toBe("insufficient_evidence");
+    expect(
+      Object.values(scores.categories).every((score) => score.status === "insufficient_evidence"),
+    ).toBe(true);
+    expect(scores.overall.status).toBe("insufficient_evidence");
+  });
+  it("maps detector limitations to the scored scope even when their original area differs", () => {
+    const scores = stackHealthScorer.score({
+      sources: [],
+      evidence: [],
+      partialFailures: [],
+      findings: [],
+      facts: (["dependencies", "security", "maintainability", "testing", "tooling"] as const).map(
+        coverageFact,
+      ),
+      limitations: [{ ...unavailableCategory("dependencies"), ruleIds: ["JS-MIGRATION-014"] }],
+    });
+    expect(scores.categories.dependencies.status).toBe("available");
+    expect(scores.categories.maintainability.status).toBe("insufficient_evidence");
+    expect(scores.overall.status).toBe("insufficient_evidence");
   });
 });

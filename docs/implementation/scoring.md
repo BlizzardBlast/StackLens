@@ -1,135 +1,93 @@
-# Scoring Policy v1
+# Scoring Policy v2
 
 > **Status:** Accepted implementation baseline  
-> **Date:** 2026-09-20  
-> **Requirements:** FR-016, FR-018–FR-023, DATA-006, SCORE-001–SCORE-004, NFR-001–NFR-005, GOV-007  
-> **Decision:** ADR-0011
+> **Date:** 2026-09-25
+>
+> **Requirements:** FR-013–FR-023, DATA-006, SCORE-001–SCORE-004, NFR-001–NFR-005, GOV-007
+>
+> **Decision:** ADR-0012 (supersedes ADR-0011 scoring scope/formula)
 
-## Package responsibility
+`packages/scoring` owns the pure deterministic score calculation. Ecosystem rules establish
+coverage; React, API, and worker code never choose score weights or reconstruct the formula.
 
-`packages/scoring` owns concrete deterministic score policy.
+## Version and scopes
 
-It implements `AnalysisScorer` from `@stacklens/analyzer-core` and depends only on generic contracts plus finalized analyzer state. It does not know how JavaScript source is parsed, how npm/OSV/GitHub data is fetched, or how findings are rendered.
+The current version is `stack-health-v2`, with contributions owned by `SCORE-STACK-001@2`.
 
-The package does not perform network I/O and does not execute analyzed project code.
+| Category | What the score measures | Required evidence |
+| --- | --- | --- |
+| Dependencies | Supported outdated/deprecated versions and curated dependency overlap | Inventory provenance, exact current versions, complete bound npm current/latest records for every declaration |
+| Security | Supported known dependency advisories | Exact versions and complete source-bound OSV queries with query provenance |
+| Maintainability | Major-version migration readiness | Complete exact current/latest npm metadata for all declarations |
+| Testing | Static test setup | Supported declared test-runner command and conventional test-file observation |
+| Tooling | Reproducibility setup | Exact supported package-manager pin and matching committed root lockfile |
 
-## Scoring version
+These are bounded scopes. Testing does not measure passing tests or runtime test coverage.
+Maintainability does not measure general code quality. Security 100 means no supported
+score-impacting known advisory matches in complete exact-version OSV queries, not universal security.
 
-Production scorer:
+Testing recognizes declared Jest, Vitest, Mocha, AVA, Jasmine, Tape, Playwright, and Cypress commands
+at the beginning of a root package script, optionally behind supported package-manager launchers,
+plus `node --test`. Custom commands remain unresolved. Conventional test files are supported
+JS/TS `.test.*`, `.spec.*`, and `__tests__` paths. No command or test is executed.
 
-- scorer: `stackHealthScorer`;
-- scoring version: `stack-health-v1`;
-- score-contribution rule: `SCORE-STACK-001@1`.
+Tooling recognizes exact npm/pnpm/Yarn `packageManager` versions and existing supported lockfile
+normalization. Unknown managers, incomplete/stale resolutions, and ambiguous lockfiles remain N/A.
+Dependency-free projects require only the supported manager-pin check.
 
-The scoring version is copied into `AnalysisReport.analyzer.scoringVersion`, so reports produced under materially different formulas can be distinguished.
+Observed absence of setup is a medium-confidence heuristic with low priority. Test-file/lockfile
+absence requires complete relevant acquisition. A positive observation may remain usable in a
+partial scan. Missing provider/file evidence itself never creates a negative finding.
 
-## Coverage gate
+## Coverage gates
 
-A numeric category score is allowed only when:
+Numeric scores require explicit `analysis.coverage.<category>` facts. `JS-COVERAGE-018@3` owns
+Dependencies, Security, and Maintainability coverage; `JS-READINESS-019@1` owns Testing and Tooling.
+`JS-SETUP-019@1` produces readiness findings from completed facts, and the existing independent
+prioritizer assigns their conservative low priority. Recommendations remain a separate stage.
 
-1. an explicit fact with type `analysis.coverage.<category>` exists; and
-2. no report limitation affects that category.
+Coverage-rule limitations and limitations from scored detector rules block their scopes. A rule
+failure that could omit scored output blocks scoring even if a coverage fact exists. Unclassified
+rule failures conservatively block all categories. Source-usage or dynamic-configuration warnings
+remain visible but do not invalidate complete version-health or migration checks.
 
-If either condition is false, the category returns:
+Potentially-unused findings still require full source/parser/configuration coverage. They remain
+visible but do not deduct from the v2 dependency version-health score. Scoring filters eligible
+rule families explicitly; presentation does not decide eligibility.
 
-```text
-status = insufficient_evidence
-value  = absent
-```
+## Deductions and overall score
 
-The scorer never converts a missing coverage fact into zero points and never treats an unavailable provider as a clean result.
+Each available category starts at 100. Eligible findings deduct points by finalized priority:
 
-The ecosystem rule package is responsible for producing coverage facts/limitations because it understands what evidence is required for its analysis domain. The generic scorer only enforces the gate.
-
-## Available categories in v1
-
-Numeric policy exists for:
-
-- Dependencies;
-- Security.
-
-The following accepted categories remain N/A in v1:
-
-- Maintainability;
-- Testing;
-- Tooling.
-
-Their findings remain visible and prioritized. They simply do not influence a numeric category/overall score until an accepted complete-coverage policy exists.
-
-## Deductions
-
-An available category starts at 100.
-
-Each finalized finding in that category produces one deduction:
-
-| Finding priority | Points |
+| Priority | Points |
 | --- | ---: |
 | Critical | 40 |
 | High | 25 |
 | Medium | 12 |
 | Low | 5 |
 
-The final value is clamped at zero.
+Clamp category values at zero. Each contribution identifies the triggering finding, evidence,
+priority rationale, and scoring rule. Setup findings therefore deduct five points each. Absence
+of a scored finding means only no deductions within that scope.
 
-Each `ScoreContribution` contains:
+Overall is the equal-weight arithmetic mean of **all five** categories, rounded to two decimals,
+only when all five are available. Otherwise it is N/A and references the blocking limitations.
 
-- deterministic contribution ID;
-- category and deduction direction;
-- point value;
-- rationale describing the priority-to-points rule;
-- `SCORE-STACK-001@1` ownership;
-- triggering finding ID;
-- triggering finding evidence IDs.
+## Coverage display and compatibility
 
-There are no hidden additions or LLM adjustments.
+The serialized report shape remains unchanged. Its `evidenceCoverage` field represents score
+eligibility: category 0/100, overall available categories divided by five. It is **not** a measured
+percentage of files or dependency evidence acquired. The web UI displays category-score availability
+and the analyzer's actual repository acquisition counts instead of a misleading evidence meter.
 
-## Overall score
-
-The v1 overall score requires both Dependencies and Security to be available.
-
-When both exist:
-
-```text
-overall = (dependencies + security) / 2
-```
-
-The result is rounded to two decimal places.
-
-Because only two of the five accepted category families are numeric in v1, overall `evidenceCoverage` is 40.
-
-If either Dependencies or Security is N/A, the overall score is N/A and references the blocking category limitations.
-
-## Meaning of a clean security category
-
-A 100 Security score means:
-
-- every supported dependency had an exact current semantic version established directly by
-  package.json or by matching FR-023 lockfile evidence;
-- the bound OSV source was complete;
-- every exact-version query completed;
-- every query had explicit provenance evidence; and
-- no score-impacting supported security finding was produced.
-
-It does **not** mean that the project is generally secure. StackLens MVP currently covers known dependency advisories, not every security property. The report/requirements retain that distinction.
-
-## Determinism
-
-Equivalent normalized facts, findings, limitations, and scoring version produce equivalent scores and contribution IDs.
-
-Changing priority deductions, supported category coverage, or the overall formula is a scoring-policy change and requires a new scoring version plus ADR/documentation/test review.
+Stored `stack-health-v1` reports retain original values: only Dependencies and Security had policies,
+the overall mean required those two, and three categories always returned N/A. The UI labels those
+three as policies not implemented in that report version. Reanalysis creates a new v2 report;
+historical scores are never silently recomputed. v1 and v2 scores are not directly comparable.
 
 ## Verification
 
-Package tests cover:
-
-- deterministic deductions;
-- contribution ownership/evidence;
-- N/A behavior for unsupported or incomplete categories;
-- overall averaging only across the two explicitly supported v1 categories;
-- no penalty from unavailable evidence;
-- schema-valid score output.
-
-The JavaScript policy integration fixture additionally proves the complete analyzer flow from facts through findings, priority, recommendations, scoring, and report validation.
-
-**Traceability:** FR-016, FR-018–FR-023, DATA-006, SCORE-001–SCORE-004, NFR-001, NFR-004,
-NFR-005, GOV-007.
+Fixtures cover all five available scopes, missing/partial evidence, unsupported commands/managers,
+safe static inspection, heuristic setup gaps, contribution provenance, category isolation, rule
+failures, deterministic input reordering, and the five-category overall gate. Provider tests use
+synthetic responses; live provider runs are supplementary evidence only.

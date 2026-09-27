@@ -170,10 +170,12 @@ Default GitHub acquisition bounds are:
 
 - per-request timeout: 8 seconds;
 - maximum JSON response body: 8 MiB;
-- maximum retained selected files: 32;
+- maximum retained selected files: 512;
 - maximum decoded bytes per file: 512 KiB;
-- maximum decoded bytes across retained files: 2 MiB;
-- maximum requests per acquisition: 40.
+- maximum decoded bytes across retained files: 8 MiB;
+- maximum requests per acquisition: 520;
+- at most four in-flight blob reads, with byte/request reservations before dispatch and retention
+  in candidate order. A rate-limit response prevents further batches.
 
 `package.json` is prioritized first and supported root lockfiles immediately after it, ahead of
 optional configuration/source candidates when file/request budgets are tight. Lockfiles are excluded

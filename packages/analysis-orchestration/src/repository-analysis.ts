@@ -22,6 +22,7 @@ import {
   createDependencyInventoryEvidence,
   createJavaScriptProjectSnapshot,
   createProjectConfigurationEvidence,
+  createReadinessEvidence,
   createResolvedDependencyEvidence,
   createSourceUsageEvidence,
   effectiveDependencyVersion,
@@ -255,6 +256,16 @@ function parseRepositoryManifest(
   const project = withJavaScriptSourceUsage(
     createJavaScriptProjectSnapshot(manifest, projectFiles, {
       scripts,
+      repositoryCoverage: {
+        complete:
+          snapshot.sourceCoverage.status === "complete" && snapshot.limitations.length === 0,
+        candidateSourceFiles: snapshot.sourceCoverage.candidateFiles,
+        acquiredSourceFiles: snapshot.sourceCoverage.acquiredFiles,
+        lockfilePaths: snapshot.files
+          .filter((file) => isSupportedLockfilePath(file.path))
+          .map((file) => file.path),
+        lockfileIssueCount: lockfileNormalization.issues.length,
+      },
       ...(lockfileNormalization.snapshot === undefined
         ? {}
         : { resolvedDependencies: lockfileNormalization.snapshot }),
@@ -394,6 +405,7 @@ export async function analyzePublicGitHubRepository(
       ? []
       : createResolvedDependencyEvidence(parsedManifest.project.resolvedDependencies)),
     ...createProjectConfigurationEvidence(parsedManifest.project),
+    ...createReadinessEvidence(parsedManifest.project),
     ...createSourceUsageEvidence(parsedManifest.project),
   ];
   const partialFailures: PartialFailure[] = [...repositoryResult.partialFailures];

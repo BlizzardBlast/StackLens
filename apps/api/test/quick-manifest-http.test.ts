@@ -186,7 +186,7 @@ describe("quick manifest Fastify transport [FR-001, FR-002, FR-004, FR-021]", ()
         basis: "heuristic",
         rule: {
           id: "JS-RECOMMEND-015",
-          version: "1",
+          version: "2",
         },
       }),
     ]);

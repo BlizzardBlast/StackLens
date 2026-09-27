@@ -5,7 +5,7 @@ import { compareCodeUnits, truncate } from "./rule-support.js";
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-RECOMMEND-015";
-const RULE_VERSION = "1";
+const RULE_VERSION = "2";
 
 interface RecommendationDescriptor {
   readonly suggestion: (finding: Finding) => string;
@@ -13,6 +13,12 @@ interface RecommendationDescriptor {
 }
 
 const DESCRIPTORS: Readonly<Record<string, RecommendationDescriptor>> = {
+  "JS-SETUP-019": {
+    suggestion: (finding) =>
+      `${finding.description} Confirm whether an alternative setup already meets the project's needs before adopting the supported convention.`,
+    impact:
+      "Makes test or reproducibility setup explicit without implying that tests or tools have run successfully.",
+  },
   "JS-VULN-011": {
     suggestion: (finding) =>
       `Review the advisory evidence for ${finding.subject.name} and choose a supported remediation, then verify the dependency change with the project's normal test/release process.`,

@@ -14,7 +14,7 @@
 
   html {
     @apply bg-background text-foreground;
-    font-family: var(--font-sans);
+    font-family: var(--sl-font-sans);
   }
 
   body {
@@ -30,6 +30,21 @@
   kbd,
   pre,
   samp {
-    font-family: var(--font-mono);
+    font-family: var(--sl-font-mono);
+  }
+}
+
+:where(a, button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--sl-focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
   }
 }

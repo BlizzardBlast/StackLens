@@ -17,6 +17,7 @@ import {
   normalizePackageManifest,
   outdatedDependencyRule,
   scoringCoverageFactRule,
+  projectReadinessFactRule,
   sourceUsageFactRule,
   withJavaScriptSourceUsage,
 } from "../src/index.js";
@@ -139,7 +140,12 @@ describe("production analysis policy integration [FR-014–FR-021, SCORE-001–S
         version: "javascript-policy-v1",
         ruleSet: {
           version: "javascript-policy-rules-v1",
-          factRules: [dependencyInventoryRule, scoringCoverageFactRule, sourceUsageFactRule],
+          factRules: [
+            dependencyInventoryRule,
+            scoringCoverageFactRule,
+            sourceUsageFactRule,
+            projectReadinessFactRule,
+          ],
           findingRules: [knownVulnerabilityRule, migrationOpportunityRule, outdatedDependencyRule],
           prioritizer: javascriptFindingPrioritizer,
           recommendationRules: [evidenceBackedRecommendationRule],
@@ -208,27 +214,29 @@ describe("production analysis policy integration [FR-014–FR-021, SCORE-001–S
       contributionIds: [],
     });
     expect(report.scores.categories.maintainability).toMatchObject({
-      status: "insufficient_evidence",
-      evidenceCoverage: 0,
+      status: "available",
+      evidenceCoverage: 100,
+      value: 88,
     });
     expect(report.scores.overall).toEqual({
-      status: "available",
-      evidenceCoverage: 40,
-      value: 94,
-      contributionIds: [expect.any(String)],
+      status: "insufficient_evidence",
+      evidenceCoverage: 60,
+      limitationIds: expect.any(Array),
     });
-    expect(report.scores.contributions).toHaveLength(1);
-    expect(report.scores.contributions[0]).toMatchObject({
+    expect(report.scores.contributions).toHaveLength(2);
+    expect(
+      report.scores.contributions.find((item) => item.category === "dependencies"),
+    ).toMatchObject({
       category: "dependencies",
       direction: "deduction",
       points: 12,
       findingIds: [expect.any(String)],
       rule: {
         id: "SCORE-STACK-001",
-        version: "1",
+        version: "2",
       },
     });
-    expect(report.analyzer.scoringVersion).toBe("stack-health-v1");
+    expect(report.analyzer.scoringVersion).toBe("stack-health-v2");
     expect(JSON.stringify(report).toLowerCase()).not.toContain('"secure"');
     expect(AnalysisReportSchema.safeParse(report).success).toBe(true);
   });

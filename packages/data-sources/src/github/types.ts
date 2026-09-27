@@ -8,9 +8,9 @@ export const GITHUB_REST_API_VERSION = "2026-03-10";
 export const GITHUB_DEFAULT_TIMEOUT_MS = 8_000;
 export const GITHUB_DEFAULT_MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
 export const GITHUB_DEFAULT_MAX_FILE_BYTES = 512 * 1024;
-export const GITHUB_DEFAULT_MAX_TOTAL_FILE_BYTES = 2 * 1024 * 1024;
-export const GITHUB_DEFAULT_MAX_FILES = 32;
-export const GITHUB_DEFAULT_MAX_REQUESTS = 40;
+export const GITHUB_DEFAULT_MAX_TOTAL_FILE_BYTES = 8 * 1024 * 1024;
+export const GITHUB_DEFAULT_MAX_FILES = 512;
+export const GITHUB_DEFAULT_MAX_REQUESTS = 520;
 
 export interface ParsedGitHubRepositoryUrl {
   readonly owner: string;

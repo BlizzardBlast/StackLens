@@ -245,7 +245,7 @@ describe("score coverage policy [FR-018, FR-019, FR-021, FR-023, SCORE-003]", ()
       expect.arrayContaining([
         expect.objectContaining({
           affectedCategories: ["dependencies"],
-          message: expect.stringContaining("complete supported static"),
+          message: expect.stringContaining("no supported exact current version"),
         }),
         expect.objectContaining({
           affectedCategories: ["security"],
@@ -253,7 +253,7 @@ describe("score coverage policy [FR-018, FR-019, FR-021, FR-023, SCORE-003]", ()
         }),
         expect.objectContaining({
           affectedCategories: ["maintainability"],
-          message: expect.stringContaining("N/A"),
+          message: expect.stringContaining("no supported exact current version"),
         }),
       ]),
     );

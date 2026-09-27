@@ -130,9 +130,15 @@ function createModeVariables(root, mode) {
     "primary-foreground": `color.semantic.${mode}.primaryForeground`,
     focus: `color.semantic.${mode}.focus`,
     danger: `color.semantic.${mode}.danger`,
+    "danger-foreground": `color.semantic.${mode}.dangerForeground`,
     success: `color.semantic.${mode}.success`,
     warning: `color.semantic.${mode}.warning`,
     info: `color.semantic.${mode}.info`,
+    "brand-surface": `color.semantic.${mode}.brandSurface`,
+    "brand-foreground": `color.semantic.${mode}.brandForeground`,
+    "brand-muted": `color.semantic.${mode}.brandMuted`,
+    "brand-accent": `color.semantic.${mode}.brandAccent`,
+    "brand-border": `color.semantic.${mode}.brandBorder`,
     "severity-critical": `color.domain.severity.${mode}.critical`,
     "severity-high": `color.domain.severity.${mode}.high`,
     "severity-medium": `color.domain.severity.${mode}.medium`,
@@ -172,6 +178,7 @@ function createCompatibilityVariables() {
     "  --accent: var(--sl-surface-muted);",
     "  --accent-foreground: var(--sl-foreground);",
     "  --destructive: var(--sl-danger);",
+    "  --destructive-foreground: var(--sl-danger-foreground);",
     "  --border: var(--sl-border);",
     "  --input: var(--sl-input);",
     "  --ring: var(--sl-focus);",
@@ -215,6 +222,14 @@ ${createModeVariables(root, "light")}
 ${createCompatibilityVariables()}
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not([data-theme="light"]) {
+    color-scheme: dark;
+${createModeVariables(root, "dark")}
+${createCompatibilityVariables()}
+  }
+}
+
 .dark,
 [data-theme="dark"] {
   color-scheme: dark;
@@ -238,6 +253,7 @@ ${createCompatibilityVariables()}
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -245,6 +261,11 @@ ${createCompatibilityVariables()}
   --color-success: var(--sl-success);
   --color-warning: var(--sl-warning);
   --color-info: var(--sl-info);
+  --color-brand-surface: var(--sl-brand-surface);
+  --color-brand-foreground: var(--sl-brand-foreground);
+  --color-brand-muted: var(--sl-brand-muted);
+  --color-brand-accent: var(--sl-brand-accent);
+  --color-brand-border: var(--sl-brand-border);
   --color-severity-critical: var(--sl-severity-critical);
   --color-severity-high: var(--sl-severity-high);
   --color-severity-medium: var(--sl-severity-medium);
@@ -263,6 +284,7 @@ ${createCompatibilityVariables()}
 
   --font-sans: var(--sl-font-sans);
   --font-mono: var(--sl-font-mono);
+  --default-transition-duration: var(--sl-duration-normal);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

@@ -180,7 +180,12 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
 - FR-014 migration opportunities must name deterministic current/target states and remain optional/heuristic unless evidence proves a migration is required. Do not turn every minor/patch update into a separate migration finding.
 - Production priority is owned only by the configured `FindingPrioritizer`; detector rules must not embed urgency. Heuristic uncertainty may lower/cap priority but must never increase it.
 - Recommendation rules consume finalized findings and their evidence. Keep advice separate from facts and do not imply an automatic repository change is safe.
-- Category scores require explicit coverage facts plus no material limitation for that category. Missing/partial provider, source, configuration, or exact-version evidence must produce N/A/insufficient evidence instead of a deduction.
+- Category scores require explicit coverage facts plus no material limitation within the versioned
+  scoring scope. Under ADR-0012, version-health and migration scores do not require source-usage
+  completeness; unused-dependency heuristics still do. Missing required evidence must produce N/A.
+- Testing/Tooling scores describe supported static setup and reproducibility, never test results or
+  runtime coverage. Custom scripts, unsupported package managers, and partial lockfile evidence stay
+  limited. Absence-based test-file/lockfile findings require complete relevant acquisition.
 - Concrete score weights/formulas live only in `packages/scoring`. React/Fastify/worker code must not recalculate priority or scores.
 - OSV complete zero-match query evidence means only zero supported known-vulnerability matches for that exact query; never describe it as proof that a dependency/project is secure.
 

@@ -1531,3 +1531,146 @@ come from matching supported root-lockfile evidence rather than only exact packa
 declarations.
 
 **Traceability:** NFR-006, NFR-007, GOV-002, GOV-006, GOV-007.
+
+## 2026-09-23 — Step 59: Refine the production palette, typography, and visual rhythm
+
+**Pull request:** [#37](https://github.com/BlizzardBlast/StackLens/pull/37)
+
+A design review found that the cool neutral baseline suited StackLens's diagnostic purpose, but
+repeated pale cards, long headlines, system-font fallbacks, and implementation-heavy instructions
+made the input pages feel generic. The production design now pairs steel reading surfaces and
+action blue with a deep teal evidence explanation. A small stack mark and shorter, left-aligned
+headlines provide identity without borrowing severity colors for decoration.
+
+IBM Plex Sans Variable and IBM Plex Mono are locally bundled free OFL-1.1 fonts; both license
+notices ship with the web build. The shared font inheritance now reads canonical variables directly
+instead of relying on a Tailwind utility variable being emitted. Text remains available through
+system fallbacks and `font-display: swap`.
+
+Both input modes share simpler form/navigation treatment. On compact screens the form precedes
+supporting explanations. Native radio/current-page semantics now have visible checkmarks, including
+a correction to a previously ineffective nested `peer-checked` dot. One main landmark and a skip
+link replace nested main elements. Reports inherit the same typography and have a clearer section
+hierarchy while keeping analyzer-owned meaning intact.
+
+The theme follows the system preference and retains explicit overrides. Contrast review required
+adjusting status shades, input borders, focus outlines, and destructive-button foregrounds for both
+themes. Regression tests check actual tinted badge/limitation compositions and button hover states.
+Motion is limited to control feedback, existing honest busy/stage feedback, and a 180 ms evidence
+entrance. Reduced motion disables animations and transitions while preserving status text.
+
+Verification:
+
+- `pnpm check` passed: build, shadcn configuration, typecheck, tests, lint, and formatting.
+- The web suite passed 21 tests; the token suite passed six tests, including light/dark contrast.
+- Five existing database-gated tests were skipped locally without `TEST_DATABASE_URL`; CI provides
+  PostgreSQL. Existing shadcn setup notices did not fail lint.
+- Chromium checked both input routes at 320/390/768/1024/1440 px in both themes: no horizontal
+  document overflow and one main landmark in all 20 combinations.
+- Keyboard skip/focus/radio checks, synthetic file-upload/report/evidence flows, and compact
+  repository progress/failure states passed. Reduced motion disabled evidence and progress motion.
+- The browser loaded fonts from the local origin; production output includes both font licenses.
+
+The [visual review](visual-refinement.md) contains the rationale and committed captures. Design,
+implementation, ADR-0007, README, and handover documentation were updated; accepted requirements and
+analyzer/scoring behavior are unchanged. The disposable original prototype remains historical.
+
+**Traceability:** PRD-004, FR-001–FR-003, FR-017, FR-021, FR-022, NFR-006–NFR-008, GOV-002,
+GOV-006, GOV-007.
+
+## 2026-09-24 — Step 60: Verify contrast in rendered interaction states
+
+**Pull request:** [#37](https://github.com/BlizzardBlast/StackLens/pull/37)
+
+A follow-up contrast audit found that the passing palette was weakened by 80% opacity on waiting
+and completed progress descriptions: light-mode text measured 4.04:1. The copy now uses opaque
+muted foreground at 6.41:1. Outlined actions use the input-border token, and the evidence entrance
+keeps its 4 px movement while preserving fully opaque text.
+
+Chromium/axe review covered both themes, input and error states, selected/upload controls, busy
+feedback, all priority/confidence report badges, limitations, expanded evidence, recovery actions,
+and four progress-pulse positions. No text violations remained; control borders, focus, and the
+glyphs flagged for manual review were checked separately. A 320 px upload view remained readable
+and had no document overflow in either theme. The token suite now has ten tests, adding selected
+and error surfaces, coverage bars, and layered activity-pulse contrast. `pnpm check` passed, including
+21 web tests and ten token tests; five existing database-gated tests skipped locally without
+`TEST_DATABASE_URL`. Evidence text stayed fully opaque at 0/90/180 ms, and reduced motion disabled
+its animation.
+
+The [contrast review](contrast-review.md) records methods, measured pairs, and scope. The design
+system now explicitly requires opaque secondary copy and rendered-state checks in addition to
+token calculations. Accepted behavior, font licensing, palette values, scoring, and architecture
+remain unchanged.
+
+**Traceability:** NFR-006, NFR-007, NFR-008, GOV-002, GOV-007.
+
+## 2026-09-24 — Step 61: Own PostgreSQL pool and client error handling
+
+**Pull request:** [#37](https://github.com/BlizzardBlast/StackLens/pull/37)
+
+Startup logs exposed incomplete database error handling in both API and Worker. Each runtime
+handled pool errors but omitted listeners on checked-out clients, leaving Graphile to install
+fallback listeners after StackLens had already opened connections for migrations.
+
+The shared persistence pool factory now attaches both handlers before the first connection and
+routes errors through the existing runtime callback. Connection listeners are registered only for
+new clients, and handlers remain present through shutdown. Entry-point logging continues to emit
+error names rather than raw messages. Query errors, analyzer policy, queue retries, and accepted
+product behavior remain unchanged.
+
+Four focused tests cover pool/first-client error delivery, multiple clients and reuse, shutdown,
+and the optional reporter. The local-development guide documents the ownership and lifecycle.
+
+A PostgreSQL 18 smoke check used a temporary database and started both composed runtimes without
+the missing-handler warning. Terminating only the smoke check's own idle API connection and
+checked-out Worker connection delivered errors to the configured reporters; subsequent API reads
+and Worker queries reconnected successfully. No external providers were called.
+
+`pnpm check` passed with `TEST_DATABASE_URL` pointing to the temporary PostgreSQL database,
+including all seven persistence tests and 22 API tests, with no database-test skips. The initial
+parallel run exceeded the existing API runtime test's five-second timeout; it passed on rerun
+without changing that timeout. The final build, typecheck, tests, lint, and formatting all passed.
+
+**Traceability:** FR-003, NFR-009, SEC-007, GOV-002, GOV-007; ADR-0004.
+
+## 2026-09-25 — Step 62: Recover evidence and explain five scoped scores
+
+**Pull request:** [#37](https://github.com/BlizzardBlast/StackLens/pull/37)
+
+The real KerjaLog report had 11 limitations: a 32-file ceiling, rejected historical npm
+`deprecated: false` metadata for React, unresolved configuration, repeated provider notices, and
+three scoring policies that were intentionally unimplemented. Accepted requirements and ADR-0012
+now define five bounded scoring scopes before implementation changes.
+
+The npm adapter accepts explicit false while rejecting other malformed values. GitHub collection
+uses coordinated 512-file/520-request/8 MiB budgets, four concurrent blob requests, deterministic
+retention, and explicit rate-limit/resource failures. A bounded parser inspects literal config
+exports, immutable constants, and recognized wrappers without executing repository code; imported
+presets and runtime values remain partial.
+
+Repository analyzer/rule-set v3 uses `stack-health-v2`: version health, known advisories, major
+migration readiness, static test setup, and tooling reproducibility. Each score requires its own
+complete evidence, and overall requires all five. Missing evidence never becomes a penalty.
+Unused-dependency heuristics keep their strict completeness gate and are outside the version-health
+score. Quick composition v3 records recommendation rule v2 while retaining manifest-only N/A.
+
+The report states scope and available-category counts instead of misleading evidence percentages.
+Disclosures expose deductions or linked blocking causes. Duplicate notices are grouped ahead of
+findings, distinguishing related areas from actually blocked scores. Legacy reports retain their
+values and explicitly identify their unimplemented policies. Zero has its own score-floor
+explanation. Existing palette, free fonts, and motion remain consistent.
+
+`pnpm check` passed with 319 tests, including PostgreSQL integration tests in a temporary database
+that was removed afterward. Browser review covered both themes at 320 and 1440 px, keyboard
+disclosure/focus links, no horizontal overflow, and passing axe text-contrast checks. A fresh run of
+the same immutable KerjaLog commit acquired all 351 source files and 47 npm packages in 51 seconds,
+with no provider failures and one honest unresolved ESLint preset limitation. All five scores were
+available; overall was 68. The original report was not rewritten.
+
+Requirements, ADRs/architecture, package and implementation guides, report design, and handover
+were updated. The [implementation record](../implementation/evidence-improvements.md) includes
+scope, captures, and verification; new analyses require restarting the local composition. The next
+session must check this PR's merge status and resolve/verify the current `main` HEAD.
+
+**Traceability:** FR-003, FR-006–FR-010, FR-013–FR-021, FR-023, DATA-001–DATA-006,
+SCORE-001–SCORE-004, SEC-001, SEC-002, NFR-001–NFR-008, GOV-002–GOV-007; ADR-0012.

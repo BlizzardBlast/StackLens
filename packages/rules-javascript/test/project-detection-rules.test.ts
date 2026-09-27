@@ -444,16 +444,16 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
       },
       rule: {
         id: "JS-CONFIG-013",
-        version: "1",
+        version: "2",
       },
     });
-    expect(result.facts?.[0]?.statement).toContain("was not executed or evaluated");
+    expect(result.facts?.[0]?.statement).toContain("was not executed");
     expect(result.limitations).toEqual([
       expect.objectContaining({
         kind: "unsupported_configuration",
         affectedCategories: ["dependencies", "tooling"],
         ruleIds: ["JS-CONFIG-013"],
-        message: expect.stringContaining("did not import, execute, or resolve dynamic values"),
+        message: expect.stringContaining("outside the supported immutable export subset"),
       }),
     ]);
   });
@@ -516,7 +516,7 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
     expect(result.facts).toHaveLength(3);
     expect(
       result.facts?.find((fact) => fact.subject.path === ".eslintrc.cjs")?.statement,
-    ).toContain("was not executed or evaluated");
+    ).toContain("was not executed");
     expect(
       result.facts?.find((fact) => fact.subject.path === ".prettierrc.yaml")?.statement,
     ).toContain("file format is not supported");
@@ -527,7 +527,7 @@ describe("projectConfigurationRule [FR-013, FR-021, SEC-001, SEC-002]", () => {
       expect.arrayContaining([
         expect.objectContaining({
           kind: "unsupported_configuration",
-          message: expect.stringContaining("did not import, execute, or resolve dynamic values"),
+          message: expect.stringContaining("outside the supported immutable export subset"),
         }),
         expect.objectContaining({
           kind: "unsupported_configuration",

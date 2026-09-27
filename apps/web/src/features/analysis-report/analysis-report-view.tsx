@@ -10,8 +10,10 @@ import type {
 } from "@stacklens/contracts";
 import { Button } from "@stacklens/ui/components/button";
 import { AnalysisLimitation } from "@stacklens/ui/domain/analysis-limitation";
-import { EvidenceCoverage } from "@stacklens/ui/domain/evidence-coverage";
 import { FindingCard } from "@stacklens/ui/domain/finding-card";
+
+import { groupLimitations } from "./report-limitations";
+import type { LimitationGroup } from "./report-limitations";
 
 const categoryLabels: Record<ScoreCategory, string> = {
   dependencies: "Dependencies",
@@ -32,20 +34,101 @@ const categories = [
 interface ScoreCardProps {
   readonly label: string;
   readonly score: ScoreResult;
+  readonly category: ScoreCategory;
+  readonly report: AnalysisReport;
+  readonly limitationGroups: readonly LimitationGroup[];
 }
 
-function ScoreCard({ label, score }: Readonly<ScoreCardProps>) {
+const scoreScopes: Record<ScoreCategory, string> = {
+  dependencies: "Version health: outdated, deprecated, and overlapping dependencies.",
+  security: "Known advisories for supported exact dependency versions.",
+  maintainability: "Major-version migration readiness; general code quality is outside this scope.",
+  testing: "Static test-command and test-file setup. Tests were not run.",
+  tooling: "Package-manager pin and committed lockfile reproducibility.",
+};
+
+function ScoreCard({ label, score, category, report, limitationGroups }: Readonly<ScoreCardProps>) {
+  const unimplemented =
+    report.analyzer.scoringVersion === "stack-health-v1" &&
+    (category === "maintainability" || category === "testing" || category === "tooling") &&
+    score.status === "insufficient_evidence";
+  const blockers =
+    score.status === "insufficient_evidence"
+      ? limitationGroups.filter((group) =>
+          group.limitations.some((limitation) => score.limitationIds.includes(limitation.id)),
+        )
+      : [];
+  const contributions =
+    score.status === "available"
+      ? report.scores.contributions.filter((item) => score.contributionIds.includes(item.id))
+      : [];
   return (
-    <section className="grid gap-3 rounded-xl border bg-card p-4" aria-label={label}>
+    <section className="grid gap-3 self-start rounded-xl border bg-card p-4" aria-label={label}>
       <div className="flex items-baseline justify-between gap-4">
         <h3 className="font-semibold">{label}</h3>
         <strong className="text-xl">
           {score.status === "available" ? `${score.value}/100` : "N/A"}
         </strong>
       </div>
-      <EvidenceCoverage percent={score.evidenceCoverage} />
-      {score.status === "insufficient_evidence" ? (
-        <p className="text-xs text-muted-foreground">Insufficient evidence for a numeric score.</p>
+      {report.analyzer.scoringVersion === "stack-health-v2" ? (
+        <p className="text-xs leading-5 text-muted-foreground">{scoreScopes[category]}</p>
+      ) : null}
+      <p className="text-sm font-medium">
+        {unimplemented
+          ? "Scoring not implemented in this report’s version"
+          : score.status === "available"
+            ? "Supported scoring checks complete"
+            : "Analysis incomplete for this score"}
+      </p>
+      {unimplemented ? (
+        <p className="text-xs text-muted-foreground">
+          Run a new analysis to use the current scoring policy. This historical score is preserved.
+        </p>
+      ) : null}
+      {blockers.length === 0 ? null : (
+        <details className="text-sm">
+          <summary className="cursor-pointer rounded-md py-2 font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring">
+            Why N/A? ({blockers.length} {blockers.length === 1 ? "reason" : "reasons"})
+          </summary>
+          <ul className="mt-2 grid gap-3">
+            {blockers.map((group) => (
+              <li key={group.anchor}>
+                <a
+                  className="text-primary underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring"
+                  href={`#${group.anchor}`}
+                >
+                  {group.message}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+      {score.status === "available" ? (
+        <details className="text-sm">
+          <summary className="cursor-pointer rounded-md py-2 font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring">
+            Score explanation ({contributions.length} deductions)
+          </summary>
+          {report.analyzer.scoringVersion === "stack-health-v2" && score.value === 0 ? (
+            <p className="mt-2 text-muted-foreground">
+              Deductions reached the score floor of zero. This is a scored result with evidence;
+              missing evidence is shown as N/A.
+            </p>
+          ) : null}
+          {contributions.length === 0 ? (
+            <p className="mt-2 text-muted-foreground">
+              No score-impacting findings were reported within this scope.
+            </p>
+          ) : (
+            <ul className="mt-2 grid gap-3">
+              {contributions.map((contribution) => (
+                <li key={contribution.id}>
+                  <strong>−{contribution.points} points.</strong> {contribution.rationale}
+                </li>
+              ))}
+            </ul>
+          )}
+        </details>
       ) : null}
     </section>
   );
@@ -189,7 +272,7 @@ function EvidenceDetail({ finding, evidence, report, onClose }: Readonly<Evidenc
 
   return (
     <aside
-      className="grid gap-4 rounded-xl border bg-card p-5"
+      className="evidence-disclosure grid gap-4 rounded-xl border border-primary/40 bg-card p-5"
       aria-labelledby="evidence-detail-title"
     >
       <div className="flex items-start justify-between gap-4">
@@ -296,18 +379,23 @@ export function AnalysisReportView({
     completedWithLimitations || report.limitations.length > 0 || report.partialFailures.length > 0;
 
   const isManifestAnalysis = report.input.type === "manifest";
+  const limitationGroups = groupLimitations(report.limitations);
+  const availableCategoryCount = categories.filter(
+    (category) => report.scores.categories[category].status === "available",
+  ).length;
+  const acquisition = report.facts.find((fact) => fact.type === "project.repository.coverage");
   const repository =
     report.input.type === "repository"
       ? `${report.input.repository.owner}/${report.input.repository.name}`
       : "package.json · quick analysis";
 
   return (
-    <article className="grid gap-8">
-      <header className="grid gap-3">
+    <article className="grid min-w-0 gap-8 wrap-anywhere">
+      <header className="grid gap-3 border-b pb-6">
         <p className="font-mono text-sm text-muted-foreground">{repository}</p>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Analysis report</h1>
+            <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">Analysis report</h1>
             {report.input.type === "repository" ? (
               <p className="mt-1 font-mono text-xs text-muted-foreground">
                 {report.input.repository.ref ?? "resolved revision"} @{" "}
@@ -342,15 +430,26 @@ export function AnalysisReportView({
 
       {hasLimitations ? (
         <AnalysisLimitation title="Analysis completed with limitations">
-          Some evidence was unavailable or incomplete. Review the limitations before interpreting
-          scores or findings.
+          {limitationGroups.length} distinct evidence{" "}
+          {limitationGroups.length === 1 ? "limitation" : "limitations"}
+          {report.partialFailures.length > 0
+            ? ` and ${report.partialFailures.length} acquisition or rule ${report.partialFailures.length === 1 ? "issue" : "issues"}`
+            : ""}
+          .{" "}
+          <a
+            className="font-semibold underline underline-offset-4 outline-none focus-visible:ring-3 focus-visible:ring-ring"
+            href="#limitations-title"
+          >
+            Review causes and affected checks
+          </a>
+          .
         </AnalysisLimitation>
       ) : null}
 
       {isManifestAnalysis ? <ManifestInsights report={report} /> : null}
 
       <section className="grid gap-4" aria-labelledby="score-summary-title">
-        <div className="grid gap-3 rounded-xl border bg-card p-5">
+        <div className="grid gap-3 rounded-xl border bg-muted/50 p-5">
           <div className="flex flex-wrap items-baseline justify-between gap-4">
             <h2 id="score-summary-title" className="text-lg font-semibold">
               Stack health
@@ -361,17 +460,22 @@ export function AnalysisReportView({
                 : "N/A"}
             </strong>
           </div>
-          <EvidenceCoverage percent={report.scores.overall.evidenceCoverage} />
-          {isManifestAnalysis ? (
-            <p className="text-sm text-muted-foreground">
-              For quick analysis, this percentage measures evidence available to the numeric scoring
-              policy—not how much of package.json StackLens parsed. The manifest insights above
-              remain analyzer-backed observations.
-            </p>
-          ) : null}
+          <p className="text-sm font-medium">
+            {availableCategoryCount} of {categories.length} category scores available
+          </p>
+          {acquisition === undefined ? null : (
+            <p className="text-sm text-muted-foreground">{acquisition.statement}</p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Score availability describes the supported scoring checks. It does not measure the
+            percentage of repository evidence inspected.
+          </p>
           {report.scores.overall.status === "insufficient_evidence" ? (
             <p className="text-sm text-muted-foreground">
-              Overall score is unavailable because the report has insufficient supported evidence.
+              {report.analyzer.scoringVersion === "stack-health-v2"
+                ? "Overall score requires all five category scores."
+                : "Overall score is unavailable under this report’s scoring policy."}{" "}
+              Review the N/A explanations below.
             </p>
           ) : null}
         </div>
@@ -382,10 +486,94 @@ export function AnalysisReportView({
               key={category}
               label={categoryLabels[category]}
               score={report.scores.categories[category]}
+              category={category}
+              report={report}
+              limitationGroups={limitationGroups}
             />
           ))}
         </div>
       </section>
+
+      {report.limitations.length === 0 && report.partialFailures.length === 0 ? null : (
+        <section className="grid gap-3" aria-labelledby="limitations-title">
+          <h2 id="limitations-title" className="text-xl font-semibold tracking-tight">
+            Limitations and next steps
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Repeated messages are grouped. Complete checks and evidence-backed findings remain
+            useful.
+          </p>
+          {limitationGroups.map((group) => {
+            const affected = [
+              ...new Set(group.limitations.flatMap((limitation) => limitation.affectedCategories)),
+            ];
+            const rules = [
+              ...new Set(group.limitations.flatMap((limitation) => limitation.ruleIds)),
+            ];
+            const blockedScores = categories.filter((category) => {
+              const score = report.scores.categories[category];
+              return (
+                score.status === "insufficient_evidence" &&
+                group.limitations.some((limitation) => score.limitationIds.includes(limitation.id))
+              );
+            });
+            return (
+              <div
+                key={group.anchor}
+                id={group.anchor}
+                tabIndex={-1}
+                className="scroll-mt-6 rounded-xl outline-none focus:ring-3 focus:ring-ring"
+              >
+                <AnalysisLimitation
+                  title={
+                    group.kind === "resource_limit"
+                      ? "Repository collection limit"
+                      : group.kind === "unsupported_configuration"
+                        ? "Static configuration support"
+                        : "Evidence limitation"
+                  }
+                >
+                  <p>{group.message}</p>
+                  {affected.length === 0 ? null : (
+                    <p className="mt-2 text-xs">
+                      Related analysis areas:{" "}
+                      {affected.map((category) => categoryLabels[category]).join(", ")}
+                    </p>
+                  )}
+                  <p className="mt-2 text-xs">
+                    {blockedScores.length > 0
+                      ? `Blocks scoring: ${blockedScores.map((category) => categoryLabels[category]).join(", ")}.`
+                      : "This limitation does not block the completed scoring checks."}
+                  </p>
+                  {group.limitations.length > 1 ? (
+                    <p className="mt-1 text-xs">
+                      Grouped from {group.limitations.length} rule notices.
+                    </p>
+                  ) : null}
+                  {rules.length === 0 ? null : (
+                    <details className="mt-2 text-xs">
+                      <summary className="cursor-pointer rounded-md py-1 outline-none focus-visible:ring-3 focus-visible:ring-ring">
+                        Rule references
+                      </summary>
+                      <p className="mt-1 font-mono">{rules.join(", ")}</p>
+                    </details>
+                  )}
+                </AnalysisLimitation>
+              </div>
+            );
+          })}
+          {report.partialFailures.map((failure) => (
+            <AnalysisLimitation key={failure.id} title="Partial analysis issue">
+              <p>{failure.message}</p>
+              <p className="mt-2 text-xs">
+                {failure.retryable
+                  ? "This issue may be transient. Retry the analysis after the source recovers."
+                  : "A provider or supported-format change may be required before rerunning the analysis."}
+              </p>
+            </AnalysisLimitation>
+          ))}
+        </section>
+      )}
 
       <section className="grid gap-4" aria-labelledby="findings-title">
         <div>
@@ -464,24 +652,6 @@ export function AnalysisReportView({
               </article>
             ))}
           </div>
-        </section>
-      )}
-
-      {report.limitations.length === 0 && report.partialFailures.length === 0 ? null : (
-        <section className="grid gap-3" aria-labelledby="limitations-title">
-          <h2 id="limitations-title" className="text-xl font-semibold tracking-tight">
-            Limitations
-          </h2>
-          {report.limitations.map((limitation) => (
-            <AnalysisLimitation key={limitation.id} title="Evidence limitation">
-              {limitation.message}
-            </AnalysisLimitation>
-          ))}
-          {report.partialFailures.map((failure) => (
-            <AnalysisLimitation key={failure.id} title="Partial analysis issue">
-              {failure.message}
-            </AnalysisLimitation>
-          ))}
         </section>
       )}
     </article>
