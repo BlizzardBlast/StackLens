@@ -24,6 +24,18 @@ describe("FR-011 validated CVSS base severity", () => {
     });
   });
   it.each([
+    ["CVSS_V2", "AV:L/AC:H/Au:M/C:N/I:N/A:N", "none", 0],
+    ["CVSS_V2", "AV:N/AC:L/Au:N/C:P/I:P/A:P", "high", 7.5],
+    ["CVSS_V3", "CVSS:3.0/AV:L/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:L", "low", 1.8],
+    ["CVSS_V3", "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:L/I:L/A:N", "medium", 4.6],
+    ["CVSS_V4", "CVSS:4.0/AV:L/AC:H/AT:P/PR:H/UI:A/VC:L/VI:L/VA:L/SC:L/SI:L/SA:L", "low", 1],
+  ])("preserves expected CVSS score bands for %s", (type, vector, severity, baseScore) => {
+    expect(normalizeAdvisorySeverity([advisory(type, vector)], "fixture")).toMatchObject({
+      severity,
+      ratings: [{ vector, baseScore }],
+    });
+  });
+  it.each([
     "9.8",
     "CVSS:3.1/AV:N",
     "CVSS:3.1/AV:N/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",

@@ -332,6 +332,11 @@ the September 2026 light/dark browser measurements and coverage.
 
 Base UI provides significant keyboard/ARIA/focus behavior, but StackLens remains responsible for correct composition, labels, copy, contrast, and semantics.
 
+Instructional descriptions remain associated when validation appears. Input controls must retain
+their stable help-text ID in `aria-describedby` and append the conditional error ID, rather than
+replacing help text with the error. This applies to repository URLs and both quick-analysis input
+modes; visible alerts and focus order remain separate interaction concerns.
+
 ## 15. Responsive breakpoints
 
 Do not design components around device names.
@@ -389,6 +394,11 @@ When adding a shadcn component:
 5. expose a small StackLens API rather than spreading generated internals everywhere;
 6. add accessibility tests for meaningful custom composition;
 7. do not modify an upstream-like primitive solely to create a one-off screen style—wrap it with a product component instead.
+
+The UI package keeps shadcn discovery aligned with runtime package imports: `components.json` uses
+`#components`, `#hooks`, and `#lib`, and `packages/ui/tsconfig.json` defines the matching exact
+path mappings from its package root. Keep `cn` on the compatible `^0.3.2` line and resolve tool
+diagnostics through tokens/component APIs rather than disabling design-system lint rules.
 
 ## 19. Token implementation path
 

@@ -31,8 +31,9 @@ The application service:
 1. reuses `parsePublicGitHubRepositoryUrl` for authoritative supported-GitHub URL validation;
 2. canonicalizes accepted `.git` suffix/trailing-slash forms;
 3. generates a UUID with Node's cryptographic `randomUUID()` by default;
-4. delegates record creation and queue delivery to `createRepositoryAnalysisJob`;
-5. returns `202 Accepted` with only the stable `analysisId`.
+4. delegates atomic record/outbox creation and best-effort immediate dispatch to
+   `createRepositoryAnalysisJob`;
+5. returns `202 Accepted` with only the stable `analysisId` once that atomic persistence succeeds.
 
 The API does not expose a user-selected ref in this baseline. The durable job package still supports
 an optional ref internally, but adding ref-selection to the public MVP is a separate product behavior
@@ -65,7 +66,8 @@ Stable transport errors are intentionally low detail:
 - `invalid_request` — request shape does not match the route schema;
 - `invalid_repository_url` — URL is not a supported public HTTPS GitHub repository URL;
 - `analysis_not_found` — durable analysis ID does not exist;
-- `analysis_unavailable` — queue/persistence state cannot currently be served;
+- `analysis_unavailable` — durable analysis creation or status/report persistence cannot currently
+  be served;
 - `internal_error` — unexpected uncaught transport error.
 
 Dependency errors do not return low-level database/queue/provider messages.
@@ -96,28 +98,25 @@ policy.
 The Worker remains responsible for consuming the queue and invoking
 `@stacklens/analysis-orchestration`.
 
-## Queue-enqueue failure edge
+## Delivery failure edge
 
-Analysis-row creation and Graphile enqueue are currently separate durable operations in
-`createRepositoryAnalysisJob`.
+The API accepts a repository request after `analysis` and the source-free outbox row commit in the
+same transaction. If the immediate delivery attempt fails or is ambiguous, the response remains
+`202 { analysisId }`; an API or Worker delivery pump retries through the stable Graphile job key.
+Public polling remains `queued` and exposes neither delivery attempts nor Graphile internals.
 
-If enqueueing throws, the HTTP route returns `503` and does not expose the generated analysis ID.
-The API deliberately does not delete or force-fail the row because a connection failure can make the
-queue commit outcome ambiguous; doing so could invalidate work that was actually committed.
-
-This means an unreachable queued row can remain after a failed submission until operational
-retention/reconciliation handles it. The accepted architecture already requires finite anonymous
-retention before hosted deployment. A transactional outbox/reconciliation mechanism should be added
-only as a separately reviewed reliability change rather than by coupling Fastify to Graphile SQL
-internals.
+Only failure to create that durable record returns `503 analysis_unavailable`. This preserves a
+truthful acceptance boundary without moving queue SQL into Fastify. See
+[ADR-0014](../adr/0014-transactional-outbox-delivery.md).
 
 ## Verification
 
 Focused Fastify injection tests cover:
 
-- accepted URL canonicalization, durable creation, enqueueing, and `202`;
+- accepted URL canonicalization, atomic durable creation, and a `202` that remains successful while
+  internal delivery retries;
 - unsupported URLs and strict unknown-field rejection before durable work;
-- source-free `503` behavior when queue delivery throws;
+- source-free `503` behavior when durable creation fails;
 - running durable progress without queue internals;
 - completed report delivery;
 - terminal typed failure delivery;

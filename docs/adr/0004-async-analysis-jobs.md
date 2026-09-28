@@ -26,12 +26,18 @@ Use **asynchronous jobs for repository analysis**, backed by **PostgreSQL** and 
 
 Quick manifest analysis remains synchronous unless measurements show a need to move it to the job system.
 
+Reliable handoff from accepted persistence to Graphile is further specified by
+[ADR-0014](0014-transactional-outbox-delivery.md). That ADR replaces the separate API enqueue
+step below with an internal transactional outbox; it does not change the public analysis lifecycle
+or Worker execution ownership selected here.
+
 ### Repository-analysis lifecycle
 
 1. API validates the GitHub URL.
-2. API creates an analysis record with a non-guessable identifier.
-3. API enqueues a repository-analysis job containing minimal metadata.
-4. API returns `202 Accepted` plus the analysis identifier.
+2. API atomically creates an analysis record and source-free delivery record with a non-guessable
+   identifier.
+3. An API or Worker delivery pump idempotently enqueues the minimal repository-analysis job.
+4. API returns `202 Accepted` plus the analysis identifier once the atomic persistence completes.
 5. Worker claims the job and updates coarse progress stages.
 6. Worker resolves the repository to an immutable commit and performs bounded analysis.
 7. Worker writes the structured report or typed failure.

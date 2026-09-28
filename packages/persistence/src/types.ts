@@ -67,6 +67,14 @@ export interface CreateQueuedRepositoryAnalysis {
   readonly retentionExpiresAt?: string;
 }
 
+export interface RepositoryAnalysisDelivery {
+  readonly analysisId: string;
+  readonly repositoryUrl: string;
+  readonly requestedRef?: string;
+  readonly attempts: number;
+  readonly leaseToken: string;
+}
+
 export interface AnalysisRetryUpdate {
   readonly id: string;
   readonly jobId: string;

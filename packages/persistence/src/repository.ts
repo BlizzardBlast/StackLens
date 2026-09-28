@@ -1,18 +1,51 @@
-import { and, eq, isNull, notInArray, or } from "drizzle-orm";
+import { and, eq, isNull, notInArray, or, sql } from "drizzle-orm";
 
 import type { StackLensDatabase } from "./database.js";
-import { analysisReports, analyses } from "./schema.js";
+import { analysisDeliveries, analysisReports, analyses } from "./schema.js";
 import type {
   AnalysisCompletion,
   AnalysisFailureUpdate,
   AnalysisProgressStage,
   AnalysisRetryUpdate,
   CreateQueuedRepositoryAnalysis,
+  RepositoryAnalysisDelivery,
   RepositoryAnalysisRecord,
   StoredAnalysisReport,
 } from "./types.js";
 
 const TERMINAL_STATUSES = ["completed", "completed_with_limitations", "failed"] as const;
+
+interface ClaimedDeliveryRow {
+  readonly analysis_id: string;
+  readonly repository_url: string;
+  readonly requested_ref: string | null;
+  readonly attempts: number;
+}
+
+function isClaimedDeliveryRow(value: unknown): value is ClaimedDeliveryRow {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "analysis_id" in value &&
+    typeof value.analysis_id === "string" &&
+    "repository_url" in value &&
+    typeof value.repository_url === "string" &&
+    "requested_ref" in value &&
+    (typeof value.requested_ref === "string" || value.requested_ref === null) &&
+    "attempts" in value &&
+    typeof value.attempts === "number" &&
+    Number.isSafeInteger(value.attempts) &&
+    value.attempts > 0
+  );
+}
+
+function claimedDeliveryRows(value: unknown): readonly ClaimedDeliveryRow[] {
+  if (!Array.isArray(value) || !value.every(isClaimedDeliveryRow)) {
+    throw new Error("Repository delivery claim returned invalid persistence data.");
+  }
+
+  return value;
+}
 
 function isoTimestamp(value: string): string {
   return new Date(value).toISOString();
@@ -48,6 +81,26 @@ export interface AnalysisRepository {
   createQueuedRepositoryAnalysis(
     input: CreateQueuedRepositoryAnalysis,
   ): Promise<RepositoryAnalysisRecord>;
+  createQueuedRepositoryAnalysisWithDelivery(
+    input: CreateQueuedRepositoryAnalysis,
+  ): Promise<RepositoryAnalysisRecord>;
+  claimPendingRepositoryAnalysisDeliveries(
+    limit: number,
+    leaseToken: string,
+    now: string,
+    leaseExpiresAt: string,
+  ): Promise<readonly RepositoryAnalysisDelivery[]>;
+  markRepositoryAnalysisDeliveryDelivered(
+    analysisId: string,
+    leaseToken: string,
+    deliveredAt: string,
+  ): Promise<void>;
+  retryRepositoryAnalysisDelivery(
+    analysisId: string,
+    leaseToken: string,
+    nextAvailableAt: string,
+    updatedAt: string,
+  ): Promise<void>;
   findAnalysis(id: string): Promise<RepositoryAnalysisRecord | undefined>;
   findReport(analysisId: string): Promise<StoredAnalysisReport | undefined>;
   claimForExecution(id: string, jobId: string, startedAt: string): Promise<boolean>;
@@ -99,6 +152,177 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
     }
 
     return record;
+  }
+
+  async createQueuedRepositoryAnalysisWithDelivery(
+    input: CreateQueuedRepositoryAnalysis,
+  ): Promise<RepositoryAnalysisRecord> {
+    return this.database.transaction(async (transaction) => {
+      await transaction
+        .insert(analyses)
+        .values({
+          id: input.id,
+          inputType: "repository",
+          repositoryUrl: input.repositoryUrl,
+          ...(input.requestedRef === undefined ? {} : { requestedRef: input.requestedRef }),
+          status: "queued",
+          progressStage: "queued",
+          createdAt: input.createdAt,
+          updatedAt: input.createdAt,
+          ...(input.retentionExpiresAt === undefined
+            ? {}
+            : { retentionExpiresAt: input.retentionExpiresAt }),
+        })
+        .onConflictDoNothing({ target: analyses.id });
+
+      const [row] = await transaction
+        .select()
+        .from(analyses)
+        .where(eq(analyses.id, input.id))
+        .limit(1);
+
+      if (row === undefined) {
+        throw new Error("Failed to persist repository analysis.");
+      }
+
+      if (
+        row.repositoryUrl !== input.repositoryUrl ||
+        row.requestedRef !== (input.requestedRef ?? null)
+      ) {
+        throw new Error("Analysis identifier is already bound to different repository input.");
+      }
+
+      if (row.status === "queued" && row.activeJobId === null) {
+        await transaction
+          .insert(analysisDeliveries)
+          .values({
+            analysisId: input.id,
+            status: "pending",
+            attempts: 0,
+            availableAt: input.createdAt,
+            createdAt: input.createdAt,
+            updatedAt: input.createdAt,
+          })
+          .onConflictDoNothing({ target: analysisDeliveries.analysisId });
+      }
+
+      return compactRecord(row);
+    });
+  }
+
+  async claimPendingRepositoryAnalysisDeliveries(
+    limit: number,
+    leaseToken: string,
+    now: string,
+    leaseExpiresAt: string,
+  ): Promise<readonly RepositoryAnalysisDelivery[]> {
+    if (!Number.isSafeInteger(limit) || limit <= 0) {
+      throw new Error("Repository delivery claim limit must be a positive safe integer.");
+    }
+
+    const result = await this.database.transaction(async (transaction) => {
+      await transaction.execute(sql`
+        INSERT INTO analysis_delivery (
+          analysis_id, status, attempts, available_at, created_at, updated_at
+        )
+        SELECT id, 'pending', 0, updated_at, updated_at, updated_at
+        FROM analysis
+        WHERE status = 'queued' AND active_job_id IS NULL
+        ON CONFLICT (analysis_id) DO NOTHING
+      `);
+
+      return transaction.execute(sql<{
+        analysis_id: string;
+        repository_url: string;
+        requested_ref: string | null;
+        attempts: number;
+      }>`
+        WITH candidates AS (
+          SELECT delivery.analysis_id
+          FROM analysis_delivery AS delivery
+          INNER JOIN analysis ON analysis.id = delivery.analysis_id
+          WHERE analysis.status = 'queued'
+            AND analysis.active_job_id IS NULL
+            AND (
+              (delivery.status = 'pending' AND delivery.available_at <= ${now}::timestamptz)
+              OR (delivery.status = 'delivering' AND delivery.lease_expires_at <= ${now}::timestamptz)
+            )
+          ORDER BY delivery.available_at, delivery.analysis_id
+          FOR UPDATE OF delivery SKIP LOCKED
+          LIMIT ${limit}
+        ), claimed AS (
+          UPDATE analysis_delivery AS delivery
+          SET status = 'delivering',
+              attempts = delivery.attempts + 1,
+              lease_token = ${leaseToken},
+              lease_expires_at = ${leaseExpiresAt}::timestamptz,
+              updated_at = ${now}::timestamptz
+          FROM candidates
+          WHERE delivery.analysis_id = candidates.analysis_id
+          RETURNING delivery.analysis_id, delivery.attempts
+        )
+        SELECT claimed.analysis_id, analysis.repository_url, analysis.requested_ref, claimed.attempts
+        FROM claimed
+        INNER JOIN analysis ON analysis.id = claimed.analysis_id
+      `);
+    });
+
+    const rows = claimedDeliveryRows(result.rows);
+
+    return rows.map((row) => ({
+      analysisId: row.analysis_id,
+      repositoryUrl: row.repository_url,
+      ...(row.requested_ref === null ? {} : { requestedRef: row.requested_ref }),
+      attempts: row.attempts,
+      leaseToken,
+    }));
+  }
+
+  async markRepositoryAnalysisDeliveryDelivered(
+    analysisId: string,
+    leaseToken: string,
+    deliveredAt: string,
+  ): Promise<void> {
+    await this.database
+      .update(analysisDeliveries)
+      .set({
+        status: "delivered",
+        leaseToken: null,
+        leaseExpiresAt: null,
+        deliveredAt,
+        updatedAt: deliveredAt,
+      })
+      .where(
+        and(
+          eq(analysisDeliveries.analysisId, analysisId),
+          eq(analysisDeliveries.status, "delivering"),
+          eq(analysisDeliveries.leaseToken, leaseToken),
+        ),
+      );
+  }
+
+  async retryRepositoryAnalysisDelivery(
+    analysisId: string,
+    leaseToken: string,
+    nextAvailableAt: string,
+    updatedAt: string,
+  ): Promise<void> {
+    await this.database
+      .update(analysisDeliveries)
+      .set({
+        status: "pending",
+        leaseToken: null,
+        leaseExpiresAt: null,
+        availableAt: nextAvailableAt,
+        updatedAt,
+      })
+      .where(
+        and(
+          eq(analysisDeliveries.analysisId, analysisId),
+          eq(analysisDeliveries.status, "delivering"),
+          eq(analysisDeliveries.leaseToken, leaseToken),
+        ),
+      );
   }
 
   async findAnalysis(id: string): Promise<RepositoryAnalysisRecord | undefined> {

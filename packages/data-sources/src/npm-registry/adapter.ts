@@ -152,6 +152,7 @@ export class NpmRegistryAdapter implements EvidenceProvider<
     try {
       const response = await this.#fetchImpl(endpoint, {
         method: "GET",
+        redirect: "error",
         headers: {
           accept: NPM_REGISTRY_ACCEPT,
         },

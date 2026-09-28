@@ -35,6 +35,19 @@ function validationFailure(error: unknown): boolean {
   );
 }
 
+const REQUEST_PARSER_ERROR_CODES = new Set([
+  "FST_ERR_CTP_BODY_TOO_LARGE",
+  "FST_ERR_CTP_EMPTY_JSON_BODY",
+  "FST_ERR_CTP_INVALID_CONTENT_LENGTH",
+  "FST_ERR_CTP_INVALID_JSON_BODY",
+  "FST_ERR_CTP_INVALID_MEDIA_TYPE",
+]);
+
+function requestParserFailure(error: unknown): boolean {
+  const code = errorCode(error);
+  return code !== undefined && REQUEST_PARSER_ERROR_CODES.has(code);
+}
+
 function errorCode(error: unknown): string | undefined {
   if (
     typeof error !== "object" ||
@@ -57,7 +70,7 @@ export async function createStackLensApi(options: StackLensApiOptions): Promise<
   app.setSerializerCompiler(serializerCompiler);
 
   app.setErrorHandler((error, request, reply) => {
-    if (validationFailure(error)) {
+    if (validationFailure(error) || requestParserFailure(error)) {
       return reply.code(400).send({
         code: "invalid_request",
         message: "Request does not match the API schema.",

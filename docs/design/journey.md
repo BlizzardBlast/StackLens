@@ -1708,3 +1708,38 @@ guides, AGENTS, README and same-PR handover were updated. Final quality results 
 
 **Traceability:** FR-005–FR-009, FR-011–FR-023, DATA-001–006, SCORE-001–004, SEC-001/002,
 NFR-006–008, GOV-002–007; ADR-0013.
+
+## 2026-09-28 — Step 64: Make repository submission durably deliverable
+
+The review-remediation pass closes `CR-P0-001`, `CR-P1-002` through `CR-P1-005`, and
+`CR-P2-006` through `CR-P2-007` without changing the report schema, scoring formulas, priority
+policy, or presentation-side calculations.
+
+The JavaScript rules package replaces the Node-ESM-incompatible CVSS dependency with pinned
+`ae-cvss-calculator@1.0.13`, isolated behind its existing base-score adapter. Fixtures cover CVSS
+2.0, 3.0, 3.1, and 4.0 reference vectors, boundaries, malformed/duplicate metrics, and exclusion of
+v4 Threat/Environmental adjustments. Drizzle moved to the stable 0.45 line, and `pnpm check` now
+imports compiled rules under Node 24 before optionally starting/stopping both compiled runtimes when
+`TEST_DATABASE_URL` is supplied.
+
+Repository submission now atomically writes the public analysis record and an internal source-free
+delivery record. API and Worker runtime pumps claim leased batches, retry ambiguous delivery through
+the existing stable Graphile key, and retain delivered records until analysis removal. The public API
+still returns `202 { analysisId }` and `queued` after durable creation; it never exposes attempts,
+leases, queue IDs, or source. [ADR-0014](../adr/0014-transactional-outbox-delivery.md) records the
+decision. npm Registry and OSV requests now reject redirects, while malformed JSON/content-type
+Fastify failures are stable `400 invalid_request` responses.
+
+Repository, paste, and local-file controls retain help text in `aria-describedby` when an error is
+also announced. The UI package restores shadcn alias recognition with compatible `cn` and explicit
+package-import path mappings; token tests use explicit `void` for Node test registration so the
+restored lint policy remains clean.
+
+Three capped self-review passes inspected dependency/runtime, transactional-delivery/HTTP/provider,
+and UI/tooling/documentation changes. The final gate ran the full test graph with isolated
+PostgreSQL persistence schema coverage, typecheck, lint, format, production audit, compiled runtime
+smoke, and `git diff --check`. Browser-emulation evidence is limited to DOM accessibility tests;
+no physical-device or assistive-technology device claim is made.
+
+**Traceability:** FR-001–FR-004, FR-011, NFR-006, NFR-008, NFR-009, SEC-003, GOV-002, GOV-006,
+GOV-007; ADR-0004, ADR-0014.

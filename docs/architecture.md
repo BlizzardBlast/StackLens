@@ -135,6 +135,8 @@ PostgreSQL is the only required stateful infrastructure component for the hosted
 MVP uses it for:
 
 - repository-analysis jobs/status and active Graphile execution ownership;
+- source-free transactional outbox records that make accepted submissions recoverable before Graphile
+  delivery;
 - transient/report metadata needed for asynchronous delivery;
 - structured analysis reports when configured for hosted retention;
 - schema/rule/scoring version metadata;
@@ -156,7 +158,7 @@ The job system exists to:
 - expose progress/status;
 - provide the foundation for later monitoring (**FR-103**).
 
-The job payload must contain references/metadata rather than full private source content whenever possible (**SEC-003**, **SEC-004**).
+The job payload must contain references/metadata rather than full private source content whenever possible (**SEC-003**, **SEC-004**). A source-free transactional outbox bridges durable analysis creation and idempotent Graphile delivery: API and Worker runtimes may each claim leased batches, while the public API continues to expose only `queued` state and a stable analysis ID. See [ADR-0014](adr/0014-transactional-outbox-delivery.md).
 
 ### 4.6 Shared analysis orchestration
 
@@ -404,8 +406,9 @@ sequenceDiagram
     U->>W: Submit public GitHub URL
     W->>A: POST /v1/analyses/repository
     A->>A: Validate URL
-    A->>DB: Create analysis + enqueue job
+    A->>DB: Atomically create analysis + outbox delivery
     A-->>W: 202 analysisId
+    Note over A,WK: API or Worker pump claims outbox and enqueues stable Graphile job
     WK->>DB: Claim job
     WK->>GH: Resolve commit + fetch bounded files
     GH-->>WK: Repository snapshot data
@@ -612,7 +615,7 @@ The web application remains a client of the public API; analyzer logic does not 
 | Validation/contracts | Zod 4                           |
 | API description      | OpenAPI via Fastify integration |
 | Database             | PostgreSQL 18                   |
-| SQL/ORM              | Drizzle ORM stable 0.44 line    |
+| SQL/ORM              | Drizzle ORM stable 0.45 line    |
 | Background jobs      | Graphile Worker                 |
 | Logging              | Pino-compatible structured logs |
 
@@ -865,7 +868,7 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0008 — Analysis report contract v1](adr/0008-analysis-report-contract-v1.md)
 - [ADR-0009 — Deterministic staged analyzer core](adr/0009-deterministic-staged-analyzer-core.md)
 - [ADR-0010 — Static source parser compatibility under TypeScript 7](adr/0010-static-source-parser-typescript-7.md)
+- [ADR-0013 — Workspace inspection and risk/readiness scoring](adr/0013-workspace-inspection-and-scoring-v3.md)
+- [ADR-0014 — Transactional outbox for repository-analysis delivery](adr/0014-transactional-outbox-delivery.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).
-
-ADR-0013: [Workspace inspection and risk/readiness scoring](adr/0013-workspace-inspection-and-scoring-v3.md).

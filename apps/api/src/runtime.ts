@@ -8,7 +8,9 @@ import {
   migrateStackLensDatabase,
 } from "@stacklens/persistence";
 import {
+  createRepositoryAnalysisDeliveryDispatcher,
   createGraphileRepositoryJobQueue,
+  startRepositoryAnalysisDeliveryPump,
   type GraphileJobAdder,
 } from "@stacklens/repository-jobs";
 
@@ -36,6 +38,7 @@ export async function createStackLensApiRuntime(
     await migrateStackLensDatabase(database);
 
     const workerUtils = await makeWorkerUtils({ pgPool: pool });
+    let deliveryPump: ReturnType<typeof startRepositoryAnalysisDeliveryPump> | undefined;
 
     try {
       await workerUtils.migrate();
@@ -45,9 +48,15 @@ export async function createStackLensApiRuntime(
           return workerUtils.addJob(identifier, payload, jobOptions);
         },
       };
-      const app = await createStackLensApi({
-        repository: new DrizzleAnalysisRepository(database),
+      const repository = new DrizzleAnalysisRepository(database);
+      const deliveryDispatcher = createRepositoryAnalysisDeliveryDispatcher({
+        repository,
         queue: createGraphileRepositoryJobQueue(jobAdder),
+      });
+      deliveryPump = startRepositoryAnalysisDeliveryPump(deliveryDispatcher);
+      const app = await createStackLensApi({
+        repository,
+        deliveryDispatcher,
         quickManifestAnalyzer,
         ...(options.logger === undefined ? {} : { logger: options.logger }),
       });
@@ -64,6 +73,7 @@ export async function createStackLensApiRuntime(
           stopped = true;
 
           try {
+            await deliveryPump?.stop();
             await app.close();
           } finally {
             try {
@@ -75,7 +85,11 @@ export async function createStackLensApiRuntime(
         },
       };
     } catch (error) {
-      await workerUtils.release();
+      try {
+        await deliveryPump?.stop();
+      } finally {
+        await workerUtils.release();
+      }
       throw error;
     }
   } catch (error) {

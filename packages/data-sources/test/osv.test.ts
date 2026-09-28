@@ -190,12 +190,16 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
     expect(firstCall[1]).toEqual(
       expect.objectContaining({
         method: "POST",
+        redirect: "error",
         headers: {
           accept: "application/json",
           "content-type": "application/json",
         },
       }),
     );
+    for (const [, options] of fetchImpl.mock.calls) {
+      expect(options).toEqual(expect.objectContaining({ redirect: "error" }));
+    }
     const firstBody = firstCall[1]?.body;
 
     if (typeof firstBody !== "string") {
@@ -832,6 +836,32 @@ describe("OsvVulnerabilityAdapter [FR-011, DATA-001, DATA-002, NFR-003, SEC-008]
       retryable: true,
     });
     expect(result.failure.message).not.toContain("transport details");
+  });
+
+  it("contains redirect failures in a typed source failure", async () => {
+    const adapter = createAdapter(
+      vi.fn<typeof fetch>().mockRejectedValue(new Error("redirected to an untrusted host")),
+    );
+
+    const result = await adapter.fetch({
+      queries: [
+        {
+          packageName: "example-package",
+          version: "1.0.0",
+        },
+      ],
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      throw new Error("Expected redirect failure to be unavailable");
+    }
+
+    expect(result.failure).toMatchObject({
+      code: "osv_query_request_failed",
+      retryable: true,
+    });
+    expect(result.failure.message).not.toContain("untrusted host");
   });
 
   it("returns a retryable typed failure when the OSV request times out", async () => {

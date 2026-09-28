@@ -1,4 +1,4 @@
-import { jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { integer, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import type { AnalysisReport } from "@stacklens/contracts";
 
@@ -34,4 +34,18 @@ export const analysisReports = pgTable("analysis_report", {
   reportSchemaVersion: text("report_schema_version").notNull(),
   report: jsonb("report").$type<AnalysisReport>().notNull(),
   createdAt: timestamp("created_at", { mode: "string", withTimezone: true }).notNull(),
+});
+
+export const analysisDeliveries = pgTable("analysis_delivery", {
+  analysisId: text("analysis_id")
+    .primaryKey()
+    .references(() => analyses.id, { onDelete: "cascade" }),
+  status: text("status").$type<"pending" | "delivering" | "delivered">().notNull(),
+  attempts: integer("attempts").notNull(),
+  availableAt: timestamp("available_at", { mode: "string", withTimezone: true }).notNull(),
+  leaseToken: text("lease_token"),
+  leaseExpiresAt: timestamp("lease_expires_at", { mode: "string", withTimezone: true }),
+  deliveredAt: timestamp("delivered_at", { mode: "string", withTimezone: true }),
+  createdAt: timestamp("created_at", { mode: "string", withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true }).notNull(),
 });

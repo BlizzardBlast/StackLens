@@ -8,7 +8,7 @@ import { tokens } from "../dist/tokens.js";
 const themePath = fileURLToPath(new URL("../dist/theme.css", import.meta.url));
 const tokensPath = fileURLToPath(new URL("../dist/tokens.js", import.meta.url));
 
-test("generated theme exposes StackLens domain semantics", async () => {
+void test("generated theme exposes StackLens domain semantics", async () => {
   const css = await readFile(themePath, "utf8");
 
   for (const variable of [
@@ -23,7 +23,7 @@ test("generated theme exposes StackLens domain semantics", async () => {
   }
 });
 
-test("generated token module exposes resolved values", async () => {
+void test("generated token module exposes resolved values", async () => {
   const source = await readFile(tokensPath, "utf8");
 
   assert.match(source, /"color\.semantic\.light\.background"/);
@@ -59,7 +59,7 @@ function assertContrast(foreground, background, minimum, label) {
 for (const mode of ["light", "dark"]) {
   const semantic = (name) => rgb(tokens[`color.semantic.${mode}.${name}`]);
 
-  test(`NFR-006: ${mode} text, domain badges, inputs, and focus retain AA contrast`, () => {
+  void test(`NFR-006: ${mode} text, domain badges, inputs, and focus retain AA contrast`, () => {
     const domainPaths = Object.keys(tokens).filter(
       (path) => path.startsWith("color.domain.") && path.includes(`.${mode}.`),
     );
@@ -105,7 +105,7 @@ for (const mode of ["light", "dark"]) {
     }
   });
 
-  test(`NFR-006: ${mode} action and brand surfaces preserve readable text`, () => {
+  void test(`NFR-006: ${mode} action and brand surfaces preserve readable text`, () => {
     for (const [backgroundRole, foregroundRole] of [
       ["primary", "primaryForeground"],
       ["danger", "dangerForeground"],
@@ -130,7 +130,7 @@ for (const mode of ["light", "dark"]) {
     }
   });
 
-  test(`NFR-006: ${mode} selected controls and error messages retain contrast on tinted surfaces`, () => {
+  void test(`NFR-006: ${mode} selected controls and error messages retain contrast on tinted surfaces`, () => {
     for (const surface of ["background", "surface"]) {
       const selected = composite(semantic("primary"), semantic(surface), 0.05);
       for (const role of ["foreground", "mutedForeground", "primary"]) {
@@ -150,7 +150,7 @@ for (const mode of ["light", "dark"]) {
     );
   });
 
-  test(`NFR-006: ${mode} progress copy stays readable throughout the activity pulse`, () => {
+  void test(`NFR-006: ${mode} progress copy stays readable throughout the activity pulse`, () => {
     const row = composite(semantic("primary"), semantic("surface"), 0.05);
     // The pulse varies between half and full opacity over the row's existing 5% tint.
     // Include the untinted row and sample the complete animation, not just its resting state.

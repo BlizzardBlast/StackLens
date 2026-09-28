@@ -79,7 +79,7 @@ export function RepositoryAnalysisForm({
             }
           }}
           aria-invalid={error === undefined ? undefined : true}
-          aria-describedby={errorId ?? "repository-url-help"}
+          aria-describedby={`repository-url-help${errorId === undefined ? "" : ` ${errorId}`}`}
           disabled={isPending}
           className="min-h-12 w-full min-w-0 rounded-lg border border-input bg-background px-4 py-3 font-mono text-sm transition-[border-color,box-shadow,background-color] outline-none placeholder:font-sans placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/35 disabled:cursor-not-allowed disabled:bg-muted/50 disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
         />

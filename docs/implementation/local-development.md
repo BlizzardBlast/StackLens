@@ -93,8 +93,9 @@ same-origin deployment.
 2. apply StackLens persistence bootstrap;
 3. initialize/migrate Graphile Worker utilities;
 4. bind `DrizzleAnalysisRepository`;
-5. adapt Graphile `addJob` through `@stacklens/repository-jobs`;
-6. construct the existing Fastify application.
+5. adapt Graphile `addJob` through `@stacklens/repository-jobs` and start the shared source-free
+   transactional-outbox delivery pump;
+6. construct the existing Fastify application and stop the pump before releasing runtime resources.
 
 `apps/api/src/main.ts` owns only environment values, the listening socket, process signals, and
 graceful shutdown.
@@ -103,7 +104,9 @@ graceful shutdown.
 
 `apps/worker/src/runtime.ts` continues to own Graphile execution plus the accepted
 GitHub/npm/OSV/orchestration composition. It now leaves OS signals to the executable process so the
-runtime can close both Graphile and its PostgreSQL pool deterministically.
+runtime can close the delivery pump, Graphile, and its PostgreSQL pool deterministically. The API
+and Worker pumps use the same persistence/repository-job interfaces, so either healthy long-lived
+process can recover pending delivery without making Fastify an execution owner.
 
 `apps/worker/src/main.ts` owns environment values and process shutdown only.
 
@@ -152,3 +155,9 @@ The repository-wide completion gate remains:
 ```bash
 pnpm check
 ```
+
+After the build, `pnpm check` runs `pnpm runtime:smoke`. It always imports the compiled
+rules-JavaScript entry under Node 24, catching real ESM dependency-resolution failures. When
+`TEST_DATABASE_URL` is set, it also creates and stops the compiled API and Worker runtimes against
+PostgreSQL, exercising persistence bootstrap and Graphile initialization without contacting external
+providers.

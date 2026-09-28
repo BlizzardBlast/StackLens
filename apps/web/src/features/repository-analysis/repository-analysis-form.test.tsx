@@ -17,6 +17,13 @@ describe("RepositoryAnalysisForm [FR-003, FR-004, NFR-006, NFR-008]", () => {
     fireEvent.submit(form!);
 
     expect(screen.getByRole("alert")).toHaveTextContent("Use an HTTPS repository URL.");
+    expect(screen.getByLabelText("Public GitHub repository")).toHaveAttribute(
+      "aria-describedby",
+      "repository-url-help repository-url-error",
+    );
+    expect(screen.getByLabelText("Public GitHub repository")).toHaveAccessibleDescription(
+      "Use the repository URL, such as github.com/owner/repository. It must be publicly accessible. Use an HTTPS repository URL.",
+    );
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -39,6 +46,10 @@ describe("RepositoryAnalysisForm [FR-003, FR-004, NFR-006, NFR-008]", () => {
     expect(input).toHaveValue("https://example.com/repository");
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Enter a supported public GitHub repository URL.",
+    );
+    expect(input).toHaveAttribute("aria-describedby", "repository-url-help repository-url-error");
+    expect(input).toHaveAccessibleDescription(
+      "Use the repository URL, such as github.com/owner/repository. It must be publicly accessible. Enter a supported public GitHub repository URL.",
     );
   });
 

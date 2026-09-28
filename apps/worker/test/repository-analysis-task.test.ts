@@ -39,6 +39,18 @@ function repositoryHarness(analysis = record(), claimResult = true) {
   const createQueuedRepositoryAnalysis = vi.fn<
     AnalysisRepository["createQueuedRepositoryAnalysis"]
   >(async () => analysis);
+  const createQueuedRepositoryAnalysisWithDelivery = vi.fn<
+    AnalysisRepository["createQueuedRepositoryAnalysisWithDelivery"]
+  >(async () => analysis);
+  const claimPendingRepositoryAnalysisDeliveries = vi.fn<
+    AnalysisRepository["claimPendingRepositoryAnalysisDeliveries"]
+  >(async () => []);
+  const markRepositoryAnalysisDeliveryDelivered = vi.fn<
+    AnalysisRepository["markRepositoryAnalysisDeliveryDelivered"]
+  >(async () => undefined);
+  const retryRepositoryAnalysisDelivery = vi.fn<
+    AnalysisRepository["retryRepositoryAnalysisDelivery"]
+  >(async () => undefined);
   const findAnalysis = vi.fn<AnalysisRepository["findAnalysis"]>(async () => analysis);
   const findReport = vi.fn<AnalysisRepository["findReport"]>(async () => undefined);
   const claimForExecution = vi.fn<AnalysisRepository["claimForExecution"]>(async () => claimResult);
@@ -49,6 +61,10 @@ function repositoryHarness(analysis = record(), claimResult = true) {
 
   const repository: AnalysisRepository = {
     createQueuedRepositoryAnalysis,
+    createQueuedRepositoryAnalysisWithDelivery,
+    claimPendingRepositoryAnalysisDeliveries,
+    markRepositoryAnalysisDeliveryDelivered,
+    retryRepositoryAnalysisDelivery,
     findAnalysis,
     findReport,
     claimForExecution,

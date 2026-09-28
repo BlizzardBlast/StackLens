@@ -115,6 +115,10 @@ rule semantics.
 Response bytes are counted while streaming. Content-Length is also rejected early when it already
 exceeds the configured limit.
 
+The npm Registry request uses `redirect: "error"`. A redirect is classified as the existing typed
+request failure and does not disclose the redirect target or transport details in public failure
+messages.
+
 ## Provenance and safe references
 
 Every successful package observation creates:
@@ -291,6 +295,10 @@ All are adapter options so deployment boundaries can be tightened without changi
 If the advisory-detail lookup bound is reached, all exact-version batch matches and their known OSV
 evidence links remain available, but the source is marked partial and only the bounded subset receives
 full normalized advisory details.
+
+Every OSV batch, pagination, and advisory-detail request also uses `redirect: "error"`. Redirect
+failures retain the same unavailable/partial typed-source behavior as other transport failures and
+never promote an uncontrolled redirect target into provenance.
 
 ### OSV verification
 

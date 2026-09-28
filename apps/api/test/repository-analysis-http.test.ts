@@ -7,7 +7,7 @@ import type {
   RepositoryAnalysisRecord,
   StoredAnalysisReport,
 } from "@stacklens/persistence";
-import type { RepositoryJobQueue } from "@stacklens/repository-jobs";
+import type { RepositoryAnalysisDeliveryDispatcher } from "@stacklens/repository-jobs";
 
 import { createStackLensApi } from "../src/index.js";
 
@@ -97,6 +97,18 @@ function repositoryHarness(
 
     return currentAnalysis;
   });
+  const createQueuedRepositoryAnalysisWithDelivery = vi.fn<
+    AnalysisRepository["createQueuedRepositoryAnalysisWithDelivery"]
+  >(async (input) => createQueuedRepositoryAnalysis(input));
+  const claimPendingRepositoryAnalysisDeliveries = vi.fn<
+    AnalysisRepository["claimPendingRepositoryAnalysisDeliveries"]
+  >(async () => []);
+  const markRepositoryAnalysisDeliveryDelivered = vi.fn<
+    AnalysisRepository["markRepositoryAnalysisDeliveryDelivered"]
+  >(async () => undefined);
+  const retryRepositoryAnalysisDelivery = vi.fn<
+    AnalysisRepository["retryRepositoryAnalysisDelivery"]
+  >(async () => undefined);
   const findAnalysis = vi.fn<AnalysisRepository["findAnalysis"]>(async (id) =>
     currentAnalysis?.id === id ? currentAnalysis : undefined,
   );
@@ -111,6 +123,10 @@ function repositoryHarness(
 
   const repository: AnalysisRepository = {
     createQueuedRepositoryAnalysis,
+    createQueuedRepositoryAnalysisWithDelivery,
+    claimPendingRepositoryAnalysisDeliveries,
+    markRepositoryAnalysisDeliveryDelivered,
+    retryRepositoryAnalysisDelivery,
     findAnalysis,
     findReport,
     claimForExecution,
@@ -123,6 +139,7 @@ function repositoryHarness(
   return {
     repository,
     createQueuedRepositoryAnalysis,
+    createQueuedRepositoryAnalysisWithDelivery,
     findAnalysis,
     findReport,
     setAnalysis(value: RepositoryAnalysisRecord | undefined) {
@@ -134,16 +151,16 @@ function repositoryHarness(
   };
 }
 
-function queueHarness(error?: Error) {
-  const enqueue = vi.fn<RepositoryJobQueue["enqueue"]>(async () => {
+function deliveryDispatcherHarness(error?: Error) {
+  const dispatchReady = vi.fn<RepositoryAnalysisDeliveryDispatcher["dispatchReady"]>(async () => {
     if (error !== undefined) {
       throw error;
     }
   });
 
   return {
-    enqueue,
-    queue: { enqueue } satisfies RepositoryJobQueue,
+    dispatchReady,
+    deliveryDispatcher: { dispatchReady } satisfies RepositoryAnalysisDeliveryDispatcher,
   };
 }
 
@@ -156,11 +173,11 @@ afterEach(async () => {
 
 async function testApi(
   repository: AnalysisRepository,
-  queue: RepositoryJobQueue,
+  deliveryDispatcher: RepositoryAnalysisDeliveryDispatcher,
 ): Promise<FastifyInstance> {
   const app = await createStackLensApi({
     repository,
-    queue,
+    deliveryDispatcher,
     createAnalysisId: () => "analysis-test-001",
     now: () => createdAt,
   });
@@ -172,8 +189,8 @@ async function testApi(
 describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () => {
   it("validates, canonicalizes, persists, and enqueues repository work before returning 202", async () => {
     const persistence = repositoryHarness();
-    const jobs = queueHarness();
-    const app = await testApi(persistence.repository, jobs.queue);
+    const jobs = deliveryDispatcherHarness();
+    const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
 
     const response = await app.inject({
       method: "POST",
@@ -187,21 +204,18 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
     expect(response.json()).toEqual({
       analysisId: "analysis-test-001",
     });
-    expect(persistence.createQueuedRepositoryAnalysis).toHaveBeenCalledWith({
+    expect(persistence.createQueuedRepositoryAnalysisWithDelivery).toHaveBeenCalledWith({
       id: "analysis-test-001",
       repositoryUrl: "https://github.com/acme/demo",
       createdAt,
     });
-    expect(jobs.enqueue).toHaveBeenCalledWith({
-      analysisId: "analysis-test-001",
-      repositoryUrl: "https://github.com/acme/demo",
-    });
+    expect(jobs.dispatchReady).toHaveBeenCalledOnce();
   });
 
   it("rejects unsupported repository URLs and unknown request fields before durable work", async () => {
     const persistence = repositoryHarness();
-    const jobs = queueHarness();
-    const app = await testApi(persistence.repository, jobs.queue);
+    const jobs = deliveryDispatcherHarness();
+    const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
 
     const unsupported = await app.inject({
       method: "POST",
@@ -229,14 +243,38 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
       code: "invalid_request",
       message: "Request does not match the API schema.",
     });
-    expect(persistence.createQueuedRepositoryAnalysis).not.toHaveBeenCalled();
-    expect(jobs.enqueue).not.toHaveBeenCalled();
+    expect(persistence.createQueuedRepositoryAnalysisWithDelivery).not.toHaveBeenCalled();
+    expect(jobs.dispatchReady).not.toHaveBeenCalled();
   });
 
-  it("returns a stable availability error when durable queue submission fails", async () => {
+  it("accepts durable work while the outbox retries a delivery failure", async () => {
     const persistence = repositoryHarness();
-    const jobs = queueHarness(new Error("synthetic queue failure"));
-    const app = await testApi(persistence.repository, jobs.queue);
+    const jobs = deliveryDispatcherHarness(new Error("synthetic delivery failure"));
+    const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/v1/analyses/repository",
+      payload: {
+        repositoryUrl: "https://github.com/acme/demo",
+      },
+    });
+
+    expect(response.statusCode).toBe(202);
+    expect(response.json()).toEqual({
+      analysisId: "analysis-test-001",
+    });
+    expect(persistence.createQueuedRepositoryAnalysisWithDelivery).toHaveBeenCalledOnce();
+    expect(jobs.dispatchReady).toHaveBeenCalledOnce();
+  });
+
+  it("returns a stable availability error when durable creation fails", async () => {
+    const persistence = repositoryHarness();
+    persistence.createQueuedRepositoryAnalysisWithDelivery.mockRejectedValue(
+      new Error("synthetic persistence failure"),
+    );
+    const jobs = deliveryDispatcherHarness();
+    const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
 
     const response = await app.inject({
       method: "POST",
@@ -251,8 +289,9 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
       code: "analysis_unavailable",
       message: "Repository analysis is temporarily unavailable.",
     });
-    expect(response.body).not.toContain("synthetic queue failure");
+    expect(response.body).not.toContain("synthetic persistence failure");
     expect(response.body).not.toContain("analysis-test-001");
+    expect(jobs.dispatchReady).not.toHaveBeenCalled();
   });
 
   it("returns durable running progress without exposing queue internals", async () => {
@@ -264,8 +303,8 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
         updatedAt: "2026-09-21T12:00:02.000Z",
       }),
     );
-    const jobs = queueHarness();
-    const app = await testApi(persistence.repository, jobs.queue);
+    const jobs = deliveryDispatcherHarness();
+    const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
 
     const response = await app.inject({
       method: "GET",
@@ -336,8 +375,8 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
           createdAt: completedAt,
         },
       );
-      const jobs = queueHarness();
-      const app = await testApi(persistence.repository, jobs.queue);
+      const jobs = deliveryDispatcherHarness();
+      const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
 
       const response = await app.inject({
         method: "GET",
@@ -371,8 +410,8 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
         },
       }),
     );
-    const jobs = queueHarness();
-    const app = await testApi(persistence.repository, jobs.queue);
+    const jobs = deliveryDispatcherHarness();
+    const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
 
     const response = await app.inject({
       method: "GET",
@@ -396,8 +435,8 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
 
   it("returns 404 for an unknown analysis identifier", async () => {
     const persistence = repositoryHarness();
-    const jobs = queueHarness();
-    const app = await testApi(persistence.repository, jobs.queue);
+    const jobs = deliveryDispatcherHarness();
+    const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
 
     const response = await app.inject({
       method: "GET",
@@ -413,8 +452,8 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
 
   it("publishes the repository analysis polling contract through OpenAPI", async () => {
     const persistence = repositoryHarness();
-    const jobs = queueHarness();
-    const app = await testApi(persistence.repository, jobs.queue);
+    const jobs = deliveryDispatcherHarness();
+    const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
 
     const response = await app.inject({
       method: "GET",

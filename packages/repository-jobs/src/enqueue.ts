@@ -1,5 +1,6 @@
 import type { AnalysisRepository, RepositoryAnalysisRecord } from "@stacklens/persistence";
 
+import type { RepositoryAnalysisDeliveryDispatcher } from "./delivery.js";
 import {
   REPOSITORY_ANALYSIS_MAX_ATTEMPTS,
   REPOSITORY_ANALYSIS_TASK_IDENTIFIER,
@@ -20,14 +21,14 @@ export interface CreateRepositoryAnalysisJobCommand {
 
 export interface CreateRepositoryAnalysisJobDependencies {
   readonly repository: AnalysisRepository;
-  readonly queue: RepositoryJobQueue;
+  readonly deliveryDispatcher: RepositoryAnalysisDeliveryDispatcher;
 }
 
 export async function createRepositoryAnalysisJob(
   command: CreateRepositoryAnalysisJobCommand,
   dependencies: CreateRepositoryAnalysisJobDependencies,
 ): Promise<RepositoryAnalysisRecord> {
-  const record = await dependencies.repository.createQueuedRepositoryAnalysis({
+  const record = await dependencies.repository.createQueuedRepositoryAnalysisWithDelivery({
     id: command.analysisId,
     repositoryUrl: command.repositoryUrl,
     ...(command.ref === undefined ? {} : { requestedRef: command.ref }),
@@ -37,11 +38,9 @@ export async function createRepositoryAnalysisJob(
       : { retentionExpiresAt: command.retentionExpiresAt }),
   });
 
-  await dependencies.queue.enqueue({
-    analysisId: record.id,
-    repositoryUrl: record.repositoryUrl,
-    ...(record.requestedRef === undefined ? {} : { ref: record.requestedRef }),
-  });
+  // Once the transaction above has committed, the submission is accepted. The pump will retry
+  // dispatch, so a transient delivery failure must not hide the durable analysis ID from callers.
+  void dependencies.deliveryDispatcher.dispatchReady().catch(() => undefined);
 
   return record;
 }
