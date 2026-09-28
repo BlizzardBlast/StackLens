@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { AnalysisReportSchema } from "@stacklens/contracts";
 import type { AnalysisRepository } from "@stacklens/persistence";
-import type { RepositoryJobQueue } from "@stacklens/repository-jobs";
+import type { RepositoryAnalysisDeliveryDispatcher } from "@stacklens/repository-jobs";
 
 import {
   createStackLensApi,
@@ -18,6 +18,18 @@ const analysisId = "analysis-quick-http-001";
 const repository: AnalysisRepository = {
   async createQueuedRepositoryAnalysis() {
     throw new Error("Quick manifest analysis must not create durable repository state.");
+  },
+  async createQueuedRepositoryAnalysisWithDelivery() {
+    throw new Error("Quick manifest analysis must not create durable repository state.");
+  },
+  async claimPendingRepositoryAnalysisDeliveries() {
+    return [];
+  },
+  async markRepositoryAnalysisDeliveryDelivered() {
+    return undefined;
+  },
+  async retryRepositoryAnalysisDelivery() {
+    return undefined;
   },
   async findAnalysis() {
     return undefined;
@@ -42,9 +54,9 @@ const repository: AnalysisRepository = {
   },
 };
 
-const queue: RepositoryJobQueue = {
-  async enqueue() {
-    throw new Error("Quick manifest analysis must not enqueue background work.");
+const deliveryDispatcher: RepositoryAnalysisDeliveryDispatcher = {
+  async dispatchReady() {
+    throw new Error("Quick manifest analysis must not dispatch repository work.");
   },
 };
 
@@ -58,7 +70,7 @@ afterEach(async () => {
 async function testApi(): Promise<FastifyInstance> {
   const app = await createStackLensApi({
     repository,
-    queue,
+    deliveryDispatcher,
     createAnalysisId: () => analysisId,
     now: () => createdAt,
   });
@@ -68,6 +80,31 @@ async function testApi(): Promise<FastifyInstance> {
 }
 
 describe("quick manifest Fastify transport [FR-001, FR-002, FR-004, FR-021]", () => {
+  it("maps malformed JSON and unsupported content types to the stable request error", async () => {
+    const app = await testApi();
+
+    const malformedJson = await app.inject({
+      method: "POST",
+      url: "/v1/analyze/manifest",
+      headers: { "content-type": "application/json" },
+      payload: "{",
+    });
+    const unsupportedContentType = await app.inject({
+      method: "POST",
+      url: "/v1/analyze/manifest",
+      headers: { "content-type": "text/plain" },
+      payload: "not-json",
+    });
+
+    for (const response of [malformedJson, unsupportedContentType]) {
+      expect(response.statusCode).toBe(400);
+      expect(response.json()).toEqual({
+        code: "invalid_request",
+        message: "Request does not match the API schema.",
+      });
+    }
+  });
+
   it("analyzes pasted package.json synchronously without persistence", async () => {
     const app = await testApi();
     const secretScript = "never-retain-this-script";

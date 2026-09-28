@@ -55,5 +55,35 @@ export async function migrateStackLensDatabase(database: StackLensDatabase): Pro
         created_at timestamptz NOT NULL
       )
     `);
+
+    await transaction.execute(sql`
+      CREATE TABLE IF NOT EXISTS analysis_delivery (
+        analysis_id text PRIMARY KEY REFERENCES analysis(id) ON DELETE CASCADE,
+        status text NOT NULL CHECK (status IN ('pending', 'delivering', 'delivered')),
+        attempts integer NOT NULL CHECK (attempts >= 0),
+        available_at timestamptz NOT NULL,
+        lease_token text,
+        lease_expires_at timestamptz,
+        delivered_at timestamptz,
+        created_at timestamptz NOT NULL,
+        updated_at timestamptz NOT NULL
+      )
+    `);
+
+    await transaction.execute(sql`
+      CREATE INDEX IF NOT EXISTS analysis_delivery_available_idx
+      ON analysis_delivery (available_at)
+      WHERE status IN ('pending', 'delivering')
+    `);
+
+    await transaction.execute(sql`
+      INSERT INTO analysis_delivery (
+        analysis_id, status, attempts, available_at, created_at, updated_at
+      )
+      SELECT id, 'pending', 0, updated_at, updated_at, updated_at
+      FROM analysis
+      WHERE status = 'queued' AND active_job_id IS NULL
+      ON CONFLICT (analysis_id) DO NOTHING
+    `);
   });
 }

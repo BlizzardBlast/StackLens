@@ -7,6 +7,16 @@ export type {
 } from "./enqueue.js";
 
 export {
+  createRepositoryAnalysisDeliveryDispatcher,
+  startRepositoryAnalysisDeliveryPump,
+} from "./delivery.js";
+export type {
+  RepositoryAnalysisDeliveryDispatcher,
+  RepositoryAnalysisDeliveryDispatcherOptions,
+  RepositoryAnalysisDeliveryPump,
+} from "./delivery.js";
+
+export {
   REPOSITORY_ANALYSIS_MAX_ATTEMPTS,
   REPOSITORY_ANALYSIS_TASK_IDENTIFIER,
   parseRepositoryAnalysisJobPayload,

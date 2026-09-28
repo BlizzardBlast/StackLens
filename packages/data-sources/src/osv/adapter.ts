@@ -645,6 +645,7 @@ export class OsvVulnerabilityAdapter implements EvidenceProvider<
     try {
       const response = await this.#fetchImpl(url, {
         ...init,
+        redirect: "error",
         signal: controller.signal,
       });
 

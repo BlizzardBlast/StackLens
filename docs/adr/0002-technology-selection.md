@@ -56,7 +56,7 @@ A REST/OpenAPI contract is preferred over a React/TypeScript-specific RPC protoc
 ### Persistence
 
 - **PostgreSQL 18**.
-- **Drizzle ORM stable 0.44 line** for application persistence and migrations.
+- **Drizzle ORM stable 0.45 line** for application persistence and migrations.
 - Do not adopt Drizzle 1.0 beta for production until it reaches an acceptable stable release.
 
 PostgreSQL is the single stateful infrastructure dependency. It provides a durable base for jobs now and saved repositories/history later.

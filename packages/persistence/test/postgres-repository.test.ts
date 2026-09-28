@@ -13,6 +13,7 @@ import {
 
 const databaseUrl = process.env.TEST_DATABASE_URL ?? "";
 const describeWithDatabase = databaseUrl.length > 0 ? describe : describe.skip;
+const testSchema = "stacklens_persistence_test";
 
 function availableScore() {
   return {
@@ -66,11 +67,16 @@ function report(): AnalysisReport {
 }
 
 describeWithDatabase("PostgreSQL analysis persistence [FR-003, FR-021, DATA-006, NFR-008]", () => {
-  const pool = new Pool({ connectionString: databaseUrl });
+  const adminPool = new Pool({ connectionString: databaseUrl });
+  const pool = new Pool({
+    connectionString: databaseUrl,
+    options: `-c search_path=${testSchema}`,
+  });
   const database = createStackLensDatabase(pool);
   const repository = new DrizzleAnalysisRepository(database);
 
   beforeAll(async () => {
+    await adminPool.query(`CREATE SCHEMA IF NOT EXISTS ${testSchema}`);
     await migrateStackLensDatabase(database);
   });
 
@@ -81,6 +87,8 @@ describeWithDatabase("PostgreSQL analysis persistence [FR-003, FR-021, DATA-006,
 
   afterAll(async () => {
     await pool.end();
+    await adminPool.query(`DROP SCHEMA IF EXISTS ${testSchema} CASCADE`);
+    await adminPool.end();
   });
 
   it.each(["1.0.0", "2.0.0"] as const)(
@@ -201,6 +209,102 @@ describeWithDatabase("PostgreSQL analysis persistence [FR-003, FR-021, DATA-006,
       progressStage: "collecting_metadata",
       updatedAt: "2026-09-21T00:00:03.000Z",
     });
+  });
+
+  it("atomically persists queued submission with one durable, idempotent delivery", async () => {
+    await repository.createQueuedRepositoryAnalysisWithDelivery({
+      id: "analysis-001",
+      repositoryUrl: "https://github.com/acme/demo",
+      requestedRef: "main",
+      createdAt: "2026-09-21T00:00:00.000Z",
+    });
+
+    const [firstClaim, secondClaim] = await Promise.all([
+      repository.claimPendingRepositoryAnalysisDeliveries(
+        25,
+        "lease-first",
+        "2026-09-21T00:00:00.000Z",
+        "2026-09-21T00:01:00.000Z",
+      ),
+      repository.claimPendingRepositoryAnalysisDeliveries(
+        25,
+        "lease-second",
+        "2026-09-21T00:00:00.000Z",
+        "2026-09-21T00:01:00.000Z",
+      ),
+    ]);
+
+    expect([...firstClaim, ...secondClaim]).toHaveLength(1);
+    expect([...firstClaim, ...secondClaim][0]).toMatchObject({
+      analysisId: "analysis-001",
+      repositoryUrl: "https://github.com/acme/demo",
+      requestedRef: "main",
+      attempts: 1,
+    });
+
+    const claimed = firstClaim[0] ?? secondClaim[0];
+    expect(claimed).toBeDefined();
+    await repository.markRepositoryAnalysisDeliveryDelivered(
+      "analysis-001",
+      claimed?.leaseToken ?? "unreachable",
+      "2026-09-21T00:00:01.000Z",
+    );
+
+    await expect(
+      repository.claimPendingRepositoryAnalysisDeliveries(
+        25,
+        "lease-after-delivery",
+        "2026-09-21T01:00:00.000Z",
+        "2026-09-21T01:01:00.000Z",
+      ),
+    ).resolves.toEqual([]);
+  });
+
+  it("backfills legacy queued analyses and recovers retry and expired leases", async () => {
+    await repository.createQueuedRepositoryAnalysis({
+      id: "analysis-001",
+      repositoryUrl: "https://github.com/acme/demo",
+      createdAt: "2026-09-21T00:00:00.000Z",
+    });
+
+    const [initialClaim] = await repository.claimPendingRepositoryAnalysisDeliveries(
+      25,
+      "lease-original",
+      "2026-09-21T00:00:00.000Z",
+      "2026-09-21T00:01:00.000Z",
+    );
+    expect(initialClaim).toMatchObject({ attempts: 1, leaseToken: "lease-original" });
+
+    await repository.retryRepositoryAnalysisDelivery(
+      "analysis-001",
+      "lease-original",
+      "2026-09-21T00:00:02.000Z",
+      "2026-09-21T00:00:01.000Z",
+    );
+    await expect(
+      repository.claimPendingRepositoryAnalysisDeliveries(
+        25,
+        "lease-too-early",
+        "2026-09-21T00:00:01.000Z",
+        "2026-09-21T00:01:01.000Z",
+      ),
+    ).resolves.toEqual([]);
+
+    const [retriedClaim] = await repository.claimPendingRepositoryAnalysisDeliveries(
+      25,
+      "lease-retry",
+      "2026-09-21T00:00:02.000Z",
+      "2026-09-21T00:01:02.000Z",
+    );
+    expect(retriedClaim).toMatchObject({ attempts: 2, leaseToken: "lease-retry" });
+
+    const [recoveredClaim] = await repository.claimPendingRepositoryAnalysisDeliveries(
+      25,
+      "lease-recovered",
+      "2026-09-21T00:01:03.000Z",
+      "2026-09-21T00:02:03.000Z",
+    );
+    expect(recoveredClaim).toMatchObject({ attempts: 3, leaseToken: "lease-recovered" });
   });
 
   it("persists retries and only lets the current job complete the analysis", async () => {

@@ -9,6 +9,14 @@
     "resolvePackageJsonExports": true,
     "resolvePackageJsonImports": true,
     "target": "ES2024",
+    "paths": {
+      "#components": ["./src/components"],
+      "#components/*": ["./src/components/*"],
+      "#hooks": ["./src/hooks"],
+      "#hooks/*": ["./src/hooks/*"],
+      "#lib": ["./src/lib"],
+      "#lib/*": ["./src/lib/*"]
+    },
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "test/**/*.ts", "vitest.config.ts"]

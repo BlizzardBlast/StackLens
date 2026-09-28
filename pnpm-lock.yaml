@@ -401,8 +401,8 @@ importers:
         specifier: workspace:*
         version: link:../contracts
       drizzle-orm:
-        specifier: 0.44.7
-        version: 0.44.7(@types/pg@8.23.1)(pg@8.23.0)
+        specifier: 0.45.2
+        version: 0.45.2(@types/pg@8.23.1)(pg@8.23.0)
       pg:
         specifier: 8.23.0
         version: 8.23.0
@@ -441,15 +441,15 @@ importers:
       '@babel/types':
         specifier: 7.29.8
         version: 7.29.8
-      '@pandatix/js-cvss':
-        specifier: 0.4.4
-        version: 0.4.4
       '@stacklens/analyzer-core':
         specifier: workspace:*
         version: link:../analyzer-core
       '@stacklens/contracts':
         specifier: workspace:*
         version: link:../contracts
+      ae-cvss-calculator:
+        specifier: 1.0.13
+        version: 1.0.13
       jsonc-parser:
         specifier: 3.3.1
         version: 3.3.1
@@ -507,8 +507,8 @@ importers:
         specifier: ^0.7.1
         version: 0.7.1
       cn:
-        specifier: ^0.3.0
-        version: 0.3.0
+        specifier: ^0.3.2
+        version: 0.3.2
       lucide-react:
         specifier: ^1.47.0
         version: 1.47.0(react@19.3.0)
@@ -1427,9 +1427,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@pandatix/js-cvss@0.4.4':
-    resolution: {integrity: sha512-hhBbQ7IKfoRoV3QKTP9hLKJT166/e0FkeiVSLZZIEVsO7DjxVmIWhJlPvbp+RXaM4w215xghtnXQv13Ebdlj/w==}
-
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
 
@@ -1977,6 +1974,9 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
+  ae-cvss-calculator@1.0.13:
+    resolution: {integrity: sha512-QnPO1O5gZ/1NM+X4fbfqN/y5rImEZ8CSkbSk7Arv4RrmxPzxLXr9RSLmsQJykDtXFUXn9wHLxC0/fe/pO78t3w==}
+
   ajv-formats@2.1.1:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
     peerDependencies:
@@ -2148,11 +2148,6 @@ packages:
 
   cn@0.2.6:
     resolution: {integrity: sha512-+i4L0zUGgRcEnhsxueVrP7iBGxBx5iD0WOTYg1MwFEu2ZyCmH5Ov2V1cul2Ht5UchRQQgftCf4be/RxspuW6QQ==}
-    engines: {node: '>=20'}
-    hasBin: true
-
-  cn@0.3.0:
-    resolution: {integrity: sha512-qRoU0ARrZD3Bbj1wKFftEKxPjSnzTEdFkf22NVhW+zU9D/wajhoP+qUZ5DChhhSOBCH1onV12hrmGqfu1+5Z2Q==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -2338,8 +2333,8 @@ packages:
     resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
     engines: {node: '>=12'}
 
-  drizzle-orm@0.44.7:
-    resolution: {integrity: sha512-quIpnYznjU9lHshEOAYLoZ9s3jweleHlZIAWR/jX9gAWNg/JhQ1wj0KGRf7/Zm+obRrYd9GjPVJg790QY9N5AQ==}
+  drizzle-orm@0.45.2:
+    resolution: {integrity: sha512-kY0BSaTNYWnoDMVoyY8uxmyHjpJW1geOmBMdSSicKo9CIIWkSxMIj2rkeSR51b8KAPB7m+qysjuHme5nKP+E5Q==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -4866,8 +4861,6 @@ snapshots:
   '@oxlint/binding-win32-x64-msvc@1.83.0':
     optional: true
 
-  '@pandatix/js-cvss@0.4.4': {}
-
   '@pinojs/redact@0.4.0': {}
 
   '@rolldown/binding-android-arm-eabi@1.2.9':
@@ -5249,6 +5242,8 @@ snapshots:
 
   acorn@8.18.0: {}
 
+  ae-cvss-calculator@1.0.13: {}
+
   ajv-formats@2.1.1(ajv@8.20.0):
     optionalDependencies:
       ajv: 8.20.0
@@ -5398,8 +5393,6 @@ snapshots:
 
   cn@0.2.6: {}
 
-  cn@0.3.0: {}
-
   cn@0.3.2: {}
 
   code-block-writer@13.0.3: {}
@@ -5543,7 +5536,7 @@ snapshots:
 
   dotenv@17.4.2: {}
 
-  drizzle-orm@0.44.7(@types/pg@8.23.1)(pg@8.23.0):
+  drizzle-orm@0.45.2(@types/pg@8.23.1)(pg@8.23.0):
     optionalDependencies:
       '@types/pg': 8.23.1
       pg: 8.23.0

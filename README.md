@@ -6,7 +6,7 @@ The initial product focuses on JavaScript and TypeScript projects. A developer p
 
 ## Current status
 
-**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v2 with historical v1 read support, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority v2 and risk/readiness scoring v3, the framework-independent quick-manifest service plus Fastify/OpenAPI transport, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, persistent PostgreSQL/Graphile Worker repository jobs, the Fastify REST/OpenAPI repository-analysis transport, the React repository-analysis plus quick-manifest web flows, and automated MVP acceptance smoke coverage for the production router and composed API runtime are implemented.**
+**Requirements, architecture, Design v1, production design infrastructure, Analysis Report Contract v2 with historical v1 read support, the deterministic analyzer core, JavaScript dependency inventory, npm metadata rules, known-vulnerability detection, curated dependency-overlap heuristics, static source-usage analysis, potentially-unnecessary dependency heuristics, framework/tool detection, static project-configuration inspection, deterministic migration opportunities, evidence-backed recommendations, production priority v2 and risk/readiness scoring v3, the framework-independent quick-manifest service plus Fastify/OpenAPI transport, bounded npm/OSV/public-GitHub data adapters, transport-independent public-repository analysis orchestration, transactionally delivered PostgreSQL/Graphile Worker repository jobs, the Fastify REST/OpenAPI repository-analysis transport, the React repository-analysis plus quick-manifest web flows, and automated MVP acceptance plus compiled-runtime smoke coverage are implemented.**
 
 The canonical product and system requirements are in **[docs/requirements.md](docs/requirements.md)**.
 
@@ -45,7 +45,8 @@ The default local endpoints are:
 - API: `http://127.0.0.1:3000`;
 - OpenAPI: `http://127.0.0.1:3000/openapi.json`.
 
-The API and worker automatically apply the StackLens/Graphile database migrations on startup. Local
+The API and worker automatically apply the StackLens/Graphile database migrations and each starts a
+source-free transactional-outbox delivery pump on startup. Local
 defaults match `.env.example`; copy it to `.env` or override the process environment when a different database, host,
 port, or worker concurrency is required. API and worker dev/start scripts load the root `.env` when present.
 
@@ -220,22 +221,24 @@ See [Repository Analysis Orchestration](docs/implementation/repository-analysis.
 The hosted repository-analysis delivery boundary now spans **`packages/persistence`**,
 **`packages/repository-jobs`**, and **`apps/worker`**.
 
-PostgreSQL stores only durable analysis/report metadata, while Graphile Worker executes the existing
-shared repository orchestration. Durable progress is coarse and source-free, execution is protected
-against stale/duplicate jobs by an active job ownership claim, and final reports preserve the
-existing contract/version metadata.
+PostgreSQL atomically stores a submitted analysis with a source-free delivery record, while Graphile
+Worker executes the existing shared repository orchestration. API and Worker runtime pumps can
+recover leased pending delivery through the stable Graphile job key. Durable progress is coarse and
+source-free, execution is protected against stale/duplicate jobs by an active job ownership claim,
+and final reports preserve the existing contract/version metadata.
 
 The permanent quality workflow provisions PostgreSQL 18 for persistence integration coverage.
 
-See [Persistent Repository Analysis Jobs](docs/implementation/repository-jobs.md) and **ADR-0004**.
+See [Persistent Repository Analysis Jobs](docs/implementation/repository-jobs.md), **ADR-0004**,
+and **ADR-0014**.
 
 ## Repository analysis API transport
 
 The hosted repository-analysis HTTP boundary now lives in **`apps/api`**.
 
 Fastify validates and canonicalizes supported public GitHub repository URLs, generates a non-guessable
-analysis identifier, creates/enqueues work through `@stacklens/repository-jobs`, and returns
-`202 Accepted`. Clients poll `GET /v1/analyses/:analysisId`; that endpoint reads only
+analysis identifier, atomically creates the analysis plus its internal delivery record through
+`@stacklens/repository-jobs`, and returns `202 Accepted`. Clients poll `GET /v1/analyses/:analysisId`; that endpoint reads only
 `@stacklens/persistence` state and returns coarse progress, terminal failure, or the persisted
 contract-valid report without exposing Graphile Worker internals.
 
@@ -263,13 +266,13 @@ See [Repository Analysis Web Flow](docs/implementation/repository-web.md) and **
 
 The first provider package lives in **`packages/data-sources`**.
 
-Its npm Registry adapter performs bounded package-metadata acquisition. Its OSV adapter performs
+Its npm Registry adapter performs bounded package-metadata acquisition with redirect blocking. Its OSV adapter performs
 bounded exact-version vulnerability queries and now records query-level provenance even when a
 complete exact-version query returns zero known vulnerability matches. Its public GitHub adapter validates supported repository
 URLs, resolves an immutable commit SHA, enumerates a bounded recursive tree, and fetches only the
 root manifest, supported configuration files, and bounded JS/TS/JSX/TSX source files by immutable blob SHA while exposing whether source acquisition was complete enough for absence-based analysis.
 
-All adapters associate observations with explicit provenance/retrieval time and convert provider,
+All adapters block redirects, associate observations with explicit provenance/retrieval time, and convert provider,
 network, schema, and material partial-acquisition states into typed failures/limitations. Analyzer
 rules perform no provider I/O.
 

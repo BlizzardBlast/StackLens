@@ -8,7 +8,8 @@
 ## Purpose
 
 Milestone J2 turns the transport-independent repository workflow into durable hosted work without
-moving analysis policy into the queue, database, API, or Worker.
+moving analysis policy into the queue, database, API, or Worker. Its delivery reliability is
+completed by the transactional-outbox decision in [ADR-0014](../adr/0014-transactional-outbox-delivery.md).
 
 The slice introduces three boundaries:
 
@@ -33,6 +34,12 @@ The `analysis` table persists only asynchronous-delivery metadata:
 
 The `analysis_report` table stores the final contract-valid structured report plus its schema version.
 
+The internal `analysis_delivery` table is keyed by analysis ID and stores only delivery state,
+attempt count, availability time, lease token/expiry, and timestamps. It is not part of the public
+status contract and deliberately contains no source or Graphile internals. The migration is
+idempotent and backfills existing queued, unclaimed analyses; delivered rows are retained until the
+owning analysis is removed.
+
 Repository source files, raw manifests, package scripts, and provider response bodies are not durable
 columns and are rejected from the Graphile job payload.
 
@@ -50,6 +57,19 @@ Unknown fields are rejected. The queue uses a stable job key derived from the an
 maximum attempts, and Graphile's `unsafe_dedupe` mode. That mode is intentional here because a
 second enqueue with the same stable analysis ID represents the same logical work; replacing a locked
 job would otherwise exhaust its attempts and create a competing job.
+
+### Transactional outbox delivery
+
+Repository submission creates `analysis` and its pending delivery record in the same PostgreSQL
+transaction. An accepted submission therefore has a durable path to delivery before its API route
+returns `202`.
+
+The delivery dispatcher claims batches with `SKIP LOCKED`, leases the claimed rows, and passes only
+the existing minimal payload through `RepositoryJobQueue`. A successful Graphile enqueue marks the
+row delivered. Queue failures are ambiguous by design, so they remain retryable with deterministic
+one-second exponential backoff capped at 60 seconds and reuse the same Graphile job key. An expired
+lease becomes eligible for a later healthy process. API and Worker composition each run this pump;
+neither Fastify routes nor `main.ts` contain queue SQL or delivery policy.
 
 ## Execution ownership and idempotency
 
@@ -87,7 +107,7 @@ No source content is present in progress events.
 
 ## Runtime
 
-`apps/worker` uses PostgreSQL 18, Drizzle ORM 0.44.x, Graphile Worker 0.18, and the existing
+`apps/worker` uses PostgreSQL 18, Drizzle ORM 0.45.x, Graphile Worker 0.18, and the existing
 GitHub/npm/OSV adapters.
 
 Worker startup applies the StackLens persistence bootstrap and Graphile Worker migrations, then runs
@@ -97,10 +117,12 @@ the repository task list against the shared PostgreSQL pool.
 
 The permanent quality workflow provisions PostgreSQL 18 and runs:
 
-- PostgreSQL repository integration tests for queued/running/retry/completed/failed state;
+- PostgreSQL repository integration tests for queued/running/retry/completed/failed state,
+  atomic analysis/outbox creation, legacy backfill, concurrent claims, lease recovery, and delivered
+  idempotency;
 - execution ownership and stale-job protection;
 - report/reproducibility metadata persistence;
-- queue payload and progress mapping tests;
+- queue payload, outbox retry, and pump-shutdown tests;
 - worker completion, duplicate delivery, retry, and final-attempt behavior;
 - the existing build/typecheck/test/lint/format suite.
 

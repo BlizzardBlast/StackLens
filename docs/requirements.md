@@ -218,6 +218,9 @@ A user must be able to submit a public GitHub repository URL for repository anal
 - Valid public GitHub repository URLs can be resolved.
 - Invalid, inaccessible, or unsupported URLs produce a clear error.
 - StackLens identifies the analyzed repository and revision/reference where available.
+- A `202 Accepted` repository submission is issued only after the analysis and its source-free
+  delivery record are committed atomically; the public response remains the stable analysis ID and
+  `queued` status.
 
 ### FR-004 — Validate analysis inputs
 
@@ -225,6 +228,10 @@ A user must be able to submit a public GitHub repository URL for repository anal
 **Status:** Accepted
 
 StackLens must validate analysis inputs before analysis and must not silently reinterpret invalid input.
+
+For public HTTP input, malformed JSON, unsupported content types, and schema failures must produce
+the stable validation response rather than an internal error. Client-side validation remains
+advisory; the API remains authoritative.
 
 ### FR-005 — Dependency inventory
 
@@ -753,6 +760,10 @@ Repository contents, manifests, configuration, metadata, URLs, and third-party p
 
 StackLens must retain only the minimum analysis input/data necessary to provide the requested feature.
 
+Repository-delivery state may retain only source-free operational metadata needed for idempotent
+dispatch and recovery. It must not retain repository contents, manifest bodies, scripts, provider
+responses, secrets, or queue-internal identifiers.
+
 ### SEC-004 — Private source code is not permanently stored by default
 
 **Phase:** Next  
@@ -846,12 +857,18 @@ Core analysis submission and report flows must remain usable on common desktop, 
 
 Long-running repository analysis must provide visible progress/state rather than appearing frozen. External-service latency must be distinguishable from application failure where practical.
 
+Accepted repository submissions must remain visibly `queued` while internal delivery retries; the
+public progress model must not expose delivery attempts, leases, or queue internals.
+
 ### NFR-009 — Observability without source leakage
 
 **Phase:** MVP  
 **Status:** Accepted
 
 Operational logging/telemetry must support diagnosing failures without logging full repository contents, manifests, secrets, or sensitive source by default.
+
+Delivery and provider redirect failures must be recorded or classified without preserving raw queue,
+network, redirect-target, or provider-body details in public responses or durable analysis state.
 
 ## 12. Requirements governance
 
@@ -936,7 +953,7 @@ The report must satisfy the deterministic, evidence, scoring, security, and trac
 | Capability                       | Requirements                                                       |
 | -------------------------------- | ------------------------------------------------------------------ |
 | Paste/upload analysis            | FR-001, FR-002, FR-004, FR-022                                     |
-| Public GitHub analysis           | FR-003, FR-004, SEC-001, SEC-002                                   |
+| Public GitHub analysis           | FR-003, FR-004, NFR-008, NFR-009, SEC-001, SEC-002, SEC-003        |
 | Dependency inventory             | FR-005                                                             |
 | Resolved dependency versions      | FR-023, FR-017, SCORE-003                                          |
 | Outdated packages                | FR-006, DATA-001, DATA-002                                         |

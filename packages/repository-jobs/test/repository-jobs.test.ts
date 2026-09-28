@@ -4,12 +4,15 @@ import type { AnalysisRepository, RepositoryAnalysisRecord } from "@stacklens/pe
 
 import {
   createGraphileRepositoryJobQueue,
+  createRepositoryAnalysisDeliveryDispatcher,
   createRepositoryAnalysisJob,
   durableStageForProgress,
   parseRepositoryAnalysisJobPayload,
   REPOSITORY_ANALYSIS_MAX_ATTEMPTS,
   REPOSITORY_ANALYSIS_TASK_IDENTIFIER,
+  startRepositoryAnalysisDeliveryPump,
   type GraphileJobAdder,
+  type RepositoryAnalysisDeliveryDispatcher,
   type RepositoryJobQueue,
 } from "../src/index.js";
 
@@ -32,6 +35,18 @@ function repositoryHarness(record = queuedRecord()) {
   const createQueuedRepositoryAnalysis = vi.fn<
     AnalysisRepository["createQueuedRepositoryAnalysis"]
   >(async () => record);
+  const createQueuedRepositoryAnalysisWithDelivery = vi.fn<
+    AnalysisRepository["createQueuedRepositoryAnalysisWithDelivery"]
+  >(async () => record);
+  const claimPendingRepositoryAnalysisDeliveries = vi.fn<
+    AnalysisRepository["claimPendingRepositoryAnalysisDeliveries"]
+  >(async () => []);
+  const markRepositoryAnalysisDeliveryDelivered = vi.fn<
+    AnalysisRepository["markRepositoryAnalysisDeliveryDelivered"]
+  >(async () => undefined);
+  const retryRepositoryAnalysisDelivery = vi.fn<
+    AnalysisRepository["retryRepositoryAnalysisDelivery"]
+  >(async () => undefined);
   const findAnalysis = vi.fn<AnalysisRepository["findAnalysis"]>(async () => record);
   const findReport = vi.fn<AnalysisRepository["findReport"]>(async () => undefined);
   const claimForExecution = vi.fn<AnalysisRepository["claimForExecution"]>(async () => true);
@@ -42,6 +57,10 @@ function repositoryHarness(record = queuedRecord()) {
 
   const repository: AnalysisRepository = {
     createQueuedRepositoryAnalysis,
+    createQueuedRepositoryAnalysisWithDelivery,
+    claimPendingRepositoryAnalysisDeliveries,
+    markRepositoryAnalysisDeliveryDelivered,
+    retryRepositoryAnalysisDelivery,
     findAnalysis,
     findReport,
     claimForExecution,
@@ -54,6 +73,10 @@ function repositoryHarness(record = queuedRecord()) {
   return {
     repository,
     createQueuedRepositoryAnalysis,
+    createQueuedRepositoryAnalysisWithDelivery,
+    claimPendingRepositoryAnalysisDeliveries,
+    markRepositoryAnalysisDeliveryDelivered,
+    retryRepositoryAnalysisDelivery,
   };
 }
 
@@ -109,7 +132,9 @@ describe("durable repository progress [FR-003, FR-021, NFR-008]", () => {
 describe("repository job enqueue service [FR-003, NFR-008, NFR-009]", () => {
   it("persists queued state before enqueueing a minimal job", async () => {
     const harness = repositoryHarness();
-    const enqueue = vi.fn<RepositoryJobQueue["enqueue"]>(async () => undefined);
+    const dispatchReady = vi.fn<RepositoryAnalysisDeliveryDispatcher["dispatchReady"]>(
+      async () => undefined,
+    );
 
     const result = await createRepositoryAnalysisJob(
       {
@@ -120,22 +145,18 @@ describe("repository job enqueue service [FR-003, NFR-008, NFR-009]", () => {
       },
       {
         repository: harness.repository,
-        queue: { enqueue },
+        deliveryDispatcher: { dispatchReady },
       },
     );
 
     expect(result.status).toBe("queued");
-    expect(harness.createQueuedRepositoryAnalysis).toHaveBeenCalledWith({
+    expect(harness.createQueuedRepositoryAnalysisWithDelivery).toHaveBeenCalledWith({
       id: "analysis-001",
       repositoryUrl: "https://github.com/acme/demo",
       requestedRef: "main",
       createdAt,
     });
-    expect(enqueue).toHaveBeenCalledWith({
-      analysisId: "analysis-001",
-      repositoryUrl: "https://github.com/acme/demo",
-      ref: "main",
-    });
+    expect(dispatchReady).toHaveBeenCalledOnce();
   });
 
   it("configures Graphile with a stable analysis job key and bounded attempts", async () => {
@@ -161,5 +182,85 @@ describe("repository job enqueue service [FR-003, NFR-008, NFR-009]", () => {
         maxAttempts: REPOSITORY_ANALYSIS_MAX_ATTEMPTS,
       },
     );
+  });
+});
+
+describe("repository analysis outbox delivery [FR-003, NFR-008, NFR-009, SEC-003]", () => {
+  it("delivers a leased minimal payload and records durable delivery", async () => {
+    const harness = repositoryHarness();
+    harness.claimPendingRepositoryAnalysisDeliveries.mockResolvedValue([
+      {
+        analysisId: "analysis-001",
+        repositoryUrl: "https://github.com/acme/demo",
+        requestedRef: "main",
+        attempts: 1,
+        leaseToken: "lease-001",
+      },
+    ]);
+    const enqueue = vi.fn<RepositoryJobQueue["enqueue"]>(async () => undefined);
+    const dispatcher = createRepositoryAnalysisDeliveryDispatcher({
+      repository: harness.repository,
+      queue: { enqueue },
+      now: () => createdAt,
+      createLeaseToken: () => "lease-001",
+    });
+
+    await dispatcher.dispatchReady();
+
+    expect(enqueue).toHaveBeenCalledWith({
+      analysisId: "analysis-001",
+      repositoryUrl: "https://github.com/acme/demo",
+      ref: "main",
+    });
+    expect(harness.markRepositoryAnalysisDeliveryDelivered).toHaveBeenCalledWith(
+      "analysis-001",
+      "lease-001",
+      createdAt,
+    );
+  });
+
+  it("keeps an ambiguous queue failure pending with bounded retry", async () => {
+    const harness = repositoryHarness();
+    harness.claimPendingRepositoryAnalysisDeliveries.mockResolvedValue([
+      {
+        analysisId: "analysis-001",
+        repositoryUrl: "https://github.com/acme/demo",
+        attempts: 2,
+        leaseToken: "lease-001",
+      },
+    ]);
+    const dispatcher = createRepositoryAnalysisDeliveryDispatcher({
+      repository: harness.repository,
+      queue: { enqueue: async () => Promise.reject(new Error("ambiguous queue outcome")) },
+      now: () => createdAt,
+      createLeaseToken: () => "lease-001",
+    });
+
+    await dispatcher.dispatchReady();
+
+    expect(harness.retryRepositoryAnalysisDelivery).toHaveBeenCalledWith(
+      "analysis-001",
+      "lease-001",
+      "2026-09-21T00:00:02.000Z",
+      createdAt,
+    );
+  });
+
+  it("stops the delivery pump without scheduling another dispatch", async () => {
+    vi.useFakeTimers();
+    try {
+      const dispatchReady = vi.fn<RepositoryAnalysisDeliveryDispatcher["dispatchReady"]>(
+        async () => undefined,
+      );
+      const pump = startRepositoryAnalysisDeliveryPump({ dispatchReady }, 1_000);
+
+      await Promise.resolve();
+      await pump.stop();
+      await vi.advanceTimersByTimeAsync(5_000);
+
+      expect(dispatchReady).toHaveBeenCalledOnce();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

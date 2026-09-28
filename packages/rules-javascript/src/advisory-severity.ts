@@ -1,4 +1,4 @@
-import { CVSS20, CVSS30, CVSS31, CVSS40 } from "@pandatix/js-cvss";
+import * as importedCvssCalculator from "ae-cvss-calculator";
 
 import type { AdvisoryDetails } from "@stacklens/contracts";
 
@@ -11,6 +11,80 @@ const BASE_METRICS = {
   "4.0": ["AV", "AC", "AT", "PR", "UI", "VC", "VI", "VA", "SC", "SI", "SA"],
 } as const;
 type Version = keyof typeof BASE_METRICS;
+
+interface CalculatedScores {
+  readonly base?: number;
+  readonly overall?: number;
+}
+
+interface CvssVectorCalculator {
+  calculateScores(): CalculatedScores;
+}
+
+interface CvssCalculatorConstructor {
+  new (vector: string): CvssVectorCalculator;
+}
+
+interface CvssCalculatorAdapter {
+  readonly Cvss2: CvssCalculatorConstructor;
+  readonly Cvss3P0: CvssCalculatorConstructor;
+  readonly Cvss3P1: CvssCalculatorConstructor;
+  readonly Cvss4P0: CvssCalculatorConstructor;
+}
+
+function isCvssCalculatorAdapter(value: unknown): value is CvssCalculatorAdapter {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "Cvss2" in value &&
+    typeof value.Cvss2 === "function" &&
+    "Cvss3P0" in value &&
+    typeof value.Cvss3P0 === "function" &&
+    "Cvss3P1" in value &&
+    typeof value.Cvss3P1 === "function" &&
+    "Cvss4P0" in value &&
+    typeof value.Cvss4P0 === "function"
+  );
+}
+
+const calculatorCandidate: unknown =
+  "default" in importedCvssCalculator ? importedCvssCalculator.default : importedCvssCalculator;
+
+if (!isCvssCalculatorAdapter(calculatorCandidate)) {
+  throw new Error("ae-cvss-calculator does not expose the required CVSS constructors.");
+}
+
+const calculator = calculatorCandidate;
+const { Cvss2, Cvss3P0, Cvss3P1, Cvss4P0 } = calculator;
+
+function baseScore(
+  version: Version,
+  vector: string,
+  raw: string,
+  parts: readonly string[],
+): number {
+  if (version === "4.0") {
+    // Constructing the full vector validates Threat/Environmental metrics before they are excluded.
+    new Cvss4P0(vector).calculateScores();
+    const base =
+      "CVSS:4.0/" +
+      parts
+        .filter((part) => (BASE_METRICS["4.0"] as readonly string[]).includes(part.split(":")[0]!))
+        .join("/");
+    const score = new Cvss4P0(base).calculateScores().overall;
+    if (score === undefined) throw new Error("CVSS 4.0 base score is unavailable");
+    return score;
+  }
+
+  const score =
+    version === "3.1"
+      ? new Cvss3P1(vector).calculateScores().base
+      : version === "3.0"
+        ? new Cvss3P0(vector).calculateScores().base
+        : new Cvss2(raw).calculateScores().base;
+  if (score === undefined) throw new Error("CVSS base score is unavailable");
+  return score;
+}
 
 export function normalizeAdvisorySeverity(
   advisories: readonly JavaScriptOsvVulnerability[],
@@ -46,28 +120,14 @@ export function normalizeAdvisorySeverity(
           BASE_METRICS[version].some((key) => !keys.includes(key))
         )
           continue;
-        let baseScore: number;
-        if (version === "4.0") {
-          // Validate the full vector, then score Base metrics only (not Threat/Environmental).
-          const validated = new CVSS40(vector);
-          if (!Number.isFinite(validated.Score())) continue;
-          const base =
-            "CVSS:4.0/" +
-            parts
-              .filter((part) =>
-                (BASE_METRICS["4.0"] as readonly string[]).includes(part.split(":")[0]!),
-              )
-              .join("/");
-          baseScore = new CVSS40(base).Score();
-        } else
-          baseScore =
-            version === "3.1"
-              ? new CVSS31(vector).BaseScore()
-              : version === "3.0"
-                ? new CVSS30(vector).BaseScore()
-                : new CVSS20(raw).BaseScore();
-        if (!Number.isFinite(baseScore) || baseScore < 0 || baseScore > 10) continue;
-        ratings.push({ vector, version, source: entry.source ?? "OSV", baseScore });
+        const score = baseScore(version, vector, raw, parts);
+        if (!Number.isFinite(score) || score < 0 || score > 10) continue;
+        ratings.push({
+          vector,
+          version,
+          source: entry.source ?? "OSV",
+          baseScore: Object.is(score, -0) ? 0 : score,
+        });
       } catch {
         /* Unsupported or malformed vectors stay unknown; never guess a severity. */
       }

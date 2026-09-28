@@ -183,7 +183,7 @@ export function QuickAnalysisForm({
               clearErrors();
             }}
             aria-invalid={error === undefined ? undefined : true}
-            aria-describedby={errorId ?? "manifest-content-help"}
+            aria-describedby={`manifest-content-help${errorId === undefined ? "" : ` ${errorId}`}`}
             disabled={isPending}
             className="min-h-72 w-full min-w-0 resize-y rounded-xl border border-input bg-background px-4 py-4 font-mono text-sm leading-6 transition-[border-color,box-shadow,background-color] outline-none placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/35 disabled:cursor-not-allowed disabled:bg-muted/50 disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
           />
@@ -216,7 +216,7 @@ export function QuickAnalysisForm({
                 void handleFileChange(event);
               }}
               aria-invalid={error === undefined ? undefined : true}
-              aria-describedby={errorId ?? "manifest-file-help"}
+              aria-describedby={`manifest-file-help${errorId === undefined ? "" : ` ${errorId}`}`}
               disabled={isPending}
               className="block w-full max-w-64 text-sm text-muted-foreground file:mr-3 file:min-h-10 file:rounded-md file:border file:bg-background file:px-3 file:font-semibold file:text-foreground file:transition-colors hover:file:bg-accent focus-visible:rounded-md focus-visible:ring-3 focus-visible:ring-ring/35 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
             />

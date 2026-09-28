@@ -81,6 +81,65 @@ describe("QuickAnalysisForm [FR-001, FR-002, FR-004, FR-022, NFR-006, NFR-007]",
 
     expect(textarea).toHaveValue('{"name": }');
     expect(screen.getByRole("alert")).toHaveTextContent("package.json must contain valid JSON.");
+    expect(textarea).toHaveAttribute(
+      "aria-describedby",
+      "manifest-content-help quick-analysis-error",
+    );
+    expect(textarea).toHaveAccessibleDescription(
+      "StackLens inspects the manifest without running scripts or installing dependencies. package.json must contain valid JSON.",
+    );
+  });
+
+  it("keeps paste help associated when a client validation error appears", () => {
+    const onSubmit = vi
+      .fn<(input: QuickManifestAnalysisInput) => Promise<void>>()
+      .mockResolvedValue(undefined);
+
+    render(<QuickAnalysisForm onSubmit={onSubmit} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Run quick analysis" }));
+
+    const textarea = screen.getByLabelText("package.json content");
+    expect(textarea).toHaveAttribute(
+      "aria-describedby",
+      "manifest-content-help quick-analysis-error",
+    );
+    expect(textarea).toHaveAccessibleDescription(
+      "StackLens inspects the manifest without running scripts or installing dependencies. Paste package.json content before running quick analysis.",
+    );
+  });
+
+  it("keeps file help associated during client and server errors", () => {
+    const onSubmit = vi
+      .fn<(input: QuickManifestAnalysisInput) => Promise<void>>()
+      .mockResolvedValue(undefined);
+    const { rerender } = render(<QuickAnalysisForm onSubmit={onSubmit} />);
+
+    fireEvent.click(screen.getByRole("radio", { name: /Choose local file/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Run quick analysis" }));
+
+    const fileInput = screen.getByLabelText("Local package.json");
+    expect(fileInput).toHaveAttribute(
+      "aria-describedby",
+      "manifest-file-help quick-analysis-error",
+    );
+    expect(fileInput).toHaveAccessibleDescription(
+      "Choose a JSON file named package.json. Choose a package.json file before running quick analysis.",
+    );
+
+    fireEvent.change(fileInput, { target: { files: [] } });
+
+    rerender(
+      <QuickAnalysisForm onSubmit={onSubmit} serverError="package.json must contain valid JSON." />,
+    );
+
+    expect(fileInput).toHaveAttribute(
+      "aria-describedby",
+      "manifest-file-help quick-analysis-error",
+    );
+    expect(fileInput).toHaveAccessibleDescription(
+      "Choose a JSON file named package.json. package.json must contain valid JSON.",
+    );
   });
 
   it("exposes a synchronous accessible busy state without fake progress", () => {

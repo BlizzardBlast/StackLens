@@ -6,7 +6,10 @@ import type {
   RepositoryAnalysisRecord,
   StoredAnalysisReport,
 } from "@stacklens/persistence";
-import { createRepositoryAnalysisJob, type RepositoryJobQueue } from "@stacklens/repository-jobs";
+import {
+  createRepositoryAnalysisJob,
+  type RepositoryAnalysisDeliveryDispatcher,
+} from "@stacklens/repository-jobs";
 
 export interface SubmitRepositoryAnalysisCommand {
   readonly repositoryUrl: string;
@@ -14,7 +17,7 @@ export interface SubmitRepositoryAnalysisCommand {
 
 export interface RepositoryAnalysisApplicationDependencies {
   readonly repository: AnalysisRepository;
-  readonly queue: RepositoryJobQueue;
+  readonly deliveryDispatcher: RepositoryAnalysisDeliveryDispatcher;
   readonly createAnalysisId?: () => string;
   readonly now?: () => string;
 }
@@ -68,7 +71,7 @@ export async function submitRepositoryAnalysis(
     },
     {
       repository: dependencies.repository,
-      queue: dependencies.queue,
+      deliveryDispatcher: dependencies.deliveryDispatcher,
     },
   );
 

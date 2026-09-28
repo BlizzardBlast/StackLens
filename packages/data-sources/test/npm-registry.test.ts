@@ -89,6 +89,7 @@ describe("NpmRegistryAdapter [FR-006, FR-007, FR-010, DATA-001, DATA-002]", () =
       "https://registry.npmjs.org/%40stacklens%2Fexample",
       expect.objectContaining({
         method: "GET",
+        redirect: "error",
         headers: {
           accept: "application/json",
         },
@@ -560,6 +561,27 @@ describe("NpmRegistryAdapter [FR-006, FR-007, FR-010, DATA-001, DATA-002]", () =
       retryable: true,
     });
     expect(result.failure.message).not.toContain("socket details");
+  });
+
+  it("contains redirect failures in a typed source failure", async () => {
+    const adapter = createAdapter(
+      vi.fn<typeof fetch>().mockRejectedValue(new Error("redirected to an untrusted host")),
+    );
+
+    const result = await adapter.fetch({
+      packageName: "react",
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      throw new Error("Expected redirect failure to be unavailable");
+    }
+
+    expect(result.failure).toMatchObject({
+      code: "npm_request_failed",
+      retryable: true,
+    });
+    expect(result.failure.message).not.toContain("untrusted host");
   });
 
   it("enforces the configured response-size limit", async () => {

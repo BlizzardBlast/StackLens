@@ -20,5 +20,6 @@ export type {
   AnalysisStatus,
   CreateQueuedRepositoryAnalysis,
   RepositoryAnalysisRecord,
+  RepositoryAnalysisDelivery,
   StoredAnalysisReport,
 } from "./types.js";
