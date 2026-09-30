@@ -74,6 +74,9 @@ STACKLENS_WORKER_CONCURRENCY=2
 The defaults are intentionally local-only convenience values. Deployed API/Worker processes should
 provide an explicit `DATABASE_URL` through their environment/secret manager.
 
+With `DATABASE_URL` unset, both executable entrypoints use the Compose database on port 55432;
+copying `.env.example` is optional. An explicit `DATABASE_URL` takes precedence unchanged.
+
 For repeated live repository analysis, `STACKLENS_GITHUB_TOKEN` can authenticate the worker's
 read-only GitHub REST requests and substantially reduce anonymous-rate-limit failures. It is an
 operator/developer secret for the existing public-repository flow, not a user GitHub connection:
@@ -137,6 +140,10 @@ Local runtime composition does not alter analysis semantics:
 - startup/shutdown logging emits error names rather than connection strings or source content.
 
 ## Verification
+
+For FR-003/FR-022 and NFR-009, isolated entrypoint tests verify default startup configuration and
+explicit database overrides for both API and Worker. Tests mock runtime factories, reset module
+imports and environment changes, and remove only their own process signal listeners.
 
 PostgreSQL-backed API runtime integration coverage creates the actual persistence and Graphile
 queue adapters and verifies both public API execution models without live providers:

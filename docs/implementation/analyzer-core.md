@@ -199,6 +199,11 @@ The production JavaScript/TypeScript analyzer can now compose the existing core 
 
 This confirms the dependency-inversion design: analyzer-core required no priority/scoring formula change for production policy to become concrete.
 
-The current production composition advances recommendations to `JS-RECOMMEND-015@2`, coverage to
+The subsequent v2 production composition advanced recommendations to `JS-RECOMMEND-015@2`, coverage to
 `JS-COVERAGE-018@3`, and scoring to v2, adding `JS-READINESS-019@1` facts and `JS-SETUP-019@1`
 findings. These additions likewise require no core policy changes.
+
+Current v5 production and quick-manifest compositions live in analysis-orchestration.
+JS-INSPECTION-018@2 and JS-MIGRATION-014@3 correct evidence and output identity without changing
+analyzer-core duplicate rejection or stack-health-v3 formulas. See the
+[eight-finding remediation](review-findings-remediation.md) for current verification.

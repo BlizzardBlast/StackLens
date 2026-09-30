@@ -6,9 +6,10 @@ import type {
   NormalizedPackageManifest,
   PackageDependencyGroup,
 } from "./manifest.js";
+import { isExternalDependency } from "./manifest.js";
 import { parseExactSemanticVersion } from "./semver.js";
 import { stableHash } from "./stable-id.js";
-import { parseStaticYaml } from "./static-data.js";
+import { localPath, parseStaticYaml } from "./static-data.js";
 
 export const SUPPORTED_LOCKFILE_PATHS = [
   "package-lock.json",
@@ -82,9 +83,7 @@ function uniqueDeclarations(
 ): readonly NormalizedDependencyDeclaration[] {
   const unique = new Map<string, NormalizedDependencyDeclaration>();
 
-  for (const declaration of manifest.dependencies.filter(
-    (item) => !item.peerOnly && item.internalPackagePath === undefined,
-  )) {
+  for (const declaration of manifest.dependencies.filter(isExternalDependency)) {
     unique.set(
       JSON.stringify([declaration.name, declaration.declaredSpecifier, declaration.group]),
       declaration,
@@ -243,6 +242,20 @@ function resolutionFromCandidate(
   };
 }
 
+function packageLockInstallation(
+  packages: Record<string, unknown>,
+  packageName: string,
+  packagePath: string,
+): unknown {
+  let directory = packagePath === "." ? "" : packagePath;
+  for (;;) {
+    const key = (directory === "" ? "" : directory + "/") + "node_modules/" + packageName;
+    if (Object.hasOwn(packages, key)) return packages[key];
+    if (directory === "") return undefined;
+    directory = directory.includes("/") ? directory.slice(0, directory.lastIndexOf("/")) : "";
+  }
+}
+
 function packageLockCandidate(
   parsed: Record<string, unknown>,
   declaration: NormalizedDependencyDeclaration,
@@ -252,17 +265,7 @@ function packageLockCandidate(
 
   if (isRecord(packages)) {
     const root = packages[packagePath === "." ? "" : packagePath];
-    let directory = packagePath === "." ? "" : packagePath;
-    let installed: unknown;
-    for (;;) {
-      const key = (directory === "" ? "" : directory + "/") + "node_modules/" + declaration.name;
-      if (Object.hasOwn(packages, key)) {
-        installed = packages[key];
-        break;
-      }
-      if (directory === "") break;
-      directory = directory.includes("/") ? directory.slice(0, directory.lastIndexOf("/")) : "";
-    }
+    const installed = packageLockInstallation(packages, declaration.name, packagePath);
 
     if (!isRecord(root) || !isRecord(installed)) {
       return undefined;
@@ -572,10 +575,13 @@ function parseYarnLock(
   };
 }
 
-export function normalizeResolvedDependencies(
+function selectLockfile(
   manifest: NormalizedPackageManifest,
   files: readonly JavaScriptLockfileFile[],
-): ResolvedDependencyNormalization {
+): {
+  readonly file?: JavaScriptLockfileFile & { readonly path: SupportedLockfilePath };
+  readonly issues: readonly JavaScriptResolvedDependencyIssue[];
+} {
   const lockfiles = files
     .filter((file): file is JavaScriptLockfileFile & { readonly path: SupportedLockfilePath } =>
       isSupportedLockfilePath(file.path),
@@ -632,15 +638,94 @@ export function normalizeResolvedDependencies(
     return { issues: [] };
   }
 
-  if (selected.path === "package-lock.json") {
-    return parsePackageLock(selected.content, manifest);
-  }
+  return { file: selected, issues: [] };
+}
 
-  if (selected.path === "pnpm-lock.yaml") {
-    return parsePnpmLock(selected.content, manifest);
+/** Classifies links from transient lockfile data without following filesystem symlinks. */
+export function createNpmWorkspaceLinkResolver(
+  manifest: NormalizedPackageManifest,
+  files: readonly JavaScriptLockfileFile[],
+  members: readonly { readonly path: string; readonly manifest: NormalizedPackageManifest }[],
+): (
+  declaration: NormalizedDependencyDeclaration,
+  packagePath: string,
+) => { readonly internalPackagePath?: string; readonly unresolvedInternalTarget?: true } {
+  const selection = selectLockfile(manifest, files);
+  if (selection.file !== undefined && selection.file.path !== "package-lock.json")
+    return () => ({});
+  const npmFile = files.find((file) => file.path === "package-lock.json");
+  // Without a manager hint or lockfile, a same-name workspace may be npm-linked.
+  // Keep that declaration unresolved instead of treating it as an external installation.
+  if (
+    npmFile === undefined &&
+    manifest.packageManager !== undefined &&
+    !manifest.packageManager.startsWith("npm@")
+  )
+    return () => ({});
+  let parsed: unknown;
+  try {
+    parsed = npmFile === undefined ? undefined : JSON.parse(npmFile.content);
+  } catch {
+    /* Missing or malformed link evidence stays unresolved, never inferred. */
   }
+  const packages = isRecord(parsed) && isRecord(parsed.packages) ? parsed.packages : undefined;
+  const supported =
+    isRecord(parsed) && (parsed.lockfileVersion === 2 || parsed.lockfileVersion === 3);
+  return (declaration, packagePath) => {
+    const installed =
+      packages === undefined
+        ? undefined
+        : packageLockInstallation(packages, declaration.name, packagePath);
+    const possibleMember = members.some(
+      (member) => member.path !== "." && member.manifest.packageName === declaration.name,
+    );
+    const link = isRecord(installed) && installed.link === true;
+    if (
+      !link &&
+      (!possibleMember ||
+        (selection.file !== undefined &&
+          supported &&
+          isRecord(installed) &&
+          installed.link === undefined &&
+          typeof installed.version === "string" &&
+          isRecord(parsed) &&
+          packageLockCandidate(parsed, declaration, packagePath)?.specifierMatches))
+    )
+      return {};
+    const unresolved = { unresolvedInternalTarget: true } as const;
+    if (!link || !supported || selection.file === undefined || packages === undefined)
+      return unresolved;
+    const importer = packages[packagePath === "." ? "" : packagePath];
+    const group = isRecord(importer) ? importer[declaration.group] : undefined;
+    if (!isRecord(group) || group[declaration.name] !== declaration.declaredSpecifier)
+      return unresolved;
+    const rawTarget = installed.resolved;
+    const target =
+      typeof rawTarget === "string" && !rawTarget.startsWith("/")
+        ? localPath("package.json", "./" + rawTarget)
+        : undefined;
+    if (
+      target === undefined ||
+      !members.some(
+        (member) => member.path === target && member.manifest.packageName === declaration.name,
+      )
+    )
+      return unresolved;
+    return { internalPackagePath: target };
+  };
+}
 
-  return parseYarnLock(selected.content, manifest);
+export function normalizeResolvedDependencies(
+  manifest: NormalizedPackageManifest,
+  files: readonly JavaScriptLockfileFile[],
+): ResolvedDependencyNormalization {
+  const selected = selectLockfile(manifest, files);
+  if (selected.file === undefined) return { issues: selected.issues };
+  if (selected.file.path === "package-lock.json")
+    return parsePackageLock(selected.file.content, manifest);
+  if (selected.file.path === "pnpm-lock.yaml")
+    return parsePnpmLock(selected.file.content, manifest);
+  return parseYarnLock(selected.file.content, manifest);
 }
 
 function resolutionIdentity(

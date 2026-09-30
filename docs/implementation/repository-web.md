@@ -78,8 +78,10 @@ current row adds a restrained pulsing semantic-primary surface layer while keepi
 the animation is disabled by reduced-motion preferences and never implies measurable numeric
 progress.
 
-Transient status failures use a bounded retry policy. A public `404` is not repeatedly retried.
-Users can explicitly retry a failed status fetch.
+Transient status failures use a bounded retry policy. A public `404` stops interval polling and
+automatic focus/reconnect refetches, including when older nonterminal data is cached. Users can
+explicitly retry; a successful response clears the error and resumes polling for nonterminal status.
+The query's AbortSignal remains forwarded to fetch.
 
 ## Report rendering
 

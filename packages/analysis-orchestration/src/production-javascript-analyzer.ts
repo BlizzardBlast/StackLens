@@ -26,8 +26,8 @@ import type {
 } from "@stacklens/rules-javascript";
 import { stackHealthScorer } from "@stacklens/scoring";
 
-export const PRODUCTION_JAVASCRIPT_ANALYZER_VERSION = "javascript-production-v4";
-export const PRODUCTION_JAVASCRIPT_RULE_SET_VERSION = "javascript-rules-v4";
+export const PRODUCTION_JAVASCRIPT_ANALYZER_VERSION = "javascript-production-v5";
+export const PRODUCTION_JAVASCRIPT_RULE_SET_VERSION = "javascript-rules-v5";
 
 export const productionJavaScriptAnalyzer = {
   reportSchemaVersion: "2.0.0",
@@ -63,9 +63,9 @@ export const productionJavaScriptAnalyzer = {
 /** Manifest-only composition shares scoring policy; absent repository/provider evidence stays unknown. */
 export const quickManifestJavaScriptAnalyzer = {
   reportSchemaVersion: "2.0.0",
-  version: "javascript-quick-manifest-v4",
+  version: "javascript-quick-manifest-v5",
   ruleSet: {
-    version: "javascript-quick-manifest-rules-v4",
+    version: "javascript-quick-manifest-rules-v5",
     factRules: [
       scopeFactRule(dependencyInventoryRule),
       scopeFactRule(frameworkToolDetectionRule),

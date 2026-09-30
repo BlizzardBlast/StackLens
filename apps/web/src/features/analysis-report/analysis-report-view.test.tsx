@@ -261,3 +261,69 @@ describe("AnalysisReportView [FR-017, FR-021, SCORE-003, NFR-006, NFR-007]", () 
     expect(screen.queryByText("N/A")).not.toBeInTheDocument();
   });
 });
+
+describe("evidence focus [FR-017, FR-021, NFR-006]", () => {
+  it.each([
+    { fixture: createRepositoryReportFixture, index: 0 },
+    { fixture: reportV2Fixture, index: 0 },
+    { fixture: reportV2Fixture, index: 1 },
+  ])("restores each keyboard trigger across repeated cycles (%#)", async ({ fixture, index }) => {
+    const user = userEvent.setup();
+    render(<AnalysisReportView report={fixture()} />);
+    const trigger = screen.getAllByRole("button", { name: /View evidence/ })[index]!;
+    async function openAndClose() {
+      trigger.focus();
+      await user.keyboard("{Enter}");
+      expect(within(screen.getByRole("complementary")).getByRole("heading")).toHaveFocus();
+      await user.tab();
+      expect(screen.getByRole("button", { name: "Close" })).toHaveFocus();
+      await user.keyboard("{Enter}");
+      expect(trigger).toHaveFocus();
+      expect(screen.queryByRole("complementary")).not.toBeInTheDocument();
+    }
+    await openAndClose();
+    await openAndClose();
+  });
+
+  it("uses the Findings heading when the original trigger is no longer connected", async () => {
+    const user = userEvent.setup();
+    const report = reportV2Fixture();
+    const view = render(<AnalysisReportView report={report} />);
+    const trigger = within(screen.getByRole("region", { name: "Update opportunities" })).getByRole(
+      "button",
+      { name: /View evidence/ },
+    );
+    await user.click(trigger);
+    view.rerender(
+      <AnalysisReportView
+        report={{
+          ...report,
+          findings: report.findings.map((finding) => ({
+            ...finding,
+            disposition: "issue" as const,
+          })),
+        }}
+      />,
+    );
+    expect(trigger.isConnected).toBe(false);
+    await user.click(screen.getByRole("button", { name: "Close" }));
+    expect(screen.getByRole("heading", { name: "Findings" })).toHaveFocus();
+  });
+
+  it("does not restore trigger focus on package filtering or unmount", async () => {
+    const user = userEvent.setup();
+    const view = render(<AnalysisReportView report={reportV2Fixture()} />);
+    await user.click(screen.getAllByRole("button", { name: /View evidence/ })[0]!);
+    const filter = screen.getByRole("button", { name: "ui · packages/ui" });
+    await user.click(filter);
+    expect(filter).toHaveFocus();
+    expect(screen.queryByRole("button", { name: "Close" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /View evidence/ }));
+    const destination = document.createElement("button");
+    document.body.append(destination);
+    destination.focus();
+    view.unmount();
+    expect(destination).toHaveFocus();
+    destination.remove();
+  });
+});

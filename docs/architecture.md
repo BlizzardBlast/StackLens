@@ -356,7 +356,7 @@ mean capped by Dependencies and Security. Formula and bands live only in the sco
 Workspace packages own their checks; an orchestration-only root does not duplicate member setup.
 Source acquisition counts and check completeness are separate observations.
 
-Both repository and provider-free quick compositions live in analysis-orchestration and use v4
+Both repository and provider-free quick compositions live in analysis-orchestration and use v5
 identities. Schema 2.0.0 adds check states, package identity, resolution provenance, advisory
 severity and machine-readable limitations. Strict 1.0.0 readers retain historical values without
 rescoring. Ship compatible readers first, then enable writers; rollback retains schema 2 support.

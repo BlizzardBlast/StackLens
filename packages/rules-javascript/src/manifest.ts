@@ -14,7 +14,17 @@ export interface NormalizedDependencyDeclaration {
   readonly effectiveSpecifier?: string;
   readonly catalog?: string;
   readonly internalPackagePath?: string;
+  readonly unresolvedInternalTarget?: true;
   readonly peerOnly?: boolean;
+}
+
+export function isExternalDependency(declaration: NormalizedDependencyDeclaration): boolean {
+  return (
+    !declaration.peerOnly &&
+    declaration.internalPackagePath === undefined &&
+    !declaration.unresolvedInternalTarget &&
+    !(declaration.effectiveSpecifier ?? declaration.declaredSpecifier).startsWith("workspace:")
+  );
 }
 
 export interface NormalizedPackageManifest {

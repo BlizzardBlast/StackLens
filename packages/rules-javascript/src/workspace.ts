@@ -1,7 +1,11 @@
 import { minimatch } from "minimatch";
 
-import { normalizeResolvedDependencies, isSupportedLockfilePath } from "./lockfile.js";
-import { normalizePackageManifest } from "./manifest.js";
+import {
+  normalizeResolvedDependencies,
+  isSupportedLockfilePath,
+  createNpmWorkspaceLinkResolver,
+} from "./lockfile.js";
+import { normalizePackageManifest, isExternalDependency } from "./manifest.js";
 import type { NormalizedDependencyDeclaration } from "./manifest.js";
 import { createJavaScriptProjectSnapshot, normalizePackageScripts } from "./project-snapshot.js";
 import type {
@@ -20,12 +24,7 @@ export function workspacePackages(
 export function externalDeclarations(
   project: JavaScriptProjectSnapshot,
 ): readonly NormalizedDependencyDeclaration[] {
-  return project.dependencies.filter(
-    (item) =>
-      !item.peerOnly &&
-      item.internalPackagePath === undefined &&
-      !(item.effectiveSpecifier ?? item.declaredSpecifier).startsWith("workspace:"),
-  );
+  return project.dependencies.filter(isExternalDependency);
 }
 
 export function createWorkspaceProject(
@@ -110,6 +109,7 @@ export function createWorkspaceProject(
       });
     }
   }
+  const npmLink = createNpmWorkspaceLinkResolver(rootManifest, files, manifests);
   const declarations = (
     raw: readonly NormalizedDependencyDeclaration[],
     path: string,
@@ -140,11 +140,16 @@ export function createWorkspaceProject(
       const internal = effectiveSpecifier.startsWith("workspace:")
         ? manifests.filter((item) => item.manifest.packageName === declaration.name)
         : [];
-      const internalPackagePath = internal.length === 1 ? internal[0]!.path : undefined;
-      if (
-        effectiveSpecifier.startsWith("catalog:") ||
-        (effectiveSpecifier.startsWith("workspace:") && internalPackagePath === undefined)
-      ) {
+      const npmTarget =
+        effectiveSpecifier.startsWith("workspace:") || declaration.group === "peerDependencies"
+          ? {}
+          : npmLink(declaration, path);
+      const internalPackagePath =
+        internal.length === 1 ? internal[0]!.path : npmTarget.internalPackagePath;
+      const unresolvedInternalTarget =
+        npmTarget.unresolvedInternalTarget ||
+        (effectiveSpecifier.startsWith("workspace:") && internalPackagePath === undefined);
+      if (effectiveSpecifier.startsWith("catalog:") || unresolvedInternalTarget) {
         issues.push({
           code: "workspace_dependency_unresolved",
           path: path === "." ? "package.json" : path + "/package.json",
@@ -156,6 +161,7 @@ export function createWorkspaceProject(
         effectiveSpecifier,
         ...(catalog === undefined ? {} : { catalog }),
         ...(internalPackagePath === undefined ? {} : { internalPackagePath }),
+        ...(unresolvedInternalTarget ? { unresolvedInternalTarget: true as const } : {}),
         peerOnly: declaration.group === "peerDependencies",
       };
     });
@@ -187,9 +193,10 @@ export function createWorkspaceProject(
     for (const dependency of dependencies.filter(
       (item) => item.internalPackagePath !== undefined && !item.peerOnly,
     )) {
-      let matched = false;
+      let matched =
+        npmLink(dependency, path).internalPackagePath === dependency.internalPackagePath;
       const pnpm = files.find((file) => file.path === "pnpm-lock.yaml");
-      if (pnpm !== undefined)
+      if (!matched && pnpm !== undefined)
         try {
           const lock = parseStaticYaml(pnpm.content);
           const importer =

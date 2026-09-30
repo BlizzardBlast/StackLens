@@ -205,6 +205,9 @@ A user must be able to upload a `package.json` file for quick analysis.
 - A supported manifest can be selected and analyzed.
 - Invalid or unsupported files fail safely with an actionable message.
 - The uploaded manifest is subject to the data-retention requirements in this document.
+- Replacing or clearing a file selection invalidates the previous content immediately. Submission
+  waits for the current local read; obsolete reads cannot replace content or report an error.
+  Changing input mode cancels pending reads without discarding pasted text.
 
 ### FR-003 — Analyze public GitHub repository
 
@@ -362,6 +365,9 @@ StackLens must identify relevant migration opportunities when a deterministic ru
 - The reason for suggesting the migration is shown.
 - The evidence and rule that triggered the suggestion are shown.
 - A migration is not presented as mandatory unless the underlying evidence establishes that it is required.
+- Declarations in one workspace package that resolve to the same exact current and target versions
+  produce one migration opportunity with combined declaration and evidence references. Distinct
+  versions and workspace paths remain distinct.
 
 ### FR-015 — Evidence-backed recommendations
 
@@ -508,11 +514,18 @@ Initial supported lockfiles are:
 - Discover declared pnpm/npm/Yarn workspace members and preserve package paths, dependency groups,
   original specifiers, catalog constraints and exact resolution provenance. Recognize internal
   workspace links without sending them to external version/advisory providers.
+- npm package-lock v2/v3 internal links require matching importer declarations, canonical target
+  paths, and an acquired declared workspace member with matching package identity. Missing, stale,
+  conflicting or unsafe link evidence remains limited and cannot become a registry lookup or a
+  clean score. Package-name equality alone does not establish an internal edge.
 - Peer-only declarations are compatibility constraints, not installed versions.
 - Support JSONC where the configuration format permits it, MDX executable syntax, immutable local
   configuration references and known plugin identities. External preset internals remain opaque.
 - Trace bounded supported package-script and Turbo delegation to member commands. Never execute
   scripts/configuration, MDX, plugins, tests, builds, or dependency installation.
+- Node test discovery uses supported Node filename/directory conventions. Jest-style spec files
+  alone do not prove Node discovery. Unsupported selection flags, loaders, runtime-dependent
+  TypeScript behavior and partial acquisition prevent dependent absence claims.
 - Preserve known fields and positive references during partial inspection. Unknown spreads,
   mutation, missing imports, truncation or dynamic references suppress dependent conclusions.
 - Attach limitations to machine-readable reasons, affected paths/packages and check keys. Show
@@ -843,6 +856,12 @@ Findings must use stable identifiers and structured data contracts so the web ap
 
 The StackLens web experience should meet WCAG 2.2 AA for user-facing MVP flows.
 
+For FR-002/FR-017/FR-021, local file reads expose polite status and block stale submission.
+Explicitly closing inline evidence restores its originating button or the Findings heading when
+that button is gone. Quick-analysis completion focuses the report heading once and updates a stable
+polite status region; reset returns focus to the introduction. Initial render and ordinary rerenders
+must not steal focus.
+
 ### NFR-007 — Responsive web experience
 
 **Phase:** MVP  
@@ -856,6 +875,10 @@ Core analysis submission and report flows must remain usable on common desktop, 
 **Status:** Accepted
 
 Long-running repository analysis must provide visible progress/state rather than appearing frozen. External-service latency must be distinguishable from application failure where practical.
+
+An authoritative status 404 stops interval, focus and reconnect requests. Manual retry remains
+available; success resumes polling only for a nonterminal status. Transient failures retain bounded
+retry behavior, and request cancellation remains connected to navigation/unmount.
 
 Accepted repository submissions must remain visibly `queued` while internal delivery retries; the
 public progress model must not expose delivery attempts, leases, or queue internals.

@@ -50,12 +50,18 @@ Quick analysis is synchronous.
 The UI therefore exposes:
 
 - enabled input state;
+- local file-reading state with polite feedback and disabled submission; replacement selection and
+  mode switching remain available;
 - explicit request-busy state with disabled duplicate submission;
 - recoverable authoritative validation errors that preserve entered/selected content;
 - a terminal report on success.
 
 It does not add repository polling, fabricated progress stages, percentages, persistence, or
 background work.
+
+Each file selection owns a monotonically increasing generation. Only the current generation can
+commit content or read errors. Replacement, clearing, mode changes and unmount invalidate pending
+reads; pasted text remains independent. Submission checks current readiness and generation.
 
 ## Design and accessibility
 
@@ -68,6 +74,10 @@ screens. Narrow layouts collapse naturally to one column.
 
 Controls are labeled, keyboard-focus visible, error state uses `role="alert"`, and synchronous
 request state uses `aria-busy` plus polite live output. Status meaning never depends on color alone.
+
+A stable polite completion output stays mounted across form/report transitions. Successful quick
+analysis focuses the report heading once. Analyze another manifest clears completion status and
+focuses the introduction heading. Initial load, errors and ordinary rerenders do not redirect focus.
 
 ## Shared report composition
 
@@ -117,6 +127,8 @@ Focused tests cover:
 - invalid success payload rejection;
 - pasted-content preservation;
 - local file reading and submission;
+- delayed/reversed file reads, obsolete rejection, clearing, mode switching and unmount;
+- completion/reset focus, stable completion announcements and schema 1/2 production-router journeys;
 - accessible synchronous busy state with no fake percentage;
 - manifest-only evidence-boundary, analyzer-backed insight presentation, and numeric-score coverage
   clarification.

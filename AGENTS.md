@@ -182,7 +182,7 @@ Ecosystem-specific JavaScript/TypeScript normalization and deterministic rules l
 - FR-014 migration opportunities must name deterministic current/target states and remain optional/heuristic unless evidence proves a migration is required. Do not turn every minor/patch update into a separate migration finding.
 - Production priority is owned only by the configured `FindingPrioritizer`; detector rules must not embed urgency. Heuristic uncertainty may lower/cap priority but must never increase it.
 - Recommendation rules consume finalized findings and their evidence. Keep advice separate from facts and do not imply an automatic repository change is safe.
-- ADR-0013 supersedes the affected ADR-0012 scoring policy. Production v4 emits schema 2.0.0 and
+- ADR-0013 supersedes the affected ADR-0012 scoring policy. Production v5 emits schema 2.0.0 and
   stack-health-v3. Risk bands depend on explicit deprecation or supported exact-version advisory
   severity, never finding priority. Updates, migrations, overlap and non-use advice are unscored.
 - Named checks have pass/fail/unknown/not_applicable states. Missing required evidence blocks the
@@ -283,7 +283,7 @@ Shared hosted-analysis composition lives in `packages/analysis-orchestration`.
 - Keep it transport- and persistence-independent so API and Worker can both consume it.
 - This package may sequence injected GitHub/npm/OSV providers before analyzer-core; it must not hide provider I/O inside rules.
 - Keep production analyzer composition here rather than reconstructing rule/prioritizer/recommendation/scorer sets in Fastify routes or Worker handlers.
-- Both repository and provider-free quick-manifest v4 compositions live here. Strict report readers
+- Both repository and provider-free quick-manifest v5 compositions live here. Strict report readers
   accept schemas 1.0.0 and 2.0.0; never rescore stored reports or rewrite historical JSONB. Deploy
   compatible readers before new writers, and preserve both readers in rollback builds.
 - Preserve unavailable/partial providers as report sources/partial failures and let rules/scoring emit limitations; never translate missing data into clean conclusions.

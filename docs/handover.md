@@ -1,39 +1,49 @@
 # StackLens Session Handover
 
-> **Prepared:** 2026-09-27
+> **Prepared:** 2026-09-30
 > **Architecture:** v0.1.15
-> **Milestone:** Workspace inspection and scoring v3 (ADR-0013)
-> **Milestone PR:** [#38](https://github.com/BlizzardBlast/StackLens/pull/38)
-> **Branch:** `codex/workspace-inspection-scoring`, stacked on open PR #37
-> **Baseline:** `8fe68e0e065f08b0ffdf9aaf0e664b9b7103d2e2`
-> **Traceability:** FR-005–FR-009, FR-011–FR-023, DATA-001–006, SCORE-001–004, SEC-001/002, NFR-006–008, GOV-002–007
+> **Milestone:** Eight-finding review remediation
+> **Publication:** Review PR from `codex/review-findings`; no merge or deployment
+> **Branch:** `codex/review-findings`, existing checkout
+> **Baseline:** `962146e0352386a15d7ba40ee5eb745a918d4a6d` (`main` and `origin/main`)
+> **Traceability:** FR-002/003/005/014/017–023, SCORE-002/003, NFR-006–009, SEC-001/002, GOV-002/007
 
 ## Current handover
 
-Repository and quick-manifest compositions are v4 in analysis-orchestration. Reports use schema
-2.0.0 and stack-health-v3. Readers strictly preserve historical schema 1.0.0 reports and scores.
-There is no database migration/backfill. Deploy compatible client/API readers before v4 writers;
-rollback must keep schema 2 read support. Restart applications and request a new analysis to see
-the new policy. Resolve and verify the current main HEAD and both PR merge states before new work.
+The approved remediation addresses CR-P1-001–004 and CR-P2-001–004. The
+[remediation ledger](implementation/review-findings-remediation.md) records each finding,
+phase review, regression and final verification. The September 29 gate passed before the user
+authorized a review PR on September 30. Verify the current branch, main HEAD, working tree and PR
+checks before any later work or merge.
 
-Risk bands replace accumulated priority deductions. Updates and optional migrations are unscored;
-Maintainability now measures lint/type-check safeguards. Workspace manifests/catalogs/importers,
-JSONC/MDX, bounded local configs and script delegation preserve package ownership and uncertainty.
-React presents supplied checks, package filters and linked explanations without policy duplication.
+Repository and provider-free quick-manifest compositions use v5 identities. JS-INSPECTION-018 is
+version 2 and JS-MIGRATION-014 is version 3. Report schema 2.0.0, strict historical schema 1.0.0
+readers and stack-health-v3 formulas are unchanged. Corrected evidence affects newly generated
+reports only; there is no migration, historical rescore, backfill, dependency upgrade or deployment
+sequence change. Rollback retains schema 2 read support.
 
-[Phase review and verification](implementation/workspace-inspection.md),
-[scoring policy](implementation/scoring.md), [report contract](implementation/analysis-contracts.md),
-[report design](design/report-evidence.md) and ADR-0013 are authoritative for this milestone.
-Pinned acceptance uses recorded KerjaLog/Frey-ui inputs and synthetic provider/test evidence;
-it is not a full live audit. External presets/callbacks, complex selectors and ambiguous execution
-targets remain bounded static limitations. No repository code is executed.
+npm workspace links require importer and acquired-member identity evidence and never reach external
+providers when internal or unresolved. Node discovery uses supported Node conventions; equivalent
+migration declarations share one opportunity with combined evidence. API and Worker both default to
+Compose port 55432. File generations prevent stale uploads; authoritative 404s stop automatic
+refetches. Explicit evidence Close and quick completion/reset restore useful keyboard focus.
 
-Final pnpm check passed with 413 tests, including PostgreSQL/API compatibility, and git diff
---check passed. All six scoped phase review gates are approved.
+Final review of PR #40 found one remaining missing-lockfile case: without a package-manager hint,
+a declaration sharing an acquired workspace member name still reached npm/OSV. The PR follow-up
+marks this case unresolved without inventing an internal edge. Unrelated names remain external.
+Focused regressions and a fresh database-backed `pnpm check` passed, including compiled runtime
+smoke. The dedicated follow-up database was removed and Docker restored to its original stopped
+state. PR #40 still awaits merge review; no merge or deployment occurred.
 
-The PR includes its handover and journey before merge. The isolated local test database is named
-`stacklens_workspace_v3_test`; normal application data is untouched. Browser screenshots use
-synthetic contract-valid fixtures and emulated viewports, not physical-device evidence.
+[Scoring policy](implementation/scoring.md), [report contract](implementation/analysis-contracts.md),
+[report design](design/report-evidence.md) and ADR-0013 remain authoritative. Provider responses and
+browser fixtures are synthetic; no analyzed code is executed. Unsupported selectors, external preset
+internals and runtime-dependent discovery remain bounded static limitations.
+
+Verification uses the dedicated `stacklens_remediation_20260929` database and restores the original
+stopped PostgreSQL service state afterward. The ledger records actual cleanup and check results.
+Browser evidence covers emulated desktop/320px layouts, both themes, reduced motion and keyboard/DOM
+behavior. It does not claim physical-device or screen-reader testing.
 
 ## Historical milestone context
 

@@ -29,6 +29,8 @@ flowchart TD
 - Do not present fake percentage progress if the backend only knows stage progress.
 - Progress language should describe the actual architecture stage.
 - Partial provider failures should not look identical to total failure.
+- A status 404 stops automatic requests; Try again can recover and resume active-status polling.
+- Closing inline evidence returns focus to its trigger, or the Findings heading if the trigger is gone.
 
 ## Flow B — Pasted package.json
 
@@ -52,6 +54,11 @@ The report must not imply source-level certainty. For example:
 
 - package-use heuristics requiring imports may be unavailable;
 - vulnerability matching may be N/A when no exact installed version can be established.
+
+Local upload replacement clears stale content immediately, announces reading, and prevents submission
+until the current file is ready. Switching modes preserves pasted text and invalidates pending reads.
+Quick-analysis completion announces the result and focuses the report heading. Analyze another
+manifest clears the status and focuses the introduction, without initial-load autofocus.
 
 ## Flow C — Understand a recommendation
 

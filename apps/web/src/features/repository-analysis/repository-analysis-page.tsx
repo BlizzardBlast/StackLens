@@ -24,6 +24,10 @@ function queryErrorMessage(error: unknown): string {
   return "StackLens could not load this analysis right now.";
 }
 
+function isNotFound(error: unknown): boolean {
+  return error instanceof RepositoryAnalysisApiError && error.status === 404;
+}
+
 function AnalysisNavigation() {
   return (
     <nav aria-label="Analysis navigation">
@@ -45,14 +49,17 @@ export function RepositoryAnalysisPage({
     queryKey: ["repository-analysis", analysisId],
     queryFn: ({ signal }) => client.getAnalysis(analysisId, signal),
     refetchInterval: (currentQuery) => {
+      if (isNotFound(currentQuery.state.error)) return false;
       const snapshot = currentQuery.state.data;
 
       return snapshot !== undefined && isTerminalRepositoryAnalysisStatus(snapshot.status)
         ? false
         : 1500;
     },
+    refetchOnWindowFocus: (currentQuery) => !isNotFound(currentQuery.state.error),
+    refetchOnReconnect: (currentQuery) => !isNotFound(currentQuery.state.error),
     retry: (failureCount, error) => {
-      if (error instanceof RepositoryAnalysisApiError && error.status === 404) {
+      if (isNotFound(error)) {
         return false;
       }
 

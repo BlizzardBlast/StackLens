@@ -33,7 +33,17 @@ The UI may round numbers for display but never recomputes a category or ceiling.
 
 ## Evidence and uncertainty
 
-JS-INSPECTION-018@1 emits pass/fail/unknown/not_applicable checks with stable package-scoped IDs.
+JS-INSPECTION-018@2 emits pass/fail/unknown/not_applicable checks with stable package-scoped IDs.
+
+For supported `node --test` default discovery, JavaScript files beneath `test/`, or named
+`test.js`, `test-*.js`, `*.test.js`, `*-test.js` or `*_test.js` (including cjs/mjs),
+provide positive file evidence. Ordinary `.spec.js` and `__tests__/helper.js` alone do not.
+Unsupported selectors/loaders and runtime-dependent TypeScript discovery stay unknown; missing
+files fail only with complete relevant acquisition. With a supported Node test command, the
+regression examples score Testing 50 for only `src/example.spec.js` and 100 for `test/example.js`.
+These correct evidence inputs without changing the stack-health-v3 formula or historical scores.
+See [Node discovery documentation](https://nodejs.org/docs/latest-v24.x/api/test.html#running-tests-from-the-command-line).
+
 Unknown checks reference limitations. Only the precise evidence required by a check blocks it:
 missing npm latest does not block a complete current-version deprecation record; an opaque ESLint
 preset need not block evidence that a lint configuration exists. Partial source usage still blocks

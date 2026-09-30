@@ -1,6 +1,6 @@
 # JavaScript Rules
 
-## Current v4 behavior (2026-09-27)
+## Current v5 behavior (2026-09-30)
 
 ADR-0013 supersedes historical priority/deduction/coverage slices below. Production reports use
 schema 2.0.0 with package-scoped workspace checks and stack-health-v3. Workspace catalogs/importers,
@@ -550,14 +550,38 @@ evidence.
 
 No analyzed source or configuration is executed.
 
+## Workspace link eligibility (FR-005, FR-023)
+
+The workspace normalizer reuses authoritative lockfile selection and nearest npm installation
+lookup for package-lock v2/v3 `link: true` entries. It requires an exact importer/specifier match
+and a canonical path to an acquired declared member with matching identity. Names alone cannot
+prove a link. Original groups/specifiers remain inventory evidence.
+
+Verified targets use `internalPackagePath`; unverified targets use an internal-only marker and
+existing workspace limitations. A shared eligibility predicate excludes both from provider
+collection, external lockfile normalization and finding scoping. No registry version or clean
+score is fabricated for an unresolved target. Peer-only constraints do not require installation
+evidence. Existing pnpm handling and Yarn support boundaries remain unchanged.
+
+When neither a lockfile nor a package-manager hint is present, a declaration sharing an acquired
+workspace member's package name remains unresolved. npm can link a member under a standard version
+specifier, so absent installation evidence cannot prove an external installation. No internal edge
+is claimed; declarations without a matching member remain eligible for external metadata.
+
 ## FR-014 migration opportunities
 
-`JS-MIGRATION-014@2` consumes completed dependency-inventory facts plus source-bound npm Registry
+`JS-MIGRATION-014@3` consumes completed dependency-inventory facts plus source-bound npm Registry
 metadata.
 
-The first supported migration path is intentionally narrow: an exact declared semantic version whose
+The first supported migration path is intentionally narrow: an exact current semantic version from
+a declaration or matching lockfile resolution whose
 npm `latest` target crosses a semantic major-version boundary. The finding identifies both current
 and target versions, preserves npm/project evidence, and remains a medium-confidence heuristic.
+
+Within each workspace path, declarations resolving to the same package/current/target triple share
+one opportunity. All original specifiers are described; fact, evidence, limitation and confidence
+references are unioned and sorted. Identical limitation output is deduplicated locally. Analyzer-core
+continues to reject conflicting duplicate output rather than hiding invalid rule results.
 
 Minor, patch, and prerelease-to-release differences remain FR-006 outdated findings. A migration
 finding never states that adoption is mandatory; release notes, compatibility, and project-specific

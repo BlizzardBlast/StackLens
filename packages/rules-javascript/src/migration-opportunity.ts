@@ -15,7 +15,7 @@ import { newerVersionDifference, parseExactSemanticVersion } from "./semver.js";
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-MIGRATION-014";
-const RULE_VERSION = "2";
+const RULE_VERSION = "3";
 
 export function migrationOpportunityFindingId(
   packageName: string,
@@ -49,7 +49,8 @@ export const migrationOpportunityRule: FindingRule<
     "NFR-004",
   ],
   evaluate(context) {
-    const findings: FindingCandidate[] = [];
+    const findings = new Map<string, FindingCandidate>();
+    const declarations = new Map<string, Set<string>>();
     const limitations: AnalysisLimitation[] = [];
 
     for (const basis of dependencyFactBases(context.facts)) {
@@ -132,15 +133,27 @@ export const migrationOpportunityRule: FindingRule<
         continue;
       }
 
-      const factIds = basis.facts.map((fact) => fact.id);
+      const id = migrationOpportunityFindingId(
+        basis.packageName,
+        effective.version,
+        latest.version,
+      );
+      const existing = findings.get(id);
+      const specifiers = declarations.get(id) ?? new Set<string>();
+      specifiers.add(basis.declaredSpecifier);
+      declarations.set(id, specifiers);
+      const factIds = [
+        ...uniqueSorted([...(existing?.factIds ?? []), ...basis.facts.map((fact) => fact.id)]),
+      ];
       const evidenceIds = uniqueSorted([
+        ...(existing?.evidenceIds ?? []),
         ...basis.facts.flatMap((fact) => fact.evidenceIds),
         ...effective.evidenceIds,
         ...resolved.observation.evidence.map((evidence) => evidence.id),
       ]);
 
-      findings.push({
-        id: migrationOpportunityFindingId(basis.packageName, effective.version, latest.version),
+      findings.set(id, {
+        id,
         category: "maintainability",
         classification: "heuristic",
         subject: {
@@ -153,9 +166,12 @@ export const migrationOpportunityRule: FindingRule<
           500,
         ),
         description: truncate(
-          `package.json declares ${JSON.stringify(
-            basis.declaredSpecifier,
-          )} for ${basis.packageName}; StackLens established current exact version ${effective.version} from ${effective.source === "lockfile" ? "the supported root lockfile" : "the exact manifest declaration"}. The npm Registry latest dist-tag resolves to ${latest.version}. The major version differs, so StackLens identifies a migration-review opportunity rather than a routine update. Reviewing the migration can reduce long-term version drift and make breaking compatibility work explicit before it becomes urgent. This does not make the migration mandatory; compatibility, release notes, and project-specific behavior still require review.`,
+          `package.json declares ${[...specifiers]
+            .toSorted()
+            .map((value) => JSON.stringify(value))
+            .join(
+              ", ",
+            )} for ${basis.packageName}; StackLens established current exact version ${effective.version} from supported exact manifest declarations or matching lockfile evidence. The npm Registry latest dist-tag resolves to ${latest.version}. The major version differs, so StackLens identifies a migration-review opportunity rather than a routine update. Reviewing the migration can reduce long-term version drift and make breaking compatibility work explicit before it becomes urgent. This does not make the migration mandatory; compatibility, release notes, and project-specific behavior still require review.`,
           4_000,
         ),
         rule: {
@@ -165,7 +181,12 @@ export const migrationOpportunityRule: FindingRule<
         requirementIds: ["FR-014", "FR-023", "DATA-001", "DATA-002", "DATA-003", "DATA-004"],
         evidenceIds: [...evidenceIds],
         factIds,
-        limitationIds: [...resolved.observation.limitationIds],
+        limitationIds: [
+          ...uniqueSorted([
+            ...(existing?.limitationIds ?? []),
+            ...resolved.observation.limitationIds,
+          ]),
+        ],
         confidence: {
           level: "medium",
           rationale:
@@ -175,6 +196,10 @@ export const migrationOpportunityRule: FindingRule<
       });
     }
 
-    return { findings, limitations };
+    return {
+      findings: [...findings.values()].toSorted((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)),
+      // Deduplicate identical limitations only; conflicting IDs still fail core validation.
+      limitations: [...new Map(limitations.map((item) => [JSON.stringify(item), item])).values()],
+    };
   },
 };

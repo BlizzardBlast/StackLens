@@ -23,6 +23,7 @@ import { packageEvidenceId, packagePrefix } from "./workspace-rules.js";
 import { workspacePackages, externalDeclarations } from "./workspace.js";
 
 const RULE_ID = "JS-INSPECTION-018";
+const RULE_VERSION = "2";
 type State = InspectionCheckDetails["state"];
 const CATEGORY_ORDER = [
   "dependencies",
@@ -72,6 +73,21 @@ function testFileState(
   )
     return "unknown";
   let files = (project.files ?? []).filter((file) => CODE.test(file.path));
+  if (runners.has("node")) {
+    if (
+      executions.some((execution) =>
+        execution.arguments.some((argument) => argument !== "--test" && argument !== "--watch"),
+      )
+    )
+      return "unknown";
+    const nodeName = /(?:^|\/)test\/|(?:^|\/)(?:test|test-[^/]+|[^/]+[._-]test)\.[cm]?[jt]s$/u;
+    if (files.some((file) => /\.[cm]?js$/u.test(file.path) && nodeName.test(file.path)))
+      return "pass";
+    // Native TypeScript discovery depends on the analyzed Node runtime and loader options.
+    if (files.some((file) => /\.[cm]?ts$/u.test(file.path) && nodeName.test(file.path)))
+      return "unknown";
+    return project.repositoryCoverage?.complete ? "fail" : "unknown";
+  }
   let candidates = files.filter((file) => TEST.test(file.path));
   const config =
     project.files?.find((file) =>
@@ -218,7 +234,7 @@ export const workspaceInspectionRule: FactRule<
 > = {
   kind: "fact",
   id: RULE_ID,
-  version: "1",
+  version: RULE_VERSION,
   requirementIds: [
     "FR-005",
     "FR-007",
@@ -289,7 +305,7 @@ export const workspaceInspectionRule: FactRule<
           limitationIds,
           ...details,
         },
-        rule: { id: RULE_ID, version: "1" },
+        rule: { id: RULE_ID, version: RULE_VERSION },
         requirementIds: ["FR-018", "FR-019", "FR-020", "FR-023", "SCORE-003"],
         evidenceIds: evidence,
       });
@@ -312,7 +328,7 @@ export const workspaceInspectionRule: FactRule<
             role: member.role ?? "package",
           },
         },
-        rule: { id: RULE_ID, version: "1" },
+        rule: { id: RULE_ID, version: RULE_VERSION },
         requirementIds: ["FR-005", "FR-021"],
         evidenceIds: [packageEvidenceId(path)],
       });
@@ -337,7 +353,7 @@ export const workspaceInspectionRule: FactRule<
             effectiveSpecifier: declaration.effectiveSpecifier ?? declaration.declaredSpecifier,
             internalPackagePath: declaration.internalPackagePath!,
           },
-          rule: { id: RULE_ID, version: "1" },
+          rule: { id: RULE_ID, version: RULE_VERSION },
           requirementIds: ["FR-005", "FR-023"],
           evidenceIds: [packageEvidenceId(path)],
         });

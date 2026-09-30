@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type Ref } from "react";
 
 import type {
   AnalysisFact,
@@ -300,7 +300,7 @@ function EvidenceDetail({ finding, evidence, report, onClose }: Readonly<Evidenc
             ref={headingRef}
             tabIndex={-1}
             id="evidence-detail-title"
-            className="mt-1 text-lg font-semibold outline-none"
+            className="mt-1 rounded-sm text-lg font-semibold outline-none focus-visible:ring-3 focus-visible:ring-ring"
           >
             {finding.title}
           </h3>
@@ -378,14 +378,18 @@ function EvidenceDetail({ finding, evidence, report, onClose }: Readonly<Evidenc
 export interface AnalysisReportViewProps {
   readonly report: AnalysisReport;
   readonly completedWithLimitations?: boolean;
+  readonly reportHeadingRef?: Ref<HTMLHeadingElement>;
 }
 
 export function AnalysisReportView({
   report,
   completedWithLimitations = false,
+  reportHeadingRef,
 }: Readonly<AnalysisReportViewProps>) {
   const [selectedFindingId, setSelectedFindingId] = useState<string>();
   const [packagePath, setPackagePath] = useState<string>();
+  const evidenceTriggerRef = useRef<HTMLButtonElement>(null);
+  const findingsHeadingRef = useRef<HTMLHeadingElement>(null);
   const packages = report.facts.flatMap((fact) =>
     fact.details?.kind === "workspace_package" ? [fact.details.package] : [],
   );
@@ -447,7 +451,13 @@ export function AnalysisReportView({
         <p className="font-mono text-sm text-muted-foreground">{repository}</p>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-medium tracking-tight sm:text-4xl">Analysis report</h1>
+            <h1
+              ref={reportHeadingRef}
+              tabIndex={-1}
+              className="rounded-sm text-3xl font-medium tracking-tight outline-none focus-visible:ring-3 focus-visible:ring-ring sm:text-4xl"
+            >
+              Analysis report
+            </h1>
             {report.input.type === "repository" ? (
               <p className="mt-1 font-mono text-xs text-muted-foreground">
                 {report.input.repository.ref ?? "resolved revision"} @{" "}
@@ -673,7 +683,12 @@ export function AnalysisReportView({
 
       <section className="grid gap-4" aria-labelledby="findings-title">
         <div>
-          <h2 id="findings-title" className="text-xl font-semibold tracking-tight">
+          <h2
+            ref={findingsHeadingRef}
+            tabIndex={-1}
+            id="findings-title"
+            className="rounded-sm text-xl font-semibold tracking-tight outline-none focus-visible:ring-3 focus-visible:ring-ring"
+          >
             Findings
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -760,7 +775,8 @@ export function AnalysisReportView({
                         description={finding.description}
                         category={finding.category}
                         ruleId={finding.rule.id}
-                        onViewEvidence={() => {
+                        onViewEvidence={(event) => {
+                          evidenceTriggerRef.current = event.currentTarget;
                           setSelectedFindingId(finding.id);
                         }}
                       />
@@ -779,6 +795,9 @@ export function AnalysisReportView({
             report={report}
             onClose={() => {
               setSelectedFindingId(undefined);
+              const trigger = evidenceTriggerRef.current;
+              (trigger?.isConnected ? trigger : findingsHeadingRef.current)?.focus();
+              evidenceTriggerRef.current = null;
             }}
           />
         )}
