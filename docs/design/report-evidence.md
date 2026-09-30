@@ -20,6 +20,15 @@ whole report. React derives filtered lists during rendering. Analyzer-supplied d
 confirmed issues, update opportunities and review advice. TanStack Query retains remote-state,
 cancellation and terminal-polling ownership.
 
+Evidence details remain an inline disclosure. Opening moves focus to its heading; explicit Close
+returns focus to the originating View evidence button. If that button is disconnected, focus goes
+to the Findings heading. Filtering or navigating away does not restore focus. There is no dialog
+role or focus trap. Programmatically focused headings retain a visible keyboard focus indicator.
+
+Quick-analysis success focuses the report heading once and announces completion through a stable
+polite status region. Reset clears the announcement and returns focus to the introduction heading;
+initial load and ordinary rerenders do not autofocus.
+
 Limitations precede findings and group by structured reason and package scope, preserving every
 message, affected file/check and score link. A known lint configuration can satisfy existence while
 its external preset internals stay opaque. Unsupported selection settings still block checks that

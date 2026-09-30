@@ -170,7 +170,7 @@ Maintainability, Testing and Tooling score named static setup checks with equal 
 evidence blocks the relevant score; not-applicable checks are distinct. Overall is the applicable
 mean capped by Dependencies and Security. These are product bands, not percentages of safety.
 
-The v4 analyzer supports workspace manifests, pnpm catalogs/importers, JSONC, MDX, bounded local
+The v5 analyzer supports workspace manifests, pnpm catalogs/importers, JSONC, MDX, bounded local
 configuration imports and script delegation. It supplies checklists, package scopes and linked
 explanations to the report. Opaque presets and dynamic commands retain precise limitations.
 

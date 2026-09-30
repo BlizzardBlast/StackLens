@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import type { ReactNode } from "react";
+import type { MouseEventHandler, ReactNode } from "react";
 
 import { Button } from "#components/button";
 import { ConfidenceIndicator, FindingTypeBadge, SeverityBadge } from "#domain/finding-badges";
@@ -28,7 +28,7 @@ export interface FindingCardProps {
   description: ReactNode;
   category: ScoreCategory;
   ruleId: RuleReference["id"];
-  onViewEvidence?: () => void;
+  onViewEvidence?: MouseEventHandler<HTMLButtonElement>;
   className?: string;
 }
 

@@ -200,3 +200,10 @@ unchanged successful tasks; changed suites ran freshly. git diff --check passed.
 Delivery: [PR #38](https://github.com/BlizzardBlast/StackLens/pull/38) is stacked on PR #37's
 `codex/design-palette-typography` branch. GitHub's quality workflow passed for implementation
 commit `e91ed4c4d8eb54f72a848fc84cd0486aaca6e385`. The same PR includes the release handover.
+
+## September 29 correction record
+
+The subsequent [eight-finding remediation](review-findings-remediation.md) corrects npm internal-link
+eligibility, Node discovery and migration aggregation. Current analyzer/rule-set identities are v5;
+JS-INSPECTION-018 is version 2 and JS-MIGRATION-014 is version 3. Schema 2.0.0 and stack-health-v3
+formulas are unchanged. The phase records above retain their original versions and verification.

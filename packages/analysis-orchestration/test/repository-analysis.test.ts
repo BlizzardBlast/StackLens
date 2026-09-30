@@ -32,6 +32,92 @@ const baseCommand = {
 } as const;
 
 describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-009]", () => {
+  it.each(["packages/lib", "packages/missing", "../outside"])(
+    "never queries external providers for npm link target %s [FR-005, FR-023]",
+    async (target) => {
+      const manifest = {
+        workspaces: ["packages/*"],
+        packageManager: "npm@11.0.0",
+        dependencies: { "local-lib": "1.0.0" },
+      };
+      const snapshot = repositorySuccess({
+        manifest: JSON.stringify(manifest),
+        lockfile: {
+          path: "package-lock.json",
+          content: JSON.stringify({
+            lockfileVersion: 3,
+            packages: {
+              "": manifest,
+              "node_modules/local-lib": { link: true, resolved: target },
+              "packages/lib": { name: "local-lib", version: "1.0.0" },
+            },
+          }),
+        },
+      });
+      if (!snapshot.ok) throw new Error("Expected fixture snapshot");
+      const memberContent = JSON.stringify({ name: "local-lib", version: "1.0.0" });
+      const githubRepositoryProvider = provider<GitHubRepositoryRequest, GitHubRepositorySnapshot>(
+        "github-rest",
+        async () => ({
+          ...snapshot,
+          data: {
+            ...snapshot.data,
+            files: [
+              ...snapshot.data.files,
+              {
+                path: "packages/lib/package.json",
+                content: memberContent,
+                blobSha: "e".repeat(40),
+                byteLength: memberContent.length,
+              },
+            ],
+            manifestPaths: ["package.json", "packages/lib/package.json"],
+            workspaceDiscoveryComplete: true,
+          },
+        }),
+      );
+      const npmRegistryProvider = provider<NpmPackageMetadataRequest, NpmPackageMetadata>(
+        "npm-registry",
+        async () => {
+          throw new Error("Internal links must not query npm");
+        },
+      );
+      const osvProvider = provider<OsvVulnerabilityRequest, OsvVulnerabilitySnapshot>(
+        "osv",
+        async () => {
+          throw new Error("Internal links must not query OSV");
+        },
+      );
+      const result = await analyzePublicGitHubRepository(baseCommand, {
+        githubRepositoryProvider,
+        npmRegistryProvider,
+        osvProvider,
+      });
+      expect(npmRegistryProvider.fetchMock).not.toHaveBeenCalled();
+      expect(osvProvider.fetchMock).not.toHaveBeenCalled();
+      if (!result.ok) throw new Error("Expected workspace report");
+      expect(result.report.partialFailures).toEqual([]);
+      expect(
+        result.report.facts.some(
+          (fact) => fact.type === "dependency.inventory" && fact.subject.name === "local-lib",
+        ),
+      ).toBe(true);
+      expect(
+        result.report.facts.some((fact) => fact.type === "dependency.workspace.internal"),
+      ).toBe(target === "packages/lib");
+      expect(
+        result.report.findings.filter((finding) =>
+          ["dependencies", "security"].includes(finding.category),
+        ),
+      ).toEqual([]);
+      for (const category of ["dependencies", "security"] as const) {
+        expect(result.report.scores.categories[category].status).toBe(
+          target === "packages/lib" ? "not_applicable" : "insufficient_evidence",
+        );
+      }
+      expect(AnalysisReportSchema.safeParse(result.report).success).toBe(true);
+    },
+  );
   it("deduplicates workspace providers while keeping versions distinct and peers internal", async () => {
     const snapshot = repositorySuccess({
       manifest: JSON.stringify({
@@ -179,8 +265,8 @@ describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-
       },
     });
     expect(result.report.analyzer).toEqual({
-      version: "javascript-production-v4",
-      ruleSetVersion: "javascript-rules-v4",
+      version: "javascript-production-v5",
+      ruleSetVersion: "javascript-rules-v5",
       scoringVersion: "stack-health-v3",
     });
 

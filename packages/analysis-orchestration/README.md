@@ -4,7 +4,7 @@ Transport-independent application orchestration for StackLens analysis.
 
 The package currently owns:
 
-- the repository and provider-free quick-manifest v4 analyzer composition roots (schema 2.0.0);
+- the repository and provider-free quick-manifest v5 analyzer composition roots (schema 2.0.0);
 - public GitHub repository analysis orchestration;
 - deterministic provider sequencing and metadata bounds;
 - transport-independent repository progress events whose observers may be asynchronous and are awaited;

@@ -1,6 +1,6 @@
 import { startStackLensWorker } from "./runtime.js";
 
-const DEFAULT_DATABASE_URL = "postgresql://stacklens:stacklens@127.0.0.1:5432/stacklens";
+const DEFAULT_DATABASE_URL = "postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens";
 const DEFAULT_CONCURRENCY = 2;
 
 function environmentInteger(name: string, fallback: number): number {

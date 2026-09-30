@@ -187,10 +187,7 @@ packages: {}
     ]);
 
     expect(parsed.snapshot?.resolutions).toEqual([]);
-    expect(parsed.issues.map((item) => item.code)).toEqual([
-      "lockfile_specifier_mismatch",
-      "lockfile_resolution_non_semver",
-    ]);
+    expect(parsed.issues.map((item) => item.code)).toEqual(["lockfile_specifier_mismatch"]);
 
     const ambiguous = normalizeResolvedDependencies(manifest, [
       { path: "package-lock.json", content: packageLock },

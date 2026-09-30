@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 
 import { Button } from "@stacklens/ui/components/button";
 
@@ -11,6 +11,10 @@ interface SelectedManifest {
   readonly content: string;
   readonly size: number;
 }
+
+type FileState =
+  | { readonly status: "empty" | "reading" | "failed" }
+  | { readonly status: "ready"; readonly generation: number; readonly manifest: SelectedManifest };
 
 export interface QuickAnalysisFormProps {
   readonly onSubmit: (input: QuickManifestAnalysisInput) => Promise<void>;
@@ -35,8 +39,19 @@ export function QuickAnalysisForm({
 }: Readonly<QuickAnalysisFormProps>) {
   const [mode, setMode] = useState<InputMode>("paste");
   const [pastedContent, setPastedContent] = useState("");
-  const [selectedManifest, setSelectedManifest] = useState<SelectedManifest>();
+  const [fileState, setFileState] = useState<FileState>({ status: "empty" });
+  const fileGeneration = useRef(0);
   const [clientError, setClientError] = useState<string>();
+
+  useEffect(
+    () => () => {
+      fileGeneration.current += 1;
+    },
+    [],
+  );
+
+  const selectedManifest = fileState.status === "ready" ? fileState.manifest : undefined;
+  const isReading = fileState.status === "reading";
 
   function clearErrors(): void {
     setClientError(undefined);
@@ -44,33 +59,43 @@ export function QuickAnalysisForm({
   }
 
   function selectMode(nextMode: InputMode): void {
+    fileGeneration.current += 1;
+    setFileState({ status: "empty" });
     setMode(nextMode);
     clearErrors();
   }
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>): Promise<void> {
     const file = event.currentTarget.files?.[0];
+    const generation = ++fileGeneration.current;
+    setFileState({ status: file === undefined ? "empty" : "reading" });
     clearErrors();
 
     if (file === undefined) {
-      setSelectedManifest(undefined);
       return;
     }
 
     try {
       const content = await file.text();
-      setSelectedManifest({
-        filename: file.name,
-        content,
-        size: file.size,
+      if (generation !== fileGeneration.current) return;
+      setFileState({
+        status: "ready",
+        generation,
+        manifest: {
+          filename: file.name,
+          content,
+          size: file.size,
+        },
       });
     } catch {
-      setSelectedManifest(undefined);
+      if (generation !== fileGeneration.current) return;
+      setFileState({ status: "failed" });
       setClientError("StackLens could not read this file in your browser.");
     }
   }
 
   async function submit(): Promise<void> {
+    if (isPending || isReading) return;
     if (mode === "paste") {
       if (pastedContent.trim().length === 0) {
         setClientError("Paste package.json content before running quick analysis.");
@@ -82,7 +107,7 @@ export function QuickAnalysisForm({
       return;
     }
 
-    if (selectedManifest === undefined) {
+    if (fileState.status !== "ready" || fileState.generation !== fileGeneration.current) {
       setClientError("Choose a package.json file before running quick analysis.");
       return;
     }
@@ -90,8 +115,8 @@ export function QuickAnalysisForm({
     setClientError(undefined);
     await onSubmit({
       kind: "upload",
-      filename: selectedManifest.filename,
-      content: selectedManifest.content,
+      filename: fileState.manifest.filename,
+      content: fileState.manifest.content,
     }).catch(() => undefined);
   }
 
@@ -196,7 +221,10 @@ export function QuickAnalysisForm({
           <label htmlFor="manifest-file" className="text-sm font-semibold">
             Local package.json
           </label>
-          <div className="grid gap-4 rounded-xl border border-dashed bg-muted/20 p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+          <div
+            aria-busy={isReading}
+            className="grid gap-4 rounded-xl border border-dashed bg-muted/20 p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+          >
             <div className="grid gap-1">
               <p className="text-sm font-semibold">
                 {selectedManifest?.filename ?? "Select a manifest from this device"}
@@ -224,6 +252,9 @@ export function QuickAnalysisForm({
           <p id="manifest-file-help" className="text-xs leading-5 text-muted-foreground">
             Choose a JSON file named package.json.
           </p>
+          <output aria-live="polite" className="text-sm text-muted-foreground">
+            {isReading ? "Reading file…" : ""}
+          </output>
         </div>
       )}
 
@@ -238,7 +269,7 @@ export function QuickAnalysisForm({
       )}
 
       <div className="grid gap-3">
-        <Button type="submit" disabled={isPending} size="lg" className="w-full">
+        <Button type="submit" disabled={isPending || isReading} size="lg" className="w-full">
           {isPending ? (
             <>
               <span

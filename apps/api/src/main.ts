@@ -1,6 +1,6 @@
 import { createStackLensApiRuntime } from "./runtime.js";
 
-const DEFAULT_DATABASE_URL = "postgresql://stacklens:stacklens@127.0.0.1:5432/stacklens";
+const DEFAULT_DATABASE_URL = "postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens";
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = 3000;
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { InspectionCheckDetails } from "@stacklens/contracts";
+import { stackHealthScorer } from "@stacklens/scoring";
 
 import type { JavaScriptAnalysisMetadata } from "../src/analysis-metadata.js";
 import type { JavaScriptStaticProjectFile } from "../src/project-snapshot.js";
@@ -12,9 +13,10 @@ function inspect(
   manifest: unknown,
   files: JavaScriptStaticProjectFile[],
   metadata: JavaScriptAnalysisMetadata = {},
+  complete = true,
 ) {
   const project = createWorkspaceProject(JSON.stringify(manifest), files, {
-    complete: true,
+    complete,
     candidateSourceFiles: files.length,
     acquiredSourceFiles: files.length,
     lockfilePaths: [],
@@ -56,6 +58,65 @@ function inspect(
   };
 }
 describe("FR-018 FR-019 FR-020 FR-023 named workspace checks", () => {
+  it.each([
+    "src/example.test.js",
+    "src/example-test.cjs",
+    "src/example_test.mjs",
+    "src/test-example.js",
+    "src/test.js",
+    "test/example.js",
+    "nested/test/helper.js",
+  ])("recognizes Node default discovery: %s", (path) => {
+    expect(
+      inspect({ scripts: { test: "node --test" } }, [{ path, content: "export {};" }]).state(
+        "test.files",
+      ),
+    ).toBe("pass");
+  });
+  it.each(["src/example.spec.js", "__tests__/helper.js", "src/example.test.jsx"])(
+    "does not borrow other runners' discovery: %s",
+    (path) => {
+      const files = [{ path, content: "export {};" }];
+      expect(inspect({ scripts: { test: "node --test" } }, files).state("test.files")).toBe("fail");
+      expect(
+        inspect({ scripts: { test: "node --test" } }, files, {}, false).state("test.files"),
+      ).toBe("unknown");
+    },
+  );
+  it("keeps runtime-dependent Node TypeScript and selection flags unknown", () => {
+    expect(
+      inspect({ scripts: { test: "node --test test" } }, [
+        { path: "src/example.test.js", content: "export {};" },
+      ]).state("test.files"),
+    ).toBe("unknown");
+    expect(
+      inspect({ scripts: { test: "node --test" } }, [
+        { path: "test/example.ts", content: "export {};" },
+      ]).state("test.files"),
+    ).toBe("unknown");
+    expect(
+      inspect({ scripts: { test: "node --test other/*.js" } }, [
+        { path: "test/example.js", content: "export {};" },
+      ]).state("test.files"),
+    ).toBe("unknown");
+  });
+  it.each([
+    ["src/example.spec.js", 50],
+    ["test/example.js", 100],
+  ] as const)("scores supported Node setup for %s as %i", (path, expected) => {
+    const { result } = inspect({ scripts: { test: "node --test" } }, [
+      { path, content: "export {};" },
+    ]);
+    const scores = stackHealthScorer.score({
+      facts: result.facts ?? [],
+      findings: [],
+      sources: [],
+      evidence: [],
+      limitations: result.limitations ?? [],
+      partialFailures: [],
+    });
+    expect(scores.categories.testing).toMatchObject({ status: "available", value: expected });
+  });
   it("keeps Playwright matches within testDir and ignores unrelated runner configuration", () => {
     const files = [
       { path: "src/example.test.ts", content: "export {};" },

@@ -1743,3 +1743,52 @@ no physical-device or assistive-technology device claim is made.
 
 **Traceability:** FR-001–FR-004, FR-011, NFR-006, NFR-008, NFR-009, SEC-003, GOV-002, GOV-006,
 GOV-007; ADR-0004, ADR-0014.
+
+## 2026-09-29 — Eight review findings remediated
+
+The approved correction plan addresses CR-P1-001–004 and CR-P2-001–004 from baseline `962146e`.
+Verified npm workspace links now retain internal identity and avoid npm/OSV requests; unresolved
+links stay limited. Node test discovery follows supported Node patterns, correcting the audited
+Testing examples to 50 and 100 without changing the formula. Migration opportunities aggregate
+matching current/target versions within each package scope and retain all contributing evidence.
+
+API and Worker default to Compose port 55432 while preserving explicit overrides. Local upload
+reads use generations so replacement cannot submit or overwrite stale content. Authoritative 404s
+stop automatic polling/focus/reconnect requests while manual retry can resume active polling.
+Inline evidence Close returns focus to its trigger or Findings heading. Quick completion announces
+the result and focuses the report heading; reset returns to the introduction without load-time
+or rerender autofocus. The local-read status sits outside its busy file panel.
+
+JS-INSPECTION-018 advances from 1 to 2; JS-MIGRATION-014 from 2 to 3. Production and provider-free
+quick analyzer/rule-set identities advance from v4 to v5. Schema 2.0.0, both report readers,
+stack-health-v3 formulas, REST payloads, database schema and historical report values are preserved.
+No migration, backfill, dependency upgrade or deployment change is needed.
+
+The capped review used three sweeps across the complete ledger. Sweep 2 corrected peer-only npm
+lookup and unsupported Node positional arguments; sweep 3 corrected the busy/live-status nesting.
+Focused analyzer, orchestration, contracts, scoring, API/Worker and UI/web checks passed. Compiled
+API/Worker smoke passed against an isolated PostgreSQL database with the smoke-only Worker task list.
+Production-router tests cover both report schemas. Browser checks cover 1280px and 320px, both themes,
+reduced motion, upload replacement, 404 recovery, visible keyboard focus and evidence controls with
+no horizontal page overflow. This is browser/DOM evidence, not actual screen-reader testing.
+
+The [remediation ledger](../implementation/review-findings-remediation.md) holds final full-gate,
+cleanup, coverage and decision evidence. Changes were left uncommitted at the September 29 gate.
+
+**Traceability:** FR-002, FR-003, FR-005, FR-014, FR-017–FR-023, SCORE-002/003,
+NFR-006–NFR-009, SEC-001/002, GOV-002/007.
+
+Final completion gate: `pnpm check` with `TEST_DATABASE_URL` passed all 491 tests, build, compiled
+runtime smoke, UI configuration, typecheck, lint and formatting. The isolated database was removed
+and PostgreSQL restored to its original stopped state. All eight findings are resolved for this scope.
+
+## 2026-09-30 — Remediation submitted for review
+
+The user authorized a new PR for the completed eight-finding remediation. The reviewed branch is
+committed and proposed against `main`. No behavior or scoring policy changed after the September 29
+completion gate; this entry records publication and preserves the earlier verification history.
+See the [remediation ledger](../implementation/review-findings-remediation.md) for review coverage,
+tests and exact changed paths. No merge or deployment is part of this step.
+
+**Traceability:** GOV-002, GOV-007; FR-002, FR-003, FR-005, FR-014, FR-017–FR-023,
+SCORE-002/003, NFR-006–NFR-009, SEC-001/002.

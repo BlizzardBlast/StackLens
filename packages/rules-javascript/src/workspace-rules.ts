@@ -16,6 +16,7 @@ import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
 import { createDependencyInventoryEvidence } from "./dependency-inventory.js";
 import { createResolvedDependencyEvidence } from "./lockfile.js";
 import { isSupportedLockfilePath } from "./lockfile.js";
+import { isExternalDependency } from "./manifest.js";
 import { createProjectConfigurationEvidence } from "./project-configuration.js";
 import { createReadinessEvidence } from "./project-readiness.js";
 import type { JavaScriptProjectSnapshot } from "./project-snapshot.js";
@@ -176,11 +177,7 @@ export function scopeFindingRule(
                   (fact.details?.kind === "dependency_inventory"
                     ? fact.details.dependencyGroup
                     : "") &&
-                (declaration.peerOnly ||
-                  declaration.internalPackagePath !== undefined ||
-                  (declaration.effectiveSpecifier ?? declaration.declaredSpecifier).startsWith(
-                    "workspace:",
-                  )),
+                !isExternalDependency(declaration),
             ),
         );
         const result = rule.evaluate({ ...local, facts });
