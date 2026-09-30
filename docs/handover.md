@@ -1,6 +1,6 @@
 # StackLens Session Handover
 
-> **Prepared:** 2026-09-29
+> **Prepared:** 2026-09-30
 > **Architecture:** v0.1.15
 > **Milestone:** Eight-finding review remediation
 > **Publication:** Review PR from `codex/review-findings`; no merge or deployment
@@ -27,6 +27,13 @@ providers when internal or unresolved. Node discovery uses supported Node conven
 migration declarations share one opportunity with combined evidence. API and Worker both default to
 Compose port 55432. File generations prevent stale uploads; authoritative 404s stop automatic
 refetches. Explicit evidence Close and quick completion/reset restore useful keyboard focus.
+
+Final review of PR #40 found one remaining missing-lockfile case: without a package-manager hint,
+a declaration sharing an acquired workspace member name still reached npm/OSV. The PR follow-up
+marks this case unresolved without inventing an internal edge. Unrelated names remain external.
+Focused regressions and a fresh database-backed `pnpm check` passed, including compiled runtime
+smoke. The dedicated follow-up database was removed and Docker restored to its original stopped
+state. PR #40 still awaits merge review; no merge or deployment occurred.
 
 [Scoring policy](implementation/scoring.md), [report contract](implementation/analysis-contracts.md),
 [report design](design/report-evidence.md) and ADR-0013 remain authoritative. Provider responses and

@@ -1,6 +1,6 @@
 # JavaScript Rules
 
-## Current v4 behavior (2026-09-27)
+## Current v5 behavior (2026-09-30)
 
 ADR-0013 supersedes historical priority/deduction/coverage slices below. Production reports use
 schema 2.0.0 with package-scoped workspace checks and stack-health-v3. Workspace catalogs/importers,
@@ -562,6 +562,11 @@ existing workspace limitations. A shared eligibility predicate excludes both fro
 collection, external lockfile normalization and finding scoping. No registry version or clean
 score is fabricated for an unresolved target. Peer-only constraints do not require installation
 evidence. Existing pnpm handling and Yarn support boundaries remain unchanged.
+
+When neither a lockfile nor a package-manager hint is present, a declaration sharing an acquired
+workspace member's package name remains unresolved. npm can link a member under a standard version
+specifier, so absent installation evidence cannot prove an external installation. No internal edge
+is claimed; declarations without a matching member remain eligible for external metadata.
 
 ## FR-014 migration opportunities
 

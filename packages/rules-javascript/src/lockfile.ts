@@ -654,7 +654,14 @@ export function createNpmWorkspaceLinkResolver(
   if (selection.file !== undefined && selection.file.path !== "package-lock.json")
     return () => ({});
   const npmFile = files.find((file) => file.path === "package-lock.json");
-  if (npmFile === undefined && !manifest.packageManager?.startsWith("npm@")) return () => ({});
+  // Without a manager hint or lockfile, a same-name workspace may be npm-linked.
+  // Keep that declaration unresolved instead of treating it as an external installation.
+  if (
+    npmFile === undefined &&
+    manifest.packageManager !== undefined &&
+    !manifest.packageManager.startsWith("npm@")
+  )
+    return () => ({});
   let parsed: unknown;
   try {
     parsed = npmFile === undefined ? undefined : JSON.parse(npmFile.content);

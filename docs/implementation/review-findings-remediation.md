@@ -151,6 +151,24 @@ All eight ledger IDs are resolved, with no unresolved in-scope regression. Scope
 The September 29 implementation gate left changes uncommitted on `codex/review-findings`.
 The September 30 follow-up authorized commit, push and a review PR. No merge or deployment occurred.
 
+## September 30 final-review correction
+
+The subsequent read-only review of PR #40 found one remaining CR-P1-001 path. With an acquired
+same-name workspace member, no lockfile and no package-manager hint, the resolver returned an
+external declaration with no workspace limitation. Repository orchestration could then request
+npm metadata and exact-version OSV data. This contradicted the accepted missing-evidence behavior.
+
+The follow-up treats this case as an unresolved internal target, not a verified internal edge. An
+explicit non-npm manager or an authoritative non-npm lockfile retains its existing boundary;
+declarations without a matching acquired member remain external. Focused regressions failed before
+the correction, then passed. Both affected package suites and typechecks passed. A fresh
+`pnpm check` with `TEST_DATABASE_URL` passed build, compiled runtime smoke, UI configuration, typecheck,
+all 22 test-graph tasks, lint and formatting, including database-backed persistence/API checks.
+The dedicated `stacklens_pr40_followup_20260930` database was dropped after confirming zero active
+connections and zero remaining databases with that name. The originally stopped PostgreSQL
+container and Docker Desktop engine were stopped again. No analyzed repository content was
+executed. This correction follows the original three-sweep ledger rather than rewriting its history.
+
 ## Exact working-tree changes
 
 The following paths are the complete remediation inventory relative to baseline `962146e`.

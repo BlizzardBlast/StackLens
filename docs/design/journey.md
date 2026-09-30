@@ -1792,3 +1792,18 @@ tests and exact changed paths. No merge or deployment is part of this step.
 
 **Traceability:** GOV-002, GOV-007; FR-002, FR-003, FR-005, FR-014, FR-017–FR-023,
 SCORE-002/003, NFR-006–NFR-009, SEC-001/002.
+
+## 2026-09-30 — Final-review workspace correction
+
+Final review of PR #40 found a remaining CR-P1-001 case: when a declared workspace member shares a
+dependency name but neither a lockfile nor a package-manager hint is available, the dependency was
+still sent to npm and OSV. The follow-up keeps this declaration unresolved without claiming a
+verified internal edge. Unrelated dependency names remain external. This preserves conservative
+provider eligibility and score limitations without changing reports, scoring formulas or schemas.
+
+New unit and synthetic repository-analysis regressions cover missing lockfile evidence, zero
+external-provider requests, inventory retention, absence of a fabricated internal edge and
+insufficient-evidence scores. Both affected package suites and typechecks passed. The follow-up
+remains in PR #40; no merge or deployment occurred.
+
+**Traceability:** FR-005, FR-023, SCORE-003, SEC-001, SEC-002, GOV-002, GOV-007.

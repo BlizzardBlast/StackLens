@@ -70,6 +70,55 @@ function fixture(
 }
 
 describe("npm internal links [FR-005, FR-023, SCORE-003, SEC-002]", () => {
+  it.each([undefined, "npm@11.0.0"])(
+    "keeps a matching workspace declaration unresolved without a lockfile (manager %s)",
+    (packageManager) => {
+      const root = {
+        workspaces: ["packages/*"],
+        dependencies: { lib: "1.0.0" },
+        ...(packageManager === undefined ? {} : { packageManager }),
+      };
+      const project = createWorkspaceProject(
+        JSON.stringify(root),
+        [
+          {
+            path: "packages/lib/package.json",
+            content: JSON.stringify({ name: "lib", version: "1.0.0" }),
+          },
+        ],
+        {
+          complete: true,
+          candidateSourceFiles: 0,
+          acquiredSourceFiles: 0,
+          lockfilePaths: [],
+          lockfileIssueCount: 0,
+        },
+      );
+      expect(project.dependencies[0]).toMatchObject({ unresolvedInternalTarget: true });
+      expect(project.dependencies[0]?.internalPackagePath).toBeUndefined();
+      expect(externalDeclarations(project)).toEqual([]);
+      expect(project.workspaceIssues).toContainEqual(
+        expect.objectContaining({ code: "workspace_dependency_unresolved" }),
+      );
+    },
+  );
+
+  it("keeps an unrelated dependency external when no workspace member matches", () => {
+    const project = createWorkspaceProject(
+      JSON.stringify({ workspaces: ["packages/*"], dependencies: { external: "1.0.0" } }),
+      [{ path: "packages/lib/package.json", content: JSON.stringify({ name: "lib" }) }],
+      {
+        complete: true,
+        candidateSourceFiles: 0,
+        acquiredSourceFiles: 0,
+        lockfilePaths: [],
+        lockfileIssueCount: 0,
+      },
+    );
+    expect(externalDeclarations(project)).toMatchObject([{ name: "external" }]);
+    expect(project.workspaceIssues).toEqual([]);
+  });
+
   it("does not require installation evidence for peer-only constraints", () => {
     const project = createWorkspaceProject(
       JSON.stringify({

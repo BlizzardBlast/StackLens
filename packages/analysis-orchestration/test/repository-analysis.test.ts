@@ -32,6 +32,73 @@ const baseCommand = {
 } as const;
 
 describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-009]", () => {
+  it("keeps an unpinned workspace dependency out of providers without lockfile evidence [FR-005, FR-023, SCORE-003]", async () => {
+    const manifest = JSON.stringify({
+      workspaces: ["packages/*"],
+      dependencies: { "local-lib": "1.0.0" },
+    });
+    const snapshot = repositorySuccess({ manifest });
+    if (!snapshot.ok) throw new Error("Expected fixture snapshot");
+    const memberContent = JSON.stringify({ name: "local-lib", version: "1.0.0" });
+    const githubRepositoryProvider = provider<GitHubRepositoryRequest, GitHubRepositorySnapshot>(
+      "github-rest",
+      async () => ({
+        ...snapshot,
+        data: {
+          ...snapshot.data,
+          files: [
+            ...snapshot.data.files,
+            {
+              path: "packages/lib/package.json",
+              content: memberContent,
+              blobSha: "e".repeat(40),
+              byteLength: memberContent.length,
+            },
+          ],
+          manifestPaths: ["package.json", "packages/lib/package.json"],
+          workspaceDiscoveryComplete: true,
+        },
+      }),
+    );
+    const npmRegistryProvider = provider<NpmPackageMetadataRequest, NpmPackageMetadata>(
+      "npm-registry",
+      async ({ packageName }) => npmSuccess(packageName, "1.0.0"),
+    );
+    const osvProvider = provider<OsvVulnerabilityRequest, OsvVulnerabilitySnapshot>(
+      "osv",
+      async (request) => osvSuccess(request),
+    );
+
+    const result = await analyzePublicGitHubRepository(baseCommand, {
+      githubRepositoryProvider,
+      npmRegistryProvider,
+      osvProvider,
+    });
+    expect(npmRegistryProvider.fetchMock).not.toHaveBeenCalled();
+    expect(osvProvider.fetchMock).not.toHaveBeenCalled();
+    if (!result.ok) throw new Error("Expected workspace report");
+    expect(result.report.partialFailures).toEqual([]);
+    expect(result.report.facts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "dependency.inventory",
+          subject: expect.objectContaining({ name: "local-lib" }),
+        }),
+      ]),
+    );
+    expect(result.report.facts.some((fact) => fact.type === "dependency.workspace.internal")).toBe(
+      false,
+    );
+    expect(result.report.limitations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ reasonCode: "workspace_dependency_unresolved" }),
+      ]),
+    );
+    for (const category of ["dependencies", "security"] as const)
+      expect(result.report.scores.categories[category].status).toBe("insufficient_evidence");
+    expect(AnalysisReportSchema.safeParse(result.report).success).toBe(true);
+  });
+
   it.each(["packages/lib", "packages/missing", "../outside"])(
     "never queries external providers for npm link target %s [FR-005, FR-023]",
     async (target) => {
