@@ -1,8 +1,8 @@
 # StackLens Product & System Requirements
 
 > **Status:** Accepted baseline  
-> **Version:** 0.1.1  
-> **Last updated:** 2026-09-19  
+> **Version:** 0.1.2\
+> **Last updated:** 2026-10-01\
 > **Product:** StackLens  
 > **Repository:** BlizzardBlast/StackLens
 
@@ -772,6 +772,11 @@ Repository contents, manifests, configuration, metadata, URLs, and third-party p
 **Status:** Accepted
 
 StackLens must retain only the minimum analysis input/data necessary to provide the requested feature.
+
+Hosted anonymous repository analyses must have a documented, configurable finite lifetime.
+Expiry cleanup removes terminal analysis, report and delivery records together while preserving
+queued/running ownership. Expired in-flight analyses become eligible as soon as they reach a
+terminal state; operators must monitor stalled execution. Quick manifest analysis remains transient.
 
 Repository-delivery state may retain only source-free operational metadata needed for idempotent
 dispatch and recovery. It must not retain repository contents, manifest bodies, scripts, provider

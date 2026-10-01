@@ -6,6 +6,7 @@ import {
   createStackLensPool,
   DrizzleAnalysisRepository,
   migrateStackLensDatabase,
+  type StackLensPoolOptions,
 } from "@stacklens/persistence";
 import {
   createRepositoryAnalysisDeliveryDispatcher,
@@ -20,6 +21,8 @@ import { createStackLensApi } from "./server.js";
 export interface StackLensApiRuntimeOptions {
   readonly connectionString: string;
   readonly logger?: boolean;
+  readonly retentionHours?: number;
+  readonly databasePoolOptions?: StackLensPoolOptions;
   readonly onDatabasePoolError?: (error: Error) => void;
 }
 
@@ -31,7 +34,11 @@ export interface StackLensApiRuntime {
 export async function createStackLensApiRuntime(
   options: StackLensApiRuntimeOptions,
 ): Promise<StackLensApiRuntime> {
-  const pool = createStackLensPool(options.connectionString, options.onDatabasePoolError);
+  const pool = createStackLensPool(
+    options.connectionString,
+    options.onDatabasePoolError,
+    options.databasePoolOptions,
+  );
 
   try {
     const database = createStackLensDatabase(pool);
@@ -58,6 +65,7 @@ export async function createStackLensApiRuntime(
         repository,
         deliveryDispatcher,
         quickManifestAnalyzer,
+        retentionHours: options.retentionHours ?? 24,
         ...(options.logger === undefined ? {} : { logger: options.logger }),
       });
 

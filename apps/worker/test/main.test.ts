@@ -22,6 +22,8 @@ beforeEach(() => {
   vi.stubEnv("DATABASE_URL", undefined);
   vi.stubEnv("STACKLENS_WORKER_CONCURRENCY", undefined);
   vi.stubEnv("STACKLENS_GITHUB_TOKEN", undefined);
+  vi.stubEnv("STACKLENS_DATABASE_POOL_MAX", undefined);
+  vi.stubEnv("STACKLENS_DATABASE_SSL_CA", undefined);
   mocks.start.mockResolvedValue({ stop: mocks.stop });
 });
 
@@ -37,6 +39,20 @@ afterEach(() => {
 
 // FR-003, FR-022, NFR-009: default local startup and explicit overrides.
 describe("Worker executable configuration", () => {
+  it("forwards hosted database settings and limited concurrency [FR-003, FR-022, SEC-007]", async () => {
+    vi.stubEnv("STACKLENS_DATABASE_POOL_MAX", "5");
+    vi.stubEnv("STACKLENS_DATABASE_SSL_CA", "fixture CA forwarded to pool validation");
+    vi.stubEnv("STACKLENS_WORKER_CONCURRENCY", "1");
+    await import("../src/main.js");
+    await vi.waitFor(() =>
+      expect(mocks.start).toHaveBeenCalledWith(
+        expect.objectContaining({
+          databasePoolOptions: { max: 5, sslCa: "fixture CA forwarded to pool validation" },
+          concurrency: 1,
+        }),
+      ),
+    );
+  });
   it.each([
     [undefined, "postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens"],
     [

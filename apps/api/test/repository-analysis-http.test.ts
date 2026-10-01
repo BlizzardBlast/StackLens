@@ -187,6 +187,46 @@ async function testApi(
 }
 
 describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () => {
+  it("SEC-003/FR-004 returns 404 when retention removes a completed report between reads", async () => {
+    const persistence = repositoryHarness(
+      record({ status: "completed", progressStage: "completed" }),
+    );
+    const jobs = deliveryDispatcherHarness();
+    const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
+    const response = await app.inject({ method: "GET", url: "/v1/analyses/analysis-test-001" });
+    expect(response.statusCode).toBe(404);
+    expect(response.json()).toMatchObject({ code: "analysis_not_found" });
+  });
+  it("SEC-003 assigns configured expiry and prevents caching of accepted and failed requests", async () => {
+    const persistence = repositoryHarness();
+    const jobs = deliveryDispatcherHarness();
+    const app = await createStackLensApi({
+      repository: persistence.repository,
+      deliveryDispatcher: jobs.deliveryDispatcher,
+      createAnalysisId: () => "retention-test",
+      now: () => createdAt,
+      retentionHours: 24,
+    });
+    openApps.push(app);
+    const response = await app.inject({
+      method: "POST",
+      url: "/v1/analyses/repository",
+      payload: { repositoryUrl: "https://github.com/acme/demo" },
+    });
+    expect(response.statusCode).toBe(202);
+    expect(persistence.createQueuedRepositoryAnalysisWithDelivery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        retentionExpiresAt: new Date(new Date(createdAt).getTime() + 86_400_000).toISOString(),
+      }),
+    );
+    const missing = await app.inject({ method: "GET", url: "/v1/analyses/missing" });
+    expect(missing.statusCode).toBe(404);
+    for (const result of [response, missing]) {
+      expect(result.headers["cache-control"]).toBe("private, no-store");
+      expect(result.headers["cdn-cache-control"]).toBe("no-store");
+      expect(result.headers["vercel-cdn-cache-control"]).toBe("no-store");
+    }
+  });
   it("validates, canonicalizes, persists, and enqueues repository work before returning 202", async () => {
     const persistence = repositoryHarness();
     const jobs = deliveryDispatcherHarness();

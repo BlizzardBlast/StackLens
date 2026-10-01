@@ -1,10 +1,10 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.15
-> **Date:** 2026-09-27
+> **Architecture version:** 0.1.17
+> **Date:** 2026-10-01
 > **Requirements source:** [requirements.md](requirements.md)  
-> **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
+> **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
 ## 1. Architecture summary
 
@@ -819,6 +819,22 @@ A specific cloud vendor is intentionally not an architectural dependency. The de
 
 This preserves the open-source-core/self-hosting direction in **PRD-006**.
 
+The prepared hosted web target is Vercel under ADR-0015. Its programmatic configuration builds
+the static web dependency graph and forwards same-origin REST requests to an explicit HTTPS API
+origin. `Dockerfile` and `deploy/compose.production.yaml` prepare the separate API/Worker/PostgreSQL
+host with Caddy TLS routing; the provider remains replaceable. The local Compose boundary is unchanged.
+The managed preview preparation now uses Aiven PostgreSQL Free with an explicit CA and verified TLS.
+Shared persistence pool options configure finite connection acquisition and per-process connection
+limits; environment parsing remains outside analyzer policy. The free Node 24 Silly Worker is
+activated and both authenticated repository runs completed with limitations. A Render Free Docker
+API blueprint and dashboard form are prepared; activation awaits branch publication and backend
+secret-transfer approval after Northflank's actual form required card verification. See the
+[managed hosting runbook](implementation/managed-hosting.md) for current resources and limits.
+Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker
+maintenance purges expired terminal analysis/report/delivery records in bounded sweeps while
+preserving in-flight ownership. API responses prohibit browser/CDN caching. These are deployment
+and retention boundaries under SEC-003, not analyzer, scoring or report-schema changes.
+
 ## 19. Scaling path
 
 Do not introduce distributed complexity before measurements justify it.
@@ -844,7 +860,7 @@ Analyzer rule packages should remain reusable libraries even if orchestration is
 
 The following are not required to begin implementation:
 
-- hosted cloud provider;
+- backend hosted cloud provider (the static web target is selected in ADR-0015);
 - user/account authentication provider;
 - billing;
 - notification provider;
@@ -870,5 +886,6 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0010 — Static source parser compatibility under TypeScript 7](adr/0010-static-source-parser-typescript-7.md)
 - [ADR-0013 — Workspace inspection and risk/readiness scoring](adr/0013-workspace-inspection-and-scoring-v3.md)
 - [ADR-0014 — Transactional outbox for repository-analysis delivery](adr/0014-transactional-outbox-delivery.md)
+- [ADR-0015 — Vercel static web and portable backend target](adr/0015-vercel-static-web-target.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).

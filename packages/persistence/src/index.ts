@@ -2,6 +2,8 @@ export { createStackLensDatabase } from "./database.js";
 export type { StackLensDatabase } from "./database.js";
 
 export { createStackLensPool } from "./pool.js";
+export { readStackLensPoolOptions } from "./pool-options.js";
+export type { StackLensPoolOptions } from "./pool-options.js";
 
 export { migrateStackLensDatabase } from "./migrate.js";
 

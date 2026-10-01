@@ -1,3 +1,5 @@
+import { readStackLensPoolOptions } from "@stacklens/persistence";
+
 import { startStackLensWorker } from "./runtime.js";
 
 const DEFAULT_DATABASE_URL = "postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens";
@@ -29,13 +31,20 @@ function optionalEnvironmentSecret(name: string): string | undefined {
 }
 
 async function main(): Promise<void> {
+  if (process.env.NODE_ENV === "production" && !process.env.DATABASE_URL) {
+    throw new Error("Production Worker requires DATABASE_URL.");
+  }
   const githubToken = optionalEnvironmentSecret("STACKLENS_GITHUB_TOKEN");
   const runtime = await startStackLensWorker({
     connectionString: process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
+    databasePoolOptions: readStackLensPoolOptions(process.env),
     concurrency: environmentInteger("STACKLENS_WORKER_CONCURRENCY", DEFAULT_CONCURRENCY),
     ...(githubToken === undefined ? {} : { githubToken }),
     onDatabasePoolError(error) {
       process.stderr.write(`StackLens Worker database pool error (${errorName(error)}).\n`);
+    },
+    onRetentionError(error) {
+      process.stderr.write(`StackLens retention sweep failed (${errorName(error)}).\n`);
     },
   });
 

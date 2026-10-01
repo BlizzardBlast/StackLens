@@ -133,18 +133,22 @@ export function QuickAnalysisForm({
       <fieldset className="grid gap-3" disabled={isPending}>
         <legend className="mb-3 text-sm font-semibold">Choose your input</legend>
         <div className="grid gap-3 sm:grid-cols-2">
-          <label className="group cursor-pointer" aria-label="Paste manifest">
+          <label className="group cursor-pointer">
             <input
               className="peer sr-only"
               type="radio"
               name="quick-analysis-mode"
               value="paste"
+              aria-labelledby="quick-mode-paste-title"
+              aria-describedby="quick-mode-paste-help"
               checked={mode === "paste"}
               onChange={() => selectMode("paste")}
             />
             <span className="grid min-h-24 gap-2 rounded-xl border border-input bg-background p-4 transition-[background-color,border-color,box-shadow] group-hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5 peer-focus-visible:ring-3 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background">
               <span className="flex items-center justify-between gap-3">
-                <span className="text-sm font-semibold">Paste manifest</span>
+                <span id="quick-mode-paste-title" className="text-sm font-semibold">
+                  Paste manifest
+                </span>
                 <span
                   aria-hidden="true"
                   className="flex size-5 items-center justify-center rounded-full border border-input text-xs text-primary"
@@ -152,24 +156,28 @@ export function QuickAnalysisForm({
                   {mode === "paste" ? "✓" : null}
                 </span>
               </span>
-              <span className="text-xs leading-5 text-muted-foreground">
+              <span id="quick-mode-paste-help" className="text-xs leading-5 text-muted-foreground">
                 Best when package.json is already open in your editor.
               </span>
             </span>
           </label>
 
-          <label className="group cursor-pointer" aria-label="Choose local file">
+          <label className="group cursor-pointer">
             <input
               className="peer sr-only"
               type="radio"
               name="quick-analysis-mode"
               value="upload"
+              aria-labelledby="quick-mode-upload-title"
+              aria-describedby="quick-mode-upload-help"
               checked={mode === "upload"}
               onChange={() => selectMode("upload")}
             />
             <span className="grid min-h-24 gap-2 rounded-xl border border-input bg-background p-4 transition-[background-color,border-color,box-shadow] group-hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5 peer-focus-visible:ring-3 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background">
               <span className="flex items-center justify-between gap-3">
-                <span className="text-sm font-semibold">Choose local file</span>
+                <span id="quick-mode-upload-title" className="text-sm font-semibold">
+                  Choose local file
+                </span>
                 <span
                   aria-hidden="true"
                   className="flex size-5 items-center justify-center rounded-full border border-input text-xs text-primary"
@@ -177,7 +185,7 @@ export function QuickAnalysisForm({
                   {mode === "upload" ? "✓" : null}
                 </span>
               </span>
-              <span className="text-xs leading-5 text-muted-foreground">
+              <span id="quick-mode-upload-help" className="text-xs leading-5 text-muted-foreground">
                 Read package.json locally, then send only its text to StackLens.
               </span>
             </span>

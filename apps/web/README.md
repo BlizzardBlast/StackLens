@@ -81,6 +81,10 @@ Vite proxies `/v1` to `http://127.0.0.1:3000` locally. Production defaults to sa
 requests. `VITE_STACKLENS_API_BASE_URL` may be provided only when the deployment explicitly supports
 a separate API origin.
 
+The prepared Vercel target uses the repository root, a web-only Turbo build and same-origin API
+rewrites. Leave the browser API base URL unset and configure `STACKLENS_API_ORIGIN` in the Vercel
+project. See [hosting preparation](../../docs/implementation/vercel-hosting.md).
+
 ## Testing
 
 Focused tests cover:
@@ -102,6 +106,10 @@ The acceptance smoke uses the real production route tree and real web client sin
 only their network methods. This verifies route composition without depending on live providers.
 
 The repository-wide `pnpm check` remains the completion gate.
+
+The jsdom suite runs at most two workers to avoid CPU contention between large report fixtures.
+File isolation and the default five-second test timeout remain enabled. The release pass reproduced
+three timeouts under the default worker count; all 52 web tests passed with the two-worker limit.
 
 **Traceability:** FR-001–FR-004, FR-017, FR-021, FR-022, DATA-001–DATA-006,
 SCORE-001–SCORE-004, NFR-003, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002, SEC-003, SEC-007,

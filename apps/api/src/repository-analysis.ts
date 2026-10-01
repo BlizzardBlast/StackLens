@@ -20,6 +20,7 @@ export interface RepositoryAnalysisApplicationDependencies {
   readonly deliveryDispatcher: RepositoryAnalysisDeliveryDispatcher;
   readonly createAnalysisId?: () => string;
   readonly now?: () => string;
+  readonly retentionHours?: number;
 }
 
 export interface RepositoryAnalysisValidationError {
@@ -62,12 +63,26 @@ export async function submitRepositoryAnalysis(
 
   const analysisId = (dependencies.createAnalysisId ?? randomUUID)();
   const createdAt = (dependencies.now ?? (() => new Date().toISOString()))();
+  const retentionHours = dependencies.retentionHours;
+  if (
+    retentionHours !== undefined &&
+    (!Number.isSafeInteger(retentionHours) || retentionHours < 1 || retentionHours > 8_760)
+  ) {
+    throw new Error("Repository retention hours must be an integer from 1 to 8760.");
+  }
 
   const analysis = await createRepositoryAnalysisJob(
     {
       analysisId,
       repositoryUrl: repository.canonicalUrl,
       createdAt,
+      ...(retentionHours === undefined
+        ? {}
+        : {
+            retentionExpiresAt: new Date(
+              new Date(createdAt).getTime() + retentionHours * 3_600_000,
+            ).toISOString(),
+          }),
     },
     {
       repository: dependencies.repository,
@@ -97,5 +112,7 @@ export async function readRepositoryAnalysis(
 
   const report = await repository.findReport(analysis.id);
 
-  return report === undefined ? { analysis } : { analysis, report };
+  // Retention may remove a terminal record between the two reads. Never return completion
+  // without its report; use the same missing-analysis recovery as an already-purged row.
+  return report === undefined ? undefined : { analysis, report };
 }

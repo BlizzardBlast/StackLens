@@ -3,7 +3,7 @@
 ## Report compatibility and quick composition
 
 Existing URLs serve the shared strict schema 1.0.0/2.0.0 response union in Zod and OpenAPI. Quick
-manifest analysis injects the v4 provider-free composition from analysis-orchestration; the API
+manifest analysis injects the v5 provider-free composition from analysis-orchestration; the API
 does not reconstruct scoring. Saved reports round-trip unchanged. Deploy compatible readers before
 new writers; rollback must retain schema 2 support.
 
@@ -14,6 +14,13 @@ asynchronous public-repository analysis, while keeping the quick-manifest applic
 framework-independent. Long-running
 repository-analysis composition remains shared through `@stacklens/analysis-orchestration`; the API
 and Worker do not import each other.
+
+The executable runtime assigns repository expiry from `STACKLENS_RETENTION_HOURS` (24 hours by
+default, integer range 1–8760). Quick reports remain transient. All API responses carry browser/CDN
+`no-store` directives. A completed report removed during a retention/read race uses the existing
+404 recovery. Production startup requires an explicit `DATABASE_URL`. See
+[backend hosting](../../docs/implementation/backend-hosting.md) and the prepared
+[Render Free API preview](../../docs/implementation/render-hosting.md).
 
 ## Quick manifest analysis
 
@@ -133,6 +140,10 @@ pnpm --filter @stacklens/api dev
 The local defaults are `DATABASE_URL=postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens`,
 `STACKLENS_API_HOST=127.0.0.1`, and `STACKLENS_API_PORT=3000`. Production should provide an
 explicit `DATABASE_URL`.
+Hosted databases also accept `STACKLENS_DATABASE_SSL_CA` (actual multiline CA PEM) and
+`STACKLENS_DATABASE_POOL_MAX` (positive integer). Remove URL SSL parameters when supplying the
+explicit CA. The managed preview uses an API pool of three; credentials remain backend-only.
+See [managed hosting](../../docs/implementation/managed-hosting.md).
 
 `src/runtime.ts` owns infrastructure composition only: PostgreSQL pool, StackLens migrations,
 Graphile Worker queue utilities, the durable repository implementation, and Fastify construction.

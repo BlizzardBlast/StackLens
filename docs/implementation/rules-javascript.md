@@ -329,7 +329,7 @@ insufficient-evidence fixtures per DATA-004/NFR-002.
 
 ### FR-010 neutral npm health signal
 
-`JS-NPM-010@1` emits one package-level `dependency.health.npm_registry` fact when the normalized
+`JS-NPM-010@2` emits one package-level `dependency.health.npm_registry` fact when the normalized
 npm snapshot provides a valid `latest` record.
 
 The fact can state:
@@ -342,8 +342,12 @@ These are neutral verifiable signals, not a combined health score or maintenance
 "recent/stale/healthy/unhealthy/unmaintained" threshold is encoded. Therefore this slice does not
 create a combined interpretation that would require a new undisclosed rule.
 
-The fact references every project declaration evidence record for that package plus the exact npm
-Registry external evidence.
+The fact references external declaration evidence for that package plus the exact npm
+Registry external evidence. Internal workspace links, unresolved workspace targets and peer-only
+constraints use the same eligibility boundary as provider acquisition: no health fact and no
+missing-registry limitation. A same-name external declaration remains eligible independently
+(FR-005, FR-023). This correction advances only the production composition to v6; quick-manifest
+v5, report schema 2.0.0 and stack-health-v3 remain unchanged.
 
 ### Deterministic shared support
 

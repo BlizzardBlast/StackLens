@@ -69,8 +69,10 @@ Normal PR acceptance deliberately does not depend on:
 - visual layout judgment at physical viewport sizes;
 - manual keyboard/focus inspection.
 
-Those checks remain part of the next manual release-readiness pass. Their absence is not converted
-into a clean conclusion about deployment readiness.
+The [September 30 live release-readiness record](mvp-release-readiness.md) adds listening-browser,
+real Worker/provider, keyboard/focus and verified CSS-viewport evidence. Those observations remain
+separate from normal PR correctness. Actual screen-reader, physical-device and deployment checks
+remain unverified; no clean conclusion about deployment readiness is inferred.
 
 ## Permanent gate
 

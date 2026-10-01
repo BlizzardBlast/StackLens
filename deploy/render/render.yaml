@@ -1,0 +1,33 @@
+# PRD-006/NFR-004/SEC-007: one preview API; Worker and PostgreSQL use separate hosts.
+services:
+  - type: web
+    name: stacklens-api-preview
+    runtime: docker
+    repo: https://github.com/BlizzardBlast/StackLens
+    branch: codex/mvp-release-readiness
+    region: singapore
+    plan: free
+    numInstances: 1
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /openapi.json
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: STACKLENS_RUNTIME
+        value: api
+      - key: STACKLENS_API_HOST
+        value: 0.0.0.0
+      - key: STACKLENS_API_PORT
+        value: "3000"
+      - key: PORT
+        value: "3000"
+      - key: STACKLENS_DATABASE_POOL_MAX
+        value: "3"
+      - key: STACKLENS_RETENTION_HOURS
+        value: "24"
+      - key: DATABASE_URL
+        sync: false
+      - key: STACKLENS_DATABASE_SSL_CA
+        sync: false

@@ -1,3 +1,5 @@
+import { readStackLensPoolOptions } from "@stacklens/persistence";
+
 import { createStackLensApiRuntime } from "./runtime.js";
 
 const DEFAULT_DATABASE_URL = "postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens";
@@ -27,9 +29,14 @@ function errorName(error: unknown): string {
 }
 
 async function main(): Promise<void> {
+  if (process.env.NODE_ENV === "production" && !process.env.DATABASE_URL) {
+    throw new Error("Production API requires DATABASE_URL.");
+  }
   const runtime = await createStackLensApiRuntime({
     connectionString: process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
+    databasePoolOptions: readStackLensPoolOptions(process.env),
     logger: true,
+    retentionHours: environmentInteger("STACKLENS_RETENTION_HOURS", 24, 8_760),
     onDatabasePoolError(error) {
       process.stderr.write(`StackLens API database pool error (${errorName(error)}).\n`);
     },

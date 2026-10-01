@@ -25,6 +25,7 @@ try {
   workerRuntime = await startStackLensWorker({
     connectionString: databaseUrl,
     concurrency: 1,
+    retentionCleanup: false,
     // Register only a smoke-local task so the runner initializes without claiming repository jobs
     // or constructing the provider-backed analyzer task.
     taskList: { runtime_smoke: async () => undefined },

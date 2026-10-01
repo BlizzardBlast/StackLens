@@ -23,6 +23,8 @@ beforeEach(() => {
   vi.stubEnv("DATABASE_URL", undefined);
   vi.stubEnv("STACKLENS_API_HOST", undefined);
   vi.stubEnv("STACKLENS_API_PORT", undefined);
+  vi.stubEnv("STACKLENS_DATABASE_POOL_MAX", undefined);
+  vi.stubEnv("STACKLENS_DATABASE_SSL_CA", undefined);
   mocks.start.mockResolvedValue({ app: { listen: mocks.listen }, stop: mocks.stop });
 });
 
@@ -38,6 +40,18 @@ afterEach(() => {
 
 // FR-003, FR-022, NFR-009: default local startup and explicit overrides.
 describe("API executable configuration", () => {
+  it("forwards hosted database settings [FR-003, FR-022, SEC-007]", async () => {
+    vi.stubEnv("STACKLENS_DATABASE_POOL_MAX", "3");
+    vi.stubEnv("STACKLENS_DATABASE_SSL_CA", "fixture CA forwarded to pool validation");
+    await import("../src/main.js");
+    await vi.waitFor(() =>
+      expect(mocks.start).toHaveBeenCalledWith(
+        expect.objectContaining({
+          databasePoolOptions: { max: 3, sslCa: "fixture CA forwarded to pool validation" },
+        }),
+      ),
+    );
+  });
   it.each([
     [undefined, "postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens"],
     [

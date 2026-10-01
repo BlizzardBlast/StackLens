@@ -1,0 +1,450 @@
+{
+  "preparedDate": "2026-10-01",
+  "recordedAt": "2026-10-01T01:02:17.727Z",
+  "status": "local_preparation_verified_deployment_pending",
+  "requirements": [
+    "PRD-006",
+    "FR-001",
+    "FR-003",
+    "FR-004",
+    "FR-022",
+    "NFR-004",
+    "NFR-006",
+    "NFR-007",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "source": {
+    "branch": "codex/mvp-release-readiness",
+    "verifiedMain": "f51d2b61f4740172558bb4b38087af60af8d791a",
+    "workingTree": "uncommitted",
+    "productionInputSha256": {
+      "Dockerfile": "ce5033d543188a6e4fbc7a3c54e53bff4a5b22034f62b90713025801bfd6a4ec",
+      ".dockerignore": "e4e3c62d1e28196190eb184dabde5a779c943958577946792935c6c69390eb00",
+      "package.json": "3c2bb0c524f8469557c2bb7f56cf3af0367607e20d6190ea0e07a6eeecadb65e",
+      "pnpm-lock.yaml": "8cf2ea4a30473be74fdf9544805402bbabad7f31eb6eefa2849b1559d390e0e1",
+      "pnpm-workspace.yaml": "47eb56209f3a2cef2a631ec6f824d22889da59cb3028d167bd1793bdeebd951d",
+      "deploy/compose.production.yaml": "ca2658924a3b32e132c641ff5d4a0b12d73f0a8a7e3369c26369fb88d1ff659a",
+      "deploy/Caddyfile": "5e3ba23f3779ebc0594d2e85de7602f72b625421ea6606bff7ce7544f4a9066c",
+      "apps/api/src/main.ts": "8450ff962d8ed18548fc9b0a589139dadac6fc2d0148eebbd97191138f0b745d",
+      "apps/api/src/repository-analysis.ts": "a6ab83220930e25baa4fbb74758ab870b5f874b3942cb2c7ad27cddf1a225831",
+      "apps/api/src/runtime.ts": "4cc1a1244eda50c56bc605a8a6f6629f39d57294e401aa4b6bc2c1a9f751c573",
+      "apps/api/src/server.ts": "5a9ce2e3cb8cf297071adcb3c4d9cd0b38c9b86406a43de2f4b659fb36075c4c",
+      "apps/worker/src/main.ts": "ec74b039a20872ef6584fe4012ce43c375fa29e00547d2528f6d578d65da14bf",
+      "apps/worker/src/runtime.ts": "698f0cc62f7919ea6b3f38776e831043627012fc2e257ea642b28103a4e579a5",
+      "apps/worker/src/retention.ts": "8800cd43f4dbad527d816f559057ad24029aa2ae809568d999b104ab1fe9c214",
+      "packages/persistence/src/migrate.ts": "903371e5443122eb64e41c434825bf73630504b2903fac0da2f441fe135a18e7",
+      "packages/persistence/src/repository.ts": "3d39e5ec9dc36e1d39646d6183f9375dc8d46d256cdd94c96875fe81fa7f9bd6",
+      "scripts/container-health.mjs": "e9a31afa122b03edc09584e42f14a409dcdca3b0fd29cc976b9017425f0b0fcb",
+      "vercel.mjs": "29fe0fe14d211726b25a9efbe001d25807c1387ce97bbb818f77401656439d7b",
+      "scripts/vercel-config.mjs": "c6d6da328f47624a06c4c8a2f099f9df413d086a18ab07ab1ae66ed362edbbed",
+      "packages/rules-javascript/src/npm-registry-health.ts": "68253c0673a035da4f8768991357cb24120a747cb7626f2f11882e9fc6741a05",
+      "packages/analysis-orchestration/src/production-javascript-analyzer.ts": "68139377ddcb5655acd8385ad604d0ebdae77e89e865071d9bc3de5ae74e98af"
+    }
+  },
+  "target": {
+    "web": "Vercel static Vite",
+    "backend": "portable Linux Docker Compose API/Worker/PostgreSQL/Caddy",
+    "config": {
+      "framework": "vite",
+      "installCommand": "pnpm install --frozen-lockfile",
+      "buildCommand": "pnpm exec turbo run build --filter=@stacklens/web...",
+      "outputDirectory": "apps/web/dist",
+      "rewrites": [
+        {
+          "source": "/v1/:path*",
+          "destination": "https://api.example.com/v1/:path*"
+        },
+        {
+          "source": "/openapi.json",
+          "destination": "https://api.example.com/openapi.json"
+        },
+        {
+          "source": "/quick",
+          "destination": "/index.html"
+        },
+        {
+          "source": "/analyses/:analysisId",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "/v1/:path*",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "private, no-store"
+            },
+            {
+              "key": "CDN-Cache-Control",
+              "value": "no-store"
+            },
+            {
+              "key": "Vercel-CDN-Cache-Control",
+              "value": "no-store"
+            }
+          ]
+        },
+        {
+          "source": "/openapi.json",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "private, no-store"
+            },
+            {
+              "key": "CDN-Cache-Control",
+              "value": "no-store"
+            },
+            {
+              "key": "Vercel-CDN-Cache-Control",
+              "value": "no-store"
+            }
+          ]
+        }
+      ]
+    },
+    "exampleApiOriginIsProvisioned": false
+  },
+  "configurationValidation": {
+    "vercel": {
+      "scope": "used properties from official schema; not Vercel CLI/cloud build",
+      "schemaUrl": "https://openapi.vercel.sh/vercel.json",
+      "schemaSha256": "7ae6353e731682d99516bd124737d286e491c79286f936cfa3ece765b43a8c14",
+      "passed": true,
+      "note": "The live schema declares draft-04 but contains draft-07 keywords in unused Functions sections; validation used the static target properties. A deprecated public property was removed."
+    },
+    "caddy": "validated with pinned Caddy image; no certificate issued",
+    "compose": "config --quiet passed"
+  },
+  "runtime": {
+    "nodeInContainers": "24.21.0",
+    "pnpmBuild": "12.4.2",
+    "hostNode": "v24.19.0",
+    "containers": [
+      {
+        "name": "/stacklens-hosting-rehearsal-20261001-api-1",
+        "imageId": "sha256:cf520908d4dfc4fb0483b55e2d6690e13b0d3d7739f240af645437caf2300ed8",
+        "health": "healthy",
+        "user": "node",
+        "readOnly": true,
+        "memoryBytes": 536870912,
+        "logDriver": "local",
+        "oomKilled": false
+      },
+      {
+        "name": "/stacklens-hosting-rehearsal-20261001-worker-1",
+        "imageId": "sha256:1cb54f878382a78577c1cf43b3787b4cc1f385240fab57125c08fc5c977d2f45",
+        "health": "healthy",
+        "user": "node",
+        "readOnly": true,
+        "memoryBytes": 1073741824,
+        "logDriver": "local",
+        "oomKilled": false
+      },
+      {
+        "name": "/stacklens-hosting-rehearsal-20261001-postgres-1",
+        "imageId": "sha256:662db3da228c2ea2649b3ae04db4b4479e85fea5979f6a917a7f6d5cb1e7ec39",
+        "health": "healthy",
+        "user": "",
+        "readOnly": false,
+        "memoryBytes": 536870912,
+        "logDriver": "local",
+        "oomKilled": false
+      }
+    ],
+    "initialLiveImages": {
+      "api": "sha256:a0b920a0c021411f1a5daf45b13d7c3ec1c55e07264b2e728d5e75d50ac79e0d",
+      "worker": "sha256:e7d23f78722eaa3dffc15e619b9b4b3d118168e1d90872babdc267ea97ea5d3b"
+    },
+    "finalImagesNote": "Rebuilt after the completed-report read-race fix. Final checks below use the rebuilt images; analyzer/provider code is unchanged between these image checks.",
+    "operatorGithubCredential": "existing operator credential passed only to Worker; value excluded",
+    "productionMissingDatabaseUrl": {
+      "apiExit": 1,
+      "workerExit": 1
+    }
+  },
+  "initialHttp": {
+    "startedAt": "2026-10-01T00:44:01.067Z",
+    "openapi": {
+      "version": "3.1.0",
+      "paths": [
+        "/v1/analyses/repository",
+        "/v1/analyses/{analysisId}",
+        "/v1/analyze/manifest"
+      ]
+    },
+    "quick": {
+      "analysisId": "8014ef66-e5c9-4545-9eb2-6b50666a7415",
+      "schemaVersion": "2.0.0",
+      "durableStatus": 404
+    },
+    "invalid": {
+      "status": 400,
+      "code": "invalid_json"
+    },
+    "submissions": [
+      {
+        "name": "KerjaLog",
+        "analysisId": "98da5e7a-0c8e-4823-bf06-ed82ab4dc642"
+      },
+      {
+        "name": "frey-ui",
+        "analysisId": "8c069e1f-0d23-442c-80b9-8c5f139e9fc3"
+      }
+    ]
+  },
+  "recovery": {
+    "queuedSubmissions": 2,
+    "workerStoppedDuringSubmission": true,
+    "apiRestartPreservedQueuedState": true
+  },
+  "repositories": [
+    {
+      "name": "KerjaLog",
+      "analysisId": "98da5e7a-0c8e-4823-bf06-ed82ab4dc642",
+      "status": "completed_with_limitations",
+      "createdAt": "2026-10-01T00:44:01.350Z",
+      "startedAt": "2026-10-01T00:45:39.208Z",
+      "completedAt": "2026-10-01T00:46:51.863Z",
+      "commit": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+      "schemaVersion": "2.0.0",
+      "analyzer": {
+        "version": "javascript-production-v6",
+        "ruleSetVersion": "javascript-rules-v6",
+        "scoringVersion": "stack-health-v3"
+      },
+      "facts": 289,
+      "findings": 32,
+      "limitations": 53,
+      "partialFailures": [
+        {
+          "sourceId": "source-osv-1692bec16377d976",
+          "code": "osv_query_timeout"
+        }
+      ],
+      "sourceStatusCounts": {
+        "available": 48,
+        "partial": 0,
+        "unavailable": 1
+      },
+      "observedStages": [
+        "queued",
+        "resolving_repository",
+        "collecting_snapshot",
+        "collecting_metadata",
+        "completed_with_limitations"
+      ],
+      "scores": {
+        "overall": {
+          "status": "insufficient_evidence"
+        },
+        "dependencies": {
+          "status": "available",
+          "value": 100
+        },
+        "security": {
+          "status": "insufficient_evidence"
+        },
+        "maintainability": {
+          "status": "insufficient_evidence"
+        },
+        "testing": {
+          "status": "insufficient_evidence"
+        },
+        "tooling": {
+          "status": "available",
+          "value": 100
+        }
+      }
+    },
+    {
+      "name": "frey-ui",
+      "analysisId": "8c069e1f-0d23-442c-80b9-8c5f139e9fc3",
+      "status": "completed_with_limitations",
+      "createdAt": "2026-10-01T00:44:01.383Z",
+      "startedAt": "2026-10-01T00:46:51.974Z",
+      "completedAt": "2026-10-01T00:47:43.875Z",
+      "commit": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+      "schemaVersion": "2.0.0",
+      "analyzer": {
+        "version": "javascript-production-v6",
+        "ruleSetVersion": "javascript-rules-v6",
+        "scoringVersion": "stack-health-v3"
+      },
+      "facts": 403,
+      "findings": 61,
+      "limitations": 24,
+      "partialFailures": [
+        {
+          "sourceId": "source-npm-705cd4edcffff8b0",
+          "code": "npm_response_too_large"
+        },
+        {
+          "sourceId": "source-npm-40b65597feb59bfa",
+          "code": "npm_response_too_large"
+        },
+        {
+          "sourceId": "source-npm-e9d3a168e2214314",
+          "code": "npm_response_too_large"
+        }
+      ],
+      "sourceStatusCounts": {
+        "available": 47,
+        "partial": 0,
+        "unavailable": 3
+      },
+      "observedStages": [
+        "queued",
+        "resolving_repository",
+        "collecting_snapshot",
+        "collecting_metadata",
+        "running_rules",
+        "completed_with_limitations"
+      ],
+      "scores": {
+        "overall": {
+          "status": "insufficient_evidence"
+        },
+        "dependencies": {
+          "status": "insufficient_evidence"
+        },
+        "security": {
+          "status": "available",
+          "value": 70
+        },
+        "maintainability": {
+          "status": "insufficient_evidence"
+        },
+        "testing": {
+          "status": "available",
+          "value": 100
+        },
+        "tooling": {
+          "status": "available",
+          "value": 100
+        }
+      }
+    }
+  ],
+  "finalImageChecks": {
+    "checkedAt": "2026-10-01T01:00:10.819Z",
+    "retainedReportAfterDatabaseContainerReplacement": "passed",
+    "expiredReportRemains404": true,
+    "quickModes": [
+      {
+        "kind": "paste",
+        "status": 200,
+        "schemaVersion": "2.0.0",
+        "durableStatus": 404
+      },
+      {
+        "kind": "upload",
+        "status": 200,
+        "schemaVersion": "2.0.0",
+        "durableStatus": 404
+      }
+    ],
+    "terminalFailure": {
+      "analysisId": "2f54415f-07ad-4c86-831b-22c719631531",
+      "status": "failed",
+      "code": "repository_unavailable",
+      "retryable": false
+    }
+  },
+  "retention": {
+    "defaultHours": 24,
+    "acceptedHoursRange": [
+      1,
+      8760
+    ],
+    "sweepBatch": 100,
+    "intervalMs": 60000,
+    "legacyNullExpiryPreserved": true,
+    "queuedRunningClaimsPreserved": "PostgreSQL regression verified",
+    "workerStartupSweep": "passed",
+    "expiredAnalysisHttpStatus": 404,
+    "unexpiredAnalysisHttpStatus": 200,
+    "cascadedCounts": {
+      "analyses": 0,
+      "reports": 0,
+      "deliveries": 0
+    }
+  },
+  "backupRestore": {
+    "dumpFormat": "PostgreSQL custom",
+    "restoreExitOnError": "passed",
+    "restoredCounts": {
+      "analyses": 2,
+      "reports": 2,
+      "deliveries": 2
+    },
+    "reportContractsValidated": 2,
+    "retainedReportContentDigestMatchesSource": true
+  },
+  "quality": {
+    "command": "pnpm check",
+    "database": "isolated stacklens_hosting_check_20261001",
+    "exitCode": 0,
+    "compiledDatabaseRuntimeSmoke": "passed with retention cleanup explicitly disabled",
+    "vitestPassed": 496,
+    "designTokenTestsPassed": 10,
+    "deploymentTestsPassed": 5,
+    "totalTestsPassed": 511,
+    "testGraph": {
+      "successful": 22,
+      "cached": 18
+    },
+    "checkLogSha256": "a2e55865b06c2e437ca49743b9b22940177e904675f600465b20645ce12b1e46",
+    "initialCorrections": [
+      "await Node test promises",
+      "batch retention fixture setup without changing the five-second timeout",
+      "use nonmutating toSorted"
+    ],
+    "existingWarnings": [
+      "web chunk exceeds 500 kB",
+      "Graphile Windows executable-detection warning"
+    ]
+  },
+  "remainingGates": [
+    "backend host and public API domain",
+    "Vercel account/project linkage and real preview build",
+    "public DNS/TLS issuance/renewal and Vercel rewrite/cache verification",
+    "finite encrypted off-host backup and log policies plus monitoring",
+    "actual screen-reader and physical-device/second-browser acceptance",
+    "branch CI after authorized publication"
+  ],
+  "authorizationBoundary": {
+    "commit": false,
+    "push": false,
+    "externalResourcesProvisioned": false,
+    "paidServiceCreated": false,
+    "deployment": false
+  },
+  "cleanup": {
+    "status": "completed",
+    "verifiedAt": "2026-10-01T01:07:48Z",
+    "initialDockerEngine": "stopped",
+    "finalDockerEngine": "stopped",
+    "dockerStopExitCode": 0,
+    "dockerDesktopAndBackendProcessesRemaining": 0,
+    "taskComposeProject": "stacklens-hosting-rehearsal-20261001",
+    "taskContainersRemaining": 0,
+    "taskNetworksRemaining": 0,
+    "taskVolumesRemaining": 0,
+    "loopbackPortsReleased": [3300, 55433],
+    "isolatedRehearsalQualityAndRestoreDatabasesRemovedWithTaskVolume": true,
+    "temporaryHelpersLogsAndCredentialCopyRemoved": true,
+    "rootEnvironmentPreserved": true,
+    "originalDevelopmentVolumePreserved": true,
+    "preparedLocalImagesRetained": true
+  }
+}

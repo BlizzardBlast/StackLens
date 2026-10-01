@@ -77,6 +77,13 @@ export async function migrateStackLensDatabase(database: StackLensDatabase): Pro
     `);
 
     await transaction.execute(sql`
+      CREATE INDEX IF NOT EXISTS analysis_retention_idx
+      ON analysis (retention_expires_at, id)
+      WHERE status IN ('completed', 'completed_with_limitations', 'failed')
+        AND active_job_id IS NULL
+    `);
+
+    await transaction.execute(sql`
       INSERT INTO analysis_delivery (
         analysis_id, status, attempts, available_at, created_at, updated_at
       )

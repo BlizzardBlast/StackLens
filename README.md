@@ -13,6 +13,24 @@ The canonical product and system requirements are in **[docs/requirements.md](do
 For the current implementation sequence and fresh-session handover, see **[docs/handover.md](docs/handover.md)**.
 The automated acceptance baseline is documented in
 **[docs/implementation/mvp-acceptance.md](docs/implementation/mvp-acceptance.md)**.
+The [September 30 live release evidence](docs/implementation/mvp-release-readiness.md) covers both
+public repositories through the local web/API/worker/database stack, paste/upload, error recovery
+and verified 320px layouts. It records provider limitations and the remaining real screen-reader
+and physical-device checks; it does not claim a deployed release.
+
+[Hosting preparation](docs/implementation/vercel-hosting.md) now targets Vercel for the static web
+client and [portable containers](docs/implementation/backend-hosting.md) for API/Worker/PostgreSQL.
+The [managed hosting setup](docs/implementation/managed-hosting.md) now includes a created and
+verified Aiven Free PostgreSQL service and certificate-verified runtime settings. Northflank's
+actual service form requires a card, so its compute target was rejected under the user's no-card
+constraint. Railway API/Worker services are prepared offline for a credit-limited trial; measured
+startup memory exceeds its recurring free credit estimate. A free Silly Development Node 24 Worker
+is activated against Aiven. After approved public-only GitHub token setup, both remote repositories
+completed with explicit limitations; sampled memory reached 249.41 MiB of 256 MiB. A
+[Render Free API blueprint](docs/implementation/render-hosting.md) and dashboard form are prepared;
+deployment needs publication of the reviewed branch and approved Aiven credential transfer.
+Configurable 24-hour anonymous retention and bounded cleanup are implemented. Public API activation,
+Vercel linkage/routing, real assistive-technology/device validation and deployed acceptance remain open.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 

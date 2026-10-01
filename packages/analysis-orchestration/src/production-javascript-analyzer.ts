@@ -26,8 +26,8 @@ import type {
 } from "@stacklens/rules-javascript";
 import { stackHealthScorer } from "@stacklens/scoring";
 
-export const PRODUCTION_JAVASCRIPT_ANALYZER_VERSION = "javascript-production-v5";
-export const PRODUCTION_JAVASCRIPT_RULE_SET_VERSION = "javascript-rules-v5";
+export const PRODUCTION_JAVASCRIPT_ANALYZER_VERSION = "javascript-production-v6";
+export const PRODUCTION_JAVASCRIPT_RULE_SET_VERSION = "javascript-rules-v6";
 
 export const productionJavaScriptAnalyzer = {
   reportSchemaVersion: "2.0.0",

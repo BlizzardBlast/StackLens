@@ -11,6 +11,7 @@ import {
   createStackLensPool,
   DrizzleAnalysisRepository,
   migrateStackLensDatabase,
+  type StackLensPoolOptions,
 } from "@stacklens/persistence";
 import {
   createGraphileRepositoryJobQueue,
@@ -19,13 +20,17 @@ import {
   type GraphileJobAdder,
 } from "@stacklens/repository-jobs";
 
+import { startAnalysisRetentionPump } from "./retention.js";
 import { createRepositoryAnalysisTaskList } from "./task.js";
 
 export interface WorkerRuntimeOptions {
   readonly connectionString: string;
   readonly concurrency?: number;
+  readonly databasePoolOptions?: StackLensPoolOptions;
   readonly githubToken?: string;
   readonly onDatabasePoolError?: (error: Error) => void;
+  readonly onRetentionError?: (error: unknown) => void;
+  readonly retentionCleanup?: boolean;
   /**
    * Internal composition seam for runtime verification. Production leaves this unset so the
    * repository-analysis task remains the only configured worker task.
@@ -42,7 +47,11 @@ export interface StackLensWorkerRuntime {
 export async function startStackLensWorker(
   options: WorkerRuntimeOptions,
 ): Promise<StackLensWorkerRuntime> {
-  const pool = createStackLensPool(options.connectionString, options.onDatabasePoolError);
+  const pool = createStackLensPool(
+    options.connectionString,
+    options.onDatabasePoolError,
+    options.databasePoolOptions,
+  );
 
   try {
     const database = createStackLensDatabase(pool);
@@ -51,6 +60,7 @@ export async function startStackLensWorker(
 
     const workerUtils = await makeWorkerUtils({ pgPool: pool });
     let deliveryPump: ReturnType<typeof startRepositoryAnalysisDeliveryPump> | undefined;
+    let retentionPump: ReturnType<typeof startAnalysisRetentionPump> | undefined;
 
     try {
       const repository = new DrizzleAnalysisRepository(database);
@@ -84,6 +94,12 @@ export async function startStackLensWorker(
         concurrency: options.concurrency ?? 2,
         noHandleSignals: true,
       });
+      if (options.retentionCleanup ?? true) {
+        retentionPump = startAnalysisRetentionPump({
+          repository,
+          ...(options.onRetentionError === undefined ? {} : { onError: options.onRetentionError }),
+        });
+      }
 
       let stopped = false;
 
@@ -99,6 +115,7 @@ export async function startStackLensWorker(
 
           try {
             await deliveryPump?.stop();
+            await retentionPump?.stop();
             await runner.stop();
           } finally {
             try {
@@ -112,6 +129,7 @@ export async function startStackLensWorker(
     } catch (error) {
       try {
         await deliveryPump?.stop();
+        await retentionPump?.stop();
       } finally {
         await workerUtils.release();
       }

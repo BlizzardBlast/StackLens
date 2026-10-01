@@ -74,6 +74,9 @@ screens. Narrow layouts collapse naturally to one column.
 
 Controls are labeled, keyboard-focus visible, error state uses `role="alert"`, and synchronous
 request state uses `aria-busy` plus polite live output. Status meaning never depends on color alone.
+Native mode radios use their visible titles as `aria-labelledby` names and their explanatory text
+as `aria-describedby` descriptions. The surrounding labels carry no unsupported naming ARIA;
+Space and arrow-key selection retain native radio behavior (NFR-006).
 
 A stable polite completion output stays mounted across form/report transitions. Successful quick
 analysis focuses the report heading once. Analyze another manifest clears completion status and

@@ -1,12 +1,86 @@
+import { rootCertificates } from "node:tls";
+
 import { Client, type Pool } from "pg";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { readStackLensPoolOptions } from "../src/pool-options.js";
 import { createStackLensPool } from "../src/pool.js";
 
 const pools: Pool[] = [];
 
 afterEach(async () => {
   await Promise.all(pools.splice(0).map(async (pool) => pool.end()));
+});
+
+describe("Hosted PostgreSQL configuration [FR-003, FR-022, NFR-009, SEC-007]", () => {
+  const ca = rootCertificates[0]!;
+  const connectionString = "postgresql://fixture:secret@db.example.com/fixture";
+
+  it("preserves local defaults when hosted options are absent", () => {
+    expect(readStackLensPoolOptions({})).toEqual({});
+    const pool = createStackLensPool(connectionString);
+    pools.push(pool);
+    expect(pool.options.max).toBe(10);
+    expect(pool.options.connectionTimeoutMillis).toBe(10_000);
+  });
+
+  it("uses the same verified CA and pool cap for PostgreSQL clients", () => {
+    const options = readStackLensPoolOptions({
+      STACKLENS_DATABASE_POOL_MAX: "3",
+      STACKLENS_DATABASE_SSL_CA: ca,
+    });
+    const pool = createStackLensPool(connectionString, undefined, options);
+    pools.push(pool);
+    const client = new Client(pool.options);
+    expect(pool.options.max).toBe(3);
+    expect(client.ssl).toEqual({ ca, rejectUnauthorized: true });
+  });
+
+  it.each([
+    "sslmode=require",
+    "sslmode=no-verify",
+    "ssl=0",
+    "sslrootcert=secret",
+    "sslcert=secret",
+    "sslkey=secret",
+    "sslnegotiation=direct",
+  ])("rejects URL SSL overrides without exposing credentials: %s", (parameter) => {
+    expect(() =>
+      createStackLensPool(`${connectionString}?${parameter}`, undefined, { sslCa: ca }),
+    ).toThrow("Remove URL SSL parameters when configuring the database CA certificate.");
+  });
+
+  it.each(["", "0", "-1", "1.5", "Infinity", "secret", " 3", "1e2"])(
+    "rejects invalid environment pool limits: %s",
+    (value) => {
+      expect(() => readStackLensPoolOptions({ STACKLENS_DATABASE_POOL_MAX: value })).toThrow(
+        "STACKLENS_DATABASE_POOL_MAX must be a positive integer.",
+      );
+    },
+  );
+
+  it("fails closed on empty or malformed CA values and invalid URLs", () => {
+    expect(() => readStackLensPoolOptions({ STACKLENS_DATABASE_SSL_CA: " " })).toThrow(
+      "STACKLENS_DATABASE_SSL_CA must contain a PEM certificate.",
+    );
+    for (const sslCa of [
+      "secret",
+      "-----BEGIN CERTIFICATE-----\nsecret\n-----END CERTIFICATE-----",
+    ]) {
+      expect(() => createStackLensPool(connectionString, undefined, { sslCa })).toThrow(
+        "Database CA must contain a PEM certificate.",
+      );
+    }
+    expect(() => createStackLensPool("secret", undefined, { sslCa: ca })).toThrow(
+      "Certificate-verified database connections require a PostgreSQL URL.",
+    );
+    expect(() => createStackLensPool(connectionString, undefined, { max: 0 })).toThrow(
+      "Database pool maximum must be a positive integer.",
+    );
+    expect(() =>
+      createStackLensPool(connectionString, undefined, { connectionTimeoutMillis: 0 }),
+    ).toThrow("Database connection timeout must be a positive integer.");
+  });
 });
 
 describe("PostgreSQL error handling [NFR-009, SEC-007]", () => {

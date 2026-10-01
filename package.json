@@ -15,7 +15,8 @@
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
     "runtime:smoke": "node ./scripts/runtime-smoke.mjs",
-    "test": "turbo run test",
+    "test": "pnpm test:deployment && turbo run test",
+    "test:deployment": "node --test scripts/vercel-config.test.mjs",
     "typecheck": "turbo run typecheck",
     "ui:add": "pnpm --filter @stacklens/ui exec shadcn add",
     "ui:info": "pnpm --filter @stacklens/ui exec shadcn info --json"

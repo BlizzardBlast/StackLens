@@ -57,6 +57,8 @@ The report must not imply source-level certainty. For example:
 
 Local upload replacement clears stale content immediately, announces reading, and prevents submission
 until the current file is ready. Switching modes preserves pasted text and invalidates pending reads.
+Paste/file cards label native radio inputs from their visible titles and associate supporting text
+as descriptions. Keyboard Space and arrow keys select modes with a visible focus indicator.
 Quick-analysis completion announces the result and focuses the report heading. Analyze another
 manifest clears the status and focuses the introduction, without initial-load autofocus.
 

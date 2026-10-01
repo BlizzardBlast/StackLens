@@ -1807,3 +1807,236 @@ insufficient-evidence scores. Both affected package suites and typechecks passed
 remains in PR #40; no merge or deployment occurred.
 
 **Traceability:** FR-005, FR-023, SCORE-003, SEC-001, SEC-002, GOV-002, GOV-007.
+
+## 2026-09-30 — Live MVP release acceptance
+
+PR #40 is now merged at `f51d2b6`; its baseline quality workflow passed. The user supplied KerjaLog
+and frey-ui for live validation. Both immutable revisions completed through the real local React,
+Fastify, PostgreSQL, transactional delivery, Graphile Worker and GitHub/npm/OSV flow. Paste/upload,
+authoritative input errors, a real nonexistent-repository failure, quick non-persistence, terminal
+polling and keyboard focus were checked. The
+[release record](../implementation/mvp-release-readiness.md) preserves exact commits, analysis IDs,
+durations, score states, provider limitations and representative screenshots.
+
+Live acceptance exposed two additional gaps. Native quick-mode radios now derive names and help
+from visible text instead of unsupported label-wrapper ARIA. `JS-NPM-010@2` filters external
+installation declarations before grouping, removing misleading missing-npm messages for internal
+links while preserving same-name external evidence. Production analyzer/rule-set identities advance
+to v6; quick-manifest v5, schema 2.0.0, historical readers and stack-health-v3 stay as documented.
+
+Both repositories were rerun after the corrections. The final frey-ui report retained three bounded
+npm response failures and a GitHub file timeout, plus one distinct Vitest advisory across three
+package scopes. Unknown scores stayed N/A. Sixteen final axe scans at verified 1280/320 CSS pixels,
+both themes and reduced motion reported zero violations and no overflow. Decorative contrast
+manual-review items were inspected separately. These observations do not claim actual screen-reader,
+physical-device or deployed-host validation. The full gate exposed jsdom worker contention; limiting
+the web suite to two isolated workers preserves its five-second timeout and makes the report/router
+tests reliable in this pass. Final database-backed `pnpm check` passed all 501 tests, compiled runtime
+smoke, typecheck, lint and formatting. Cache and cleanup details belong to the linked release record.
+Changes remain uncommitted on
+`codex/mvp-release-readiness`; no publication or deployment is part of this step.
+
+**Traceability:** FR-001–FR-006, FR-010/011/017–023, DATA-001–005, SCORE-001–004,
+NFR-005–009, SEC-001–003, SEC-007, GOV-002/007.
+
+## 2026-10-01 — Vercel web and portable backend preparation
+
+The user selected Vercel and requested a new backend target. ADR-0015 prepares the static web
+deployment with a required HTTPS API origin, preserved REST prefixes, known SPA deep links and
+browser/CDN no-store directives. Separate portable API/Worker images, PostgreSQL and Caddy TLS
+routing keep the accepted asynchronous architecture intact. The existing local Compose boundary
+remains PostgreSQL-only. Runtime images use pinned bases, production dependency trees, non-root
+execution, read-only filesystems, health checks, resource/log caps and orderly shutdown.
+
+Hosting review exposed an unenforced retention boundary. SEC-003 now makes finite hosted lifetime
+and ownership-safe cleanup explicit. API runtime assigns a configurable 24-hour default; Worker
+maintenance purges bounded expired terminal rows and cascades reports/delivery metadata while
+preserving queued/running claims and legacy null-expiry records. Origin responses prevent caching.
+A completed report removed between API reads follows the existing missing-analysis recovery.
+Production entrypoints refuse missing database configuration. Analyzer identities, scoring,
+report schemas and historical JSON remain unchanged.
+
+Both user-supplied repositories completed through the Linux containers after durable queued state
+survived an API restart with Worker stopped. KerjaLog retained a real OSV timeout and unknown
+Security; frey-ui retained three oversized npm responses. Quick/error/non-persistence, startup
+retention cascade and isolated PostgreSQL dump/restore were verified. The
+[dated preparation record](../implementation/release-evidence/2026-10-01-hosting.json) identifies
+initial and final image checks, provider limitations, quality-cache use and cleanup.
+The new database regression initially exceeded five seconds during sequential fixture creation;
+bulk inserts preserve its ownership/concurrency/cascade assertions and the normal timeout.
+Node test promises and nonmutating sort requirements were corrected before the final gate.
+Database-backed `pnpm check` passed all 511 tests, compiled runtime smoke, typecheck, lint and
+formatting. Eighteen of twenty-two test-graph tasks were cached.
+
+[Hosting](../implementation/vercel-hosting.md), [backend operations](../implementation/backend-hosting.md)
+and [manual acceptance](../implementation/manual-release-validation.md) document activation and the
+remaining real gates. No cloud account linkage, public certificate issuance, host provisioning,
+Git publication or deployment is claimed. Changes remain uncommitted on the existing branch.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009,
+SEC-001/002/003/007, GOV-002/006/007; ADR-0002/0004/0014/0015.
+
+## 2026-10-01 — Free-hosting feasibility
+
+The user asked whether the backend can also use Vercel and whether a free provider is available.
+Current primary documentation and Context7 confirm Fastify support on Vercel Functions, while
+the current continuous Graphile Worker needs a separate host or an architecture migration.
+The runbooks record Vercel Hobby's personal/non-commercial restriction and Oracle Always Free's
+current 2-OCPU/12-GB free-tenancy allowance, capacity/reclamation constraints and payment-card
+verification. Oracle remains a candidate; ARM64 runtime verification, account access and hostname
+selection are unresolved. No provider selection, provisioning, deployment or runtime code change
+was made. Documentation formatting and diff checks passed; the previous 511-test gate is historical
+verification of the prepared implementation, not evidence of either public deployment route.
+
+**Traceability:** PRD-006, NFR-004/009, SEC-003/007, GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-01 — Managed PostgreSQL and no-card deployment review
+
+The user selected Vercel, Northflank and Aiven, then retained the no-card constraint after actual
+Northflank service creation required card verification. Its empty free project remains; no service
+or payment method was created. This dashboard evidence corrects the earlier no-card blog guidance.
+Aiven project `stacklens-preview` and PostgreSQL Free service `stacklens-preview-pg` were created
+without a card, using the Free Asia Pacific allocation on DigitalOcean `blr`.
+
+The shared persistence factory now validates CA PEM and pool limits, verifies server trust and
+hostname, rejects URL SSL overrides and bounds connection acquisition. API/Worker entrypoints
+forward those settings, and container checks reuse the same CA with one connection. The managed
+configuration uses API max three and Worker max five/concurrency one. Local defaults and analyzer
+policy remain unchanged. Focused tests cover SSL override rejection, malformed values, CA forwarding
+and executable configuration. Live Aiven verification confirmed PostgreSQL 18.6, TLS, unrelated-CA
+rejection, StackLens/Graphile migrations, quick reports, durable enqueue and provider-free Worker
+startup/shutdown. The isolated verification database was removed.
+
+Initial parallel quality execution hit existing test timeouts. The database-backed test graph then
+passed serially; a subsequent lint diagnostic was fixed by validating the parsed certificate's CA
+flag. The final database-backed `pnpm check` passed with 531 tests, with eighteen of twenty-two
+test-graph tasks cached. Earlier container images are historical artifacts and must be rebuilt for
+these runtime changes. No public API/Worker or Vercel release has been verified.
+
+Railway remains a no-card candidate with limited trial/monthly credit. Its GitHub authorization
+requests new account access and is staged for user approval; no Railway deployment or secret
+transfer was performed. ClawCloud could not be resolved from the actual browser. The
+[managed runbook](../implementation/managed-hosting.md) and
+[dated evidence](../implementation/release-evidence/2026-10-01-managed-hosting.json) record resources,
+limits and remaining activation/acceptance work. Architecture v0.1.17 and ADR-0015 describe the
+managed database boundary; no requirement or report-schema change was needed.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007,
+GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-01 — No-card compute preparation and resource check
+
+The user completed Railway GitHub sign-in. A private `stacklens-preview` project now has two
+offline services with non-secret runtime variables, Dockerfile builds and API startup health
+configured. No source, database secrets, public domain, paid plan or deployment was uploaded.
+The CLI is available but unauthenticated. Local source upload is supported without a Git push;
+`.railwayignore` excludes environment files, diagnostic assets and generated outputs.
+
+The Dockerfile preserves explicit API/Worker targets and adds a non-secret `STACKLENS_RUNTIME`
+selector for hosts without a target-stage setting. Both selected Linux images rebuilt and passed
+package identity, CA-backed Aiven health, non-root and read-only runtime checks. Temporary
+containers, isolated databases and the local credential file were removed. Brief startup memory
+observations (159.2 MiB API/167.8 MiB Worker) imply roughly $3/month RAM cost at Railway's advertised
+rate, before CPU/network, exceeding its recurring $1 allowance. Its thirty-day/$5 trial therefore
+remains an inactive preview option rather than a verified ongoing free host.
+
+ClawCloud's main and regional endpoints did not resolve in the actual browser. Silly Development's
+live signup form advertises no-card, non-expiring 0.25 CPU/256 MB RAM/512 MB disk Worker hosting,
+but account access, Node 24 and outbound database connectivity remain open. A locally constrained
+Worker completed frey-ui with limitations; KerjaLog failed and the anonymous GitHub allowance was
+observed at zero afterward. Its failure payload and memory peak were not retained, so neither
+failure causality nor complete resource fit is claimed. User signup is staged before provider
+selection or credential transfer. The managed runbook/evidence distinguish these preparation
+steps from public full-stack acceptance. The earlier 531-test gate covers unchanged application
+code; fresh Linux builds verify the subsequent Docker selector change.
+
+**Traceability:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-001/002/003/007,
+GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-01 — Free Worker server and Node 24 startup rehearsal
+
+The user completed Silly Development signup and a Free `stacklens-worker-preview` Node server was
+created without a card. Node 24 and `start-worker.js` are saved; the service remains stopped.
+The panel's fixed startup runs npm for root package metadata and routes ordinary JavaScript through
+ts-node. `scripts/prepare-silly-worker.mjs` now packages the reviewed Linux image with its production
+dependencies, moves root package metadata, removes only packaged root TypeScript configs and adds
+an ESM boundary plus `deploy/silly/start-worker.js`. This avoids workspace reinstallation and the
+observed TS5083 monorepo-config lookup. The adapter loads private runtime configuration and delegates
+to the existing Worker entrypoint; analyzer and durable queue policy are unchanged.
+
+The approximately 16 MB compressed/88 MB unpacked archive passed local Node 24.17.0 panel-image
+startup, verified Aiven TLS, StackLens/Graphile migrations and continued running at 256 MiB/no swap,
+0.25 CPU and concurrency one. The memory peak reached the limit with reclaim pressure and no OOM
+kill; complete repository-analysis capacity remains unverified. Temporary containers, isolated
+databases and runtime files were removed. The final database-backed `pnpm check` passed 531 tests
+with eighteen of twenty-two test-graph tasks cached, plus build/runtime smoke/types/lint/format.
+Temporary upload API access, transfer of Aiven credentials to the new host and activation await
+specific user authorization. No code or secrets were uploaded, and no release is claimed.
+
+**Traceability:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-001/002/003/007,
+GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-01 — Free Worker activation and remote provider evidence
+
+After explicit approval, a temporary Silly Development API key uploaded the reviewed 16,808,305-byte
+Linux Worker archive and a separate private Aiven runtime file to `stacklens-worker-preview`
+(`60761d98`). Initial startup exposed a panel decompression incompatibility: pnpm symlinks became
+ordinary files, making the persistence package unavailable. The one-shot `deploy/silly/install.js`
+checks the archive SHA-256 and uses native Linux `tar` to preserve those links. Failed extraction
+files and diagnostic code were replaced, the installer/archive removed, and the normal Node 24
+entrypoint restored with no extra packages or arguments. No analyzed repository was installed or
+executed, and no paid resources or card were used.
+
+Remote startup created StackLens/Graphile schemas, and Aiven observed certificate-verified TLS
+sessions from the Worker host. A local compiled API submitted the public REST contract to the same
+database; only the remote Worker executed provider jobs. frey-ui completed with schema 2.0.0 and
+48 explicit limitations in 107.9 seconds. KerjaLog reached terminal `repository_unavailable` in
+11.3 seconds because the host's anonymous GitHub quota was exhausted. The limited report also
+retained npm response-size/timeouts. Sampled host memory peaked at 218.20 MiB; the Worker remained
+running. This is bounded partial acceptance, not proof of fully acquired repository capacity.
+
+A deliberate restart preserved terminal API payload hashes; the first immediate start request
+exceeded its deadline, and a later start succeeded. Active-job recovery, remote retention/restore,
+public HTTPS API/Vercel and real assistive-technology/device validation remain open. The upload key
+was revoked, confirmed by `401` on reuse and an empty dashboard key list. Local upload credentials
+were removed; the explicitly approved runtime file remains on the host. A public-only thirty-day
+GitHub provider token was proposed and awaits separate approval. Changes remain uncommitted and
+unpushed. The prior database-backed `pnpm check` passed 531 tests; the added installer passed fresh
+lint/format checks and actual remote hash-checked extraction/link verification.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007,
+GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-01 — Authenticated Worker acceptance and Render Free API preparation
+
+After authorization and user-completed GitHub verification, a new thirty-day public-only token
+was installed in the approved Worker's private runtime file, preserving existing settings and
+mode `0600`. Authenticated core quota was 5,000 before use. Only the remote Silly Worker executed
+the two provider jobs submitted through the local compiled API and shared Aiven database.
+frey-ui at `6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf` completed in 158.1 seconds with 24 limitations
+and three bounded npm response-size failures. KerjaLog at
+`9e5f869bbcf5b9d582f8e1453395ea2c06c79f83` completed in 127.0 seconds with five static-evidence
+limitations and no provider failures. Both schema 2.0.0 reports preserved uncertainty. The Worker
+stayed running; sampled memory reached 249.41 MiB of 256 MiB, so general capacity remains open.
+The initial anonymous failures remain historical evidence. The second temporary upload key was
+revoked, verified by `401` and an empty dashboard list; local private copies were removed.
+The approved runtime GitHub token remains on the Worker and expires 2026-10-31.
+
+The user completed Render GitHub sign-in. `deploy/render/render.yaml` prepares one Free Docker
+API in Singapore, explicit manual deployment, shared Aiven secrets as unfilled placeholders and
+`/openapi.json` startup health. It passes Render's published Draft 2020-12 schema. The actual
+dashboard form selects Free/$0, Docker, Singapore, seven non-secret variables and automatic
+deployment Off. It remains unsent, with `main` selected because the reviewed release branch has
+no remote ref. Publication and Aiven credential transfer to this new provider need authorization.
+No Render service, card, paid plan, public API or Vercel deployment was created. Free API idle
+sleep and wake-up remain live acceptance checks; the independent Worker topology is preserved.
+
+The documentation-impact pass updates current status, handover, architecture/ADR, managed/Vercel
+runbooks and source-free evidence, with a dedicated Render activation guide. Product requirements,
+analyzer policy and report contracts do not change. The existing database-backed quality baseline
+is 531 passing tests; the new configuration is validated against the provider schema, with fresh
+lint/format/diff checks recorded in the dated evidence. Public routing, active-job recovery,
+remote retention/restore and real screen-reader/device checks remain open.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007,
+GOV-002/006/007; ADR-0004/0015.

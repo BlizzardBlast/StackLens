@@ -10,6 +10,7 @@ import {
   DrizzleAnalysisRepository,
   migrateStackLensDatabase,
 } from "../src/index.js";
+import { analysisDeliveries } from "../src/schema.js";
 
 const databaseUrl = process.env.TEST_DATABASE_URL ?? "";
 const describeWithDatabase = databaseUrl.length > 0 ? describe : describe.skip;
@@ -83,6 +84,107 @@ describeWithDatabase("PostgreSQL analysis persistence [FR-003, FR-021, DATA-006,
   beforeEach(async () => {
     await database.delete(analysisReports);
     await database.delete(analyses);
+  });
+
+  it("SEC-003 purges expired terminal reports and delivery rows while preserving active, future and legacy records", async () => {
+    const createdAt = "2026-09-21T00:00:00.000Z";
+    const ids = ["expired", "failed", "limited", "queued", "running", "future", "legacy"];
+    await database.insert(analyses).values(
+      ids.map((id) => ({
+        id,
+        inputType: "repository" as const,
+        repositoryUrl: "https://github.com/acme/demo",
+        createdAt,
+        updatedAt: createdAt,
+        status:
+          id === "queued"
+            ? ("queued" as const)
+            : id === "running"
+              ? ("running" as const)
+              : id === "failed"
+                ? ("failed" as const)
+                : id === "limited"
+                  ? ("completed_with_limitations" as const)
+                  : ("completed" as const),
+        progressStage:
+          id === "queued"
+            ? ("queued" as const)
+            : id === "running"
+              ? ("running_rules" as const)
+              : id === "failed"
+                ? ("failed" as const)
+                : id === "limited"
+                  ? ("completed_with_limitations" as const)
+                  : ("completed" as const),
+        activeJobId: id === "running" ? "job-running" : null,
+        retentionExpiresAt:
+          id === "legacy"
+            ? null
+            : id === "future"
+              ? "2026-10-02T00:00:00.000Z"
+              : "2026-10-01T00:00:00.000Z",
+      })),
+    );
+    await database.insert(analysisDeliveries).values(
+      ids.map((id) => ({
+        analysisId: id,
+        status: "delivered" as const,
+        attempts: 1,
+        availableAt: createdAt,
+        createdAt,
+        updatedAt: createdAt,
+        deliveredAt: createdAt,
+      })),
+    );
+    await database.insert(analysisReports).values(
+      ["expired", "limited", "future", "legacy"].map((id) => ({
+        analysisId: id,
+        reportSchemaVersion: "1.0.0",
+        report: { ...report(), analysisId: id },
+        createdAt,
+      })),
+    );
+    expect(await repository.purgeExpiredTerminalAnalyses("2026-09-30T23:59:59.999Z")).toBe(0);
+    const now = "2026-10-01T00:00:00.000Z";
+    const counts = await Promise.all([
+      repository.purgeExpiredTerminalAnalyses(now, 1),
+      repository.purgeExpiredTerminalAnalyses(now, 1),
+    ]);
+    expect(counts).toEqual([1, 1]);
+    expect(await repository.purgeExpiredTerminalAnalyses(now, 1)).toBe(1);
+    const remaining = await database.select().from(analyses);
+    expect(remaining.map((row) => row.id).toSorted()).toEqual([
+      "future",
+      "legacy",
+      "queued",
+      "running",
+    ]);
+    expect(remaining.find((row) => row.id === "running")).toMatchObject({
+      status: "running",
+      activeJobId: "job-running",
+    });
+    const remainingReports = await database.select().from(analysisReports);
+    expect(remainingReports.map((row) => row.analysisId).toSorted()).toEqual(["future", "legacy"]);
+    const deliveries = await database.select().from(analysisDeliveries);
+    expect(deliveries.map((row) => row.analysisId).toSorted()).toEqual([
+      "future",
+      "legacy",
+      "queued",
+      "running",
+    ]);
+    await repository.fail({
+      id: "running",
+      jobId: "job-running",
+      completedAt: now,
+      updatedAt: now,
+      failureSummary: {
+        code: "synthetic_failure",
+        message: "Synthetic failure.",
+        retryable: false,
+      },
+    });
+    expect(await repository.purgeExpiredTerminalAnalyses(now)).toBe(1);
+    await expect(repository.purgeExpiredTerminalAnalyses(now, 0)).rejects.toThrow("batch limit");
   });
 
   afterAll(async () => {

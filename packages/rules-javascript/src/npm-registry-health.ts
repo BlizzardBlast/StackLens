@@ -3,7 +3,7 @@ import type { AnalysisFact, AnalysisLimitation } from "@stacklens/contracts";
 
 import type { JavaScriptAnalysisMetadata } from "./analysis-metadata.js";
 import { dependencyInventoryEvidenceId } from "./dependency-inventory.js";
-import type { NormalizedPackageManifest } from "./manifest.js";
+import { isExternalDependency, type NormalizedPackageManifest } from "./manifest.js";
 import { latestDistTag, packageVersion, resolveNpmObservation } from "./npm-rule-support.js";
 import {
   createDependencyRuleLimitation,
@@ -14,7 +14,7 @@ import {
 import { stableHash } from "./stable-id.js";
 
 const RULE_ID = "JS-NPM-010";
-const RULE_VERSION = "1";
+const RULE_VERSION = "2";
 
 export function npmRegistryHealthFactId(packageName: string): string {
   return `fact-js-npm-health-${stableHash(packageName)}`;
@@ -32,7 +32,12 @@ export const npmRegistryHealthFactRule: FactRule<
     const facts: AnalysisFact[] = [];
     const limitations: AnalysisLimitation[] = [];
 
-    for (const basis of dependencyDeclarationBases(context.project)) {
+    const externalProject = {
+      ...context.project,
+      dependencies: context.project.dependencies.filter(isExternalDependency),
+    };
+
+    for (const basis of dependencyDeclarationBases(externalProject)) {
       const resolved = resolveNpmObservation({
         ruleId: RULE_ID,
         packageName: basis.packageName,

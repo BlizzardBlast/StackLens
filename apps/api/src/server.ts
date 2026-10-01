@@ -69,6 +69,14 @@ export async function createStackLensApi(options: StackLensApiOptions): Promise<
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
+  // SEC-003/NFR-008: anonymous input, progress and reports must not enter browser/CDN caches.
+  app.addHook("onSend", async (_request, reply, payload) => {
+    reply.header("Cache-Control", "private, no-store");
+    reply.header("CDN-Cache-Control", "no-store");
+    reply.header("Vercel-CDN-Cache-Control", "no-store");
+    return payload;
+  });
+
   app.setErrorHandler((error, request, reply) => {
     if (validationFailure(error) || requestParserFailure(error)) {
       return reply.code(400).send({
