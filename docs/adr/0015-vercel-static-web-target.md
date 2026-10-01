@@ -5,6 +5,11 @@
 - **Requirements:** PRD-006, FR-001, FR-003, FR-004, FR-022, NFR-004, NFR-008, NFR-009, SEC-003, SEC-007, GOV-006
 - **Related:** ADR-0002, ADR-0004, ADR-0014
 
+**October 2 correction:** [ADR-0016](0016-vercel-request-bound-api.md) supersedes this decision's
+continuous-API-only restriction for an optional Vercel API preview. The approved Render Free
+attempt requested card verification and created no service. The following preparation record
+remains historical; static web separation and portable containers remain supported.
+
 ## Context
 
 The user selected Vercel after the local live MVP acceptance pass. The existing architecture has a

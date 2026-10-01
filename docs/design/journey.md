@@ -2040,3 +2040,37 @@ remote retention/restore and real screen-reader/device checks remain open.
 
 **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007,
 GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-02 — Published release branch, Render blocker and Vercel API preparation
+
+After explicit approval, commit `7ce34f0` was published in draft PR #41 and GitHub quality run
+`36884582320` passed. The approved Render Free/$0 form selected that branch and received the two
+Aiven values privately. Deployment requested Add Card verification describing a temporary $1
+authorization. No card was entered; the fresh October 2 dashboard confirmed no services and the
+restored form was blank. Configuration schema validity did not establish no-card eligibility.
+The earlier Render preparation remains historical evidence. Worker remained running after eight
+hours, with an observed idle 176.44 MiB of 256 MiB; this does not replace workload peak measurements.
+
+ADR-0016 adds a separate optional Vercel Fastify API project rooted at `apps/api`. Its compiled
+native entrypoint keeps the public contract and awaited delivery attempt, disables only the API
+recovery timer, and attaches a one-connection default pool to Fluid Compute. The continuous Silly
+Worker retains recovery, provider execution and retention. Portable process/container startup
+remains supported. Aiven's 20-connection limit is global; per-instance pooling does not bound
+autoscaling. Database values require new-destination approval and stay outside the static web project.
+
+The real Fastify builder selected `app.mjs`, passed the configured frozen install/workspace build,
+and traced Node 24 output with 1,765 files, 8,167,198 uncompressed bytes and embedded Graphile
+migrations. A TypeScript trace problem prompted the small compiled JavaScript entrypoint; no
+compiler or strictness setting was weakened. Native local HTTP checks passed OpenAPI, malformed
+JSON, quick analysis, unknown-route JSON and uncached queued submission/polling. Database-backed
+`pnpm check` passed 539 tests plus compiled runtime smoke, including the request-bound adapter.
+The new tests initially failed two mock-type lint checks; both were corrected and the full gate passed.
+
+The documentation-impact pass corrects stale unpublished/approval-pending Render status, updates
+architecture, current handover and hosting guides, and adds dated source-free evidence. Requirements,
+analyzer/scoring policy and report schemas do not change. No Vercel cloud runtime or backend secret
+resource exists yet. Cloud TLS/cold/warm requests, public full-stack acceptance, remote recovery/
+retention/restore and real screen-reader/device gates remain open; PR #41 remains draft.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-003/007,
+GOV-002/006/007; ADR-0004/0014/0015/0016.

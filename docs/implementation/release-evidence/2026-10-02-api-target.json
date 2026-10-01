@@ -1,0 +1,147 @@
+{
+  "date": "2026-10-02",
+  "timezone": "Asia/Jakarta",
+  "recordedAt": "2026-10-01T23:45:42.507Z",
+  "requirementIds": [
+    "PRD-006",
+    "FR-001",
+    "FR-003",
+    "FR-004",
+    "FR-022",
+    "NFR-004",
+    "NFR-008",
+    "NFR-009",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "source": {
+    "branch": "codex/mvp-release-readiness",
+    "pullRequest": "https://github.com/BlizzardBlast/StackLens/pull/41",
+    "initialPublishedCommit": "7ce34f0eebd86dfcbc3646984db90dc92234ee1a",
+    "verifiedMain": "f51d2b61f4740172558bb4b38087af60af8d791a",
+    "initialQualityRun": {
+      "id": 36884582320,
+      "conclusion": "success"
+    },
+    "adapterRevision": "Resolve the current reviewed PR HEAD; the initial published commit predates this adapter.",
+    "merged": false
+  },
+  "render": {
+    "attempted": true,
+    "branchSelected": "codex/mvp-release-readiness",
+    "plan": "Free $0/month",
+    "region": "Singapore",
+    "runtime": "Docker API",
+    "aivenCredentialsEnteredAfterApproval": true,
+    "cardVerificationPrompt": true,
+    "temporaryAuthorizationUsd": 1,
+    "cardEntered": false,
+    "serviceCreated": false,
+    "publicOrigin": null,
+    "dashboardVerifiedEmpty": true,
+    "restoredFormBlank": true
+  },
+  "worker": {
+    "host": "Silly Development",
+    "server": "60761d98",
+    "stateObserved": "Running",
+    "uptimeObserved": "8h 23m 18s",
+    "idleMemoryMiB": 176.44,
+    "memoryLimitMiB": 256,
+    "notes": "Periodic UI observation, not cgroup peak or new workload acceptance. Prior authenticated repository evidence remains in the October 1 record."
+  },
+  "vercel": {
+    "target": "separate API project",
+    "proposedName": "stacklens-api-preview",
+    "planObserved": "Hobby",
+    "rootDirectory": "apps/api",
+    "framework": "fastify",
+    "node": "24.x",
+    "region": "sin1",
+    "maxDurationSeconds": 60,
+    "databasePoolMaxPerInstance": 1,
+    "apiDeliveryPump": false,
+    "continuousRecovery": "Silly Worker",
+    "backendSecretTransferApproved": false,
+    "backendSecretsTransferred": false,
+    "projectCreated": false,
+    "deployed": false,
+    "publicOrigin": null,
+    "build": {
+      "recordedAt": "2026-10-01T23:43:35.229Z",
+      "builder": "12.0.0",
+      "entrypoint": "app.mjs",
+      "runtime": "nodejs24.x",
+      "handler": "apps\\api\\app.mjs",
+      "files": 1765,
+      "uncompressedBytes": 8167198,
+      "graphileEmbeddedMigrations": 1,
+      "routes": [
+        {
+          "handle": "filesystem"
+        },
+        {
+          "src": "/(.*)",
+          "dest": "/",
+          "transforms": [
+            {
+              "type": "request.path",
+              "op": "set",
+              "args": "/$1"
+            }
+          ]
+        }
+      ]
+    },
+    "nativeHttp": {
+      "recordedAt": "2026-10-01T23:41:02.479Z",
+      "nativeEntry": "apps/api/app.mjs",
+      "database": "local disposable PostgreSQL 18",
+      "http": {
+        "openapi": 200,
+        "malformedJson": 400,
+        "unknownPath": 404,
+        "quick": 200,
+        "submitted": 202,
+        "queuedLookup": 200,
+        "noStore": true
+      },
+      "providerCalls": false,
+      "cloudFunction": false
+    }
+  },
+  "quality": {
+    "command": "pnpm check",
+    "database": "disposable local PostgreSQL 18",
+    "passed": true,
+    "tests": 539,
+    "vitestTests": 524,
+    "designTokenTests": 10,
+    "deploymentTests": 5,
+    "testGraphTasks": 22,
+    "cachedTestGraphTasks": 21,
+    "compiledVercelRuntimeSmoke": true,
+    "build": true,
+    "typecheck": true,
+    "lint": true,
+    "format": true
+  },
+  "boundaries": {
+    "analyzerPolicyChanged": false,
+    "reportSchemasChanged": false,
+    "providerCallsInNewVerification": false,
+    "analyzedRepositoryExecution": false,
+    "paidPlanOrCard": false
+  },
+  "pending": [
+    "Approval to transfer Aiven credentials to the new separate Vercel API project",
+    "Actual cloud build/TLS and cold/warm Function behavior",
+    "Public API and Vercel web acceptance for both repositories",
+    "Remote active-job recovery",
+    "Remote expiry and backup restore",
+    "Real screen-reader and physical-device validation"
+  ]
+}

@@ -12,7 +12,9 @@ Linux Docker Compose deployment: Caddy terminates HTTPS, Fastify accepts request
 executes analysis, and PostgreSQL owns durable state. Any suitable container host can supply this
 topology. No external host implementing this Compose topology, API DNS record or Caddy certificate
 has been provisioned. The separate [managed preview](managed-hosting.md) uses the activated Aiven
-database and Silly Worker, with a [Render Free API](render-hosting.md) prepared but not deployed.
+database and Silly Worker. The [Render Free API](render-hosting.md) attempt hit card verification;
+an optional [Vercel API](vercel-api-hosting.md) now preserves the same contract with request-bound
+lifecycle under ADR-0016. Neither public API target has been deployed.
 
 The host needs Docker/Compose, persistent storage, a public API hostname with DNS directed to it,
 ports 80/443 for certificate issuance and HTTPS, and outbound access to the existing fixed provider

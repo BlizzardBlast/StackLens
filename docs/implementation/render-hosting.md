@@ -1,7 +1,7 @@
 # Render Free API preview
 
-> **Status:** Blueprint and dashboard form prepared; no service deployed\
-> **Date:** 2026-10-01\
+> **Status:** Actual Free deployment blocked by card verification; no service created\
+> **Updated:** 2026-10-02\
 > **Requirements:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007, GOV-002/006/007\
 > **Decision:** [ADR-0015](../adr/0015-vercel-static-web-target.md)
 
@@ -13,11 +13,15 @@
 shows $0/month, 0.1 CPU and 512 MB RAM. The user completed Render GitHub sign-in; the public Git
 repository source avoids installing a GitHub application with repository access.
 
-The actual form is prepared with Docker, Singapore, Free, the health path, build context and seven
-non-secret variables. Its branch remains `main` because `codex/mvp-release-readiness` is unpublished.
-Do not submit that form until the reviewed branch is published and selected. No service, API origin,
-card, backend secret transfer or deployment exists yet. The blueprint passes Render's published
-Draft 2020-12 JSON Schema; this validates configuration, not a cloud deployment.
+After explicit approval, the reviewed branch was published at `7ce34f0` in
+[PR #41](https://github.com/BlizzardBlast/StackLens/pull/41), and CI passed. The actual form selected
+that branch, Docker, Singapore, Free/$0, the health path, seven non-secret variables and automatic
+deployment Off. The two approved Aiven values were entered privately. Clicking Deploy opened an
+`Add Card` dialog describing a temporary $1 verification authorization. No card was entered.
+Canceling and explicitly reselecting Free did not produce a service. A fresh October 2 dashboard
+confirmed no services; the restored setup form was blank. No API origin or runtime resource exists.
+Do not retry card verification under the user's no-card constraint. The blueprint still passes the
+published Draft 2020-12 JSON Schema; configuration validity does not establish deployment eligibility.
 
 The API remains the existing compiled Fastify process. Render receives no Worker or PostgreSQL
 resource. The independently running Silly Worker and Aiven database remain the
@@ -34,7 +38,7 @@ entrypoint owns migrations, listening and orderly shutdown.
 `DATABASE_URL` and `STACKLENS_DATABASE_SSL_CA` use `sync: false` placeholders. After approval to
 transfer credentials to this new provider, supply the shared Aiven URL without SSL query parameters
 and its actual multiline CA PEM through private environment values. The persistence pool verifies
-the certificate and hostname. Never disable certificate validation or expose these values to Vercel.
+the certificate and hostname. Never disable certificate validation or expose these values to the static web project.
 The API does not need `STACKLENS_GITHUB_TOKEN`; that public-provider credential stays on the Worker.
 
 [Render Docker documentation](https://render.com/docs/docker) explains that service environment
@@ -57,10 +61,13 @@ prove that waiting clients receive usable responses.
 
 ## Activation and evidence
 
-1. Obtain explicit authorization to publish the reviewed release branch and transfer Aiven
-   credentials to Render. Preserve the existing uncommitted/unpushed state until authorized.
-2. Publish that branch, select it in the prepared form, verify Free/$0 and automatic deployment Off,
-   and enter the two backend secrets privately. Keep the root Dockerfile and build context.
+The following sequence is conditional on a future eligible no-card Render account. The current
+account's activation is blocked; use the [Vercel API target](vercel-api-hosting.md) instead.
+
+1. Authorization to publish the reviewed release branch and transfer Aiven credentials to Render
+   was given and used. PR #41 is published; recheck its reviewed HEAD before any future deployment.
+2. Select the reviewed branch, verify Free/$0 and automatic deployment Off, and enter the two
+   backend secrets privately. Keep the root Dockerfile and build context; stop at any card prompt.
 3. Deploy and record the revision, service identifier, assigned HTTPS origin, verified database
    connectivity and `/openapi.json`. Confirm the selected image is the API rather than the Worker.
 4. Submit KerjaLog and frey-ui through the public API. Preserve immutable commits, schema validation,

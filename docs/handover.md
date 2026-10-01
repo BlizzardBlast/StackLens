@@ -1,9 +1,9 @@
 # StackLens Session Handover
 
-> **Prepared:** 2026-10-01\
-> **Architecture:** v0.1.17; requirements v0.1.2\
-> **Milestone:** Aiven and authenticated free Worker verified; Render API prepared\
-> **Branch:** `codex/mvp-release-readiness`, existing checkout; changes uncommitted\
+> **Prepared:** 2026-10-02\
+> **Architecture:** v0.1.18; requirements v0.1.2\
+> **Milestone:** PR #41 published; Render card blocker verified; Vercel API target prepared\
+> **Branch:** `codex/mvp-release-readiness`, existing checkout; PR #41\
 > **Verified main:** `f51d2b61f4740172558bb4b38087af60af8d791a`, confirmed through the remote main ref\
 > **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
 
@@ -20,7 +20,7 @@ See [managed hosting](implementation/managed-hosting.md) and the
 
 Shared persistence now accepts verified CA and finite pool/connection settings. Executable API
 and Worker parse `STACKLENS_DATABASE_SSL_CA` and `STACKLENS_DATABASE_POOL_MAX`; the intended
-managed settings are API max three, Worker max five/concurrency one. Container health checks use
+managed settings are portable API max three, Vercel API max one per instance, Worker max five/concurrency one. Container health checks use
 the same CA and a separate one-connection pool. URL SSL overrides and malformed options fail
 without exposing values. Analyzer policy, contracts and requirements behavior are unchanged.
 
@@ -72,18 +72,33 @@ passed non-root/read-only health against an isolated Aiven database, which was r
 the temporary containers. `.railwayignore` protects local environment files and diagnostic assets
 if a trial upload is later authorized.
 
-The user completed Render sign-in. The [Render Free API blueprint](implementation/render-hosting.md)
-passes the published schema. Its unsent dashboard form selects Free/$0, Docker, Singapore,
-`/openapi.json`, root build context, seven non-secret variables and automatic deployment Off.
-No Render service or backend credential transfer exists. `main` remains selected until the reviewed
-`codex/mvp-release-readiness` branch is published; do not deploy `main` in that form. Remote `main`
-still resolves to the baseline above, and the release branch has no remote ref. Publication and
-Aiven secret transfer to Render need explicit authorization before activation.
+After explicit approval, commit `7ce34f0` was published in draft
+[PR #41](https://github.com/BlizzardBlast/StackLens/pull/41). Initial quality run `36884582320`
+passed. Render's actual Free/$0 form selected the reviewed branch and received the approved Aiven
+values privately. Deployment opened an Add Card dialog describing a temporary $1 verification
+authorization. No card was entered; a fresh October 2 dashboard confirmed zero services and the
+restored setup form was blank. The [Render blueprint](implementation/render-hosting.md) remains
+schema-valid, but this account's activation violates the no-card constraint. No public API exists.
 
-Vercel configuration remains prepared, but account linkage, usable API origin and deployment are
-pending. Changes remain uncommitted and unpushed on the existing branch. Public full-stack jobs,
-same-origin rewrites, remote retention/restore and real assistive-technology/device acceptance
-remain open. Resolve current `main` before resuming publication or deployment.
+The separate [Vercel API target](implementation/vercel-api-hosting.md) preserves Fastify while
+disabling the API recovery timer only for request-bound Functions. Submission still awaits durable
+delivery; Silly Worker owns recovery, execution and retention. The authenticated Vercel Hobby import
+form exposes a separate API project rooted at `apps/api`; no project has been deployed. Database
+credential transfer to Vercel is a new destination and requires explicit approval after reviewing
+this target. The existing Render approval does not authorize that transfer. Keep secrets outside
+the static web project. ADR-0016 records this lifecycle adjustment; containers remain supported.
+
+Public full-stack jobs, same-origin rewrites, remote active-job recovery, retention/restore and real
+assistive-technology/device acceptance remain open. Resolve current `main` and the reviewed PR HEAD
+before deployment or merge; no merge has been authorized. Dated October 1 records are historical
+snapshots, not current publication/deployment status.
+
+The [October 2 evidence](implementation/release-evidence/2026-10-02-api-target.json) records the
+native Fastify builder selecting `app.mjs`, traced Node 24 output (1,765 files, 8,167,198 bytes),
+embedded Graphile migrations, native local HTTP checks and database-backed `pnpm check` passing
+539 tests. API process defaults remain covered; the request-bound adapter smoke runs without
+provider execution. Resolve the current PR HEAD for this target rather than assuming `7ce34f0`
+contains the later adapter. Current `main` remains the separately verified baseline until merged.
 
 ### Earlier portable preparation evidence
 

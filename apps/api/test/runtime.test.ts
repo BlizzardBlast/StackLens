@@ -16,6 +16,7 @@ describeWithDatabase("API runtime composition [FR-001, FR-003, FR-017, FR-021, F
     const runtime = await createStackLensApiRuntime({
       connectionString: databaseUrl,
       logger: false,
+      startDeliveryPump: false,
     });
     openRuntimes.push(runtime);
 

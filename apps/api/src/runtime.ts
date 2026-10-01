@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { makeWorkerUtils } from "graphile-worker";
+import type { Pool } from "pg";
 
 import {
   createStackLensDatabase,
@@ -24,6 +25,9 @@ export interface StackLensApiRuntimeOptions {
   readonly retentionHours?: number;
   readonly databasePoolOptions?: StackLensPoolOptions;
   readonly onDatabasePoolError?: (error: Error) => void;
+  /** Request-bound hosts rely on the continuously running Worker for outbox recovery. */
+  readonly startDeliveryPump?: boolean;
+  readonly onDatabasePoolCreated?: (pool: Pool) => void;
 }
 
 export interface StackLensApiRuntime {
@@ -41,6 +45,7 @@ export async function createStackLensApiRuntime(
   );
 
   try {
+    options.onDatabasePoolCreated?.(pool);
     const database = createStackLensDatabase(pool);
     await migrateStackLensDatabase(database);
 
@@ -60,7 +65,9 @@ export async function createStackLensApiRuntime(
         repository,
         queue: createGraphileRepositoryJobQueue(jobAdder),
       });
-      deliveryPump = startRepositoryAnalysisDeliveryPump(deliveryDispatcher);
+      if (options.startDeliveryPump !== false) {
+        deliveryPump = startRepositoryAnalysisDeliveryPump(deliveryDispatcher);
+      }
       const app = await createStackLensApi({
         repository,
         deliveryDispatcher,

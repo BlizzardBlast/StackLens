@@ -182,4 +182,9 @@ After the build, `pnpm check` runs `pnpm runtime:smoke`. It always imports the c
 rules-JavaScript entry under Node 24, catching real ESM dependency-resolution failures. When
 `TEST_DATABASE_URL` is set, it also creates and stops the compiled API and Worker runtimes against
 PostgreSQL, exercising persistence bootstrap and Graphile initialization without contacting external
-providers.
+  providers.
+
+The same compiled smoke also starts the request-bound Vercel API adapter, verifies a durable queued
+submission and uncached status, and checks that quick analysis remains transient. Its recovery
+pump is disabled; the smoke-local Worker task never claims or executes repository/provider jobs.
+This verifies local lifecycle composition, not cloud deployment or Function suspension.

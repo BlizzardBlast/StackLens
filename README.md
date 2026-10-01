@@ -27,8 +27,12 @@ constraint. Railway API/Worker services are prepared offline for a credit-limite
 startup memory exceeds its recurring free credit estimate. A free Silly Development Node 24 Worker
 is activated against Aiven. After approved public-only GitHub token setup, both remote repositories
 completed with explicit limitations; sampled memory reached 249.41 MiB of 256 MiB. A
-[Render Free API blueprint](docs/implementation/render-hosting.md) and dashboard form are prepared;
-deployment needs publication of the reviewed branch and approved Aiven credential transfer.
+[Render Free API blueprint](docs/implementation/render-hosting.md) passes schema validation, but
+the actual approved deployment requested card verification and created no service. The reviewed
+branch is published in [PR #41](https://github.com/BlizzardBlast/StackLens/pull/41); its initial CI passed.
+A separate [Vercel API Functions target](docs/implementation/vercel-api-hosting.md) now preserves
+the same Fastify contract and leaves continuous recovery/execution on the existing Worker.
+Activation and approval to transfer database credentials to this new API project remain pending.
 Configurable 24-hour anonymous retention and bounded cleanup are implemented. Public API activation,
 Vercel linkage/routing, real assistive-technology/device validation and deployed acceptance remain open.
 

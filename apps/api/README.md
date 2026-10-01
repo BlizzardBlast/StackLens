@@ -19,8 +19,12 @@ The executable runtime assigns repository expiry from `STACKLENS_RETENTION_HOURS
 default, integer range 1–8760). Quick reports remain transient. All API responses carry browser/CDN
 `no-store` directives. A completed report removed during a retention/read race uses the existing
 404 recovery. Production startup requires an explicit `DATABASE_URL`. See
-[backend hosting](../../docs/implementation/backend-hosting.md) and the prepared
-[Render Free API preview](../../docs/implementation/render-hosting.md).
+[backend hosting](../../docs/implementation/backend-hosting.md), the
+[Render card-verification blocker](../../docs/implementation/render-hosting.md), and the optional
+[Vercel API preview](../../docs/implementation/vercel-api-hosting.md). The Vercel entrypoint attaches
+one PostgreSQL pool per warm instance and disables only the API recovery pump; submission still
+awaits delivery, and the continuous Worker recovers the durable outbox. Database secrets belong
+only to the separate API project. Ordinary process startup remains unchanged.
 
 ## Quick manifest analysis
 

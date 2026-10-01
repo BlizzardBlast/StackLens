@@ -1,8 +1,8 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.17
-> **Date:** 2026-10-01
+> **Architecture version:** 0.1.18
+> **Date:** 2026-10-02
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
@@ -813,7 +813,7 @@ Local development uses the checked-in `compose.yaml` for PostgreSQL 18 while web
 A specific cloud vendor is intentionally not an architectural dependency. The deployment provider may be selected later as long as it can run:
 
 - a static frontend;
-- long-running Node API and worker processes;
+- Node API runtime and a long-running worker process;
 - PostgreSQL;
 - HTTPS and environment-secret management.
 
@@ -826,9 +826,14 @@ host with Caddy TLS routing; the provider remains replaceable. The local Compose
 The managed preview preparation now uses Aiven PostgreSQL Free with an explicit CA and verified TLS.
 Shared persistence pool options configure finite connection acquisition and per-process connection
 limits; environment parsing remains outside analyzer policy. The free Node 24 Silly Worker is
-activated and both authenticated repository runs completed with limitations. A Render Free Docker
-API blueprint and dashboard form are prepared; activation awaits branch publication and backend
-secret-transfer approval after Northflank's actual form required card verification. See the
+activated and both authenticated repository runs completed with limitations. After approved branch
+publication in PR #41, the Render Free Docker API attempt also requested card verification and
+created no service. ADR-0016 adds a separate optional Vercel Fastify API project: request-bound
+Functions keep awaited submission dispatch but disable the API recovery timer. The continuous
+Worker owns outbox recovery, provider execution and retention. A runtime-injected pool attachment
+supports Fluid Compute without coupling persistence or analyzer policy to Vercel. Database secrets
+stay only in the API project; the static web project still receives only a public HTTPS API origin.
+Portable continuous API containers remain supported. See the
 [managed hosting runbook](implementation/managed-hosting.md) for current resources and limits.
 Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker
 maintenance purges expired terminal analysis/report/delivery records in bounded sweeps while
@@ -887,5 +892,6 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0013 — Workspace inspection and risk/readiness scoring](adr/0013-workspace-inspection-and-scoring-v3.md)
 - [ADR-0014 — Transactional outbox for repository-analysis delivery](adr/0014-transactional-outbox-delivery.md)
 - [ADR-0015 — Vercel static web and portable backend target](adr/0015-vercel-static-web-target.md)
+- [ADR-0016 — Request-bound Fastify API on Vercel](adr/0016-vercel-request-bound-api.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).

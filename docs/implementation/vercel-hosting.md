@@ -17,8 +17,9 @@ Browser -> Vercel static web
                                        -> GitHub/npm/OSV
 ```
 
-API and Worker are ordinary long-running Node 24 processes under ADR-0002/0004/0014.
-PostgreSQL must be shared by those processes. A separately managed database requires a direct
+The portable API and Worker are ordinary Node 24 processes under ADR-0002/0004/0014. The optional
+[Vercel API project](vercel-api-hosting.md) uses request-bound Fastify Functions under ADR-0016;
+the Worker remains continuous. PostgreSQL must be shared by these runtimes. A managed database requires a direct
 certificate-verified TLS connection; a self-hosted database can remain on the host's private network.
 The web project has no database or provider credentials. The existing local `compose.yaml` continues
 to own only development PostgreSQL.
@@ -29,18 +30,16 @@ Checked on 2026-10-01: [Vercel Hobby](https://vercel.com/docs/plans/hobby) is fr
 and restricted to personal, non-commercial use. It fits a personal preview of this static frontend.
 Confirm plan eligibility before a commercial hosted launch.
 
-Vercel also [supports Fastify APIs](https://vercel.com/docs/frameworks/backend/fastify), deployed
-as Functions. The current API needs invocation-safe runtime composition before that deployment;
-its delivery pump and the continuously polling Graphile Worker are process-based. Hobby Functions
-have a [300-second maximum duration](https://vercel.com/docs/functions/configuring-functions/duration).
-Moving the backend to Vercel requires an external Worker host or a reviewed migration to a durable
-Workflow/queue execution model, plus suitable PostgreSQL hosting. It is a separate architecture
-change under ADR-0004/0015, not activation of the prepared container target.
+Vercel also [supports Fastify APIs](https://vercel.com/docs/frameworks/backend/fastify) as Functions.
+The separate [API target](vercel-api-hosting.md) now uses a request-bound runtime under ADR-0016,
+with the API recovery timer disabled and PostgreSQL pool attached to Fluid Compute. The external
+Silly Worker still owns execution/recovery; no queue or Workflow migration is introduced.
 
 The user now requires no payment card. The [managed setup](managed-hosting.md) records the created
 Aiven Free database, activated Silly Worker, Northflank's actual card-verification blocker and
-inactive credit-limited Railway candidate. The [Render Free API target](render-hosting.md) is
-prepared but not deployed; its HTTPS origin and cold-start behavior remain unverified. Oracle's
+inactive credit-limited Railway candidate. The [Render Free API target](render-hosting.md) hit
+card verification in the actual approved deployment and created no service. Vercel API activation
+and public routing remain pending. Oracle's
 card verification excludes it under the current constraint.
 
 ## Tracked configuration

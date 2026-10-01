@@ -1,15 +1,16 @@
 # Managed hosting setup
 
-> **Status:** Both authenticated remote Worker runs complete with limitations; Render API/Vercel pending\
-> **Date:** 2026-10-01\
+> **Status:** Remote Worker verified; Render blocked by card verification; Vercel API preparation\
+> **Updated:** 2026-10-02\
 > **Requirements:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007, GOV-002/006/007\
 > **Decision:** [ADR-0015](../adr/0015-vercel-static-web-target.md)
 
 ## Current resources and constraints
 
 The user requires free hosting without supplying a payment card. The intended web target remains
-Vercel Hobby for a personal preview. The database is now Aiven PostgreSQL Free. API and Graphile
-Worker remain continuous Node processes; no serverless queue migration is introduced.
+Vercel Hobby for a personal preview. The database is Aiven PostgreSQL Free. Graphile Worker remains
+continuous. The optional [Vercel API](vercel-api-hosting.md) is request-bound under ADR-0016;
+durable delivery and provider execution stay on the Worker.
 
 Created through the user's authenticated dashboards:
 
@@ -29,10 +30,13 @@ Created through the user's authenticated dashboards:
   additional package/argument fields are empty. After explicit user approval, the reviewed Linux
   package and private Aiven runtime credentials were uploaded and the Worker activated.
   The actual creation form explicitly says no card is required for Free.
-- Render account access after user-completed GitHub sign-in. The unsent `stacklens-api-preview`
-  form selects Free/$0, Docker, Singapore, `/openapi.json`, root build context, seven non-secret
-  variables and automatic deployment Off. The [Render blueprint](render-hosting.md) passes the
-  published schema. No Render service, backend credential transfer or public origin exists.
+- Render account access after user-completed GitHub sign-in. After approved branch publication and
+  private Aiven credential entry, the actual Free/$0 deployment opened card verification. No card
+  was supplied. A fresh dashboard confirms no services or public origin. The
+  [Render blueprint](render-hosting.md) passes schema validation; account eligibility is blocked.
+- Vercel authenticated Hobby access. Its import form exposes separate Fastify API and Vite web
+  projects. The proposed API root is `apps/api`; the web root remains the repository root. No
+  Vercel project or backend secret resource has been created for this target.
 
 The [new setup evidence](release-evidence/2026-10-01-managed-hosting.json) is separate from the
 [earlier local container rehearsal](release-evidence/2026-10-01-hosting.json). Neither proves a
@@ -217,7 +221,7 @@ Three API plus five Worker connections leave headroom below the displayed twenty
 Include health checks, migrations, administrator sessions and rollout overlap in that budget; the
 displayed maximum is not a promise that all connections are available to application clients.
 Avoid unmeasured replica scaling. Database passwords and provider tokens belong only in backend
-runtime secrets, never Docker build arguments, repository files, Vercel or `VITE_*` values.
+runtime secrets, never Docker build arguments, repository files, the static web project or `VITE_*` values.
 
 The Aiven endpoint is public with credential authentication and certificate-verified TLS. Its
 initial allowlist is open to all; restrict it when stable backend egress addresses are available.
@@ -237,11 +241,12 @@ read-only checks against another isolated Aiven database. That database and both
 removed after orderly shutdown. The separate constrained Worker experiment above is partial
 evidence and does not replace full deployed acceptance.
 
-The Worker is activated. The Render form cannot select the unpublished release branch yet;
-do not deploy its current `main` selection. After explicit branch-publication and Render
-credential-transfer authorization:
+The Worker is activated. The release branch was published at `7ce34f0` in draft PR #41 and initial
+CI passed. Render's approved deployment hit card verification and created no service. Prepare the
+[Vercel API target](vercel-api-hosting.md) under the same no-card constraint; obtain approval for
+the new backend credential destination before activation.
 
-1. Deploy the [prepared Render API](render-hosting.md) against the existing preview database.
+1. Deploy the reviewed Vercel API against the existing preview database after new-destination approval.
    Record actual
    service identifiers, image/revision, free resource allocation and runtime measurements.
 2. Verify the API's assigned HTTPS origin, migration state and a queued job reaching terminal state.
