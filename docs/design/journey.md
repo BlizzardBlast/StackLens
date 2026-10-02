@@ -2160,3 +2160,23 @@ updates the API runbook and ADR-0016 module contract. No product policy or repor
 Database-backed quality and public cloud revalidation are required before using the API origin.
 
 **Traceability:** FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0016.
+
+## 2026-10-02 — Host-owned native HTTP binding
+
+Deployment `4R1WiVXW1UUU3BKN6Gm2PjrDJVeK` built `2eb9da3` in 24 seconds. The server export
+was accepted, but the remaining asynchronous Fastify listen call failed and stopped the runtime;
+public OpenAPI returned 500. The invocation reported the sanitized listen failure, 2.88-second
+execution and 357 MB Fluid memory. The entrypoint now awaits Fastify readiness and exports its
+unbound HTTP server without calling listen. HTTP binding belongs entirely to the host.
+
+The smoke now forbids application binding during import, verifies the native server export, binds
+it as the host and checks OpenAPI/malformed JSON with graceful teardown. This closes a gap in the
+earlier capture-only replay, which waited for Fastify's listen call before binding and missed the
+cloud race. API process startup remains unchanged. The separate Hobby web project is connected
+to StackLens with Vite, Node 24 and the repository root; builds stay paused pending API verification.
+
+The documentation-impact pass updates the API runbook, ADR-0016 and source-free failure evidence.
+Product requirements, queue payloads, scoring and report schemas remain unchanged. The database-backed
+quality gate and a new public cloud check are required before assigning the web proxy origin.
+
+**Traceability:** FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0016.

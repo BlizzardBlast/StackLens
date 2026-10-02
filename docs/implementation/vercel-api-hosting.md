@@ -36,12 +36,12 @@ and attaches the pool to Fluid Compute before using it. Repository submission st
 state and awaits the existing delivery attempt. The independently running Silly Worker handles
 recovery, repository/provider execution and retention. Keep that Worker active.
 
-The native host intercepts HTTP `listen()` and binds the captured server after importing the entrypoint.
-Do not await the Fastify listen promise at module scope: that prevents import completion and deadlocks
-the host. Await runtime construction, start listening without blocking import, and keep listen failures
-sanitized. Export the captured HTTP server as the default handler; a named runtime export alone is
-rejected by the deployed runtime. The named runtime export permits graceful teardown in an isolated
-capture smoke process. The smoke verifies the default export is the same captured HTTP server.
+The native host owns HTTP binding. Await runtime construction and Fastify readiness, then export the
+unbound HTTP server as the default handler. Do not call or await Fastify `listen()` in this entrypoint:
+module-scope awaiting deadlocked import, and a non-blocking call still failed during cloud binding.
+A named runtime export alone is rejected by the deployed runtime. The named runtime export permits
+graceful teardown in an isolated smoke process. The smoke verifies the default export is the Fastify
+HTTP server and fails if application code tries to bind before the host.
 
 ## Runtime values
 
@@ -70,9 +70,10 @@ OpenAPI, malformed JSON, quick analysis, uncached submission/polling and unknown
 Database-backed `pnpm check` passed 539 tests and the compiled adapter smoke. These checks do not
 prove Vercel TLS, Function suspension, production networking or quotas. The
 [dated evidence](release-evidence/2026-10-02-api-target.json) records these boundaries.
-The compiled smoke now also captures the real entrypoint's server without binding, requires import
-completion, then binds and checks OpenAPI and malformed JSON. The previous entrypoint was captured
-but did not finish importing before binding; the corrected entrypoint passed the same replay.
+The compiled smoke now also imports the real entrypoint without permitting application binding,
+requires a ready unbound HTTP server, then binds and checks OpenAPI and malformed JSON. Earlier
+capture replay proved the module-scope await deadlock; cloud validation exposed the handler-export
+and asynchronous-binding gaps. Those failed attempts remain in the dated record.
 
 1. Resolve the current reviewed PR #41 HEAD. The adapter is published in `2a507cb`; its
    [quality run](https://github.com/BlizzardBlast/StackLens/actions/runs/36942657278) passed.

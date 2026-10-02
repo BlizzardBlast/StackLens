@@ -21,12 +21,11 @@ attempt, and returns the stable identifier. The Worker owns analysis execution a
 
 Add an optional Vercel API project with root directory `apps/api`. Keep the static web project at the
 repository root, and keep its existing same-origin proxy configuration. The API project's `app.mjs`
-is a native Fastify entrypoint; it imports the existing runtime composition and listens as documented
-by Vercel. Warm requests share the module's runtime and database pool.
-The native host captures `listen()` before binding after module import. Runtime initialization is
-awaited; the listen promise must not block import completion. Keep an isolated native-capture smoke
-alongside the compiled runtime gate so an ordinary local server check cannot miss this lifecycle constraint.
-Export the captured HTTP server as the default handler, preserving the native host's module contract.
+is a native Fastify entrypoint; it imports the existing runtime composition and exports the ready,
+unbound HTTP server as its default handler. Vercel owns HTTP binding. Warm requests share the
+module's runtime and database pool. Do not call or await Fastify `listen()` in this entrypoint.
+Keep an isolated native-entry smoke alongside the compiled runtime gate: reject application binding,
+verify the HTTP server export, then bind it as the host does and check real HTTP responses.
 
 Disable the API delivery pump only in this request-bound entrypoint. Submission still awaits the
 existing dispatcher before returning; no queue work is scheduled after the response. The continuously
