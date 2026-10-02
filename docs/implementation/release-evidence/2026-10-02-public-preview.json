@@ -1,0 +1,565 @@
+{
+  "date": "2026-10-02",
+  "timezone": "Asia/Jakarta",
+  "recordedAt": "2026-10-02T11:30:28.453Z",
+  "requirements": [
+    "PRD-006",
+    "FR-001",
+    "FR-003",
+    "FR-004",
+    "FR-022",
+    "NFR-004",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007",
+    "NFR-006",
+    "NFR-007"
+  ],
+  "source": {
+    "branch": "codex/mvp-release-readiness",
+    "pullRequest": "https://github.com/BlizzardBlast/StackLens/pull/41",
+    "runtimeRevision": "75bf5a2f37d32b98925dd922eb0c6410df3f55fc",
+    "runtimeQualityRun": {
+      "id": 36947487085,
+      "conclusion": "success",
+      "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/36947487085"
+    },
+    "merged": false
+  },
+  "targets": {
+    "api": "https://project-q766o.vercel.app",
+    "web": "https://project-j0e3o.vercel.app",
+    "apiDeploymentId": "Fd6qZs1W8XvuG44FbqZ6upyuT4jW",
+    "webDeploymentId": "BxtVh6H5U5DGpdkAYusTn4k1V3Vp",
+    "platformEnvironment": "Production used for personal preview; not product release",
+    "worker": {
+      "host": "Silly Development",
+      "server": "60761d98",
+      "concurrency": 1,
+      "poolMax": 5
+    },
+    "database": {
+      "host": "Aiven Free PostgreSQL",
+      "version": "18.6",
+      "verifiedCA": true,
+      "connectionLimit": 20
+    },
+    "cardOrPaidPlanAdded": false
+  },
+  "apiHttp": {
+    "recordedAt": "2026-10-02T00:45:05.400Z",
+    "origin": "https://project-q766o.vercel.app",
+    "openapi": {
+      "firstMs": 3146,
+      "warmMs": 58,
+      "status": 200,
+      "vercelId": "sin1::sin1::mvmgl-1790901900665-fbf3872ea403",
+      "note": "First observed request; no claim of forced Function cold start."
+    },
+    "malformedJson": 400,
+    "unknownApiJson": 404,
+    "invalidRepository": 400,
+    "quick": [
+      {
+        "kind": "paste",
+        "status": 200,
+        "analysisId": "29148fb0-b3ef-45a2-a2b0-f0c50ed94938",
+        "schemaVersion": "2.0.0",
+        "contractValid": true,
+        "lookup": 404,
+        "transient": true,
+        "noStore": true,
+        "ms": 353
+      },
+      {
+        "kind": "upload",
+        "status": 200,
+        "analysisId": "892d7915-25e1-454d-8128-d5c37a98e692",
+        "schemaVersion": "2.0.0",
+        "contractValid": true,
+        "lookup": 404,
+        "transient": true,
+        "noStore": true,
+        "ms": 57
+      }
+    ],
+    "database": "shared Aiven through Vercel API",
+    "providerJobs": false
+  },
+  "apiRepositoryJobs": {
+    "recordedAt": "2026-10-02T00:45:25.262Z",
+    "origin": "https://project-q766o.vercel.app",
+    "jobs": [
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "d3c3fd04-23dd-44c4-9565-a71a99d8edb0",
+        "submittedAt": "2026-10-02T00:45:25.953Z",
+        "submittedMs": 689,
+        "noStore": true,
+        "lastObservedAt": "2026-10-02T11:26:20.052Z",
+        "status": "completed_with_limitations",
+        "terminal": true,
+        "contractValid": true,
+        "schemaVersion": "2.0.0",
+        "repository": {
+          "provider": "github",
+          "owner": "BlizzardBlast",
+          "name": "frey-ui",
+          "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+          "ref": "main"
+        },
+        "analyzer": {
+          "version": "javascript-production-v6",
+          "ruleSetVersion": "javascript-rules-v6",
+          "scoringVersion": "stack-health-v3"
+        },
+        "reportCreatedAt": "2026-10-02T00:45:25.384Z",
+        "observedElapsedMs": 136505,
+        "limitations": 24,
+        "partialFailures": [
+          {
+            "scope": "source",
+            "code": "npm_response_too_large"
+          },
+          {
+            "scope": "source",
+            "code": "npm_response_too_large"
+          },
+          {
+            "scope": "source",
+            "code": "npm_response_too_large"
+          }
+        ],
+        "scoreStates": {
+          "dependencies": "insufficient_evidence",
+          "security": "available",
+          "maintainability": "insufficient_evidence",
+          "testing": "available",
+          "tooling": "available"
+        },
+        "createdAt": "2026-10-02T00:45:25.384Z",
+        "startedAt": "2026-10-02T00:45:27.651Z",
+        "completedAt": "2026-10-02T00:47:39.381Z",
+        "durableElapsedMs": 133997
+      },
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "69331bfd-f9a9-4edf-bf0a-8e740cd71c5f",
+        "submittedAt": "2026-10-02T00:45:26.335Z",
+        "submittedMs": 380,
+        "noStore": true,
+        "lastObservedAt": "2026-10-02T11:26:20.877Z",
+        "status": "completed_with_limitations",
+        "terminal": true,
+        "contractValid": true,
+        "schemaVersion": "2.0.0",
+        "repository": {
+          "provider": "github",
+          "owner": "BlizzardBlast",
+          "name": "KerjaLog",
+          "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+          "ref": "main"
+        },
+        "analyzer": {
+          "version": "javascript-production-v6",
+          "ruleSetVersion": "javascript-rules-v6",
+          "scoringVersion": "stack-health-v3"
+        },
+        "reportCreatedAt": "2026-10-02T00:45:25.959Z",
+        "observedElapsedMs": 242076,
+        "limitations": 5,
+        "partialFailures": [],
+        "scoreStates": {
+          "dependencies": "available",
+          "security": "available",
+          "maintainability": "insufficient_evidence",
+          "testing": "insufficient_evidence",
+          "tooling": "available"
+        },
+        "createdAt": "2026-10-02T00:45:25.959Z",
+        "startedAt": "2026-10-02T00:47:43.310Z",
+        "completedAt": "2026-10-02T00:49:21.293Z",
+        "durableElapsedMs": 235334
+      }
+    ],
+    "verifiedAt": "2026-10-02T11:26:20.925Z",
+    "reread": true
+  },
+  "webHttp": {
+    "recordedAt": "2026-10-02T00:49:34.201Z",
+    "origin": "https://project-j0e3o.vercel.app",
+    "openapi": {
+      "firstMs": 184,
+      "warmMs": 306,
+      "status": 200,
+      "vercelId": "sin1:sin1:sin1::sin1::sjjkm-1790902173234-f834f4b6a8ae",
+      "note": "First observed request; no claim of forced Function cold start."
+    },
+    "malformedJson": 400,
+    "unknownApiJson": 404,
+    "invalidRepository": 400,
+    "quick": [
+      {
+        "kind": "paste",
+        "status": 200,
+        "analysisId": "25957aa7-53fe-43c1-9a8c-c10f1e7535c8",
+        "schemaVersion": "2.0.0",
+        "contractValid": true,
+        "lookup": 404,
+        "transient": true,
+        "noStore": true,
+        "ms": 64
+      },
+      {
+        "kind": "upload",
+        "status": 200,
+        "analysisId": "53849c05-d0e3-4632-b0a5-6a1f79075a63",
+        "schemaVersion": "2.0.0",
+        "contractValid": true,
+        "lookup": 404,
+        "transient": true,
+        "noStore": true,
+        "ms": 71
+      }
+    ],
+    "database": "shared Aiven through Vercel API",
+    "providerJobs": false
+  },
+  "webRepositoryJobs": {
+    "recordedAt": "2026-10-02T00:54:57.091Z",
+    "origin": "https://project-j0e3o.vercel.app",
+    "submission": "actual browser repository forms; request timing not measured",
+    "jobs": [
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "916b3aa9-7294-4922-83f4-eb1fd4313484",
+        "lastObservedAt": "2026-10-02T11:26:19.932Z",
+        "status": "completed_with_limitations",
+        "noStore": true,
+        "terminal": true,
+        "contractValid": true,
+        "schemaVersion": "2.0.0",
+        "repository": {
+          "provider": "github",
+          "owner": "BlizzardBlast",
+          "name": "frey-ui",
+          "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+          "ref": "main"
+        },
+        "analyzer": {
+          "version": "javascript-production-v6",
+          "ruleSetVersion": "javascript-rules-v6",
+          "scoringVersion": "stack-health-v3"
+        },
+        "reportCreatedAt": "2026-10-02T00:53:45.464Z",
+        "observedElapsedMs": 59817,
+        "observedElapsedBasis": "first observation after browser submission",
+        "limitations": 25,
+        "partialFailures": [
+          {
+            "scope": "source",
+            "code": "github_blob_request_failed"
+          },
+          {
+            "scope": "source",
+            "code": "github_blob_request_failed"
+          },
+          {
+            "scope": "source",
+            "code": "npm_response_too_large"
+          },
+          {
+            "scope": "source",
+            "code": "npm_response_too_large"
+          },
+          {
+            "scope": "source",
+            "code": "npm_response_too_large"
+          }
+        ],
+        "scoreStates": {
+          "dependencies": "insufficient_evidence",
+          "security": "available",
+          "maintainability": "insufficient_evidence",
+          "testing": "available",
+          "tooling": "available"
+        },
+        "createdAt": "2026-10-02T00:53:45.464Z",
+        "startedAt": "2026-10-02T00:53:47.353Z",
+        "completedAt": "2026-10-02T00:55:53.890Z",
+        "durableElapsedMs": 128426
+      },
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "68cacfa0-1a85-4a91-b98b-95fd0ee04491",
+        "lastObservedAt": "2026-10-02T11:26:20.930Z",
+        "status": "completed_with_limitations",
+        "noStore": true,
+        "terminal": true,
+        "contractValid": true,
+        "schemaVersion": "2.0.0",
+        "repository": {
+          "provider": "github",
+          "owner": "BlizzardBlast",
+          "name": "KerjaLog",
+          "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+          "ref": "main"
+        },
+        "analyzer": {
+          "version": "javascript-production-v6",
+          "ruleSetVersion": "javascript-rules-v6",
+          "scoringVersion": "stack-health-v3"
+        },
+        "reportCreatedAt": "2026-10-02T00:54:08.383Z",
+        "limitations": 6,
+        "partialFailures": [
+          {
+            "scope": "source",
+            "code": "github_blob_timeout"
+          }
+        ],
+        "scoreStates": {
+          "dependencies": "available",
+          "security": "available",
+          "maintainability": "insufficient_evidence",
+          "testing": "insufficient_evidence",
+          "tooling": "available"
+        },
+        "createdAt": "2026-10-02T00:54:08.383Z",
+        "startedAt": "2026-10-02T00:55:57.671Z",
+        "completedAt": "2026-10-02T05:04:53.166Z",
+        "durableElapsedMs": 15044783
+      }
+    ],
+    "verifiedAt": "2026-10-02T11:26:20.966Z",
+    "reread": true
+  },
+  "webStatic": {
+    "recordedAt": "2026-10-02T01:01:55.626Z",
+    "origin": "https://project-j0e3o.vercel.app",
+    "observed": [
+      {
+        "path": "/",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/quick",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/analyses/916b3aa9-7294-4922-83f4-eb1fd4313484",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/analyses/68cacfa0-1a85-4a91-b98b-95fd0ee04491",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/assets/index-WKjKWBhc.js",
+        "status": 200,
+        "contentType": "application/javascript; charset=utf-8"
+      },
+      {
+        "path": "/assets/index-Cd4V-7Xk.css",
+        "status": 200,
+        "contentType": "text/css; charset=utf-8"
+      },
+      {
+        "path": "/assets/ibm-plex-sans-cyrillic-ext-wght-normal-d45eAU9y.woff2",
+        "status": 200,
+        "contentType": "font/woff2"
+      },
+      {
+        "path": "/assets/ibm-plex-sans-cyrillic-wght-normal-BAAhND-U.woff2",
+        "status": 200,
+        "contentType": "font/woff2"
+      },
+      {
+        "path": "/assets/ibm-plex-sans-greek-wght-normal-CmyJS8uq.woff2",
+        "status": 200,
+        "contentType": "font/woff2"
+      },
+      {
+        "path": "/assets/ibm-plex-sans-vietnamese-wght-normal-Dg1JeJN0.woff2",
+        "status": 200,
+        "contentType": "font/woff2"
+      },
+      {
+        "path": "/assets/ibm-plex-sans-latin-ext-wght-normal-CIII54If.woff2",
+        "status": 200,
+        "contentType": "font/woff2"
+      },
+      {
+        "path": "/assets/ibm-plex-sans-latin-wght-normal-IvpUvPa2.woff2",
+        "status": 200,
+        "contentType": "font/woff2"
+      },
+      {
+        "path": "/assets/ibm-plex-mono-latin-400-normal-DMJ8VG8y.woff2",
+        "status": 200,
+        "contentType": "font/woff2"
+      },
+      {
+        "path": "/assets/ibm-plex-mono-latin-500-normal-DSY6xOcd.woff2",
+        "status": 200,
+        "contentType": "font/woff2"
+      },
+      {
+        "path": "/assets/ibm-plex-mono-latin-600-normal-BgSNZQsw.woff2",
+        "status": 200,
+        "contentType": "font/woff2"
+      },
+      {
+        "path": "/assets/stacklens-missing-preview-20261002.js",
+        "status": 404,
+        "contentType": "text/plain; charset=utf-8"
+      }
+    ],
+    "failure": {
+      "analysisId": "2b16d0a7-dc4d-4ca7-93b9-710da8cfe8e2",
+      "status": "failed",
+      "code": "repository_unavailable",
+      "noStore": true
+    },
+    "browser": {
+      "scope": "Earlier static-check snapshot; native-file selection and terminal polling were verified later in the top-level browser record",
+      "repositoryForms": true,
+      "invalidQuickJsonPreserved": true,
+      "quickBusyState": true,
+      "quickResultHeadingFocus": true,
+      "quickResetHeadingFocus": true,
+      "evidenceOpenClose": true,
+      "evidenceCloseFocusReturn": true,
+      "missingAnalysisRecovery": true,
+      "nativeFilePicker": false,
+      "terminalNetworkPollingObserved": false,
+      "physicalDevice": false,
+      "screenReader": false
+    }
+  },
+  "browser": {
+    "recordedAt": "2026-10-02T11:25:06.605Z",
+    "origin": "https://project-j0e3o.vercel.app",
+    "upload": {
+      "analysisId": "a236cacc-13f7-43ed-af35-0428347ea11a",
+      "status": 200,
+      "schemaVersion": "2.0.0",
+      "kind": "upload",
+      "filename": "package.json",
+      "firstBytes": 83,
+      "replacementBytes": 110,
+      "replacementUsed": true,
+      "displayedDependencyCount": 2,
+      "reportHeadingFocused": true,
+      "requestsObserved": 1,
+      "transientLookupStatus": 404
+    },
+    "responsive": {
+      "emulatedViewport": {
+        "width": 320,
+        "height": 800
+      },
+      "quickReport": {
+        "clientWidth": 305,
+        "scrollWidth": 305
+      },
+      "physicalDevice": false,
+      "kerjaLogReport": {
+        "clientWidth": 305,
+        "scrollWidth": 305
+      }
+    },
+    "terminalPolling": {
+      "analysisId": "68cacfa0-1a85-4a91-b98b-95fd0ee04491",
+      "status": "completed_with_limitations",
+      "initialStatusRequests": 1,
+      "observationStart": "2026-10-02T11:25:49.093Z",
+      "observationEnd": "2026-10-02T11:26:51.768Z",
+      "additionalStatusRequests": 0,
+      "truncated": false
+    },
+    "consoleErrors": []
+  },
+  "workerRestart": {
+    "trigger": "Silly panel Restart during web KerjaLog analysis",
+    "previousWorkerId": "worker-39fb9fcc534e942251",
+    "replacementWorkerId": "worker-c306727f2334ce1345",
+    "panelObservedRestarted": true,
+    "immediateRecovery": false,
+    "stillRunningObservedAt": "2026-10-02T01:05:55.331Z",
+    "terminalRereadAt": "2026-10-02T11:21:09.844Z",
+    "durableCompletedAt": "2026-10-02T05:04:53.166Z",
+    "durableElapsedMs": 15044783,
+    "manualUnlockExecuted": false,
+    "temporaryHelperSavedOrRun": false,
+    "note": "Panel confirmed old process stopped/offline and new worker connected. Existing running analysis did not promptly advance. Later durable timestamps are consistent with documented four-hour Graphile stale-lock recovery; no continuous observation or exact recovery trigger is claimed.",
+    "references": [
+      "https://worker.graphile.org/docs/error-handling",
+      "https://worker.graphile.org/docs/admin-functions"
+    ]
+  },
+  "workerResourceObservation": {
+    "sampledMemoryMiB": 257.36,
+    "displayedLimitMiB": 256,
+    "cgroupPeakMeasured": false,
+    "oomAbsenceProved": false,
+    "note": "Periodic panel sample, not a cgroup peak; earlier samples and sanitized pool/retention errors remain recorded."
+  },
+  "quality": {
+    "command": "pnpm check",
+    "database": "disposable local PostgreSQL 18",
+    "passed": true,
+    "tests": 539,
+    "vitestTests": 524,
+    "designTokenTests": 10,
+    "deploymentTests": 5,
+    "testGraphTasks": 22,
+    "cachedTestGraphTasks": 21,
+    "compiledVercelRuntimeSmoke": true,
+    "build": true,
+    "typecheck": true,
+    "lint": true,
+    "format": true
+  },
+  "boundaries": {
+    "analyzerPolicyChanged": false,
+    "reportSchemasChanged": false,
+    "analyzedRepositoryExecution": false,
+    "rawReportsOrRepositoryBodiesPersistedInEvidence": false,
+    "databaseSecretsInWeb": false,
+    "providerTokenInApi": false
+  },
+  "pending": [
+    "Worker restart recovery latency: restarted active job stayed running until Graphile lock expiry; no prompt recovery proved",
+    "Worker capacity and pool concurrency under load; panel sampled 257.36 MiB against displayed 256 MiB limit",
+    "Forced cold start and Function pool suspension behavior",
+    "Remote finite expiry and backup restore",
+    "Real screen-reader, physical-device and second-browser-engine validation"
+  ],
+  "workerCurrentObservation": {
+    "recordedAt": "2026-10-02T11:35:40.558Z",
+    "state": "Running",
+    "uptimeObserved": "10h 37m 36s",
+    "idleMemoryMiB": 169.88,
+    "displayedMemoryLimitMiB": 256,
+    "cpuPercent": 0.36,
+    "displayedCpuLimitPercent": 25,
+    "temporaryRecoveryHelperSaved": false
+  },
+  "documentationVerification": {
+    "formatCheck": true,
+    "diffCheck": true,
+    "jsonParsed": true,
+    "implementationChangedSinceRuntimeGate": false
+  }
+}

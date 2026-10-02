@@ -18,29 +18,26 @@ public repositories through the local web/API/worker/database stack, paste/uploa
 and verified 320px layouts. It records provider limitations and the remaining real screen-reader
 and physical-device checks; it does not claim a deployed release.
 
-[Hosting preparation](docs/implementation/vercel-hosting.md) now targets Vercel for the static web
-client and [portable containers](docs/implementation/backend-hosting.md) for API/Worker/PostgreSQL.
-The [managed hosting setup](docs/implementation/managed-hosting.md) now includes a created and
-verified Aiven Free PostgreSQL service and certificate-verified runtime settings. Northflank's
-actual service form requires a card, so its compute target was rejected under the user's no-card
-constraint. Railway API/Worker services are prepared offline for a credit-limited trial; measured
-startup memory exceeds its recurring free credit estimate. A free Silly Development Node 24 Worker
-is activated against Aiven. After approved public-only GitHub token setup, both remote repositories
-completed with explicit limitations; sampled memory reached 249.41 MiB of 256 MiB. A
-[Render Free API blueprint](docs/implementation/render-hosting.md) passes schema validation, but
-the actual approved deployment requested card verification and created no service. The reviewed
-branch is published in [PR #41](https://github.com/BlizzardBlast/StackLens/pull/41); CI passed for
-the API adapter commit `2a507cb`.
-A separate [Vercel API Functions target](docs/implementation/vercel-api-hosting.md) now preserves
-the same Fastify contract and leaves continuous recovery/execution on the existing Worker.
-The Hobby project `stacklens-api-preview` is created and connected to the release branch, with
-Node 24, Singapore, Fluid Compute and runtime settings saved. After explicit approval, the two
-Aiven values were saved only in the API project; builds now allow the reviewed release branch.
-The first cloud build rejected a Function pattern before startup. After that correction, the cloud
-build passed but public requests returned 500. Local native-server capture reproduced a startup
-deadlock; the entrypoint now finishes importing before the host binds it. Cloud revalidation remains pending.
-Configurable 24-hour anonymous retention and bounded cleanup are implemented. Public API activation,
-web project linkage/routing, real assistive-technology/device validation and deployed acceptance remain open.
+The [personal preview](https://project-j0e3o.vercel.app) is live on Vercel Hobby with a separate
+[Fastify API](https://project-q766o.vercel.app), shared Aiven Free PostgreSQL and the continuous
+Silly Development Node 24 Worker. No card or paid plan was added. Both requested repositories
+completed with explicit limitations through the public API and actual web forms. Same-origin JSON
+routing, transient paste/upload, native file replacement, stable deep links, evidence focus return,
+terminal polling stop and 320px Chromium emulation pass. See the
+[October 2 public evidence](docs/implementation/public-preview-validation.md).
+
+The API native entrypoint exports a ready, unbound HTTP server; Vercel owns binding. Earlier failed
+configuration and startup attempts remain in the dated evidence. Runtime commit `75bf5a2` passed
+CI and the 539-test database-backed gate, including the native-entry and compiled API/Worker smokes.
+The reviewed branch remains in draft [PR #41](https://github.com/BlizzardBlast/StackLens/pull/41).
+
+The [managed runbook](docs/implementation/managed-hosting.md) records rejected card-required
+Northflank/Render activation and the inactive credit-limited Railway candidate. The public preview
+still has release gaps: an active Worker restart delayed KerjaLog completion to 4h 10m after
+submission; sampled memory reached 257.36 MiB against its displayed 256 MiB limit. Immediate
+recovery, capacity, Function suspension, remote expiry/restore and real screen-reader/device
+validation remain open. Configurable 24-hour retention is implemented but remote deletion/restore
+is not verified. This personal preview is not a production-readiness claim.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 

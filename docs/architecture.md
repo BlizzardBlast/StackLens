@@ -833,6 +833,9 @@ Functions keep awaited submission dispatch but disable the API recovery timer. T
 Worker owns outbox recovery, provider execution and retention. A runtime-injected pool attachment
 supports Fluid Compute without coupling persistence or analyzer policy to Vercel. Database secrets
 stay only in the API project; the static web project still receives only a public HTTPS API origin.
+The personal preview now validates separate public Vercel web/API projects with both requested
+repository reports. Active-job panel restart leaves a four-hour recovery delay and Worker capacity
+remains unproven; see [dated public acceptance](implementation/public-preview-validation.md).
 Portable continuous API containers remain supported. See the
 [managed hosting runbook](implementation/managed-hosting.md) for current resources and limits.
 Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker

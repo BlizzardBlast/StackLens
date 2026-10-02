@@ -1,6 +1,6 @@
 # Vercel API preview target
 
-> **Status:** Cloud build passed; native startup correction awaiting public revalidation\
+> **Status:** Public API verified; operational release gates open\
 > **Date:** 2026-10-02\
 > **Requirements:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007, GOV-002/006/007\
 > **Decision:** [ADR-0016](../adr/0016-vercel-request-bound-api.md)
@@ -15,8 +15,9 @@ Root directory `apps/api`, Fastify, Node 24, outside-root workspace files, Fluid
 Singapore and the project-level 60-second duration are saved. Ignored Build Step **Only build
 production** limits builds to the reviewed release branch. The user explicitly approved transferring
 the two Aiven values and activating this API; both values are saved as Secret values only in its
-Production environment. The first cloud build failed before startup; the corrected build reached
-Ready but its public OpenAPI request returned 500. No usable API has been verified yet.
+Production environment. The corrected native entrypoint is live at
+[public API](https://project-q766o.vercel.app): deployment `Fd6qZs1W8XvuG44FbqZ6upyuT4jW`,
+runtime commit `75bf5a2`, Ready in 27 seconds. Earlier configuration/startup failures remain recorded.
 Pull-request and commit comments are disabled.
 Keep the web project separate at the repository root with the existing `vercel.mjs`.
 Database secrets belong only to the API project.
@@ -75,31 +76,23 @@ requires a ready unbound HTTP server, then binds and checks OpenAPI and malforme
 capture replay proved the module-scope await deadlock; cloud validation exposed the handler-export
 and asynchronous-binding gaps. Those failed attempts remain in the dated record.
 
-1. Resolve the current reviewed PR #41 HEAD. The adapter is published in `2a507cb`; its
-   [quality run](https://github.com/BlizzardBlast/StackLens/actions/runs/36942657278) passed.
-   Recheck `codex/mvp-release-readiness`, Hobby, `apps/api` root and outside-root workspace files.
-2. Verify the saved Secret values and 60-second project duration, then deploy the reviewed release
-   branch. The approved first cloud attempt `GSY6Sn1HFcDhvcHiYYV2NMDnphoE`, commit `ff4d91a`,
-   failed before installation: `functions.app.mjs` did not match the CLI's API-directory patterns.
-   This correction removes that override. Earlier branch tracking saved successfully; its suggested
-   redeployment found no existing build. Neither message nor a reserved domain proves a usable API.
-   Record the actual revision, deployment identifier, region and verified HTTPS origin.
-   The corrected configuration built `f661bec` in 29 seconds as deployment
-   `EMDGL6Zto5tD6Mcak5ekZSeNUygF`: one Singapore Node 24 Function, 2.61 MB and a 60-second limit.
-   Its first `/openapi.json` request returned 500 with `INTERNAL_FUNCTION_INVOCATION_FAILED`
-   and no application logs. Revalidate the native startup correction before using its assigned domain.
-3. Verify `/openapi.json`, synchronous paste/upload, invalid input, uncached `202` submission and polling.
-   Preserve malformed JSON and unknown-route errors as API JSON rather than SPA HTML.
-4. Run both requested repositories through this public API and the existing remote Worker; validate
-   reports with the shared contracts and record immutable commits, timings and limitations.
-5. Point the separate web project's `STACKLENS_API_ORIGIN` at that HTTPS origin. Follow the
-   [web acceptance sequence](vercel-hosting.md#preview-acceptance-sequence), including deep links.
-6. Record cold/warm startup and pool behavior separately. Public preview success does not close
-   remote active-job recovery, retention/restore or real screen-reader/device release gates.
+The [public preview validation](public-preview-validation.md) now records successful OpenAPI,
+malformed/unknown API JSON, uncached transient paste/upload, durable repository submissions and both
+contract-valid repository reports. The separate web proxy and browser journeys pass. The
+[runtime quality run](https://github.com/BlizzardBlast/StackLens/actions/runs/36947487085) passed
+on `75bf5a2`; resolve the current PR HEAD before subsequent deployment.
 
-Rollback keeps compatible report readers and the same database/Worker. Redeploy the preceding
-reviewed API build or return to a verified portable process host. Never point the web at an
-unverified origin or move analysis execution into a Function to avoid Worker limits.
+First observed OpenAPI took 3,146 ms and the following request 58 ms. Neither is a forced cold
+start or pool-suspension test. Continue measuring Function lifecycle, autoscaling connections and
+Worker capacity separately. The active-job panel restart delayed KerjaLog completion to 4h 10m
+after submission, so prompt recovery remains a release gap. Remote expiry/restore and real
+screen-reader/device gates also remain open. Production is only the platform environment label
+for this personal preview; keep the two Aiven secrets solely in the API project.
+
+Rollback keeps compatible report readers and the same database/Worker. Keep `75bf5a2` as the first
+verified native API build. Later rollback must use a verified compatible build or a verified portable
+process host, not an earlier failed startup attempt. Never point the web at an unverified origin or
+move analysis execution into a Function to avoid Worker limits.
 
 ## Checked references
 

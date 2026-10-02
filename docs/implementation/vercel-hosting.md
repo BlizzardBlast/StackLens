@@ -1,6 +1,6 @@
 # Vercel web hosting target
 
-> **Status:** Web prepared locally; separate API project configured, no live deployment\
+> **Status:** Public static web and API proxy verified; release gates open\
 > **Date:** 2026-10-02\
 > **Requirements:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-003/007, GOV-002/006/007\
 > **Decision:** [ADR-0015](../adr/0015-vercel-static-web-target.md)
@@ -35,17 +35,16 @@ The separate [API target](vercel-api-hosting.md) now uses a request-bound runtim
 with the API recovery timer disabled and PostgreSQL pool attached to Fluid Compute. The external
 Silly Worker still owns execution/recovery; no queue or Workflow migration is introduced.
 
-The user now requires no payment card. The [managed setup](managed-hosting.md) records the created
-Aiven Free database, activated Silly Worker, Northflank's actual card-verification blocker and
-inactive credit-limited Railway candidate. The [Render Free API target](render-hosting.md) hit
-card verification in the actual approved deployment and created no service. The separate
-`stacklens-api-preview` Hobby project is configured and linked to the release branch. Backend
-credential transfer and activation are approved; the two secrets are saved only in the API project.
-Its first cloud build failed before startup. After correcting the Function pattern, the build passed
-but public requests returned 500. The native entrypoint correction awaits cloud revalidation.
-Web project creation, API activation
-and public routing remain pending. Oracle's
-card verification excludes it under the current constraint.
+The user requires no payment card. The [managed setup](managed-hosting.md) records the live
+Aiven Free database, continuous Silly Worker, rejected Northflank/Render card-required activation
+and inactive Railway trial. Separate Hobby projects `stacklens-api-preview` and
+`stacklens-web-preview` are now live. The web at
+[project-j0e3o.vercel.app](https://project-j0e3o.vercel.app) proxies
+[project-q766o.vercel.app](https://project-q766o.vercel.app). Both track the reviewed release branch
+in Vercel's Production environment, with only Production builds enabled. This is a personal preview.
+The approved Aiven values stay in API Production; no database/provider secret goes to the web.
+Earlier API startup failures remain recorded. See [public acceptance](public-preview-validation.md)
+for successful routes/reports/browser checks and remaining recovery/capacity/manual release gaps.
 
 ## Tracked configuration
 
@@ -73,7 +72,8 @@ packages remain in the build context. Select the **Vite** preset and **Node.js 2
 The checked-in configuration supplies install/build/output values; do not override them with the
 default root `pnpm build` or point output at the source directory.
 
-Set these project environment values separately for Preview and Production:
+Set these values separately for each enabled environment. The current personal preview enables
+Production only, tracks `codex/mvp-release-readiness`, and saves Config values there:
 
 | Variable | Value and purpose |
 | --- | --- |
@@ -96,8 +96,10 @@ and preview protection enabled while staging validation is incomplete.
 
 ## Backend preparation required before a usable preview
 
-The backend host must provide Node 24, the pinned pnpm version, two supervised long-running
-processes, PostgreSQL, TLS and outbound access to the fixed GitHub/npm/OSV providers.
+For the portable process alternative, the backend host must provide Node 24, the pinned pnpm
+version, two supervised long-running processes, PostgreSQL, TLS and outbound access to the fixed
+GitHub/npm/OSV providers. The activated Vercel API instead uses the separate Function runbook;
+only its Worker remains a continuous process.
 Build StackLens from the same reviewed revision with `pnpm install --frozen-lockfile` and
 `pnpm build`. The compiled package exports and runtime dependency graph must be present.
 Do not install or execute any repository submitted to StackLens for analysis.
@@ -110,7 +112,8 @@ configured service port. Keep PostgreSQL private. Set `STACKLENS_WORKER_CONCURRE
 to measured resource limits, initially matching the existing value of two unless the host requires
 less. An optional read-only `STACKLENS_GITHUB_TOKEN` belongs only to the Worker.
 For the managed preview, use concurrency one and the verified CA/pool settings in the
-[managed runbook](managed-hosting.md#postgresql-runtime-settings). No usable API origin exists yet.
+[managed runbook](managed-hosting.md#postgresql-runtime-settings). The verified API origin is
+`https://project-q766o.vercel.app`; the optional Function target needs only the continuous Worker.
 
 Startup applies StackLens and Graphile migrations and begins the source-free delivery pump.
 Provide orderly SIGTERM handling and enough shutdown time for both runtimes to stop.
@@ -174,4 +177,6 @@ dependency or analyzed-repository execution is introduced.
 
 The [October 1 preparation record](release-evidence/2026-10-01-hosting.json) distinguishes local
 checks from pending preview/production evidence. No linked project, hosting resources, paid service,
-Git push or deployment was created by target preparation.
+Git push or deployment was created by that earlier preparation. The separate
+[October 2 public record](public-preview-validation.md) supersedes its pending deployment state
+and preserves the operational/manual release gaps.

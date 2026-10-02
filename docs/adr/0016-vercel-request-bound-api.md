@@ -1,6 +1,6 @@
 # ADR-0016: Request-bound Fastify API on Vercel
 
-- **Status:** Accepted target preparation; activation pending
+- **Status:** Accepted; personal preview activated and validated
 - **Date:** 2026-10-02
 - **Requirements:** PRD-006, FR-003, FR-004, FR-022, NFR-004, NFR-008, NFR-009, SEC-003, SEC-007, GOV-006
 - **Related:** ADR-0004, ADR-0014, ADR-0015
@@ -61,8 +61,11 @@ preview, not a claim of production capacity or availability. Monitor connection 
 Target preparation must verify entrypoint selection and the actual traced build, plus real PostgreSQL
 submission with the API pump disabled. Live activation must separately prove verified TLS, cold/warm
 requests, uncached polling, both requested repository reports and the web proxy. Existing Worker-only
-and local container evidence does not prove these public paths. Remote active-job recovery, expiry,
-backup restore and real screen-reader/device checks remain release gates.
+and local container evidence alone does not prove these public paths. The
+[October 2 public validation](../implementation/public-preview-validation.md) now proves the public
+API/web routes and both repository reports. First/warm observations do not prove a forced cold
+start or pool suspension. Active-job restart completion was delayed by four hours; prompt recovery,
+capacity, expiry, backup restore and real screen-reader/device checks remain release gates.
 
 ## References checked on 2026-10-02
 

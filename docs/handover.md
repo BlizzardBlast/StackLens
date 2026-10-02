@@ -2,7 +2,7 @@
 
 > **Prepared:** 2026-10-02\
 > **Architecture:** v0.1.18; requirements v0.1.2\
-> **Milestone:** PR #41 published; Render card blocker verified; Vercel API target prepared\
+> **Milestone:** PR #41 draft; public Vercel web/API validated; Worker recovery and manual gates open\
 > **Branch:** `codex/mvp-release-readiness`, existing checkout; PR #41\
 > **Verified main:** `f51d2b61f4740172558bb4b38087af60af8d791a`, confirmed through the remote main ref\
 > **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
@@ -20,8 +20,9 @@ See [managed hosting](implementation/managed-hosting.md) and the
 
 Shared persistence now accepts verified CA and finite pool/connection settings. Executable API
 and Worker parse `STACKLENS_DATABASE_SSL_CA` and `STACKLENS_DATABASE_POOL_MAX`; the intended
-managed settings are portable API max three, Vercel API max one per instance, Worker max five/concurrency one. Container health checks use
-the same CA and a separate one-connection pool. URL SSL overrides and malformed options fail
+managed settings are portable API max three, Vercel API max one per instance and Worker max five/
+concurrency one. Container health checks use the same CA and a separate one-connection pool.
+URL SSL overrides and malformed options fail
 without exposing values. Analyzer policy, contracts and requirements behavior are unchanged.
 
 Northflank's created `stacklens-preview` project is empty. Its actual Sandbox service form requires
@@ -62,7 +63,8 @@ The one-shot `deploy/silly/install.js` verified the archive SHA-256 and used nat
 preserving links. It was removed, with the normal main file restored and arguments cleared.
 Read [managed hosting](implementation/managed-hosting.md) before repeating that deployment.
 Remote stop/start and unchanged terminal report readback passed after retrying the start request;
-the first immediate start attempt exceeded its deadline. Active-job recovery is still unverified.
+the first immediate start attempt exceeded its deadline. This earlier check did not exercise an
+active job; the October 2 restart result below records delayed recovery.
 The temporary Silly upload key was revoked (`401` on reuse and no keys in the dashboard). Local
 upload credentials were removed; the approved private runtime file remains on the Worker host.
 
@@ -73,43 +75,45 @@ the temporary containers. `.railwayignore` protects local environment files and 
 if a trial upload is later authorized.
 
 After explicit approval, commit `7ce34f0` was published in draft
-[PR #41](https://github.com/BlizzardBlast/StackLens/pull/41). Initial quality run `36884582320`
-passed. Render's actual Free/$0 form selected the reviewed branch and received the approved Aiven
-values privately. Deployment opened an Add Card dialog describing a temporary $1 verification
-authorization. No card was entered; a fresh October 2 dashboard confirmed zero services and the
-restored setup form was blank. The [Render blueprint](implementation/render-hosting.md) remains
-schema-valid, but this account's activation violates the no-card constraint. No public API exists.
+[PR #41](https://github.com/BlizzardBlast/StackLens/pull/41). Render's approved Free submission
+requested card verification; no card or service was added. The separate Vercel API destination
+was explicitly approved. Only the Aiven URL and CA are saved as API Production Secret values;
+the provider token remains Worker-only. Earlier configuration/native startup failures are preserved
+in the [API record](implementation/release-evidence/2026-10-02-api-target.json).
 
-The separate [Vercel API target](implementation/vercel-api-hosting.md) preserves Fastify while
-disabling the API recovery timer only for request-bound Functions. Submission still awaits durable
-delivery; Silly Worker owns recovery, execution and retention. The Vercel Hobby project
-`stacklens-api-preview` in `freys-projects` is created, connected to StackLens and tracks
-`codex/mvp-release-readiness`. Fastify, `apps/api`, outside-root workspace files, Node 24,
-Fluid Compute, Singapore and the three non-secret Production values are saved. The user explicitly
-approved the new Vercel destination and activation. The two Aiven values are saved as Secret values
-only in API Production; the GitHub token remains Worker-only. Builds allow the reviewed release
-branch. The first cloud attempt `GSY6Sn1HFcDhvcHiYYV2NMDnphoE` on `ff4d91a` failed before startup
-because the CLI rejected `functions.app.mjs`. That override is removed; the 60-second project default
-is saved through Functions Advanced Settings. Deployment `EMDGL6Zto5tD6Mcak5ekZSeNUygF` built
-`f661bec` successfully in 29 seconds, but public OpenAPI returned 500 with no application logs.
-Local capture reproduced the module-scope listen deadlock; the corrected entrypoint and capture smoke
-await cloud revalidation. No usable public API has been verified yet. Keep secrets outside
-the static web project. ADR-0016 records this lifecycle adjustment; containers remain supported.
+Runtime revision `75bf5a2f37d32b98925dd922eb0c6410df3f55fc` passed
+[quality run 36947487085](https://github.com/BlizzardBlast/StackLens/actions/runs/36947487085).
+Its native entrypoint exports the ready, unbound Fastify server and lets Vercel bind HTTP. The
+539-test database-backed gate includes fresh native-entry and compiled API/Worker smoke. API
+deployment `Fd6qZs1W8XvuG44FbqZ6upyuT4jW` is Ready at
+[public API](https://project-q766o.vercel.app); separate root/Vite web deployment
+`BxtVh6H5U5DGpdkAYusTn4k1V3Vp` is Ready at
+[public web](https://project-j0e3o.vercel.app). Both Hobby projects track the release branch,
+build only Production. API PR/commit comments are disabled; the web deployment posted a Vercel bot
+comment, so comment suppression is not established for the web project. That platform label is a personal preview.
+Web Config values contain Corepack and the public API origin only; no backend secret is transferred.
 
-Public full-stack jobs, same-origin rewrites, remote active-job recovery, retention/restore and real
-assistive-technology/device acceptance remain open. Resolve current `main` and the reviewed PR HEAD
-before deployment or merge; no merge has been authorized. Dated October 1 records are historical
-snapshots, not current publication/deployment status.
+The [public validation](implementation/public-preview-validation.md) and
+[source-free record](implementation/release-evidence/2026-10-02-public-preview.json) cover direct
+API and web-proxy HTTP errors/cache/transient quick reports, both repository reports, actual web
+forms, native file replacement, evidence focus return, deep-link reload, terminal polling stop and
+320px Chromium emulation. Reports retain acquisition/static limitations; analyzed code is never
+installed or executed. First/warm observations do not prove a forced cold start.
 
-The [October 2 evidence](implementation/release-evidence/2026-10-02-api-target.json) records the
-native Fastify builder selecting `app.mjs`, traced Node 24 output (1,765 files, 8,167,198 bytes),
-embedded Graphile migrations, native local HTTP checks and database-backed `pnpm check` passing
-539 tests. API process defaults remain covered; the request-bound adapter smoke runs without
-provider execution. Adapter commit `2a507cb50f076e682cf203474e8be77ae92ac186` is published;
-GitHub quality run `36942657278` passed. Resolve the current PR HEAD before activation rather
-than assuming `7ce34f0` contains the adapter. Current `main` remains the separately verified
-baseline until merged. The reserved Vercel domain is not a verified API origin. The branch-tracking
-save suggested redeployment before any build existed. Later attempts above supersede that initial setup snapshot.
+The active KerjaLog panel restart exposed delayed recovery: durable submission at 00:54:08 UTC,
+completion at 05:04:53 UTC, 15,044,783 ms later. The old Worker exited and a new Worker connected,
+but the public analysis stayed running until delayed recovery. No manual unlock ran; the temporary
+recovery editor was not saved. A panel sample of 257.36 MiB exceeds the displayed 256 MiB cap;
+it is not a cgroup peak or an OOM-absence proof. Immediate recovery, capacity, remote expiry/restore,
+Function suspension/aggregate connections and real assistive-technology/device acceptance remain open.
+Drain before planned restart; unlock only a confirmed dead Worker through Graphile's supported
+administrative function. Do not add a public recovery endpoint or unlock live workers.
+
+Next session: resolve current PR HEAD and `main`, verify both actual deployments/public routes,
+then address the recorded Worker recovery/capacity gap before release approval. Documentation pushes
+can rebuild both targets. Preserve the dated runtime SHA and distinguish any later documentation-only
+deployment. The PR stays draft; no merge has been authorized. October 1 and September 30 records
+remain historical evidence, not current deployment status.
 
 ### Earlier portable preparation evidence
 

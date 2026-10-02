@@ -2180,3 +2180,35 @@ Product requirements, queue payloads, scoring and report schemas remain unchange
 quality gate and a new public cloud check are required before assigning the web proxy origin.
 
 **Traceability:** FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0016.
+
+## 2026-10-02 — Public Vercel preview acceptance and Worker restart gap
+
+Runtime `75bf5a2` passed CI and built the API in 27 seconds. Exporting a ready, unbound HTTP
+server lets Vercel bind Fastify; public OpenAPI/JSON errors/quick reports now pass. The separate
+Hobby web project builds the root programmatic configuration in 14 seconds and proxies the verified
+API origin. Both targets use only the reviewed branch's Production environment. The platform label
+is a personal preview, not a release. No card or paid plan was added; Aiven secrets remain API/Worker
+only and the provider token remains Worker-only. Earlier failed cloud attempts stay recorded.
+
+Both requested repositories finish with contract-valid reports through the direct API and actual
+web forms. Provider/static limitations remain visible. Browser acceptance covers invalid input,
+quick busy/result/reset focus, native file replacement, stable deep links, terminal failure, evidence
+Close focus return and 320px emulation. CDP observes no extra terminal status requests over 62 seconds.
+Static asset types and missing-asset/API errors pass; quick identifiers remain transient.
+
+Restarting the remote Worker during KerjaLog exposed a recovery gap: the old process exited and a
+new Worker connected, but the analysis remained running. Durable completion occurred at 05:04:53 UTC,
+4h 10m after submission, consistent with Graphile's stale-lock recovery. No manual unlock ran and
+no temporary recovery helper was saved. A panel sample reached 257.36 MiB against its displayed
+256 MiB cap. These observations do not prove prompt recovery, capacity or absence of OOM.
+
+The documentation-impact pass updates README, handover, API/web/managed runbooks, architecture,
+ADR-0016 activation status, manual acceptance guidance and source-free dated evidence. Product
+requirements, analyzer/scoring policy, tokens and serialized contracts are unchanged. The same
+539-test database-backed runtime gate and successful CI cover the deployed implementation; this
+documentation pass adds formatting, JSON parsing, link/diff checks and publication CI. PR #41 remains
+draft and unmerged. Prompt Worker recovery/capacity, Function suspension, remote expiry/restore and
+real screen-reader/device acceptance remain release gates.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009,
+SEC-001/002/003/007, GOV-002/006/007; ADR-0015/0016.

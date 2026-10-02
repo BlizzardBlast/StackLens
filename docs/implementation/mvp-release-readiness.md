@@ -192,3 +192,11 @@ migration or ADR is needed. The documentation-impact pass updates the current ha
 acceptance/orchestration/rule/quick-flow documentation, design user flow, agent identity and journey.
 Web testing documentation also records the worker limit.
 The earlier review ledger and chronological entries retain their original historical evidence.
+
+## October 2 deployed follow-up
+
+The separate [public preview record](public-preview-validation.md) now verifies Vercel web/API,
+Aiven and remote Worker acceptance on runtime `75bf5a2`. It preserves this September 30 local
+pass as historical evidence. Both repository reports, proxy routes, quick/native-file flows,
+terminal polling and emulated narrow layouts pass. Worker restart delay and capacity, remote
+expiry/restore and human screen-reader/device checks remain release gates.

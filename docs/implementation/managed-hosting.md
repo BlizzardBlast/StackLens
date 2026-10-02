@@ -1,6 +1,6 @@
 # Managed hosting setup
 
-> **Status:** Remote Worker verified; Render blocked by card verification; Vercel API preparation\
+> **Status:** Public Vercel web/API and remote Worker verified; recovery/capacity gaps open\
 > **Updated:** 2026-10-02\
 > **Requirements:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007, GOV-002/006/007\
 > **Decision:** [ADR-0015](../adr/0015-vercel-static-web-target.md)
@@ -40,17 +40,23 @@ Created through the user's authenticated dashboards:
   non-secret build/runtime values are saved for its Production environment. The provider's
   environment label does not establish a product release. After explicit new-destination approval,
   the two Aiven values are saved only in the API Production environment. Builds allow the reviewed
-  release branch. The first cloud build failed before startup on an unsupported Function pattern;
-  that override is removed and the 60-second project duration is saved. The corrected cloud build
-  reached Ready, but public requests returned 500. A local native-capture replay reproduced the
-  module-scope listen deadlock; the correction awaits cloud revalidation. No usable
-  API origin has been verified yet. The separate web project
-  remains to be created at the repository root.
+  release branch. Runtime `75bf5a2` fixes the native startup boundary: export Fastify's ready,
+  unbound server and let Vercel bind it. The API is verified at
+  [project-q766o.vercel.app](https://project-q766o.vercel.app), with a 60-second project duration.
+- Separate Vercel Hobby web project `stacklens-web-preview` at the repository root, using Vite,
+  Node 24 and the checked-in programmatic configuration. It is verified at
+  [project-j0e3o.vercel.app](https://project-j0e3o.vercel.app). Only Corepack and the public API
+  origin are saved; no backend secrets are transferred. Both projects track the release branch
+  and build only Production, the platform label used for this personal preview.
 
-The [new setup evidence](release-evidence/2026-10-01-managed-hosting.json) is separate from the
-[earlier local container rehearsal](release-evidence/2026-10-01-hosting.json). Neither proves a
-public full-stack release. The [October 2 evidence](release-evidence/2026-10-02-api-target.json)
-records Vercel project setup, successful builds/CI and the failed public startup; usable API validation remains open.
+The [October 1 setup](release-evidence/2026-10-01-managed-hosting.json) and
+[local container rehearsal](release-evidence/2026-10-01-hosting.json) remain historical evidence.
+The [October 2 API record](release-evidence/2026-10-02-api-target.json) preserves failed attempts;
+[public acceptance](public-preview-validation.md) records working API/web routes and both reports.
+The active-job panel restart delayed KerjaLog completion to 4h 10m after submission; immediate
+recovery is not proved. A panel memory sample reached 257.36 MiB against the 256 MiB display limit.
+Capacity, prompt recovery, Function suspension, remote expiry/restore and real screen-reader/device
+acceptance remain release gates. Drain before planned maintenance; never force-unlock a live Worker.
 
 ## Compute candidate
 
