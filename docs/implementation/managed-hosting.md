@@ -34,7 +34,7 @@ Created through the user's authenticated dashboards:
   private Aiven credential entry, the actual Free/$0 deployment opened card verification. No card
   was supplied. A fresh dashboard confirms no services or public origin. The
   [Render blueprint](render-hosting.md) passes schema validation; account eligibility is blocked.
-- Vercel Hobby project `stacklens-api-preview` in `freys-projects`, connected to
+- Vercel Hobby project `stacklens-api` in `freys-projects`, connected to
   `BlizzardBlast/StackLens` and tracking `codex/mvp-release-readiness`. Fastify, `apps/api` root,
   outside-root workspace files, Node 24, Fluid Compute and Singapore are saved. The three
   non-secret build/runtime values are saved for its Production environment. The provider's
@@ -42,10 +42,10 @@ Created through the user's authenticated dashboards:
   the two Aiven values are saved only in the API Production environment. Builds allow the reviewed
   release branch. Runtime `75bf5a2` fixes the native startup boundary: export Fastify's ready,
   unbound server and let Vercel bind it. The API is verified at
-  [project-q766o.vercel.app](https://project-q766o.vercel.app), with a 60-second project duration.
-- Separate Vercel Hobby web project `stacklens-web-preview` at the repository root, using Vite,
+  [stacklens-api.vercel.app](https://stacklens-api.vercel.app), with a 60-second project duration.
+- Separate Vercel Hobby web project `stacklens` at the repository root, using Vite,
   Node 24 and the checked-in programmatic configuration. It is verified at
-  [project-j0e3o.vercel.app](https://project-j0e3o.vercel.app). Only Corepack and the public API
+  [stacklens-web.vercel.app](https://stacklens-web.vercel.app). Only Corepack and the public API
   origin are saved; no backend secrets are transferred. Both projects track the release branch
   and build only Production, the platform label used for this personal preview.
 

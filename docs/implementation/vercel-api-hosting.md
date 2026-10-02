@@ -7,8 +7,8 @@
 
 ## Project boundary
 
-The separate [Vercel Hobby project](https://vercel.com/freys-projects/stacklens-api-preview) is
-`stacklens-api-preview`, ID `prj_Zd0NV89v672Ru0RntrsFNZ2b7O7s`, in `freys-projects`.
+The separate [Vercel Hobby project](https://vercel.com/freys-projects/stacklens-api) is
+`stacklens-api`, ID `prj_Zd0NV89v672Ru0RntrsFNZ2b7O7s`, in `freys-projects`.
 It is connected to `BlizzardBlast/StackLens` and tracks `codex/mvp-release-readiness` in its
 Production environment. That platform label is for this personal preview, not a release claim.
 Root directory `apps/api`, Fastify, Node 24, outside-root workspace files, Fluid Compute and
@@ -16,11 +16,20 @@ Singapore and the project-level 60-second duration are saved. Ignored Build Step
 production** limits builds to the reviewed release branch. The user explicitly approved transferring
 the two Aiven values and activating this API; both values are saved as Secret values only in its
 Production environment. The corrected native entrypoint is live at
-[public API](https://project-q766o.vercel.app): deployment `Fd6qZs1W8XvuG44FbqZ6upyuT4jW`,
-runtime commit `75bf5a2`, Ready in 27 seconds. Earlier configuration/startup failures remain recorded.
+[public API](https://stacklens-api.vercel.app). The first verified native deployment
+`Fd6qZs1W8XvuG44FbqZ6upyuT4jW`, runtime commit `75bf5a2`, reached Ready in 27 seconds.
+Earlier configuration/startup failures remain recorded.
 Pull-request and commit comments are disabled.
 Keep the web project separate at the repository root with the existing `vercel.mjs`.
 Database secrets belong only to the API project.
+
+The user requested the permanent name `stacklens-api`; the former name was
+`stacklens-api-preview`. The same project ID and Aiven Secret values remain in place. The new
+`stacklens-api.vercel.app` domain connects to Production, alongside the original
+`project-q766o.vercel.app` compatibility alias. See the
+[naming record](release-evidence/2026-10-02-project-naming.json). No secret transfer or new host is
+needed for this rename.
+
 Render's actual Free deployment requested card verification and created no service. The user
 requires no card and no paid plan; stop if Vercel's actual activation violates that constraint.
 

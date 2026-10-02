@@ -18,13 +18,18 @@ public repositories through the local web/API/worker/database stack, paste/uploa
 and verified 320px layouts. It records provider limitations and the remaining real screen-reader
 and physical-device checks; it does not claim a deployed release.
 
-The [personal preview](https://project-j0e3o.vercel.app) is live on Vercel Hobby with a separate
-[Fastify API](https://project-q766o.vercel.app), shared Aiven Free PostgreSQL and the continuous
+The [personal preview](https://stacklens-web.vercel.app) is live on Vercel Hobby with a separate
+[Fastify API](https://stacklens-api.vercel.app), shared Aiven Free PostgreSQL and the continuous
 Silly Development Node 24 Worker. No card or paid plan was added. Both requested repositories
 completed with explicit limitations through the public API and actual web forms. Same-origin JSON
 routing, transient paste/upload, native file replacement, stable deep links, evidence focus return,
 terminal polling stop and 320px Chromium emulation pass. See the
 [October 2 public evidence](docs/implementation/public-preview-validation.md).
+
+The Vercel projects are named `stacklens` and `stacklens-api`. The web uses
+`stacklens-web.vercel.app` because `stacklens.vercel.app` belongs to another team. Original
+auto-assigned addresses remain compatibility aliases; see the
+[naming record](docs/implementation/release-evidence/2026-10-02-project-naming.json).
 
 The API native entrypoint exports a ready, unbound HTTP server; Vercel owns binding. Earlier failed
 configuration and startup attempts remain in the dated evidence. Runtime commit `75bf5a2` passed

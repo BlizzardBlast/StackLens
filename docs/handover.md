@@ -9,6 +9,15 @@
 
 ## Current handover
 
+The user requested Vercel project names `stacklens` (web) and `stacklens-api` (API). Both are renamed
+in place with their original project IDs. Current addresses are
+[StackLens](https://stacklens-web.vercel.app) and [API](https://stacklens-api.vercel.app).
+Vercel rejected `stacklens.vercel.app` as belonging to another team. Both original auto-assigned
+addresses remain compatibility aliases. Web Production Config now uses the named API origin;
+publication must rebuild routing and verify the actual current HEAD. See the
+[naming record](implementation/release-evidence/2026-10-02-project-naming.json) and PR #41 for the
+subsequent deployment/CI results. Project renaming does not establish release readiness.
+
 The user requires free hosting without a payment card. Aiven project `stacklens-preview` and
 PostgreSQL Free service `stacklens-preview-pg` are created in DigitalOcean `blr` (Asia Pacific).
 Live isolated verification confirmed PostgreSQL 18.6, verified TLS, unrelated-CA rejection,
@@ -85,10 +94,10 @@ Runtime revision `75bf5a2f37d32b98925dd922eb0c6410df3f55fc` passed
 [quality run 36947487085](https://github.com/BlizzardBlast/StackLens/actions/runs/36947487085).
 Its native entrypoint exports the ready, unbound Fastify server and lets Vercel bind HTTP. The
 539-test database-backed gate includes fresh native-entry and compiled API/Worker smoke. API
-deployment `Fd6qZs1W8XvuG44FbqZ6upyuT4jW` is Ready at
-[public API](https://project-q766o.vercel.app); separate root/Vite web deployment
-`BxtVh6H5U5DGpdkAYusTn4k1V3Vp` is Ready at
-[public web](https://project-j0e3o.vercel.app). Both Hobby projects track the release branch,
+deployment `Fd6qZs1W8XvuG44FbqZ6upyuT4jW` and separate root/Vite web deployment
+`BxtVh6H5U5DGpdkAYusTn4k1V3Vp` were the first verified public builds. The dated acceptance record
+preserves their source revisions; resolve current PR HEAD and deployment IDs for later work.
+Both Hobby projects track the release branch,
 build only Production. API PR/commit comments are disabled; the web deployment posted a Vercel bot
 comment, so comment suppression is not established for the web project. That platform label is a personal preview.
 Web Config values contain Corepack and the public API origin only; no backend secret is transferred.

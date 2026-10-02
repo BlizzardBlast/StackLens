@@ -4,7 +4,7 @@
 > **Date:** 2026-10-02\
 > **Requirements:** FR-001/003/004/017/021/022, NFR-006/007/008, GOV-002/007
 
-The live [personal preview](https://project-j0e3o.vercel.app) and
+The live [personal preview](https://stacklens-web.vercel.app) and
 [October 2 browser evidence](public-preview-validation.md) now provide the deployed target.
 Those DOM, focus, network and emulated-layout observations do not establish spoken output or
 physical-device results.

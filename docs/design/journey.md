@@ -2212,3 +2212,28 @@ real screen-reader/device acceptance remain release gates.
 
 **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009,
 SEC-001/002/003/007, GOV-002/006/007; ADR-0015/0016.
+
+## 2026-10-02 — Permanent Vercel project names and matching domains
+
+The user requested `stacklens` for the web project and `stacklens-api` for the separate API.
+Both existing projects were renamed in place, preserving their IDs, Git integrations and approved
+database-secret destinations. Readiness remains in documentation rather than the project names.
+`stacklens-api.vercel.app` was assigned to the API. Vercel rejected `stacklens.vercel.app` because
+another team owns it; `stacklens-web.vercel.app` was available and assigned as the web address.
+The original auto-assigned domains remain compatibility aliases so existing links and deployed
+rewrites continue working during the transition.
+
+Web Production Config now points at the named API origin; routing is evaluated during the next
+deployment. Before that rebuild, both new aliases passed OpenAPI, malformed/invalid/unknown API
+errors, shared-contract paste/upload and quick non-persistence checks. The naming record preserves
+the exact domain conflict and separates those observations from post-publication verification.
+Publication CI, actual deployment source and rebuilt routing are recorded in PR #41.
+
+The documentation-impact pass updates current README, handover, hosting/manual guides and public
+acceptance links while preserving historical evidence and journey entries. Accepted requirements,
+architecture boundaries, analyzer/scoring policy, UI/tokens and report schemas are unchanged.
+Formatting, JSON parsing, local links, diff and staged-credential checks cover this documentation
+change; existing runtime checks cover the same implementation. Worker recovery/capacity and manual
+release gates remain open. The PR remains draft and unmerged.
+
+**Traceability:** PRD-006, FR-001/003/004/022, SEC-003/007, GOV-002/006/007; ADR-0015/0016.

@@ -4,11 +4,17 @@
 > **Date:** 2026-10-02\
 > **Requirements:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
 
-The personal preview is live at [StackLens web](https://project-j0e3o.vercel.app), with a separate
-[Fastify API](https://project-q766o.vercel.app). Both Hobby projects track
+The personal preview is live at [StackLens web](https://stacklens-web.vercel.app), with a separate
+[Fastify API](https://stacklens-api.vercel.app). Both Hobby projects track
 `codex/mvp-release-readiness`; Vercel's Production environment label does not establish a product
 release. No card or paid plan was added. Aiven credentials belong only to the API and existing Silly
 Worker; the web receives only its HTTPS API origin. The GitHub token remains Worker-only.
+
+**Naming follow-up:** The projects are now `stacklens` and `stacklens-api`. Vercel reports that
+`stacklens.vercel.app` belongs to another team, so the web address is `stacklens-web.vercel.app`.
+Original `project-j0e3o.vercel.app` and `project-q766o.vercel.app` aliases remain attached. The
+[naming record](release-evidence/2026-10-02-project-naming.json) distinguishes new-domain checks
+from the earlier route/browser evidence below, which retains its observed origins and revisions.
 
 ## Deployment and request evidence
 

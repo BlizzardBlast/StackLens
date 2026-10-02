@@ -37,14 +37,29 @@ Silly Worker still owns execution/recovery; no queue or Workflow migration is in
 
 The user requires no payment card. The [managed setup](managed-hosting.md) records the live
 Aiven Free database, continuous Silly Worker, rejected Northflank/Render card-required activation
-and inactive Railway trial. Separate Hobby projects `stacklens-api-preview` and
-`stacklens-web-preview` are now live. The web at
-[project-j0e3o.vercel.app](https://project-j0e3o.vercel.app) proxies
-[project-q766o.vercel.app](https://project-q766o.vercel.app). Both track the reviewed release branch
+and inactive Railway trial. Separate Hobby projects `stacklens-api` and
+`stacklens` are now live. The web at
+[stacklens-web.vercel.app](https://stacklens-web.vercel.app) proxies
+[stacklens-api.vercel.app](https://stacklens-api.vercel.app). Both track the reviewed release branch
 in Vercel's Production environment, with only Production builds enabled. This is a personal preview.
 The approved Aiven values stay in API Production; no database/provider secret goes to the web.
 Earlier API startup failures remain recorded. See [public acceptance](public-preview-validation.md)
 for successful routes/reports/browser checks and remaining recovery/capacity/manual release gaps.
+
+## Project names and domains
+
+The web project is `stacklens` (`prj_RWR5i1zdAHfFdVBDh8IbNPJcBGC4`); the API project is
+`stacklens-api` (`prj_Zd0NV89v672Ru0RntrsFNZ2b7O7s`). Renaming preserves these project IDs,
+Git integrations and existing secret destinations. Deployment readiness is documented separately
+from the project names.
+
+Vercel rejected `stacklens.vercel.app` because another team already owns it. The web therefore uses
+`https://stacklens-web.vercel.app` and `STACKLENS_API_ORIGIN=https://stacklens-api.vercel.app` in
+Production. Changing this Config value requires a web rebuild. Keep the original
+`project-j0e3o.vercel.app` and `project-q766o.vercel.app` aliases during the transition so shared
+report links and existing rewrites continue working. The
+[naming record](release-evidence/2026-10-02-project-naming.json) preserves the exact provider response
+and the checks before routing was rebuilt. Earlier acceptance records retain their original URLs.
 
 ## Tracked configuration
 
@@ -113,7 +128,7 @@ to measured resource limits, initially matching the existing value of two unless
 less. An optional read-only `STACKLENS_GITHUB_TOKEN` belongs only to the Worker.
 For the managed preview, use concurrency one and the verified CA/pool settings in the
 [managed runbook](managed-hosting.md#postgresql-runtime-settings). The verified API origin is
-`https://project-q766o.vercel.app`; the optional Function target needs only the continuous Worker.
+`https://stacklens-api.vercel.app`; the optional Function target needs only the continuous Worker.
 
 Startup applies StackLens and Graphile migrations and begins the source-free delivery pump.
 Provide orderly SIGTERM handling and enough shutdown time for both runtimes to stop.

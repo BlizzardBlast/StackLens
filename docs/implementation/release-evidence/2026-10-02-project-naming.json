@@ -1,0 +1,138 @@
+{
+  "date": "2026-10-02",
+  "recordedAt": "2026-10-02T12:45:34.642Z",
+  "requirements": [
+    "PRD-006",
+    "FR-001",
+    "FR-003",
+    "FR-004",
+    "FR-022",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "source": {
+    "branch": "codex/mvp-release-readiness",
+    "beforeRevision": "22a485ceec8bc4b0425266b1eb8604f283706d81",
+    "runtimeRevision": "75bf5a2f37d32b98925dd922eb0c6410df3f55fc",
+    "pullRequest": "https://github.com/BlizzardBlast/StackLens/pull/41"
+  },
+  "api": {
+    "projectId": "prj_Zd0NV89v672Ru0RntrsFNZ2b7O7s",
+    "previousName": "stacklens-api-preview",
+    "name": "stacklens-api",
+    "dashboard": "https://vercel.com/freys-projects/stacklens-api",
+    "origin": "https://stacklens-api.vercel.app",
+    "compatibilityOrigin": "https://project-q766o.vercel.app",
+    "domainConfiguration": "Valid Configuration / Production"
+  },
+  "web": {
+    "projectId": "prj_RWR5i1zdAHfFdVBDh8IbNPJcBGC4",
+    "previousName": "stacklens-web-preview",
+    "name": "stacklens",
+    "dashboard": "https://vercel.com/freys-projects/stacklens",
+    "origin": "https://stacklens-web.vercel.app",
+    "compatibilityOrigin": "https://project-j0e3o.vercel.app",
+    "domainConfiguration": "Valid Configuration / Production",
+    "unavailableRequestedDomain": "stacklens.vercel.app",
+    "providerMessage": "stacklens.vercel.app is already assigned to another team. Use a different domain or transfer it.",
+    "apiOriginConfig": "https://stacklens-api.vercel.app",
+    "configEnvironment": "Production"
+  },
+  "beforeRoutingRebuild": {
+    "apiHttp": {
+      "recordedAt": "2026-10-02T12:39:27.615Z",
+      "origin": "https://stacklens-api.vercel.app",
+      "openapi": {
+        "firstMs": 4909,
+        "warmMs": 50,
+        "status": 200,
+        "vercelId": "sin1::sin1::km7mj-1790944762326-a051e0a9a03d",
+        "note": "First observed request; no claim of forced Function cold start."
+      },
+      "malformedJson": 400,
+      "unknownApiJson": 404,
+      "invalidRepository": 400,
+      "quick": [
+        {
+          "kind": "paste",
+          "status": 200,
+          "analysisId": "c02b7936-e674-43ad-b32f-e98042d7cf65",
+          "schemaVersion": "2.0.0",
+          "contractValid": true,
+          "lookup": 404,
+          "transient": true,
+          "noStore": true,
+          "ms": 78
+        },
+        {
+          "kind": "upload",
+          "status": 200,
+          "analysisId": "fc5801b2-9763-447c-807c-cb40c8ec3d6f",
+          "schemaVersion": "2.0.0",
+          "contractValid": true,
+          "lookup": 404,
+          "transient": true,
+          "noStore": true,
+          "ms": 69
+        }
+      ],
+      "database": "shared Aiven through Vercel API",
+      "providerJobs": false
+    },
+    "webHttp": {
+      "recordedAt": "2026-10-02T12:43:04.154Z",
+      "origin": "https://stacklens-web.vercel.app",
+      "openapi": {
+        "firstMs": 335,
+        "warmMs": 103,
+        "status": 200,
+        "vercelId": "sin1:sin1:sin1::sin1::5zb5l-1790944983018-567968269291",
+        "note": "First observed request; no claim of forced Function cold start."
+      },
+      "malformedJson": 400,
+      "unknownApiJson": 404,
+      "invalidRepository": 400,
+      "quick": [
+        {
+          "kind": "paste",
+          "status": 200,
+          "analysisId": "16fa5f71-7328-4a7b-a167-0b9475122b01",
+          "schemaVersion": "2.0.0",
+          "contractValid": true,
+          "lookup": 404,
+          "transient": true,
+          "noStore": true,
+          "ms": 74
+        },
+        {
+          "kind": "upload",
+          "status": 200,
+          "analysisId": "e35c3636-8ee3-4144-a08d-2ff47c639bdc",
+          "schemaVersion": "2.0.0",
+          "contractValid": true,
+          "lookup": 404,
+          "transient": true,
+          "noStore": true,
+          "ms": 80
+        }
+      ],
+      "database": "shared Aiven through Vercel API",
+      "providerJobs": false
+    },
+    "note": "New aliases passed HTTP checks before the web rebuild; the previous deployment still routes to the compatibility API alias."
+  },
+  "boundaries": {
+    "projectRecreated": false,
+    "databaseSecretDestinationChanged": false,
+    "backendSecretTransferredToWeb": false,
+    "providerTokenMoved": false,
+    "cardOrPaidPlanAdded": false,
+    "analyzerPolicyChanged": false,
+    "reportSchemasChanged": false,
+    "acceptedRequirementsChanged": false
+  },
+  "followUp": "Documentation publication rebuilds both projects. Verify the actual source HEAD, applied API-origin rewrite and public routes; publication CI and deployment results are recorded in PR #41. Historical evidence retains its original names and origins."
+}
