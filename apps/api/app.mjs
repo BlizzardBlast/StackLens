@@ -6,6 +6,7 @@ export const runtime = await createVercelApiRuntime().catch(() => {
 });
 /** @type {import("fastify").FastifyInstance} */
 const app = runtime.app;
+export default app.server;
 // The native host captures listen() and binds only after this module finishes importing.
 // Awaiting listen here would keep both sides waiting for each other.
 void app.listen({ host: "0.0.0.0", port: Number(process.env.PORT ?? "3000") }).catch(async () => {

@@ -2143,3 +2143,20 @@ contracts and queue behavior remain unchanged. The corrected capture replay and 
 539-test gate are required before redeployment; cloud/public full-stack acceptance remains pending.
 
 **Traceability:** PRD-006, FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0016.
+
+## 2026-10-02 — Explicit native HTTP handler export
+
+Deployment `CNCvRBZvSWjL8m8oPkHmcAvxJZQC` built capture correction `9ec89bc` in 27 seconds.
+The prior import deadlock was removed. Startup progressed through database initialization, then
+Vercel rejected the named-only module: the default export must be a function or server. Public
+OpenAPI still returned 500. The entrypoint now exports the captured HTTP server as its default
+handler. The compiled capture smoke additionally verifies that default export's type and identity.
+Pool attachment emitted three release-outside-request warnings during startup; these are recorded
+as lifecycle diagnostics, not route acceptance. The separate empty Hobby web project was created
+as `stacklens-web-preview`; it has no backend secrets or deployment.
+
+The documentation-impact pass adds this failed attempt without rewriting earlier evidence and
+updates the API runbook and ADR-0016 module contract. No product policy or report schema changes.
+Database-backed quality and public cloud revalidation are required before using the API origin.
+
+**Traceability:** FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0016.

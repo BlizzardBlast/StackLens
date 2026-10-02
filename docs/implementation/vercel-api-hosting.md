@@ -39,7 +39,9 @@ recovery, repository/provider execution and retention. Keep that Worker active.
 The native host intercepts HTTP `listen()` and binds the captured server after importing the entrypoint.
 Do not await the Fastify listen promise at module scope: that prevents import completion and deadlocks
 the host. Await runtime construction, start listening without blocking import, and keep listen failures
-sanitized. The named runtime export permits graceful teardown in an isolated capture smoke process.
+sanitized. Export the captured HTTP server as the default handler; a named runtime export alone is
+rejected by the deployed runtime. The named runtime export permits graceful teardown in an isolated
+capture smoke process. The smoke verifies the default export is the same captured HTTP server.
 
 ## Runtime values
 

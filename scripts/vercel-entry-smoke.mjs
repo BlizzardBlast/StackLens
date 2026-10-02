@@ -28,6 +28,12 @@ try {
     }),
   ]);
   runtime = entry.runtime;
+  assert(entry.default instanceof Server, "Native entry default must be an HTTP server.");
+  assert.equal(
+    entry.default,
+    capturedServer,
+    "Native entry export must match the captured server.",
+  );
   clearTimeout(timeout);
   assert(capturedServer, "Native entry did not expose an HTTP server.");
   Server.prototype.listen = originalListen;

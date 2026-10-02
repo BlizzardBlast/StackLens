@@ -26,6 +26,7 @@ by Vercel. Warm requests share the module's runtime and database pool.
 The native host captures `listen()` before binding after module import. Runtime initialization is
 awaited; the listen promise must not block import completion. Keep an isolated native-capture smoke
 alongside the compiled runtime gate so an ordinary local server check cannot miss this lifecycle constraint.
+Export the captured HTTP server as the default handler, preserving the native host's module contract.
 
 Disable the API delivery pump only in this request-bound entrypoint. Submission still awaits the
 existing dispatcher before returning; no queue work is scheduled after the response. The continuously
