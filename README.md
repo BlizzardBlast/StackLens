@@ -40,9 +40,15 @@ The [managed runbook](docs/implementation/managed-hosting.md) records rejected c
 Northflank/Render activation and the inactive credit-limited Railway candidate. The public preview
 still has release gaps: an active Worker restart delayed KerjaLog completion to 4h 10m after
 submission; sampled memory reached 257.36 MiB against its displayed 256 MiB limit. Immediate
-recovery, capacity, Function suspension, remote expiry/restore and real screen-reader/device
-validation remain open. Configurable 24-hour retention is implemented but remote deletion/restore
-is not verified. This personal preview is not a production-readiness claim.
+recovery was subsequently fixed and verified with a hosted active-job stop/start. The same analysis
+finished in 3m 13s. The final constrained Linux run completed both repositories with a 244.25 MiB
+peak and no memory-limit/OOM events. Remote expiry cleanup and isolated restoration of eight stored
+reports pass. See the [Worker recovery record](docs/implementation/worker-recovery.md) for exact
+scope and source hashes. The recovery observations were captured on a dirty base `405b420`; the
+follow-up is published through draft PR #41. Resolve its current HEAD and deployments for review.
+Headroom remains small. Sustained capacity, Function suspension/aggregate connections, operational
+backup policy and real screen-reader/device acceptance remain open. This personal preview is not
+a production-readiness claim.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 

@@ -334,6 +334,36 @@ describe("repository analysis worker task [FR-003, FR-021, NFR-003, NFR-008, NFR
     );
   });
 
+  it.each([1, 5])("preserves interruption semantics at attempt %s [NFR-008]", async (attempts) => {
+    const harness = repositoryHarness();
+    const controller = new AbortController();
+    const analyze = vi.fn<RepositoryAnalyzer>(async (_command, dependencies) => {
+      await dependencies.onProgress?.({ phase: "repository", status: "started" });
+      controller.abort();
+      // Even a provider that resolves after cancellation cannot publish a partial report.
+      return successfulResult();
+    });
+    const execution = executeRepositoryAnalysisJob(
+      { analysisId: "analysis-001", repositoryUrl: "https://github.com/acme/demo", ref: "main" },
+      { id: "graphile-job-1", attempts, maxAttempts: 5, abortSignal: controller.signal },
+      { repository: harness.repository, analysisDependencies, analyze },
+    );
+    const outcome = await execution.then(
+      () => "finished",
+      () => "retry",
+    );
+    expect(outcome).toBe(attempts === 5 ? "finished" : "retry");
+    const written = attempts === 5 ? harness.mocks.fail : harness.mocks.markRetryPending;
+    const unwritten = attempts === 5 ? harness.mocks.markRetryPending : harness.mocks.fail;
+    expect(written).toHaveBeenCalledWith(
+      expect.objectContaining({
+        failureSummary: expect.objectContaining({ code: "repository_analysis_interrupted" }),
+      }),
+    );
+    expect(unwritten).not.toHaveBeenCalled();
+    expect(harness.mocks.complete).not.toHaveBeenCalled();
+  });
+
   it("short-circuits already-terminal analyses on at-least-once delivery", async () => {
     const harness = repositoryHarness(record({ status: "completed", progressStage: "completed" }));
     const analyze = vi.fn<RepositoryAnalyzer>();

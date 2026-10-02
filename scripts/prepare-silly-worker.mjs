@@ -12,6 +12,7 @@ if (image === undefined || !image.startsWith("stacklens-worker:")) {
 }
 const output = resolve(process.argv[3] ?? ".cache/stacklens-worker-silly.tar.gz");
 const wrapper = fileURLToPath(new URL("../deploy/silly/start-worker.js", import.meta.url));
+const recoveryWrapper = fileURLToPath(new URL("../deploy/silly/recover.js", import.meta.url));
 const run = promisify(execFile);
 const command = `
 node -e 'if (JSON.parse(require("node:fs").readFileSync("/app/package.json", "utf8")).name !== "@stacklens/worker") process.exit(1)' &&
@@ -21,6 +22,7 @@ mv /package/worker/package.json /package/worker/worker.package.json &&
 rm -f /package/worker/tsconfig.json /package/worker/tsconfig.build.json &&
 printf '{"type":"module"}\n' > /package/worker/dist/package.json &&
 cp /wrapper.js /package/worker/start-worker.js &&
+cp /recover-wrapper.js /package/worker/recover.js &&
 tar -czf - -C /package/worker .
 `;
 const { stdout } = await run(
@@ -35,6 +37,8 @@ const { stdout } = await run(
     "/tmp",
     "--mount",
     `type=bind,source=${wrapper},target=/wrapper.js,readonly`,
+    "--mount",
+    `type=bind,source=${recoveryWrapper},target=/recover-wrapper.js,readonly`,
     "--entrypoint",
     "sh",
     image,

@@ -9,8 +9,24 @@ try {
 }
 
 if (process.exitCode !== 1) {
-  void import("./dist/main.js").catch(() => {
+  try {
+    // The panel's quoted "*.js" test sends ordinary JavaScript through ts-node. Replace
+    // the loader process before opening database connections; preserve PID and stdio.
+    // No repository under analysis is executed here.
+    if (process.platform === "linux" && process.execArgv.some((arg) => arg.includes("ts-node"))) {
+      process.execve(
+        process.execPath,
+        [process.execPath, "--max-old-space-size=96", "./dist/main.js"],
+        process.env,
+      );
+    } else {
+      void import("./dist/main.js").catch(() => {
+        process.exitCode = 1;
+        process.stderr.write("StackLens Worker entrypoint could not be loaded.\n");
+      });
+    }
+  } catch {
     process.exitCode = 1;
-    process.stderr.write("StackLens Worker entrypoint could not be loaded.\n");
-  });
+    process.stderr.write("StackLens Worker native startup failed.\n");
+  }
 }

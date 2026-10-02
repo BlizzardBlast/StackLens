@@ -2237,3 +2237,76 @@ change; existing runtime checks cover the same implementation. Worker recovery/c
 release gates remain open. The PR remains draft and unmerged.
 
 **Traceability:** PRD-006, FR-001/003/004/022, SEC-003/007, GOV-002/006/007; ADR-0015/0016.
+
+## 2026-10-02 — Worker interruption recovery and bounded hosting verification
+
+The user requested the next release work after the live restart left a job waiting for stale-lock
+recovery. The existing checkout receives an uncommitted follow-up on `405b420` under draft PR #41.
+NFR-008 now states planned interruption/retry and confirmed-dead-owner recovery explicitly;
+ADR-0017 keeps these responsibilities in Worker runtime. Provider acquisition consumes per-job
+abort signals and serializes npm packuments. Zero-delay Graphile completion/failure batching makes
+shutdown await queue writes before closing the pool. Integration exposed that Graphile 0.18 locks
+by `pool-...`; the earlier unsaved Worker-ID helper would not identify that owner. It was never run.
+
+The Silly launcher replaces its ts-node child with native Node before database startup, while
+retaining its parent and standard streams. The selected launcher uses 96 MiB old space without
+source-map loading. An uncapped workload reached memory-limit pressure; the 80 MiB experiment
+stopped before completion and was rejected. The final 256 MiB/no-swap/0.25 CPU Linux experiment
+completed both repositories at 244.25 MiB peak with zero memory-limit/OOM events and a clean stop.
+Provider bounds, input selection, analyzer/scoring policy, contracts and UI/tokens are unchanged.
+
+The compiled patch and launchers were uploaded to the existing approved Worker while confirmed
+offline; hashes and the unchanged private runtime file were checked before recording activation.
+The public web-proxy KerjaLog attempt was deliberately stopped while active. It reached offline in
+22,379 ms, released its queue lock, returned to queued with `repository_analysis_interrupted` and
+stored no report for the interrupted attempt. A new pool resumed attempt two; the same analysis ID
+finished in 192,798 ms with five limitations and no provider failures. frey-ui finished in 147,072 ms
+with 24 limitations and the same three bounded npm failures. No administrative unlock ran. A public
+submission receives 24-hour expiry; neither repository was executed, built or installed.
+
+Owned synthetic rows tested the actual remote retention pump: an expired terminal record and its
+report/delivery disappeared within 6,229 ms and lookup returned 404. Expired queued/running and
+legacy null-expiry rows remained, then the fixtures were removed. A consistent PostgreSQL 18 backup
+restored into a separate owned Aiven database with matching application/Graphile table hashes and
+eight strictly readable historical reports. API bootstrap/readback did not rewrite them. The
+copied queue was not executed; the database and private dump were removed. An earlier restore
+attempt rejected the target's existing empty public schema and was discarded without modifying
+the preview database. This does not establish scheduled backups or disaster queue replay.
+
+The database-backed `pnpm check` passes, including 27 Worker tests covering graceful retry, actual
+child-process death before targeted unlock and preservation of a separate live owner. A parallel
+cold test run also exposed API executable-test cleanup racing its async startup; the test now
+awaits that continuation. API production behavior did not change. The documentation-impact pass
+updates requirements/architecture versions, ADR-0017, Worker/hosting guidance, README, handover and
+source-free release evidence. Vercel still runs Git revision `405b420`; Worker patch hashes do not
+claim a new commit. The changes remain uncommitted/unpushed, and PR #41 remains draft/unmerged.
+
+The user explicitly left phone/spoken screen-reader acceptance open. Another browser engine,
+sustained/general capacity, Function suspension/aggregate connections and operational backup
+policy remain release gates. Small measured headroom and a planned stop/start are not proof of
+arbitrary workload fit, OOM recovery or automatic hosted failover.
+
+The final read-only review covers lifecycle, provider cancellation, persisted ownership, operator
+scope, launcher/package behavior and requirement/documentation traceability. No blocking issue
+remains in this bounded change. Both Vercel project overviews confirm Ready on `405b420`; all remote
+compiled/launcher hashes match the reviewed patch. Documentation verification checks 119 local
+Markdown links, JSON parsing, current source hashes, credential patterns and a clean diff. The
+temporary upload key was revoked (401 on reuse, empty dashboard list), private local files removed
+and disposable test containers/databases deleted. Approved hosting runtime credentials remain.
+
+**Traceability:** FR-003/021, NFR-008/009, SEC-001/002/003/007, GOV-002/006/007; ADR-0017.
+
+## 2026-10-02 — Publish the verified Worker follow-up
+
+Under the existing release-branch publication approval, the Worker source, focused regression tests,
+requirements/ADR and release evidence are published together through draft PR #41. No merge is
+authorized. The live capture remains explicitly based on dirty `405b420` plus file hashes, and
+subsequent publication/deployment evidence is recorded separately rather than rewriting its timing
+basis. The handover instructs the next session to resolve the PR's actual HEAD, CI and deployments.
+
+The same database-backed gate and final review cover the implementation. Publication CI and both
+rebuilt Vercel targets must be checked on the actual pushed commit; code behavior at the existing
+Worker is identified by its verified compiled/source hashes. Manual acceptance remains open at
+the user's request. Product/UI/scoring behavior and the remaining operational gates are unchanged.
+
+**Traceability:** FR-003/021, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0017.

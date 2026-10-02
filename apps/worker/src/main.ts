@@ -1,6 +1,6 @@
 import { readStackLensPoolOptions } from "@stacklens/persistence";
 
-import { startStackLensWorker } from "./runtime.js";
+import { startStackLensWorker, type StackLensWorkerRuntime } from "./runtime.js";
 
 const DEFAULT_DATABASE_URL = "postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens";
 const DEFAULT_CONCURRENCY = 2;
@@ -35,42 +35,74 @@ async function main(): Promise<void> {
     throw new Error("Production Worker requires DATABASE_URL.");
   }
   const githubToken = optionalEnvironmentSecret("STACKLENS_GITHUB_TOKEN");
-  const runtime = await startStackLensWorker({
-    connectionString: process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
-    databasePoolOptions: readStackLensPoolOptions(process.env),
-    concurrency: environmentInteger("STACKLENS_WORKER_CONCURRENCY", DEFAULT_CONCURRENCY),
-    ...(githubToken === undefined ? {} : { githubToken }),
-    onDatabasePoolError(error) {
-      process.stderr.write(`StackLens Worker database pool error (${errorName(error)}).\n`);
-    },
-    onRetentionError(error) {
-      process.stderr.write(`StackLens retention sweep failed (${errorName(error)}).\n`);
-    },
-  });
-
+  let runtime: StackLensWorkerRuntime | undefined;
   let stopping = false;
-
-  const stop = async (): Promise<void> => {
+  let stopPromise: Promise<void> | undefined;
+  const signals = ["SIGINT", "SIGTERM"] as const;
+  const removeSignals = (): void => {
+    for (const signal of signals) process.removeListener(signal, requestStop);
+  };
+  const stop = (): Promise<void> => {
+    stopPromise ??= (async () => {
+      try {
+        await runtime?.stop();
+      } catch (error) {
+        process.exitCode = 1;
+        process.stderr.write(`StackLens Worker shutdown failed (${errorName(error)}).\n`);
+      } finally {
+        removeSignals();
+      }
+    })();
+    return stopPromise;
+  };
+  const requestStop = (): void => {
+    if (stopping) return;
+    stopping = true;
+    process.stdout.write("StackLens Worker shutdown requested.\n");
+    // A signal during migrations must also stop the runner as soon as startup completes.
+    if (runtime !== undefined) void stop();
+  };
+  for (const signal of signals) process.on(signal, requestStop);
+  try {
+    runtime = await startStackLensWorker({
+      connectionString: process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
+      databasePoolOptions: readStackLensPoolOptions(process.env),
+      concurrency: environmentInteger("STACKLENS_WORKER_CONCURRENCY", DEFAULT_CONCURRENCY),
+      ...(githubToken === undefined ? {} : { githubToken }),
+      onQueueOwnerId(ownerId) {
+        process.stdout.write(`StackLens queue owner started (${ownerId}).\n`);
+      },
+      onDatabasePoolError(error) {
+        process.stderr.write(`StackLens Worker database pool error (${errorName(error)}).\n`);
+      },
+      onRetentionError(error) {
+        process.stderr.write(`StackLens retention sweep failed (${errorName(error)}).\n`);
+      },
+    });
     if (stopping) {
+      await stop();
       return;
     }
-
-    stopping = true;
-
-    try {
-      await runtime.stop();
-    } catch (error) {
-      process.exitCode = 1;
-      process.stderr.write(`StackLens Worker shutdown failed (${errorName(error)}).\n`);
-    }
-  };
-
-  process.once("SIGINT", () => {
-    void stop();
-  });
-  process.once("SIGTERM", () => {
-    void stop();
-  });
+    void runtime.runner.promise.then(
+      () => {
+        if (!stopping) {
+          stopping = true;
+          process.exitCode = 1;
+          process.stderr.write("StackLens Worker runner exited unexpectedly.\n");
+        }
+        return stop();
+      },
+      (error: unknown) => {
+        stopping = true;
+        process.exitCode = 1;
+        process.stderr.write(`StackLens Worker runner failed (${errorName(error)}).\n`);
+        return stop();
+      },
+    );
+  } catch (error) {
+    removeSignals();
+    throw error;
+  }
 }
 
 void main().catch((error: unknown) => {

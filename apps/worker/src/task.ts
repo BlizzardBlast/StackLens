@@ -24,6 +24,9 @@ export type RepositoryAnalyzer = (
 export interface RepositoryAnalysisTaskDependencies {
   readonly repository: AnalysisRepository;
   readonly analysisDependencies: Omit<RepositoryAnalysisDependencies, "onProgress">;
+  readonly createAnalysisDependencies?: (
+    signal: AbortSignal,
+  ) => Omit<RepositoryAnalysisDependencies, "onProgress">;
   readonly analyze?: RepositoryAnalyzer;
   readonly now?: () => string;
 }
@@ -32,6 +35,7 @@ export interface RepositoryJobExecution {
   readonly id: string;
   readonly attempts: number;
   readonly maxAttempts: number;
+  readonly abortSignal?: AbortSignal;
 }
 
 function failureSummary(code: string, message: string, retryable: boolean): AnalysisFailureSummary {
@@ -87,6 +91,11 @@ export async function executeRepositoryAnalysisJob(
   let result: RepositoryAnalysisResult;
 
   try {
+    job.abortSignal?.throwIfAborted();
+    const analysisDependencies =
+      job.abortSignal !== undefined && dependencies.createAnalysisDependencies !== undefined
+        ? dependencies.createAnalysisDependencies(job.abortSignal)
+        : dependencies.analysisDependencies;
     result = await analyze(
       {
         analysisId: existing.id,
@@ -95,8 +104,9 @@ export async function executeRepositoryAnalysisJob(
         ...(existing.requestedRef === undefined ? {} : { ref: existing.requestedRef }),
       },
       {
-        ...dependencies.analysisDependencies,
+        ...analysisDependencies,
         async onProgress(progress) {
+          job.abortSignal?.throwIfAborted();
           const stage = durableStageForProgress(progress);
 
           if (stage !== undefined) {
@@ -105,11 +115,15 @@ export async function executeRepositoryAnalysisJob(
         },
       },
     );
+    job.abortSignal?.throwIfAborted();
   } catch {
     const updatedAt = now();
+    const interrupted = job.abortSignal?.aborted === true;
     const summary = failureSummary(
-      "repository_analysis_unexpected_failure",
-      "Repository analysis failed unexpectedly.",
+      interrupted ? "repository_analysis_interrupted" : "repository_analysis_unexpected_failure",
+      interrupted
+        ? "Repository analysis was interrupted."
+        : "Repository analysis failed unexpectedly.",
       true,
     );
 
@@ -130,7 +144,7 @@ export async function executeRepositoryAnalysisJob(
       failureSummary: summary,
       updatedAt,
     });
-    throw new Error("Repository analysis failed unexpectedly.");
+    throw new Error(summary.message);
   }
 
   if (!result.ok) {
@@ -182,6 +196,7 @@ export function createRepositoryAnalysisTask(
         id: helpers.job.id,
         attempts: helpers.job.attempts,
         maxAttempts: helpers.job.max_attempts,
+        abortSignal: helpers.abortSignal,
       },
       dependencies,
     );

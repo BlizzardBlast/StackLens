@@ -44,12 +44,20 @@ describe("API executable configuration", () => {
     vi.stubEnv("STACKLENS_DATABASE_POOL_MAX", "3");
     vi.stubEnv("STACKLENS_DATABASE_SSL_CA", "fixture CA forwarded to pool validation");
     await import("../src/main.js");
-    await vi.waitFor(() =>
-      expect(mocks.start).toHaveBeenCalledWith(
-        expect.objectContaining({
-          databasePoolOptions: { max: 3, sslCa: "fixture CA forwarded to pool validation" },
-        }),
-      ),
+    await vi.waitFor(
+      () => {
+        expect(mocks.start).toHaveBeenCalledWith(
+          expect.objectContaining({
+            databasePoolOptions: { max: 3, sslCa: "fixture CA forwarded to pool validation" },
+          }),
+        );
+        // Wait for startup's async continuation before resetModules/environment cleanup.
+        expect(mocks.listen).toHaveBeenCalledOnce();
+        expect(process.rawListeners("SIGTERM")).toHaveLength(
+          (previousListeners.get("SIGTERM")?.length ?? 0) + 1,
+        );
+      },
+      { timeout: 5_000 },
     );
   });
   it.each([

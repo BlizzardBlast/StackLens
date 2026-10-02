@@ -87,6 +87,26 @@ does not close them. Function pool suspension, aggregate autoscaling connections
 backup restore, actual screen-reader output, a physical narrow/touch device and another browser
 engine remain unverified. Follow the [manual guide](manual-release-validation.md) for human checks.
 
+### Later October 2 recovery and retention evidence
+
+The [Worker follow-up](worker-recovery.md) closes planned active-job recovery and remote expiry/
+report-restore gaps with a reviewed patch captured on a dirty base `405b420`. The same public KerjaLog
+ID returns to queued on interruption and finishes on attempt two in 192,798 ms; no incomplete
+report or manual unlock is involved. The final constrained Linux two-repository run peaks at
+244.25 MiB with no memory-limit/OOM events. This is bounded workload evidence and limited headroom.
+Synthetic owned expiry fixtures validate the real Worker maintenance pump, cascade deletion and
+404 lookup while preserving queued/running/legacy states. A consistent backup copy restores all
+application/Graphile row hashes and eight historical reports into a separate database; the copied
+queue is not executed. All fixtures and private backup assets are removed afterward.
+
+The dated observations above are preserved. During recovery capture public Vercel code used Git
+revision `405b420`; the patched Worker has separate compiled/source hashes in the
+[new record](release-evidence/2026-10-02-worker-recovery.json). Its full local database-backed gate
+passes. The follow-up is published through draft PR #41; resolve its current HEAD/deployments without
+rewriting the capture revision. Manual phone/screen-reader acceptance stays open at the user's request. Function suspension,
+aggregate connections, sustained capacity, another browser engine and operational backup policy
+remain release work; the restore rehearsal does not establish those outcomes.
+
 PR #41 stays draft and unmerged. Resolve its current HEAD and main before review or merge.
 Documentation publication may rebuild both projects; recheck their actual deployment states and
 public requests on that HEAD. Preserve this dated runtime evidence rather than replacing its source

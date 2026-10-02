@@ -11,7 +11,7 @@ vi.mock("../src/runtime.js", () => ({
 }));
 
 const signals = ["SIGINT", "SIGTERM"] as const;
-const registration = vi.spyOn(process, "once");
+const registration = vi.spyOn(process, "on");
 afterAll(() => registration.mockRestore());
 let previousListeners: Map<(typeof signals)[number], ReturnType<typeof process.rawListeners>>;
 
@@ -24,7 +24,11 @@ beforeEach(() => {
   vi.stubEnv("STACKLENS_GITHUB_TOKEN", undefined);
   vi.stubEnv("STACKLENS_DATABASE_POOL_MAX", undefined);
   vi.stubEnv("STACKLENS_DATABASE_SSL_CA", undefined);
-  mocks.start.mockResolvedValue({ stop: mocks.stop });
+  mocks.start.mockResolvedValue({
+    stop: mocks.stop,
+    runner: { promise: new Promise<void>(() => {}) },
+  });
+  mocks.stop.mockResolvedValue(undefined);
 });
 
 afterEach(() => {
@@ -39,6 +43,25 @@ afterEach(() => {
 
 // FR-003, FR-022, NFR-009: default local startup and explicit overrides.
 describe("Worker executable configuration", () => {
+  it("handles repeated signals during startup and waits for one shutdown [NFR-008]", async () => {
+    let started: ((value: unknown) => void) | undefined;
+    mocks.start.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          started = resolve;
+        }),
+    );
+    await import("../src/main.js");
+    await vi.waitFor(() => expect(mocks.start).toHaveBeenCalledOnce());
+    const handler = registration.mock.calls.findLast(([signal]) => signal === "SIGTERM")?.[1];
+    expect(handler).toBeDefined();
+    handler?.();
+    handler?.();
+    expect(mocks.stop).not.toHaveBeenCalled();
+    started?.({ stop: mocks.stop });
+    await vi.waitFor(() => expect(mocks.stop).toHaveBeenCalledOnce());
+    expect(process.rawListeners("SIGTERM")).toEqual(previousListeners.get("SIGTERM"));
+  });
   it("forwards hosted database settings and limited concurrency [FR-003, FR-022, SEC-007]", async () => {
     vi.stubEnv("STACKLENS_DATABASE_POOL_MAX", "5");
     vi.stubEnv("STACKLENS_DATABASE_SSL_CA", "fixture CA forwarded to pool validation");

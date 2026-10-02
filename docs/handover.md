@@ -1,8 +1,8 @@
 # StackLens Session Handover
 
 > **Prepared:** 2026-10-02\
-> **Architecture:** v0.1.18; requirements v0.1.2\
-> **Milestone:** PR #41 draft; public Vercel web/API validated; Worker recovery and manual gates open\
+> **Architecture:** v0.1.19; requirements v0.1.3\
+> **Milestone:** PR #41 draft; Worker planned recovery, remote expiry and restore verified; manual gates open\
 > **Branch:** `codex/mvp-release-readiness`, existing checkout; PR #41\
 > **Verified main:** `f51d2b61f4740172558bb4b38087af60af8d791a`, confirmed through the remote main ref\
 > **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
@@ -118,11 +118,48 @@ Function suspension/aggregate connections and real assistive-technology/device a
 Drain before planned restart; unlock only a confirmed dead Worker through Graphile's supported
 administrative function. Do not add a public recovery endpoint or unlock live workers.
 
-Next session: resolve current PR HEAD and `main`, verify both actual deployments/public routes,
-then address the recorded Worker recovery/capacity gap before release approval. Documentation pushes
-can rebuild both targets. Preserve the dated runtime SHA and distinguish any later documentation-only
-deployment. The PR stays draft; no merge has been authorized. October 1 and September 30 records
-remain historical evidence, not current deployment status.
+### October 2 Worker recovery follow-up
+
+The follow-up was validated on a dirty base `405b42046108367a374f73c923b1c60b397d28d6` in the existing
+checkout and is published through draft PR #41. It adds per-job cancellation, serialized npm acquisition, awaited Graphile queue writes,
+shared shutdown completion and confirmed-dead-owner recovery. Graphile 0.18 locks by its `pool-...`
+ID; an individual `worker-...` logger ID is insufficient. The Silly launcher replaces its ts-node
+child with native Node and a 96 MiB old-space cap. The parent remains. An 80 MiB experiment stopped
+before completion and was rejected. The final Linux two-repository run peaked at 244.25 MiB under
+256 MiB/no swap/0.25 CPU, with zero memory-limit/OOM events. This does not prove sustained/general fit.
+
+The compiled Worker patch is activated on the existing approved host; no runtime credentials were
+changed. During capture Vercel web/API used `405b420`. A hosted active-job Stop/offline/Start released the
+exact old queue owner in 22,379 ms, queued the interrupted attempt without a report, and resumed
+the same KerjaLog ID on attempt two under a different pool. It finished in 192,798 ms with five
+limitations and no provider failures. No administrative unlock ran. Local integration also verifies
+actual child-process death before targeted recovery while preserving a second live owner's lock.
+
+Remote Worker expiry cleanup removed an owned synthetic terminal analysis/report/delivery within
+6,229 ms and public lookup returned 404. Expired queued/running and legacy null-expiry fixtures were
+preserved, then all owned fixtures were removed. Fresh public submissions receive 24-hour expiry.
+A consistent private PostgreSQL 18 backup restored into a separate owned Aiven database with
+matching application/Graphile table hashes. Eight historical reports passed strict repository/API
+readback without rewriting. The copied active queue was not executed. The database/dump were
+removed; this proves a restore rehearsal, not scheduled backup policy or disaster queue replay.
+
+The database-backed `pnpm check` passes, including 27 Worker tests. API startup tests now await
+startup completion before resetting modules/environment; no API production behavior changed.
+See [ADR-0017](adr/0017-worker-interruption-and-recovery.md), the
+[runbook](implementation/worker-recovery.md) and exact
+[source/evidence record](implementation/release-evidence/2026-10-02-worker-recovery.json).
+The user explicitly left real phone/screen-reader acceptance open. Another browser engine,
+Function suspension/aggregate connections, sustained capacity and operational backup policy remain
+release gates. The public-only provider token still expires 2026-10-31.
+The temporary upload key was revoked (401 on reuse, no keys in the dashboard); local private files,
+owned rehearsal databases and the disposable PostgreSQL container were removed. Final review and
+documentation/credential/link checks pass for this bounded follow-up.
+
+Next session: resolve current PR #41 HEAD and `main`, inspect its diff and check publication CI plus
+both actual Vercel deployment revisions. Match the Worker files to the published source hashes;
+the dirty capture remains the timing basis rather than claiming it observed a later commit.
+Documentation pushes can rebuild both targets. The PR stays draft; no merge has been authorized.
+Preserve the earlier dated runtime evidence rather than rewriting it as a later pass.
 
 ### Earlier portable preparation evidence
 

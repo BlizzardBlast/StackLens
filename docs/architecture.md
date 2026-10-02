@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.18
+> **Architecture version:** 0.1.19
 > **Date:** 2026-10-02
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
@@ -896,5 +896,7 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0014 — Transactional outbox for repository-analysis delivery](adr/0014-transactional-outbox-delivery.md)
 - [ADR-0015 — Vercel static web and portable backend target](adr/0015-vercel-static-web-target.md)
 - [ADR-0016 — Request-bound Fastify API on Vercel](adr/0016-vercel-request-bound-api.md)
+
+- [ADR-0017: Worker interruption and confirmed-exit recovery](adr/0017-worker-interruption-and-recovery.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).

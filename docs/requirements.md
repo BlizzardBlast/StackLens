@@ -1,8 +1,8 @@
 # StackLens Product & System Requirements
 
 > **Status:** Accepted baseline  
-> **Version:** 0.1.2\
-> **Last updated:** 2026-10-01\
+> **Version:** 0.1.3\
+> **Last updated:** 2026-10-02\
 > **Product:** StackLens  
 > **Repository:** BlizzardBlast/StackLens
 
@@ -887,6 +887,12 @@ retry behavior, and request cancellation remains connected to navigation/unmount
 
 Accepted repository submissions must remain visibly `queued` while internal delivery retries; the
 public progress model must not expose delivery attempts, leases, or queue internals.
+
+Planned Worker shutdown must stop accepting new jobs and release interrupted execution for bounded
+retry without publishing an incomplete report. Exhausted attempts must retain a terminal public
+failure. Recovery after an abrupt process exit must target only the queue owner whose death has
+been confirmed; elapsed time or a slow public stage alone is not sufficient authorization to
+release a lock held by a live executor.
 
 ### NFR-009 — Observability without source leakage
 

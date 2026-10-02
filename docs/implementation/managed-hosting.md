@@ -1,6 +1,6 @@
 # Managed hosting setup
 
-> **Status:** Public Vercel web/API and remote Worker verified; recovery/capacity gaps open\
+> **Status:** Public stack and Worker planned recovery verified; constrained capacity/manual gates remain\
 > **Updated:** 2026-10-02\
 > **Requirements:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007, GOV-002/006/007\
 > **Decision:** [ADR-0015](../adr/0015-vercel-static-web-target.md)
@@ -58,6 +58,14 @@ recovery is not proved. A panel memory sample reached 257.36 MiB against the 256
 Capacity, prompt recovery, Function suspension, remote expiry/restore and real screen-reader/device
 acceptance remain release gates. Drain before planned maintenance; never force-unlock a live Worker.
 
+**Later October 2 follow-up:** The reviewed Worker patch, validated on a dirty base `405b420`, is active.
+Planned Stop/offline/Start returned an active job to the queue without a partial report and the
+same KerjaLog ID finished in 192,798 ms. The final constrained Linux run completed both repositories
+with 244.25 MiB peak and no memory-limit/OOM events. Remote expiry cleanup and isolated backup/report
+restore pass. Earlier measurements remain historical; sustained capacity, Function suspension/
+aggregate connections, operational backup policy and manual phone/screen-reader acceptance remain
+open. See [Worker recovery](worker-recovery.md) for the exact hashes, limits and operator procedure.
+
 ## Compute candidate
 
 [Railway's pricing](https://railway.com/pricing) advertises a no-card trial with $5 for thirty days,
@@ -111,6 +119,12 @@ so the API would still need a separate HTTPS host. This is a community preview c
 verified release target or an uptime guarantee.
 
 ## Prepared Silly Worker package
+
+The current archive includes root `recover.js` for the explicit confirmed-dead-owner command. Normal
+startup remains `start-worker.js` with empty Additional Arguments. Because the panel routes ordinary
+JavaScript through ts-node, the Linux launcher replaces that child with native Node before database
+connections, using 96 MiB old space and omitting source-map loading. The ts-node parent remains.
+Never select recovery during ordinary startup or unlock a live owner. See [ADR-0017](../adr/0017-worker-interruption-and-recovery.md).
 
 The panel uses `ghcr.io/ptero-eggs/yolks:nodejs_24` and its startup command runs `npm install` when
 a root `package.json` exists, then starts ordinary `.js` filenames through `ts-node --esm`.
@@ -257,22 +271,26 @@ read-only checks against another isolated Aiven database. That database and both
 removed after orderly shutdown. The separate constrained Worker experiment above is partial
 evidence and does not replace full deployed acceptance.
 
-The Worker is activated. The release branch was published at `7ce34f0` in draft PR #41 and initial
-CI passed. Render's approved deployment hit card verification and created no service. Prepare the
-[Vercel API target](vercel-api-hosting.md) under the same no-card constraint; approval was granted for
-the new backend credential destination before activation.
+The release branch was initially published at `7ce34f0` in draft PR #41 and CI passed. Render's
+approved deployment hit card verification and created no service. The separately approved Vercel
+API/web targets are now verified, with backend credentials only at the approved API destination.
+During recovery capture their Git revision was `405b420`; the Worker follow-up has separate
+dirty-source hashes. The follow-up is published through draft PR #41 under the existing branch
+approval; resolve its current HEAD and both deployment revisions when reviewing.
 
-1. Deploy the reviewed Vercel API against the existing preview database after new-destination approval.
-   Record actual
-   service identifiers, image/revision, free resource allocation and runtime measurements.
-2. Verify the API's assigned HTTPS origin, migration state and a queued job reaching terminal state.
-3. Set Vercel Preview `STACKLENS_API_ORIGIN` to that origin and `ENABLE_EXPERIMENTAL_COREPACK=1`.
-   Keep the repository root, Vite preset, Node 24 and the checked-in build/output configuration.
-4. Run the [Vercel acceptance sequence](vercel-hosting.md#preview-acceptance-sequence), including
-   KerjaLog/frey-ui through real providers, restart recovery, finite retention and restore.
-5. Complete [real screen-reader/device validation](manual-release-validation.md). Preserve limits
-   and provider partial failures in the evidence; neither a live database nor a successful build
-   constitutes a completed release.
+1. Review the published Worker changes in PR #41 and retain the capture's exact source hashes.
+   Keep the PR draft until its release gates close; no merge is authorized.
+2. Recheck actual deployment revisions, Worker hashes and both public HTTPS origins after any
+   publication. Keep the root/Vite web configuration, Production `STACKLENS_API_ORIGIN` and
+   `ENABLE_EXPERIMENTAL_COREPACK=1`; backend secrets stay out of the web.
+3. Preserve the [Worker evidence](worker-recovery.md), including provider limits, planned recovery,
+   constrained memory, remote expiry and isolated restore. Measure sustained capacity, Function
+   suspension and aggregate database connections before broader release approval.
+4. Establish an operational backup policy. The successful private restore rehearsal does not
+   establish scheduled backup retention, recovery objectives or disaster queue replay.
+5. Complete [real screen-reader/device validation](manual-release-validation.md), currently left
+   open at the user's request, and another browser engine. A working preview does not complete
+   those acceptance gates.
 
 Sources checked on 2026-10-01: [Aiven Node connections](https://aiven.io/docs/products/postgresql/howto/connect-node),
 [node-postgres SSL behavior](https://node-postgres.com/features/ssl),

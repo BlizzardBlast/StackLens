@@ -52,6 +52,13 @@ boundary. Leave the variable unset to keep anonymous public GitHub access.
 The runtime owns Graphile/StackLens migrations and provider composition; the process entrypoint owns
 signals and graceful shutdown.
 
+Shutdown consumes Graphile's job abort signal, cancels provider I/O, and returns interrupted
+attempts for bounded retry without writing an incomplete report. Zero-delay queue-write batching
+ensures the final queue writes are awaited before pool closure. Npm packuments are acquired one at
+a time per job. Startup logs the pool owner ID needed for confirmed-exit operator recovery.
+See [Worker recovery](../../docs/implementation/worker-recovery.md) and ADR-0017; never unlock a
+live owner or infer ownership from a slow public stage.
+
 Worker runtime starts bounded expired-terminal cleanup on startup and every sixty seconds after
 the prior sweep. It preserves queued/running claims and cascades reports/delivery rows through the
 persistence boundary. Shutdown waits for active maintenance before closing the pool. Retention
