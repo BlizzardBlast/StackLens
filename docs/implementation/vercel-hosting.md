@@ -39,8 +39,10 @@ The user now requires no payment card. The [managed setup](managed-hosting.md) r
 Aiven Free database, activated Silly Worker, Northflank's actual card-verification blocker and
 inactive credit-limited Railway candidate. The [Render Free API target](render-hosting.md) hit
 card verification in the actual approved deployment and created no service. The separate
-`stacklens-api-preview` Hobby project is configured and linked to the release branch; builds are
-paused and backend credential transfer remains unapproved. Web project creation, API activation
+`stacklens-api-preview` Hobby project is configured and linked to the release branch. Backend
+credential transfer and activation are approved; the two secrets are saved only in the API project.
+Its first cloud build failed before startup and the Function-pattern correction is prepared.
+Web project creation, API activation
 and public routing remain pending. Oracle's
 card verification excludes it under the current constraint.
 

@@ -2,7 +2,7 @@
   "date": "2026-10-02",
   "timezone": "Asia/Jakarta",
   "recordedAt": "2026-10-01T23:45:42.507Z",
-  "setupUpdatedAt": "2026-10-02T00:01:47Z",
+  "setupUpdatedAt": "2026-10-02T00:15:25Z",
   "requirementIds": [
     "PRD-006",
     "FR-001",
@@ -75,7 +75,7 @@
     "region": "sin1",
     "fluidComputeObservedEnabled": true,
     "outsideRootFilesEnabled": true,
-    "ignoredBuildStep": "exit 0",
+    "ignoredBuildBehavior": "Only build production",
     "nonSecretProductionConfig": {
       "ENABLE_EXPERIMENTAL_COREPACK": "1",
       "STACKLENS_DATABASE_POOL_MAX": "1",
@@ -86,14 +86,29 @@
     "branchTrackingSaved": true,
     "suggestedRedeployFoundNoExistingDeployment": true,
     "maxDurationSeconds": 60,
+    "maxDurationConfiguredIn": "project Functions Advanced Settings",
     "databasePoolMaxPerInstance": 1,
     "apiDeliveryPump": false,
     "continuousRecovery": "Silly Worker",
-    "backendSecretTransferApproved": false,
-    "backendSecretsTransferred": false,
+    "backendSecretTransferApproved": true,
+    "backendSecretsTransferred": true,
+    "backendSecretEnvironment": "API project Production only",
+    "providerTokenTransferred": false,
     "projectCreated": true,
     "deployed": false,
     "publicOrigin": null,
+    "cloudAttempts": [
+      {
+        "id": "GSY6Sn1HFcDhvcHiYYV2NMDnphoE",
+        "commit": "ff4d91ac60eacf7217168783c5ba8cccbc2eca68",
+        "status": "error",
+        "durationSeconds": 2,
+        "cli": "62.1.0",
+        "stage": "before install and native builder",
+        "failure": "functions.app.mjs did not match a Serverless Function in the api directory",
+        "correction": "Remove the functions override and save the 60-second project default"
+      }
+    ],
     "build": {
       "recordedAt": "2026-10-01T23:43:35.229Z",
       "builder": "12.0.0",
@@ -161,7 +176,6 @@
     "paidPlanOrCard": false
   },
   "pending": [
-    "Approval to transfer Aiven credentials to the new separate Vercel API project",
     "Actual cloud build/TLS and cold/warm Function behavior",
     "Public API and Vercel web acceptance for both repositories",
     "Remote active-job recovery",

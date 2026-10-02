@@ -85,10 +85,12 @@ disabling the API recovery timer only for request-bound Functions. Submission st
 delivery; Silly Worker owns recovery, execution and retention. The Vercel Hobby project
 `stacklens-api-preview` in `freys-projects` is created, connected to StackLens and tracks
 `codex/mvp-release-readiness`. Fastify, `apps/api`, outside-root workspace files, Node 24,
-Fluid Compute, Singapore and the three non-secret Production values are saved. Builds remain
-paused with Ignored Build Step `exit 0`; there are no live deployments or backend secrets. Database
-credential transfer to Vercel is a new destination and requires explicit approval after reviewing
-this target. The existing Render approval does not authorize that transfer. Keep secrets outside
+Fluid Compute, Singapore and the three non-secret Production values are saved. The user explicitly
+approved the new Vercel destination and activation. The two Aiven values are saved as Secret values
+only in API Production; the GitHub token remains Worker-only. Builds allow the reviewed release
+branch. The first cloud attempt `GSY6Sn1HFcDhvcHiYYV2NMDnphoE` on `ff4d91a` failed before startup
+because the CLI rejected `functions.app.mjs`. That override is removed; the 60-second project default
+is saved through Functions Advanced Settings. No usable public API exists yet. Keep secrets outside
 the static web project. ADR-0016 records this lifecycle adjustment; containers remain supported.
 
 Public full-stack jobs, same-origin rewrites, remote active-job recovery, retention/restore and real

@@ -3,8 +3,5 @@
   "framework": "fastify",
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --dir ../.. exec turbo run build --filter=@stacklens/api...",
-  "regions": ["sin1"],
-  "functions": {
-    "app.mjs": { "maxDuration": 60 }
-  }
+  "regions": ["sin1"]
 }

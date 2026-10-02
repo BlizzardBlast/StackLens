@@ -38,8 +38,11 @@ Created through the user's authenticated dashboards:
   `BlizzardBlast/StackLens` and tracking `codex/mvp-release-readiness`. Fastify, `apps/api` root,
   outside-root workspace files, Node 24, Fluid Compute and Singapore are saved. The three
   non-secret build/runtime values are saved for its Production environment. The provider's
-  environment label does not establish a product release. Builds are paused with `exit 0`;
-  no backend credentials, live deployment or usable API origin exist. The separate web project
+  environment label does not establish a product release. After explicit new-destination approval,
+  the two Aiven values are saved only in the API Production environment. Builds allow the reviewed
+  release branch. The first cloud build failed before startup on an unsupported Function pattern;
+  that override is removed and the 60-second project duration is saved. No live deployment or usable
+  API origin exists yet. The separate web project
   remains to be created at the repository root.
 
 The [new setup evidence](release-evidence/2026-10-01-managed-hosting.json) is separate from the
@@ -248,7 +251,7 @@ evidence and does not replace full deployed acceptance.
 
 The Worker is activated. The release branch was published at `7ce34f0` in draft PR #41 and initial
 CI passed. Render's approved deployment hit card verification and created no service. Prepare the
-[Vercel API target](vercel-api-hosting.md) under the same no-card constraint; obtain approval for
+[Vercel API target](vercel-api-hosting.md) under the same no-card constraint; approval was granted for
 the new backend credential destination before activation.
 
 1. Deploy the reviewed Vercel API against the existing preview database after new-destination approval.

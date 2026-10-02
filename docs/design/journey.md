@@ -2098,3 +2098,26 @@ verification, the repository formatting gate, JSON parsing and diff checks. Publ
 
 **Traceability:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007,
 GOV-002/006/007; ADR-0015/0016.
+
+## 2026-10-02 — Approved Vercel activation and cloud configuration correction
+
+The user explicitly approved Aiven credential transfer to `stacklens-api-preview` and activation
+on Hobby. Only the database URL and complete CA were copied from the approved Worker's private
+runtime editor into API Production Secret values. The GitHub token remains Worker-only; no private
+credential file or output was created locally. Temporary transfer bindings were cleared.
+Builds now allow only the tracked release branch. The earlier paused attempt was confirmed canceled
+by the Ignored Build Step; no card or paid plan was added.
+
+The first actual cloud attempt `GSY6Sn1HFcDhvcHiYYV2NMDnphoE`, commit `ff4d91a`, failed in two
+seconds before installation. Vercel CLI 62.1.0 rejected the `functions.app.mjs` override as an
+unmatched API-directory pattern. The isolated native builder had not exercised this CLI validation.
+The correction removes that override and preserves the 60-second limit through the supported project
+default. The authenticated dashboard confirmed 60 seconds with Fluid Compute still enabled.
+
+The documentation-impact pass updates current status, handover, hosting runbooks and dated evidence;
+the failed attempt stays recorded. No runtime, contract, analyzer or product-policy behavior changes.
+Configuration JSON parsing, formatting/diff checks and new branch CI verify the correction;
+cloud boot and public API/web acceptance remain pending.
+
+**Traceability:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007,
+GOV-002/006/007; ADR-0015/0016.

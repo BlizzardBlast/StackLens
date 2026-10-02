@@ -1,6 +1,6 @@
 # Vercel API preview target
 
-> **Status:** Hobby project configured; backend secret transfer and cloud activation pending\
+> **Status:** Backend secret transfer approved and completed; cloud build correction prepared\
 > **Date:** 2026-10-02\
 > **Requirements:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007, GOV-002/006/007\
 > **Decision:** [ADR-0016](../adr/0016-vercel-request-bound-api.md)
@@ -12,15 +12,20 @@ The separate [Vercel Hobby project](https://vercel.com/freys-projects/stacklens-
 It is connected to `BlizzardBlast/StackLens` and tracks `codex/mvp-release-readiness` in its
 Production environment. That platform label is for this personal preview, not a release claim.
 Root directory `apps/api`, Fastify, Node 24, outside-root workspace files, Fluid Compute and
-Singapore are saved. Builds are paused with Ignored Build Step **Don't build anything** (`exit 0`).
-No cloud deployment or backend secrets exist. Pull-request and commit comments are disabled.
+Singapore and the project-level 60-second duration are saved. Ignored Build Step **Only build
+production** limits builds to the reviewed release branch. The user explicitly approved transferring
+the two Aiven values and activating this API; both values are saved as Secret values only in its
+Production environment. The first cloud build failed before startup; no usable API exists yet.
+Pull-request and commit comments are disabled.
 Keep the web project separate at the repository root with the existing `vercel.mjs`.
 Database secrets belong only to the API project.
 Render's actual Free deployment requested card verification and created no service. The user
 requires no card and no paid plan; stop if Vercel's actual activation violates that constraint.
 
 `apps/api/vercel.json` installs the frozen pnpm lockfile, builds the API workspace dependency graph,
-and selects Singapore (`sin1`) with a 60-second request limit. Enable
+and selects Singapore (`sin1`). Set the 60-second request limit in project Settings -> Functions ->
+Advanced Settings -> Default Max Duration. Do not add a `functions.app.mjs` override: the actual
+cloud CLI rejects that pattern before invoking the native Fastify builder. Enable
 `ENABLE_EXPERIMENTAL_COREPACK=1` so the package-manager version is honored. Leave Output Directory
 unset: the native Fastify builder traces `app.mjs`, which imports the compiled runtime.
 Root `packageManager` and API `packageManager` both pin pnpm 12.4.2.
@@ -32,8 +37,7 @@ recovery, repository/provider execution and retention. Keep that Worker active.
 
 ## Runtime values
 
-Set these private API environment values only after explicit approval to transfer credentials to
-Vercel as a new backend destination:
+The user approved the new Vercel destination; these private API values are saved:
 
 - `DATABASE_URL`: the shared Aiven PostgreSQL URL without SSL query overrides.
 - `STACKLENS_DATABASE_SSL_CA`: the actual multiline project CA PEM, with certificate verification enabled.
@@ -62,10 +66,11 @@ prove Vercel TLS, Function suspension, production networking or quotas. The
 1. Resolve the current reviewed PR #41 HEAD. The adapter is published in `2a507cb`; its
    [quality run](https://github.com/BlizzardBlast/StackLens/actions/runs/36942657278) passed.
    Recheck `codex/mvp-release-readiness`, Hobby, `apps/api` root and outside-root workspace files.
-2. After new-destination approval, enter the two Aiven values privately as Secret values for the
-   Production environment. Allow builds and explicitly deploy the reviewed release branch.
-   Branch tracking saved successfully; the UI's suggested redeployment found no existing build.
-   Do not mistake that message or the reserved default domain for a usable API.
+2. Verify the saved Secret values and 60-second project duration, then deploy the reviewed release
+   branch. The approved first cloud attempt `GSY6Sn1HFcDhvcHiYYV2NMDnphoE`, commit `ff4d91a`,
+   failed before installation: `functions.app.mjs` did not match the CLI's API-directory patterns.
+   This correction removes that override. Earlier branch tracking saved successfully; its suggested
+   redeployment found no existing build. Neither message nor a reserved domain proves a usable API.
    Record the actual revision, deployment identifier, region and verified HTTPS origin.
 3. Verify `/openapi.json`, synchronous paste/upload, invalid input, uncached `202` submission and polling.
    Preserve malformed JSON and unknown-route errors as API JSON rather than SPA HTML.
@@ -85,4 +90,5 @@ unverified origin or move analysis execution into a Function to avoid Worker lim
 - [Fastify deployment](https://vercel.com/docs/frameworks/backend/fastify)
 - [Database pool attachment](https://vercel.com/docs/functions/functions-api-reference/vercel-functions-package#attachdatabasepool)
 - [Native Node.js runtime](https://vercel.com/docs/functions/runtimes/node-js)
+- [Project default duration](https://vercel.com/docs/functions/configuring-functions/duration#dashboard)
 - [Existing managed resources](managed-hosting.md)
