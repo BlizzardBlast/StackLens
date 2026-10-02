@@ -36,8 +36,9 @@ the same Fastify contract and leaves continuous recovery/execution on the existi
 The Hobby project `stacklens-api-preview` is created and connected to the release branch, with
 Node 24, Singapore, Fluid Compute and runtime settings saved. After explicit approval, the two
 Aiven values were saved only in the API project; builds now allow the reviewed release branch.
-The first cloud build rejected a Function pattern before startup. Its configuration is corrected;
-activation and public API validation remain pending.
+The first cloud build rejected a Function pattern before startup. After that correction, the cloud
+build passed but public requests returned 500. Local native-server capture reproduced a startup
+deadlock; the entrypoint now finishes importing before the host binds it. Cloud revalidation remains pending.
 Configurable 24-hour anonymous retention and bounded cleanup are implemented. Public API activation,
 web project linkage/routing, real assistive-technology/device validation and deployed acceptance remain open.
 

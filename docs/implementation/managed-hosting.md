@@ -41,14 +41,16 @@ Created through the user's authenticated dashboards:
   environment label does not establish a product release. After explicit new-destination approval,
   the two Aiven values are saved only in the API Production environment. Builds allow the reviewed
   release branch. The first cloud build failed before startup on an unsupported Function pattern;
-  that override is removed and the 60-second project duration is saved. No live deployment or usable
-  API origin exists yet. The separate web project
+  that override is removed and the 60-second project duration is saved. The corrected cloud build
+  reached Ready, but public requests returned 500. A local native-capture replay reproduced the
+  module-scope listen deadlock; the correction awaits cloud revalidation. No usable
+  API origin has been verified yet. The separate web project
   remains to be created at the repository root.
 
 The [new setup evidence](release-evidence/2026-10-01-managed-hosting.json) is separate from the
 [earlier local container rehearsal](release-evidence/2026-10-01-hosting.json). Neither proves a
 public full-stack release. The [October 2 evidence](release-evidence/2026-10-02-api-target.json)
-records the prepared Vercel API project and successful adapter CI; no public API is activated.
+records Vercel project setup, successful builds/CI and the failed public startup; usable API validation remains open.
 
 ## Compute candidate
 

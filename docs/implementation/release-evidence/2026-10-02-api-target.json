@@ -2,7 +2,7 @@
   "date": "2026-10-02",
   "timezone": "Asia/Jakarta",
   "recordedAt": "2026-10-01T23:45:42.507Z",
-  "setupUpdatedAt": "2026-10-02T00:15:25Z",
+  "setupUpdatedAt": "2026-10-02T00:33:23.451Z",
   "requirementIds": [
     "PRD-006",
     "FR-001",
@@ -33,7 +33,13 @@
       "conclusion": "success",
       "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/36942657278"
     },
-    "merged": false
+    "merged": false,
+    "configurationRevision": "f661bec0351ecf5a7cc15663fee8326aaf4e9cca",
+    "configurationQualityRun": {
+      "id": 36945252902,
+      "conclusion": "success",
+      "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/36945252902"
+    }
   },
   "render": {
     "attempted": true,
@@ -95,7 +101,7 @@
     "backendSecretEnvironment": "API project Production only",
     "providerTokenTransferred": false,
     "projectCreated": true,
-    "deployed": false,
+    "deployed": true,
     "publicOrigin": null,
     "cloudAttempts": [
       {
@@ -107,6 +113,27 @@
         "stage": "before install and native builder",
         "failure": "functions.app.mjs did not match a Serverless Function in the api directory",
         "correction": "Remove the functions override and save the 60-second project default"
+      },
+      {
+        "id": "EMDGL6Zto5tD6Mcak5ekZSeNUygF",
+        "commit": "f661bec0351ecf5a7cc15663fee8326aaf4e9cca",
+        "status": "ready",
+        "durationSeconds": 29,
+        "resources": {
+          "functions": 1,
+          "path": "/index",
+          "region": "sin1",
+          "runtime": "Node.js 24.x",
+          "sizeMB": 2.61,
+          "maxDurationSeconds": 60
+        },
+        "publicHttp": {
+          "path": "/openapi.json",
+          "status": 500,
+          "errorCode": "INTERNAL_FUNCTION_INVOCATION_FAILED",
+          "applicationLogs": 0
+        },
+        "correction": "Do not await the listen promise during native entrypoint import"
       }
     ],
     "build": {
@@ -150,6 +177,23 @@
       },
       "providerCalls": false,
       "cloudFunction": false
+    },
+    "assignedOrigin": "https://project-q766o.vercel.app",
+    "publicOriginVerified": false,
+    "nativeCapture": {
+      "previousEntry": {
+        "serverCaptured": true,
+        "moduleSettledBeforeBind": false,
+        "observationMillis": 15000
+      },
+      "correctedEntry": {
+        "moduleSettledBeforeBind": true,
+        "openapi": 200,
+        "malformedJson": 400,
+        "gracefulTeardown": true
+      },
+      "database": "disposable local PostgreSQL 18",
+      "cloudFunction": false
     }
   },
   "quality": {
@@ -176,7 +220,7 @@
     "paidPlanOrCard": false
   },
   "pending": [
-    "Actual cloud build/TLS and cold/warm Function behavior",
+    "Public cloud boot, verified TLS and first/warm Function requests after native capture correction",
     "Public API and Vercel web acceptance for both repositories",
     "Remote active-job recovery",
     "Remote expiry and backup restore",

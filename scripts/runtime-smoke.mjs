@@ -18,6 +18,24 @@ const { createStackLensApiRuntime } = await import("../apps/api/dist/index.js");
 const { createVercelApiRuntime } = await import("../apps/api/dist/vercel-runtime.js");
 const { startStackLensWorker } = await import("../apps/worker/dist/index.js");
 const { default: assert } = await import("node:assert/strict");
+const { spawn } = await import("node:child_process");
+const { fileURLToPath } = await import("node:url");
+
+await new Promise((resolve, reject) => {
+  const entrySmoke = spawn(
+    process.execPath,
+    [fileURLToPath(new URL("./vercel-entry-smoke.mjs", import.meta.url))],
+    {
+      env: { ...process.env, DATABASE_URL: databaseUrl, STACKLENS_DATABASE_SSL_CA: undefined },
+      stdio: "inherit",
+      timeout: 30_000,
+    },
+  );
+  entrySmoke.once("error", reject);
+  entrySmoke.once("exit", (code) =>
+    code === 0 ? resolve() : reject(new Error("Native Vercel entry smoke failed.")),
+  );
+});
 
 let apiRuntime;
 let workerRuntime;

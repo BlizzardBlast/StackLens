@@ -1,6 +1,6 @@
 # Vercel API preview target
 
-> **Status:** Backend secret transfer approved and completed; cloud build correction prepared\
+> **Status:** Cloud build passed; native startup correction awaiting public revalidation\
 > **Date:** 2026-10-02\
 > **Requirements:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007, GOV-002/006/007\
 > **Decision:** [ADR-0016](../adr/0016-vercel-request-bound-api.md)
@@ -15,7 +15,8 @@ Root directory `apps/api`, Fastify, Node 24, outside-root workspace files, Fluid
 Singapore and the project-level 60-second duration are saved. Ignored Build Step **Only build
 production** limits builds to the reviewed release branch. The user explicitly approved transferring
 the two Aiven values and activating this API; both values are saved as Secret values only in its
-Production environment. The first cloud build failed before startup; no usable API exists yet.
+Production environment. The first cloud build failed before startup; the corrected build reached
+Ready but its public OpenAPI request returned 500. No usable API has been verified yet.
 Pull-request and commit comments are disabled.
 Keep the web project separate at the repository root with the existing `vercel.mjs`.
 Database secrets belong only to the API project.
@@ -34,6 +35,11 @@ The API entrypoint has no continuous delivery timer. It shares one pool/runtime 
 and attaches the pool to Fluid Compute before using it. Repository submission still commits durable
 state and awaits the existing delivery attempt. The independently running Silly Worker handles
 recovery, repository/provider execution and retention. Keep that Worker active.
+
+The native host intercepts HTTP `listen()` and binds the captured server after importing the entrypoint.
+Do not await the Fastify listen promise at module scope: that prevents import completion and deadlocks
+the host. Await runtime construction, start listening without blocking import, and keep listen failures
+sanitized. The named runtime export permits graceful teardown in an isolated capture smoke process.
 
 ## Runtime values
 
@@ -62,6 +68,9 @@ OpenAPI, malformed JSON, quick analysis, uncached submission/polling and unknown
 Database-backed `pnpm check` passed 539 tests and the compiled adapter smoke. These checks do not
 prove Vercel TLS, Function suspension, production networking or quotas. The
 [dated evidence](release-evidence/2026-10-02-api-target.json) records these boundaries.
+The compiled smoke now also captures the real entrypoint's server without binding, requires import
+completion, then binds and checks OpenAPI and malformed JSON. The previous entrypoint was captured
+but did not finish importing before binding; the corrected entrypoint passed the same replay.
 
 1. Resolve the current reviewed PR #41 HEAD. The adapter is published in `2a507cb`; its
    [quality run](https://github.com/BlizzardBlast/StackLens/actions/runs/36942657278) passed.
@@ -72,6 +81,10 @@ prove Vercel TLS, Function suspension, production networking or quotas. The
    This correction removes that override. Earlier branch tracking saved successfully; its suggested
    redeployment found no existing build. Neither message nor a reserved domain proves a usable API.
    Record the actual revision, deployment identifier, region and verified HTTPS origin.
+   The corrected configuration built `f661bec` in 29 seconds as deployment
+   `EMDGL6Zto5tD6Mcak5ekZSeNUygF`: one Singapore Node 24 Function, 2.61 MB and a 60-second limit.
+   Its first `/openapi.json` request returned 500 with `INTERNAL_FUNCTION_INVOCATION_FAILED`
+   and no application logs. Revalidate the native startup correction before using its assigned domain.
 3. Verify `/openapi.json`, synchronous paste/upload, invalid input, uncached `202` submission and polling.
    Preserve malformed JSON and unknown-route errors as API JSON rather than SPA HTML.
 4. Run both requested repositories through this public API and the existing remote Worker; validate

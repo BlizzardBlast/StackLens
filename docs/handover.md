@@ -90,7 +90,10 @@ approved the new Vercel destination and activation. The two Aiven values are sav
 only in API Production; the GitHub token remains Worker-only. Builds allow the reviewed release
 branch. The first cloud attempt `GSY6Sn1HFcDhvcHiYYV2NMDnphoE` on `ff4d91a` failed before startup
 because the CLI rejected `functions.app.mjs`. That override is removed; the 60-second project default
-is saved through Functions Advanced Settings. No usable public API exists yet. Keep secrets outside
+is saved through Functions Advanced Settings. Deployment `EMDGL6Zto5tD6Mcak5ekZSeNUygF` built
+`f661bec` successfully in 29 seconds, but public OpenAPI returned 500 with no application logs.
+Local capture reproduced the module-scope listen deadlock; the corrected entrypoint and capture smoke
+await cloud revalidation. No usable public API has been verified yet. Keep secrets outside
 the static web project. ADR-0016 records this lifecycle adjustment; containers remain supported.
 
 Public full-stack jobs, same-origin rewrites, remote active-job recovery, retention/restore and real
@@ -106,7 +109,7 @@ provider execution. Adapter commit `2a507cb50f076e682cf203474e8be77ae92ac186` is
 GitHub quality run `36942657278` passed. Resolve the current PR HEAD before activation rather
 than assuming `7ce34f0` contains the adapter. Current `main` remains the separately verified
 baseline until merged. The reserved Vercel domain is not a verified API origin. The branch-tracking
-save suggested redeployment, but the dashboard reported no existing build; no deployment was created.
+save suggested redeployment before any build existed. Later attempts above supersede that initial setup snapshot.
 
 ### Earlier portable preparation evidence
 

@@ -2121,3 +2121,25 @@ cloud boot and public API/web acceptance remain pending.
 
 **Traceability:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007,
 GOV-002/006/007; ADR-0015/0016.
+
+## 2026-10-02 — Native Fastify startup capture correction
+
+Configuration commit `f661bec` passed GitHub quality run `36945252902` and built in 29 seconds
+as Vercel deployment `EMDGL6Zto5tD6Mcak5ekZSeNUygF`. The dashboard confirmed one Singapore
+Node 24 Function, 2.61 MB and a 60-second duration. Ready did not prove availability: the public
+OpenAPI request returned 500 with `INTERNAL_FUNCTION_INVOCATION_FAILED` and no application logs.
+
+Inspection of the current native runtime showed that it intercepts HTTP listen, imports user code,
+then binds the captured server. A local replay captured the previous entrypoint's server but its
+import remained pending until the test bound it. Awaiting Fastify listen at module scope therefore
+deadlocked startup. The entrypoint now starts listening without blocking import completion, retains
+sanitized failure handling and exports its runtime for graceful isolated teardown. A new compiled
+smoke captures the real entrypoint before binding and checks actual OpenAPI and malformed JSON HTTP
+responses. It uses disposable PostgreSQL and never registers provider tasks.
+
+The documentation-impact pass updates current status, handover, the API/web/managed runbooks,
+ADR-0016 lifecycle detail and source-free evidence. Product requirements, analyzer policy, serialized
+contracts and queue behavior remain unchanged. The corrected capture replay and database-backed
+539-test gate are required before redeployment; cloud/public full-stack acceptance remains pending.
+
+**Traceability:** PRD-006, FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0016.
