@@ -1,7 +1,7 @@
 # Worker interruption and recovery
 
-> **Status:** Implemented; local recovery, hosted active-job retry, expiry and restore verified  
-> **Date:** 2026-10-02  
+> **Status:** Implemented; local recovery, hosted active-job retry, expiry and restore verified\
+> **Date:** 2026-10-02\
 > **Requirements:** FR-003, FR-021, NFR-008/009, SEC-001/002/003/007, GOV-002/006/007
 
 ## Runtime behavior
