@@ -29,12 +29,15 @@ is activated against Aiven. After approved public-only GitHub token setup, both 
 completed with explicit limitations; sampled memory reached 249.41 MiB of 256 MiB. A
 [Render Free API blueprint](docs/implementation/render-hosting.md) passes schema validation, but
 the actual approved deployment requested card verification and created no service. The reviewed
-branch is published in [PR #41](https://github.com/BlizzardBlast/StackLens/pull/41); its initial CI passed.
+branch is published in [PR #41](https://github.com/BlizzardBlast/StackLens/pull/41); CI passed for
+the API adapter commit `2a507cb`.
 A separate [Vercel API Functions target](docs/implementation/vercel-api-hosting.md) now preserves
 the same Fastify contract and leaves continuous recovery/execution on the existing Worker.
+The Hobby project `stacklens-api-preview` is created and connected to the release branch, with
+Node 24, Singapore, Fluid Compute and non-secret settings saved. Builds remain paused.
 Activation and approval to transfer database credentials to this new API project remain pending.
 Configurable 24-hour anonymous retention and bounded cleanup are implemented. Public API activation,
-Vercel linkage/routing, real assistive-technology/device validation and deployed acceptance remain open.
+web project linkage/routing, real assistive-technology/device validation and deployed acceptance remain open.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 

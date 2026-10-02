@@ -34,13 +34,18 @@ Created through the user's authenticated dashboards:
   private Aiven credential entry, the actual Free/$0 deployment opened card verification. No card
   was supplied. A fresh dashboard confirms no services or public origin. The
   [Render blueprint](render-hosting.md) passes schema validation; account eligibility is blocked.
-- Vercel authenticated Hobby access. Its import form exposes separate Fastify API and Vite web
-  projects. The proposed API root is `apps/api`; the web root remains the repository root. No
-  Vercel project or backend secret resource has been created for this target.
+- Vercel Hobby project `stacklens-api-preview` in `freys-projects`, connected to
+  `BlizzardBlast/StackLens` and tracking `codex/mvp-release-readiness`. Fastify, `apps/api` root,
+  outside-root workspace files, Node 24, Fluid Compute and Singapore are saved. The three
+  non-secret build/runtime values are saved for its Production environment. The provider's
+  environment label does not establish a product release. Builds are paused with `exit 0`;
+  no backend credentials, live deployment or usable API origin exist. The separate web project
+  remains to be created at the repository root.
 
 The [new setup evidence](release-evidence/2026-10-01-managed-hosting.json) is separate from the
 [earlier local container rehearsal](release-evidence/2026-10-01-hosting.json). Neither proves a
-public full-stack release. Vercel has no linked project in this checkout and no usable API origin.
+public full-stack release. The [October 2 evidence](release-evidence/2026-10-02-api-target.json)
+records the prepared Vercel API project and successful adapter CI; no public API is activated.
 
 ## Compute candidate
 

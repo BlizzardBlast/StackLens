@@ -2,6 +2,7 @@
   "date": "2026-10-02",
   "timezone": "Asia/Jakarta",
   "recordedAt": "2026-10-01T23:45:42.507Z",
+  "setupUpdatedAt": "2026-10-02T00:01:47Z",
   "requirementIds": [
     "PRD-006",
     "FR-001",
@@ -26,7 +27,12 @@
       "id": 36884582320,
       "conclusion": "success"
     },
-    "adapterRevision": "Resolve the current reviewed PR HEAD; the initial published commit predates this adapter.",
+    "adapterRevision": "2a507cb50f076e682cf203474e8be77ae92ac186",
+    "adapterQualityRun": {
+      "id": 36942657278,
+      "conclusion": "success",
+      "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/36942657278"
+    },
     "merged": false
   },
   "render": {
@@ -56,18 +62,36 @@
   "vercel": {
     "target": "separate API project",
     "proposedName": "stacklens-api-preview",
+    "projectName": "stacklens-api-preview",
+    "projectId": "prj_Zd0NV89v672Ru0RntrsFNZ2b7O7s",
+    "team": "freys-projects",
+    "dashboard": "https://vercel.com/freys-projects/stacklens-api-preview",
+    "gitRepository": "BlizzardBlast/StackLens",
+    "trackedProductionBranch": "codex/mvp-release-readiness",
     "planObserved": "Hobby",
     "rootDirectory": "apps/api",
     "framework": "fastify",
     "node": "24.x",
     "region": "sin1",
+    "fluidComputeObservedEnabled": true,
+    "outsideRootFilesEnabled": true,
+    "ignoredBuildStep": "exit 0",
+    "nonSecretProductionConfig": {
+      "ENABLE_EXPERIMENTAL_COREPACK": "1",
+      "STACKLENS_DATABASE_POOL_MAX": "1",
+      "STACKLENS_RETENTION_HOURS": "24"
+    },
+    "pullRequestCommentsEnabled": false,
+    "commitCommentsEnabled": false,
+    "branchTrackingSaved": true,
+    "suggestedRedeployFoundNoExistingDeployment": true,
     "maxDurationSeconds": 60,
     "databasePoolMaxPerInstance": 1,
     "apiDeliveryPump": false,
     "continuousRecovery": "Silly Worker",
     "backendSecretTransferApproved": false,
     "backendSecretsTransferred": false,
-    "projectCreated": false,
+    "projectCreated": true,
     "deployed": false,
     "publicOrigin": null,
     "build": {

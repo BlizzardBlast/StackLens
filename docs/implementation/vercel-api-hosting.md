@@ -1,16 +1,21 @@
 # Vercel API preview target
 
-> **Status:** Adapter prepared; backend secret transfer and cloud activation pending\
+> **Status:** Hobby project configured; backend secret transfer and cloud activation pending\
 > **Date:** 2026-10-02\
 > **Requirements:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007, GOV-002/006/007\
 > **Decision:** [ADR-0016](../adr/0016-vercel-request-bound-api.md)
 
 ## Project boundary
 
-Use a separate Vercel Hobby project named `stacklens-api-preview`, root directory `apps/api`,
-Fastify preset and Node 24. The authenticated import form exposes this separate API project;
-do not choose its inferred multi-service configuration. Keep the web project separate at the
-repository root with the existing `vercel.mjs`. Database secrets belong only to the API project.
+The separate [Vercel Hobby project](https://vercel.com/freys-projects/stacklens-api-preview) is
+`stacklens-api-preview`, ID `prj_Zd0NV89v672Ru0RntrsFNZ2b7O7s`, in `freys-projects`.
+It is connected to `BlizzardBlast/StackLens` and tracks `codex/mvp-release-readiness` in its
+Production environment. That platform label is for this personal preview, not a release claim.
+Root directory `apps/api`, Fastify, Node 24, outside-root workspace files, Fluid Compute and
+Singapore are saved. Builds are paused with Ignored Build Step **Don't build anything** (`exit 0`).
+No cloud deployment or backend secrets exist. Pull-request and commit comments are disabled.
+Keep the web project separate at the repository root with the existing `vercel.mjs`.
+Database secrets belong only to the API project.
 Render's actual Free deployment requested card verification and created no service. The user
 requires no card and no paid plan; stop if Vercel's actual activation violates that constraint.
 
@@ -33,8 +38,9 @@ Vercel as a new backend destination:
 - `DATABASE_URL`: the shared Aiven PostgreSQL URL without SSL query overrides.
 - `STACKLENS_DATABASE_SSL_CA`: the actual multiline project CA PEM, with certificate verification enabled.
 
-Set non-secret `STACKLENS_DATABASE_POOL_MAX=1`, `STACKLENS_RETENTION_HOURS=24`,
-`ENABLE_EXPERIMENTAL_COREPACK=1`. No GitHub token is needed by the API. Keep database credentials
+Non-secret `STACKLENS_DATABASE_POOL_MAX=1`, `STACKLENS_RETENTION_HOURS=24` and
+`ENABLE_EXPERIMENTAL_COREPACK=1` are saved as Config values for this project's Production
+environment. No GitHub token is needed by the API. Keep database credentials
 out of the web project, `VITE_*`, repository files, build arguments, screenshots and logs.
 The existing pool validates the CA and rejects URL SSL overrides.
 
@@ -53,10 +59,14 @@ Database-backed `pnpm check` passed 539 tests and the compiled adapter smoke. Th
 prove Vercel TLS, Function suspension, production networking or quotas. The
 [dated evidence](release-evidence/2026-10-02-api-target.json) records these boundaries.
 
-1. Resolve the current reviewed PR #41 HEAD. Select `codex/mvp-release-readiness`, not baseline `main`.
-   Verify Hobby and the separate `apps/api` root. Confirm outside-root workspace files are available.
-2. After new-destination approval, enter the two Aiven values privately and activate the API project.
-   Record the actual revision, deployment identifier, region and HTTPS origin.
+1. Resolve the current reviewed PR #41 HEAD. The adapter is published in `2a507cb`; its
+   [quality run](https://github.com/BlizzardBlast/StackLens/actions/runs/36942657278) passed.
+   Recheck `codex/mvp-release-readiness`, Hobby, `apps/api` root and outside-root workspace files.
+2. After new-destination approval, enter the two Aiven values privately as Secret values for the
+   Production environment. Allow builds and explicitly deploy the reviewed release branch.
+   Branch tracking saved successfully; the UI's suggested redeployment found no existing build.
+   Do not mistake that message or the reserved default domain for a usable API.
+   Record the actual revision, deployment identifier, region and verified HTTPS origin.
 3. Verify `/openapi.json`, synchronous paste/upload, invalid input, uncached `202` submission and polling.
    Preserve malformed JSON and unknown-route errors as API JSON rather than SPA HTML.
 4. Run both requested repositories through this public API and the existing remote Worker; validate

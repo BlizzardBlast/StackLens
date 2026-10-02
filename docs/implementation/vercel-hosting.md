@@ -1,7 +1,7 @@
 # Vercel web hosting target
 
-> **Status:** Prepared locally; no linked project or deployment\
-> **Date:** 2026-10-01\
+> **Status:** Web prepared locally; separate API project configured, no live deployment\
+> **Date:** 2026-10-02\
 > **Requirements:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-003/007, GOV-002/006/007\
 > **Decision:** [ADR-0015](../adr/0015-vercel-static-web-target.md)
 
@@ -38,7 +38,9 @@ Silly Worker still owns execution/recovery; no queue or Workflow migration is in
 The user now requires no payment card. The [managed setup](managed-hosting.md) records the created
 Aiven Free database, activated Silly Worker, Northflank's actual card-verification blocker and
 inactive credit-limited Railway candidate. The [Render Free API target](render-hosting.md) hit
-card verification in the actual approved deployment and created no service. Vercel API activation
+card verification in the actual approved deployment and created no service. The separate
+`stacklens-api-preview` Hobby project is configured and linked to the release branch; builds are
+paused and backend credential transfer remains unapproved. Web project creation, API activation
 and public routing remain pending. Oracle's
 card verification excludes it under the current constraint.
 
@@ -85,7 +87,8 @@ requires a new deployment. Keep `STACKLENS_API_ORIGIN` outside Turbo's web build
 not bundled assets. It is not prefixed with `VITE_` and is not shipped as a client environment value.
 
 Leave `DATABASE_URL` and `STACKLENS_GITHUB_TOKEN` in the API/Worker host's secret manager.
-Never paste backend `.env` content into the Vercel project. Keep build/source visibility private
+Never paste backend `.env` content into the static web project. The separately approved API project
+may receive only its required database values. Keep build/source visibility private
 and preview protection enabled while staging validation is incomplete.
 
 ## Backend preparation required before a usable preview

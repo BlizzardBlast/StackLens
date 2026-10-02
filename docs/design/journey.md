@@ -2074,3 +2074,27 @@ retention/restore and real screen-reader/device gates remain open; PR #41 remain
 
 **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-003/007,
 GOV-002/006/007; ADR-0004/0014/0015/0016.
+
+## 2026-10-02 — Vercel Hobby API project configured without activation
+
+Adapter commit `2a507cb` was published in draft PR #41; GitHub quality run `36942657278` passed.
+The authenticated Vercel dashboard created the separate Hobby project `stacklens-api-preview`
+in `freys-projects`. An empty project was used after branch-URL imports were rejected; the existing
+GitHub integration then connected StackLens successfully. Fastify, `apps/api` root, outside-root
+workspace files, Node 24, Fluid Compute and Singapore are saved. Branch tracking selects
+`codex/mvp-release-readiness`. The UI's suggested redeployment found no existing build; the overview
+confirmed no Production or Preview deployments and zero Function invocations.
+
+Builds were paused with `exit 0` before connecting Git. Production Config values pin Corepack,
+one database connection per instance and 24-hour retention. Pull-request and commit comments are
+disabled. No backend secrets, payment card, paid plan or live deployment were added. The new
+Vercel database destination still requires approval; the prior transfer approval covered Render.
+
+The documentation-impact pass updates README, current handover, hosting guides and dated evidence.
+The earlier journey entry remains unchanged as a historical snapshot. No product behavior,
+architecture policy, analyzer rules or report schemas change. The existing 539-test database-backed
+gate and successful adapter CI remain the implementation evidence; this setup adds dashboard
+verification, the repository formatting gate, JSON parsing and diff checks. Public API/web acceptance remains pending.
+
+**Traceability:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007,
+GOV-002/006/007; ADR-0015/0016.

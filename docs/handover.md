@@ -82,8 +82,11 @@ schema-valid, but this account's activation violates the no-card constraint. No 
 
 The separate [Vercel API target](implementation/vercel-api-hosting.md) preserves Fastify while
 disabling the API recovery timer only for request-bound Functions. Submission still awaits durable
-delivery; Silly Worker owns recovery, execution and retention. The authenticated Vercel Hobby import
-form exposes a separate API project rooted at `apps/api`; no project has been deployed. Database
+delivery; Silly Worker owns recovery, execution and retention. The Vercel Hobby project
+`stacklens-api-preview` in `freys-projects` is created, connected to StackLens and tracks
+`codex/mvp-release-readiness`. Fastify, `apps/api`, outside-root workspace files, Node 24,
+Fluid Compute, Singapore and the three non-secret Production values are saved. Builds remain
+paused with Ignored Build Step `exit 0`; there are no live deployments or backend secrets. Database
 credential transfer to Vercel is a new destination and requires explicit approval after reviewing
 this target. The existing Render approval does not authorize that transfer. Keep secrets outside
 the static web project. ADR-0016 records this lifecycle adjustment; containers remain supported.
@@ -97,8 +100,11 @@ The [October 2 evidence](implementation/release-evidence/2026-10-02-api-target.j
 native Fastify builder selecting `app.mjs`, traced Node 24 output (1,765 files, 8,167,198 bytes),
 embedded Graphile migrations, native local HTTP checks and database-backed `pnpm check` passing
 539 tests. API process defaults remain covered; the request-bound adapter smoke runs without
-provider execution. Resolve the current PR HEAD for this target rather than assuming `7ce34f0`
-contains the later adapter. Current `main` remains the separately verified baseline until merged.
+provider execution. Adapter commit `2a507cb50f076e682cf203474e8be77ae92ac186` is published;
+GitHub quality run `36942657278` passed. Resolve the current PR HEAD before activation rather
+than assuming `7ce34f0` contains the adapter. Current `main` remains the separately verified
+baseline until merged. The reserved Vercel domain is not a verified API origin. The branch-tracking
+save suggested redeployment, but the dashboard reported no existing build; no deployment was created.
 
 ### Earlier portable preparation evidence
 
@@ -106,7 +112,8 @@ The user selected Vercel and requested backend preparation. The [web runbook](im
 and [backend runbook](implementation/backend-hosting.md) describe the prepared target: static web on
 Vercel with an explicit HTTPS API origin, plus portable API/Worker/PostgreSQL containers and Caddy
 TLS routing. `vercel.mjs`, the production Dockerfile and separate production/rehearsal Compose files
-are ready for review. There is no linked Vercel project, external host, public origin or deployment.
+were ready for review. At that earlier preparation there was no linked Vercel project, external
+host, public origin or deployment; the current API project status is recorded above.
 The local root Compose definition remains PostgreSQL-only.
 
 The API assigns configurable anonymous expiry (24 hours by default); Worker maintenance removes
