@@ -36,6 +36,13 @@ configuration and startup attempts remain in the dated evidence. Runtime commit 
 CI and the 539-test database-backed gate, including the native-entry and compiled API/Worker smokes.
 The reviewed branch remains in draft [PR #41](https://github.com/BlizzardBlast/StackLens/pull/41).
 
+Repository acceptance waits for the atomic analysis/outbox commit; immediate dispatch is best
+effort and recovery belongs to the continuous Worker. A completed analysis whose report is missing
+returns a retryable `503`; `404` remains reserved for an absent analysis after a bounded reread.
+CI now runs the compiled native-entry/API/Worker smoke after its build with PostgreSQL 18, matching
+the local `pnpm check` runtime gate. See the [API contract](docs/implementation/repository-api.md)
+and [contributor verification guidance](CONTRIBUTING.md#compiled-runtime-verification).
+
 The [managed runbook](docs/implementation/managed-hosting.md) records rejected card-required
 Northflank/Render activation and the inactive credit-limited Railway candidate. The public preview
 still has release gaps: an active Worker restart delayed KerjaLog completion to 4h 10m after

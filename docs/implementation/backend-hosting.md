@@ -13,8 +13,9 @@ executes analysis, and PostgreSQL owns durable state. Any suitable container hos
 topology. No external host implementing this Compose topology, API DNS record or Caddy certificate
 has been provisioned. The separate [managed preview](managed-hosting.md) uses the activated Aiven
 database and Silly Worker. The [Render Free API](render-hosting.md) attempt hit card verification;
-an optional [Vercel API](vercel-api-hosting.md) now preserves the same contract with request-bound
-lifecycle under ADR-0016. Neither public API target has been deployed.
+the separate [Vercel API](vercel-api-hosting.md) is activated and publicly verified with request-bound
+lifecycle under ADR-0016. Render created no service. This portable Compose topology remains a
+locally rehearsed self-hosting option; its evidence does not establish a public Compose deployment.
 
 The host needs Docker/Compose, persistent storage, a public API hostname with DNS directed to it,
 ports 80/443 for certificate issuance and HTTPS, and outbound access to the existing fixed provider

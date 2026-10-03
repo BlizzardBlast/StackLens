@@ -8,6 +8,7 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { reportV2Fixture } from "../analysis-report/v2-test-fixture.js";
 import {
   RepositoryAnalysisApiError,
   type RepositoryAnalysisClient,
@@ -136,6 +137,27 @@ describe("repository polling [FR-003, FR-022, NFR-008]", () => {
     expect(screen.getByText("Analysis in progress")).toBeInTheDocument();
     await tick(1500);
     expect(get).toHaveBeenCalledTimes(3);
+  });
+
+  it("NFR-008 recovers from a transient 503 to a v2 report and stops interval polling", async () => {
+    const report = { ...reportV2Fixture(), analysisId: "poll-test" };
+    const get = vi
+      .fn<RepositoryAnalysisClient["getAnalysis"]>()
+      .mockRejectedValueOnce(new RepositoryAnalysisApiError("unavailable", "Retry later.", 503))
+      .mockResolvedValue({
+        ...running,
+        status: "completed_with_limitations",
+        progressStage: "completed_with_limitations",
+        report,
+      });
+    mount(get);
+    await tick(20);
+    expect(get).toHaveBeenCalledTimes(2);
+    expect(screen.getByRole("heading", { name: "Analysis report", level: 1 })).toBeInTheDocument();
+    expect(screen.getByText("Analysis completed with limitations")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Try again" })).not.toBeInTheDocument();
+    await tick(10000);
+    expect(get).toHaveBeenCalledTimes(2);
   });
 
   it.each(["completed", "completed_with_limitations", "failed"] as const)(

@@ -829,8 +829,9 @@ limits; environment parsing remains outside analyzer policy. The free Node 24 Si
 activated and both authenticated repository runs completed with limitations. After approved branch
 publication in PR #41, the Render Free Docker API attempt also requested card verification and
 created no service. ADR-0016 adds a separate optional Vercel Fastify API project: request-bound
-Functions keep awaited submission dispatch but disable the API recovery timer. The continuous
-Worker owns outbox recovery, provider execution and retention. A runtime-injected pool attachment
+Functions await the atomic analysis/outbox commit, start best-effort dispatch without awaiting it,
+and disable the API recovery timer. The continuous Worker recovers pending delivery and expired
+delivery leases, and owns provider execution and retention. A runtime-injected pool attachment
 supports Fluid Compute without coupling persistence or analyzer policy to Vercel. Database secrets
 stay only on the approved API/Worker hosts; the static web project receives only a public HTTPS API origin.
 After labeled live measurements found retained idle API clients, the request-bound preview sets

@@ -112,7 +112,12 @@ export async function readRepositoryAnalysis(
 
   const report = await repository.findReport(analysis.id);
 
-  // Retention may remove a terminal record between the two reads. Never return completion
-  // without its report; use the same missing-analysis recovery as an already-purged row.
-  return report === undefined ? undefined : { analysis, report };
+  if (report !== undefined) {
+    return { analysis, report };
+  }
+
+  // Retention may remove the analysis between reads. Recheck once so only a missing row
+  // becomes not found; a surviving completed row without its report remains unavailable.
+  const refreshedAnalysis = await repository.findAnalysis(analysisId);
+  return refreshedAnalysis === undefined ? undefined : { analysis: refreshedAnalysis };
 }

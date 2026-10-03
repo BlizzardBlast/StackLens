@@ -9,6 +9,27 @@
 
 ## Current handover
 
+### October 3 scoped PR review corrections
+
+PR #41 now distinguishes actual retention deletion from a missing terminal report. The application
+performs one analysis reread only when the report is missing: an absent row produces `404`, while a
+surviving completed record produces sanitized `503` and can recover on a later request. Existing
+report readers, public schemas and Query cancellation/polling behavior are preserved.
+
+Submission waits for the atomic analysis/outbox commit, then starts unawaited best-effort dispatch.
+The continuous Worker recovers pending deliveries and expired leases; the Vercel API has no pump.
+ADR-0016 and current hosting guidance correct their earlier awaited-dispatch claim. The quality
+workflow now runs the existing compiled native-entry/API/Worker smoke after build with PostgreSQL 18.
+See the [API contract](implementation/repository-api.md) and
+[verification guidance](../CONTRIBUTING.md#compiled-runtime-verification).
+
+Resolve the actual PR #41 HEAD, its quality run and both deployment revisions before further work;
+publication evidence is recorded in the PR. Keep it draft and unmerged. This scoped correction does
+not extend the dated runtime measurements below or close capacity, Function lifecycle, full disaster
+recovery or manual device/spoken-output gates. Narrator idle repetition remains P3 and user-deferred.
+
+### Hosting history and current resources
+
 The user requested Vercel project names `stacklens` (web) and `stacklens-api` (API). Both are renamed
 in place with their original project IDs. Current addresses are
 [StackLens](https://stacklens-web.vercel.app) and [API](https://stacklens-api.vercel.app).
@@ -199,7 +220,8 @@ The local root Compose definition remains PostgreSQL-only.
 The API assigns configurable anonymous expiry (24 hours by default); Worker maintenance removes
 expired terminal analysis/report/delivery state with bounded row locking. Queued/running ownership
 and legacy null-expiry records are preserved. Origin and Vercel routes prohibit API caching.
-A missing completed report during a cleanup/read race returns the existing 404 recovery.
+At that preparation, a missing completed report returned 404 even if the analysis survived. The
+scoped correction above now rereads once and distinguishes actual deletion from missing-report 503.
 Production entrypoints require a database URL. Analyzer v6, quick-manifest v5, both report readers,
 schema 2.0.0 and stack-health-v3 remain as recorded in the prior live pass.
 

@@ -2413,3 +2413,39 @@ The private observer credential file and owned local PostgreSQL/Vite test servic
 both test ports have no listener. The temporary logical restore database/archive were already removed.
 
 **Traceability:** FR-001/002/003/004/021/022, NFR-006/007/008/009, SEC-001/002/003/007, GOV-002/006/007; ADR-0016.
+
+## 2026-10-03 — Correct PR #41 lookup, runtime CI and delivery guidance
+
+Scoped review found that a missing completed report produced authoritative 404 even when its
+analysis row survived, stopping browser recovery. The application now rereads the analysis once
+only on that failure path: actual deletion returns 404; a surviving completed record returns the
+existing sanitized 503 and can recover on a later request. Normal reads, public schemas and stored
+report versions remain unchanged. Fastify tests cover both terminal success states, genuine deletion,
+report recovery, refreshed state and dependency failures. React coverage verifies transient 503
+recovery to a v2 report followed by polling stop without changing production React code.
+
+The quality workflow now runs the existing compiled native-entry/API/Worker smoke immediately after
+build with its PostgreSQL 18 service. Current hosting guidance and ADR-0016 correct the earlier
+awaited-dispatch claim: acceptance awaits the atomic analysis/outbox commit; immediate dispatch is
+unawaited best effort, and the continuous Worker recovers pending delivery and expired leases.
+A deferred-promise HTTP test proves both sides of that boundary and releases its promises on failure.
+The portable backend guide now distinguishes the active Vercel API from the unprovisioned Compose
+host. Earlier card blockers, native startup failures, resource experiments and source-bound captures
+remain recorded; this correction does not rewrite their evidence.
+
+Phase verification passed 42 API tests (three database tests deferred to the full gate), all 53 web
+tests, the build and a real PostgreSQL 18 native-entry/compiled API/Worker smoke. The final focused
+HTTP pass includes the deferred-dispatch test and passes all 19 cases. Read-only self-review follows
+each phase. The complete uncached database-backed gate and exact-head CI/deployment results are
+recorded with [PR #41](https://github.com/BlizzardBlast/StackLens/pull/41); resolve its current HEAD
+before subsequent work rather than assigning these earlier observations to a later revision.
+The PR remains draft and unmerged. Narrator idle repetition stays P3 and user-deferred; capacity,
+Function lifecycle, disaster recovery and physical-device/spoken acceptance are not closed here.
+
+**Traceability:** FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0014/0016.
+
+The first uncached full run timed out in two existing PostgreSQL connection tests. All 37 persistence
+tests then passed in isolation, and a fresh uncached database-backed `pnpm check` passed without
+changing assertions, timeouts or concurrency. The final gate passes all 22 Turbo test tasks with zero
+cache hits, native/compiled smoke, strict workspace/browser types, all 18 browser acceptance checks,
+lint and formatting. Both failed and successful local logs are retained separately in the review record.

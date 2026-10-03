@@ -70,6 +70,9 @@ jobs:
       - name: Build generated packages
         run: pnpm build
 
+      - name: Compiled runtime smoke
+        run: pnpm runtime:smoke
+
       - name: Validate shadcn project
         run: pnpm ui:info > /dev/null
 

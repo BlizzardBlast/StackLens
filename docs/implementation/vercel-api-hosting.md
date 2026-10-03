@@ -42,9 +42,11 @@ unset: the native Fastify builder traces `app.mjs`, which imports the compiled r
 Root `packageManager` and API `packageManager` both pin pnpm 12.4.2.
 
 The API entrypoint has no continuous delivery timer. It shares one pool/runtime across warm requests
-and attaches the pool to Fluid Compute before using it. Repository submission still commits durable
-state and awaits the existing delivery attempt. The independently running Silly Worker handles
-recovery, repository/provider execution and retention. Keep that Worker active.
+and attaches the pool to Fluid Compute before using it. Repository submission awaits the atomic
+analysis/outbox commit, then starts best-effort dispatch without waiting for completion before `202`.
+That dispatch can be interrupted by Function suspension. The independently running Silly Worker
+recovers pending deliveries and expired delivery leases, and owns repository/provider execution and
+retention. Keep that Worker active.
 
 The native host owns HTTP binding. Await runtime construction and Fastify readiness, then export the
 unbound HTTP server as the default handler. Do not call or await Fastify `listen()` in this entrypoint:
@@ -110,9 +112,13 @@ on `75bf5a2`; resolve the current PR HEAD before subsequent deployment.
 
 First observed OpenAPI took 3,146 ms and the following request 58 ms. Neither is a forced cold
 start or pool-suspension test. Continue measuring Function lifecycle, autoscaling connections and
-Worker capacity separately. The active-job panel restart delayed KerjaLog completion to 4h 10m
-after submission, so prompt recovery remains a release gap. Remote expiry/restore and real
-screen-reader/device gates also remain open. Production is only the platform environment label
+Worker capacity separately. The initial active-job panel restart delayed KerjaLog completion to
+4h 10m after submission; the later [recovery follow-up](worker-recovery.md) verifies planned
+interruption/retry, remote expiry and an isolated restore. See the current
+[operational evidence](operational-preview-validation.md) and [backup policy](preview-backups.md)
+for bounded connection/serial-job observations and remaining capacity/disaster-recovery gates.
+Physical-device and spoken screen-reader acceptance is deferred by the user.
+Production is only the platform environment label
 for this personal preview; keep the two Aiven secrets solely in the API project.
 
 Rollback keeps compatible report readers and the same database/Worker. Keep `75bf5a2` as the first

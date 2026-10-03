@@ -14,8 +14,9 @@ subsequently confirmed that no service was created. Northflank also required a c
 provider recommendations without checking their actual activation forms does not satisfy this constraint.
 
 Vercel now supports native Fastify applications as Node.js Functions. Repository execution is already
-separate from HTTP requests: the API commits a durable analysis/delivery record, awaits one delivery
-attempt, and returns the stable identifier. The Worker owns analysis execution and can recover the outbox.
+separate from HTTP requests: the API awaits the atomic analysis/outbox commit, starts best-effort
+dispatch without awaiting it, and returns the stable identifier. The Worker owns analysis execution
+and can recover pending delivery or an expired delivery lease.
 
 ## Decision
 
@@ -27,9 +28,10 @@ module's runtime and database pool. Do not call or await Fastify `listen()` in t
 Keep an isolated native-entry smoke alongside the compiled runtime gate: reject application binding,
 verify the HTTP server export, then bind it as the host does and check real HTTP responses.
 
-Disable the API delivery pump only in this request-bound entrypoint. Submission still awaits the
-existing dispatcher before returning; no queue work is scheduled after the response. The continuously
-running Worker owns delivery retry/recovery, Graphile execution and retention maintenance. No Worker,
+Disable the API delivery pump only in this request-bound entrypoint. Submission returns `202` after
+the atomic commit even if the immediate dispatch is still pending or fails. Function suspension can
+interrupt that best-effort attempt; the continuously running Worker owns delivery retry/recovery,
+Graphile execution and retention maintenance. No Worker,
 provider credential, provider call, score policy or analyzed repository execution moves into Functions.
 
 Attach the PostgreSQL pool to Vercel Fluid Compute immediately after creation with `attachDatabasePool`.
@@ -73,8 +75,13 @@ requests, uncached polling, both requested repository reports and the web proxy.
 and local container evidence alone does not prove these public paths. The
 [October 2 public validation](../implementation/public-preview-validation.md) now proves the public
 API/web routes and both repository reports. First/warm observations do not prove a forced cold
-start or pool suspension. Active-job restart completion was delayed by four hours; prompt recovery,
-capacity, expiry, backup restore and real screen-reader/device checks remain release gates.
+start or pool suspension. The initial active-job restart delayed completion by four hours. The
+[Worker recovery follow-up](../implementation/worker-recovery.md) subsequently verified planned
+interruption/retry, remote expiry and an isolated restore. The
+[October 3 operational record](../implementation/operational-preview-validation.md) adds serial hosted
+jobs, a separate restore and bounded connection measurements. General capacity, actual Function
+suspension/autoscaling-wide connections and full no-card disaster recovery remain release gates;
+physical-device and spoken screen-reader acceptance is deferred by the user.
 
 ## References checked on 2026-10-02
 

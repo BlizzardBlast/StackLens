@@ -38,6 +38,15 @@ Per **NFR-002** and **GOV-004**:
 - acceptance tests should identify the requirement IDs they verify;
 - heuristic behavior must test both positive findings and cases where evidence is insufficient.
 
+## Compiled runtime verification
+
+`pnpm check` runs `pnpm runtime:smoke` after the build. CI runs the same command as an explicit
+`Compiled runtime smoke` step with its PostgreSQL 18 service and `TEST_DATABASE_URL`. The smoke
+checks the native Vercel entrypoint before HTTP binding, then compiled API/Worker startup, durable
+submission, status readback and shutdown. It registers only a synthetic Worker task and makes no
+live provider requests. Set `TEST_DATABASE_URL` to an isolated test database for local verification;
+without it, only the compiled rules import runs and database runtime coverage is skipped.
+
 ## Browser acceptance
 
 `pnpm check` includes the built web application's Playwright acceptance suite. After installing

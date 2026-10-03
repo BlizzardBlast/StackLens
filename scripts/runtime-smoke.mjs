@@ -52,7 +52,7 @@ try {
     taskList: { runtime_smoke: async () => undefined },
   });
   // FR-003/022, SEC-003: exercise the compiled request-bound adapter with real persistence,
-  // without a recovery timer or provider task. Functions still await submission dispatch.
+  // without a recovery timer or provider task. Acceptance awaits the atomic commit; dispatch is best effort.
   vercelRuntime = await createVercelApiRuntime({ DATABASE_URL: databaseUrl });
   const submitted = await vercelRuntime.app.inject({
     method: "POST",
