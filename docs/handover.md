@@ -1,7 +1,7 @@
 # StackLens Session Handover
 
 > **Prepared:** 2026-10-03\
-> **Architecture:** v0.1.19; requirements v0.1.3\
+> **Architecture:** v0.1.20; requirements v0.1.3\
 > **Milestone:** PR #41 draft; Worker planned recovery, remote expiry and restore verified; manual gates open\
 > **Branch:** `codex/mvp-release-readiness`, existing checkout; PR #41\
 > **Verified main:** `f51d2b61f4740172558bb4b38087af60af8d791a`, confirmed through the remote main ref\
@@ -176,8 +176,12 @@ The first API burst peaked at ten clients including its observer, under the twen
 Five baseline clients became six after idle. The labeled follow-up on `d80ab03` found six API clients
 remaining after the final idle interval despite lifecycle attachment. That commit's CI and both
 deployment checks passed. The request-bound adapter now retires clients with `maxUses: 1` and uses
-`stacklens-api-vercel-single-use` to distinguish its policy; repeat live latency/release and durable
-submission checks after publishing. Preserve the earlier failed samples. Actual cold-start/suspension,
+`stacklens-api-vercel-single-use` to distinguish its policy. On `beaac25`, CI and both deployments
+passed. Seventeen lookups at concurrency two peaked at eight total clients; both idle intervals
+ended with zero new-policy API clients and the aggregate returned to its five-client baseline.
+Lookup median was 455 ms and maximum 4,064 ms. Twelve direct/proxied checks passed; a fresh frey-ui
+submission returned 202 in 649 ms and a valid limited report in 143,683 ms. Preserve the earlier
+failed samples and the successful capture's exact runtime revision. Actual cold-start/suspension,
 autoscaling-wide ceilings, general capacity, no-card disaster recovery and manual acceptance stay
 open. Preserve each observation's original source revision. Resolve PR #41's current HEAD and actual
 CI/deployments; it remains draft and no merge has been authorized.

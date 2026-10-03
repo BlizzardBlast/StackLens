@@ -78,6 +78,36 @@ regressions, compiled/native runtime smoke, all 22 Turbo test tasks, 18 browser 
 formatting. Eighteen successful test tasks use the valid cache. Hosted cleanup and latency remain
 pending publication at this capture.
 
+### Published policy verification
+
+Runtime `beaac2541a213f23da21c6b3610aaf89edf967af` passed
+[quality run 37089763781](https://github.com/BlizzardBlast/StackLens/actions/runs/37089763781).
+Both [web](https://vercel.com/freys-projects/stacklens/FKVUR2nAoB2BWASpjdcb7NvKqD4b) and
+[API](https://vercel.com/freys-projects/stacklens-api/26Uyi2bYN3SVgkKMhkL7UZy1iNCU)
+deployment checks passed. The repeat uses six two-request burst waves and two two-request resume
+waves, preserving connection headroom during deployment overlap. All seventeen uncached lookups
+return the expected JSON 404. The new label is observed during acquisition; after each 35-second
+idle interval its client count is zero. Total clients peak at eight and return to the five-client
+baseline, including the observer. No idle transaction or earlier labeled API client remains in the
+final sample. No database sessions are forcibly terminated.
+
+Lookup latency ranges from 332 to 4,064 ms, with a 455 ms median. These are observed timings for
+this bounded run; the changed concurrency and uncertain cold state prevent a controlled comparison
+with the earlier burst. Twelve direct API/web-proxy checks pass OpenAPI, malformed input,
+contract-valid paste/upload and transient-report non-persistence. A fresh frey-ui submission returns
+202 in 649 ms and completes with a contract-valid schema 2.0.0 report in 143,683 ms. Its immutable
+repository commit, 24 limitations and three bounded npm response-size failures are retained in the
+record. No analyzed code is executed. The exact hosted capture stays bound to `beaac25` even when
+later documentation commits rebuild the targets.
+
+This closes the observed bounded idle-release issue. Forced cold starts, actual Function suspension
+and a global autoscaling ceiling remain unverified. The six-job Worker soak, fresh logical restore
+and human acceptance limits described below are unchanged.
+
+After capture, the private observer credential file, owned local PostgreSQL container and Vite
+preview were removed/stopped. Both local test ports have no listener. No new hosting API key was
+created for this follow-up; the approved live hosting credentials remain on their runtime hosts.
+
 ## Hosted Worker soak
 
 Six serial public submissions alternate frey-ui and KerjaLog, three each. Every report passes the

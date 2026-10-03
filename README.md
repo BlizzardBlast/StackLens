@@ -53,8 +53,9 @@ a production-readiness claim.
 The [October 3 operational follow-up](docs/implementation/operational-preview-validation.md) adds
 continuous Chromium/Firefox/WebKit acceptance, six successful serial hosted analyses and a fresh
 four-report restore rehearsal. Labeled live measurement exposed API clients remaining idle after
-requests. The request-bound adapter now retires each released client; deployment verification must
-measure the added connection/TLS overhead and actual cleanup. The
+requests. The deployed request-bound adapter retires each released client; both measured idle
+intervals ended with zero API clients, and direct/proxied quick flows plus a fresh repository
+submission passed. Connection/TLS overhead and the exact runtime revision are recorded. The
 [backup policy](docs/implementation/preview-backups.md) records Aiven's existing daily backups and
 the Free-plan recovery limitation. Cold-start/suspension, general capacity, disaster recovery and
 manual device/screen-reader gates remain open. `pnpm check` now includes browser acceptance; install

@@ -2391,3 +2391,25 @@ and human acceptance gates remain explicit.
 The complete database-backed gate passes with the real PostgreSQL/API regressions, compiled/native
 runtime smoke, all 22 Turbo test tasks, 18 browser checks, lint and formatting. Eighteen test tasks
 reuse valid successful cache entries. Hosted verification follows publication of this reviewed runtime.
+
+## 2026-10-03 — Verify the published connection policy
+
+Runtime `beaac25` passes CI and both Vercel deployment checks. Seventeen uncached live lookups at
+concurrency two observe the new API label during acquisition and zero API clients after both
+35-second idle periods. Aggregate clients peak at eight and return to the five-client baseline;
+there are no idle transactions or old labeled API clients in the final sample. No sessions are
+forcibly terminated. Lookup median is 455 ms and maximum 4,064 ms; changed concurrency and unknown
+cold state prevent a controlled before/after latency claim.
+
+Twelve direct API/web-proxy checks pass OpenAPI, input errors, contract-valid paste/upload and
+quick non-persistence. A fresh frey-ui submission returns 202 in 649 ms and a valid limited report
+in 143,683 ms. Original failed samples are preserved alongside this exact runtime revision.
+The documentation-impact pass completes the current evidence, handover, public status and
+architecture v0.1.20; ADR-0016 records the connection overhead tradeoff. Documentation publication
+does not relabel runtime captures. PR #41 remains draft. Global capacity, actual suspension,
+disaster recovery and human acceptance gates remain explicit.
+
+The private observer credential file and owned local PostgreSQL/Vite test services are cleaned up;
+both test ports have no listener. The temporary logical restore database/archive were already removed.
+
+**Traceability:** FR-001/002/003/004/021/022, NFR-006/007/008/009, SEC-001/002/003/007, GOV-002/006/007; ADR-0016.

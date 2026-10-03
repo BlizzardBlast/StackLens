@@ -1,8 +1,8 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.19
-> **Date:** 2026-10-02
+> **Architecture version:** 0.1.20
+> **Date:** 2026-10-03
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
@@ -832,10 +832,18 @@ created no service. ADR-0016 adds a separate optional Vercel Fastify API project
 Functions keep awaited submission dispatch but disable the API recovery timer. The continuous
 Worker owns outbox recovery, provider execution and retention. A runtime-injected pool attachment
 supports Fluid Compute without coupling persistence or analyzer policy to Vercel. Database secrets
-stay only in the API project; the static web project still receives only a public HTTPS API origin.
+stay only on the approved API/Worker hosts; the static web project receives only a public HTTPS API origin.
+After labeled live measurements found retained idle API clients, the request-bound preview sets
+`maxUses: 1` to retire a client on release. Transactions retain their acquired client until release;
+the runtime/pool object, concurrency cap, finite acquisition timeout and verified TLS remain shared.
+Continuous API/Worker runtimes retain normal reuse. Reconnection adds TLS/connection overhead.
+The [October 3 operational record](implementation/operational-preview-validation.md) verifies
+bounded hosted cleanup and latency; exact suspension behavior and global autoscaling capacity stay open.
 The personal preview now validates separate public Vercel web/API projects with both requested
-repository reports. Active-job panel restart leaves a four-hour recovery delay and Worker capacity
-remains unproven; see [dated public acceptance](implementation/public-preview-validation.md).
+repository reports. An initial active-job restart exposed a four-hour recovery delay; the subsequent
+planned-interruption fix resumes the same hosted analysis promptly. Bounded constrained runs and
+serial jobs pass, while general sustained Worker capacity remains open. See
+[Worker recovery](implementation/worker-recovery.md) and the dated operational record.
 Portable continuous API containers remain supported. See the
 [managed hosting runbook](implementation/managed-hosting.md) for current resources and limits.
 Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker
