@@ -1,6 +1,7 @@
 export interface StackLensPoolOptions {
   readonly applicationName?: string;
   readonly max?: number;
+  readonly maxUses?: number;
   readonly sslCa?: string;
   readonly connectionTimeoutMillis?: number;
 }

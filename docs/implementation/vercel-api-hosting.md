@@ -71,12 +71,22 @@ the number of instances. Include Worker pools, migrations, administration and de
 when observing connection usage. This target is a low-traffic personal preview; load and availability
 claims require separate measurements.
 
-The Vercel pool uses the constant PostgreSQL application name `stacklens-api-vercel` for source-free
+The Vercel pool uses the constant PostgreSQL application name `stacklens-api-vercel-single-use` for source-free
 connection attribution. `pg_stat_activity` can distinguish API clients from the existing Worker and
 provider connections without reading SQL text, addresses or credentials. This is observability
 metadata, not a global connection cap or a change to job/scoring behavior. See the
 [October 3 measurements](operational-preview-validation.md) and
 [preview backup policy](preview-backups.md) for bounded evidence and remaining release gates.
+
+On October 3 the earlier `stacklens-api-vercel` pool retained six idle clients after a bounded burst
+and resume despite lifecycle attachment. The request-bound adapter now fixes `maxUses: 1`, retiring
+a client on release while preserving transaction ownership, pool concurrency and finite acquisition
+timeouts. The shared runtime/pool object remains available for warm requests. Continuous API/Worker
+clients keep normal reuse. This avoids relying on a post-response idle timer, at the cost of fresh
+database connections and verified TLS handshakes. The new label distinguishes this policy during
+deployment overlap. Do not terminate old sessions automatically or treat a finite burst as a global
+autoscaling cap. Verify live latency, both idle intervals, durable submission and readback after
+publication. The exact hosting-context cause remains unverified.
 
 ## Verification and activation
 

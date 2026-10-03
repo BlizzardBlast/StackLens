@@ -52,6 +52,32 @@ the label. The one-connection cap, CA validation, pool lifecycle attachment and 
 boundaries remain intact. A bounded burst does not prove a global autoscaling ceiling, a forced
 cold start or actual Function suspension.
 
+## Labeled API follow-up and connection policy
+
+Commit `d80ab0344a35dbec6c13563ad263fd53b831eef1` passed
+[quality run 37088585126](https://github.com/BlizzardBlast/StackLens/actions/runs/37088585126).
+Both [web](https://vercel.com/freys-projects/stacklens/GoKB6zoHiaVvnnPmTXiHL5Z6khBo) and
+[API](https://vercel.com/freys-projects/stacklens-api/C6enw9UDSYXJj2XhnGqtSUqP6Fww)
+deployment checks reported success. Repeating the 17 uncached lookups against the stable API alias
+found six labeled API clients at peak and six after the final 35-second idle period; three remained
+after the first idle interval. Aggregate clients peaked at eleven against the twenty-connection
+limit. This confirms an API release problem in the observed configuration. It does not establish
+the exact hosting-context or suspension cause.
+
+The request-bound preview adapter therefore uses `maxUses: 1` to retire clients on release. A
+checked-out transaction keeps its client until commit/rollback and release; concurrent acquisitions
+still queue behind the existing pool cap. Continuous API/Worker runtimes keep normal reuse. The
+new `stacklens-api-vercel-single-use` label distinguishes the policy during deployment overlap.
+Real PostgreSQL regressions verify transaction ownership, queued acquisitions, fresh backend
+identities, durable submission/polling and absence of retained API sessions. Reconnection and TLS
+overhead must be measured on the published runtime. The original failed observations remain in
+the record; they are not replaced by this configuration change.
+
+The policy's full database-backed `pnpm check` passes, including the new real PostgreSQL/API
+regressions, compiled/native runtime smoke, all 22 Turbo test tasks, 18 browser checks, lint and
+formatting. Eighteen successful test tasks use the valid cache. Hosted cleanup and latency remain
+pending publication at this capture.
+
 ## Hosted Worker soak
 
 Six serial public submissions alternate frey-ui and KerjaLog, three each. Every report passes the

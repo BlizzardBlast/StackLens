@@ -22,7 +22,9 @@ export async function createVercelApiRuntime(
     databasePoolOptions: {
       ...poolOptions,
       max: poolOptions.max ?? 1,
-      applicationName: "stacklens-api-vercel",
+      // Retire on release so request-bound cleanup does not depend on an idle timer.
+      maxUses: 1,
+      applicationName: "stacklens-api-vercel-single-use",
     },
     retentionHours,
     logger: false,

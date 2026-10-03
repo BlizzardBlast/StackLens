@@ -2364,3 +2364,30 @@ The first full gate exposed a cold persistence-barrel transform inside an API co
 A two-worker experiment still failed. The unit test now uses the actual small options parser
 through its mocked persistence boundary; runtime integration tests retain the full stack. Assertions,
 isolation and timeouts remain unchanged. The failed runs remain separate from final verification.
+
+## 2026-10-03 — Retire request-bound API connections on release
+
+The browser/operational follow-up was published as `d80ab03`; CI and both Vercel deployment checks
+passed. A repeated labeled 17-request API measurement then found six API clients still idle after
+35 seconds, with eleven total clients against the twenty-connection limit. Attribution exposed a
+real API release issue rather than an ambiguous Worker/client count. The exact hosting lifecycle
+cause remains unverified; no old database sessions are forcibly terminated.
+
+The request-bound preview now sets `maxUses: 1`, retiring each client when released. A transaction
+keeps its acquired client through commit/rollback, and acquisitions remain bounded by the shared
+pool. Continuous API/Worker runtimes keep normal reuse. A distinct diagnostic label identifies the
+new policy during deployment overlap. Real PostgreSQL regressions exercise transaction ownership,
+queued queries and durable submission/concurrent polling. Fresh connections add TLS/connection
+overhead, so live latency and idle behavior must be checked after publication.
+
+The documentation-impact pass updates ADR-0016, persistence configuration, hosting guidance,
+source-bound operational evidence, current handover and public status. Accepted product behavior,
+analyzer policy, serialized contracts and UI remain unchanged. Publication remains within approved
+draft PR #41; no merge is authorized. Earlier failed measurements and remaining capacity, recovery
+and human acceptance gates remain explicit.
+
+**Traceability:** FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0016.
+
+The complete database-backed gate passes with the real PostgreSQL/API regressions, compiled/native
+runtime smoke, all 22 Turbo test tasks, 18 browser checks, lint and formatting. Eighteen test tasks
+reuse valid successful cache entries. Hosted verification follows publication of this reviewed runtime.

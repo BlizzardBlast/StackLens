@@ -22,7 +22,11 @@ describe("Vercel API composition [FR-003, FR-022, SEC-003, SEC-007, NFR-009]", (
     await createVercelApiRuntime({ DATABASE_URL: "postgresql://fixture@localhost/fixture" });
     expect(mocks.create).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
-        databasePoolOptions: { max: 1, applicationName: "stacklens-api-vercel" },
+        databasePoolOptions: {
+          max: 1,
+          maxUses: 1,
+          applicationName: "stacklens-api-vercel-single-use",
+        },
         startDeliveryPump: false,
         retentionHours: 24,
         logger: false,
@@ -42,8 +46,9 @@ describe("Vercel API composition [FR-003, FR-022, SEC-003, SEC-007, NFR-009]", (
       expect.objectContaining({
         databasePoolOptions: {
           max: 2,
+          maxUses: 1,
           sslCa: "fixture forwarded to pool validation",
-          applicationName: "stacklens-api-vercel",
+          applicationName: "stacklens-api-vercel-single-use",
         },
         retentionHours: 12,
       }),

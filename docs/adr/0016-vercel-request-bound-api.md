@@ -38,6 +38,15 @@ optional verified CA. Pool attachment is an injected lifecycle hook: persistence
 remain independent of Vercel. The existing process entrypoint keeps its delivery pump and graceful
 shutdown behavior. StackLens and Graphile migrations remain idempotent startup operations.
 
+The October 3 labeled live measurement found six API clients still idle after the final 35-second
+idle period despite pool attachment. For this low-traffic request-bound preview, configure
+`maxUses: 1`: retire each client when its acquisition is released. Transactions retain one client
+through commit/rollback. Keep the shared pool, bounded concurrency, acquisition timeout, verified
+TLS and lifecycle attachment. Continuous API and Worker runtimes retain normal connection reuse.
+Use `stacklens-api-vercel-single-use` to distinguish the new policy from earlier pooled clients.
+This is a defensive configuration; the exact hosting lifecycle/context cause is not established.
+It adds connection/TLS overhead, which requires fresh live latency and release measurements.
+
 Build the API's workspace dependency graph before the Function is traced. Use Node 24, Singapore
 (`sin1`), a 60-second request limit and the existing REST/OpenAPI schemas. HTTP and provider failures
 retain their public sanitized contracts. Disable request logging in this adapter; pool error logs

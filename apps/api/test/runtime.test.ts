@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it } from "vitest";
 
+import { createStackLensPool } from "@stacklens/persistence";
+
 import { createStackLensApiRuntime, type StackLensApiRuntime } from "../src/index.js";
+import { createVercelApiRuntime } from "../src/vercel-runtime.js";
 
 const databaseUrl = process.env.TEST_DATABASE_URL ?? "";
 const describeWithDatabase = databaseUrl.length > 0 ? describe : describe.skip;
@@ -12,6 +15,40 @@ afterEach(async () => {
 });
 
 describeWithDatabase("API runtime composition [FR-001, FR-003, FR-017, FR-021, FR-022]", () => {
+  it("Vercel closes released database clients after durable submission and concurrent polling [NFR-009]", async () => {
+    const runtime = await createVercelApiRuntime({ DATABASE_URL: databaseUrl });
+    openRuntimes.push(runtime);
+    const observer = createStackLensPool(databaseUrl, undefined, { max: 1 });
+    try {
+      const submitted = await runtime.app.inject({
+        method: "POST",
+        url: "/v1/analyses/repository",
+        payload: { repositoryUrl: "https://github.com/acme/request-bound-runtime" },
+      });
+      expect(submitted.statusCode).toBe(202);
+      const { analysisId } = submitted.json<{ analysisId: string }>();
+      const responses = await Promise.all(
+        Array.from({ length: 4 }, async () =>
+          runtime.app.inject({ method: "GET", url: `/v1/analyses/${analysisId}` }),
+        ),
+      );
+      for (const response of responses) {
+        expect(response.statusCode).toBe(200);
+        expect(response.json()).toMatchObject({ analysisId, status: "queued" });
+      }
+      await expect
+        .poll(async () => {
+          const result = await observer.query<{ count: number }>(
+            "SELECT count(*)::int AS count FROM pg_stat_activity WHERE application_name = 'stacklens-api-vercel-single-use'",
+          );
+          return result.rows[0]!.count;
+        })
+        .toBe(0);
+    } finally {
+      await observer.end();
+    }
+  });
+
   it("migrates PostgreSQL/Graphile and enqueues repository analysis through the real adapters", async () => {
     const runtime = await createStackLensApiRuntime({
       connectionString: databaseUrl,

@@ -13,6 +13,12 @@ export function createStackLensPool(
     throw new Error("Database pool maximum must be a positive integer.");
   }
   if (
+    options.maxUses !== undefined &&
+    (!Number.isSafeInteger(options.maxUses) || options.maxUses < 1)
+  ) {
+    throw new Error("Database connection use limit must be a positive integer.");
+  }
+  if (
     options.connectionTimeoutMillis !== undefined &&
     (!Number.isSafeInteger(options.connectionTimeoutMillis) || options.connectionTimeoutMillis < 1)
   ) {
@@ -47,6 +53,7 @@ export function createStackLensPool(
     ...(options.applicationName === undefined ? {} : { application_name: options.applicationName }),
     connectionTimeoutMillis: options.connectionTimeoutMillis ?? 10_000,
     ...(options.max === undefined ? {} : { max: options.max }),
+    ...(options.maxUses === undefined ? {} : { maxUses: options.maxUses }),
     ...(options.sslCa === undefined
       ? {}
       : { ssl: { ca: options.sslCa, rejectUnauthorized: true } }),

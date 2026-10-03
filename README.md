@@ -46,14 +46,15 @@ peak and no memory-limit/OOM events. Remote expiry cleanup and isolated restorat
 reports pass. See the [Worker recovery record](docs/implementation/worker-recovery.md) for exact
 scope and source hashes. The recovery observations were captured on a dirty base `405b420`; the
 follow-up is published through draft PR #41. Resolve its current HEAD and deployments for review.
-Headroom remains small. Sustained capacity, Function suspension/aggregate connections, operational
-backup policy and real screen-reader/device acceptance remain open. This personal preview is not
+Headroom remains small. General capacity, Function suspension/global connection ceilings, full
+disaster recovery and real screen-reader/device acceptance remain open. This personal preview is not
 a production-readiness claim.
 
 The [October 3 operational follow-up](docs/implementation/operational-preview-validation.md) adds
 continuous Chromium/Firefox/WebKit acceptance, six successful serial hosted analyses and a fresh
-four-report restore rehearsal. A bounded API burst peaked at ten of twenty connections; its idle
-result requires attribution, so API pools now carry a constant diagnostic label. The
+four-report restore rehearsal. Labeled live measurement exposed API clients remaining idle after
+requests. The request-bound adapter now retires each released client; deployment verification must
+measure the added connection/TLS overhead and actual cleanup. The
 [backup policy](docs/implementation/preview-backups.md) records Aiven's existing daily backups and
 the Free-plan recovery limitation. Cold-start/suspension, general capacity, disaster recovery and
 manual device/screen-reader gates remain open. `pnpm check` now includes browser acceptance; install

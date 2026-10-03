@@ -22,6 +22,7 @@ describe("Hosted PostgreSQL configuration [FR-003, FR-022, NFR-009, SEC-007]", (
     pools.push(pool);
     expect(pool.options.max).toBe(10);
     expect(pool.options.connectionTimeoutMillis).toBe(10_000);
+    expect(pool.options.maxUses).toBe(Infinity);
   });
 
   it("uses the same verified CA and pool cap for PostgreSQL clients", () => {
@@ -35,6 +36,41 @@ describe("Hosted PostgreSQL configuration [FR-003, FR-022, NFR-009, SEC-007]", (
     expect(pool.options.max).toBe(3);
     expect(client.ssl).toEqual({ ca, rejectUnauthorized: true });
   });
+
+  it.skipIf(process.env.TEST_DATABASE_URL === undefined)(
+    "retires released clients without interrupting transactions or queued acquisitions",
+    async () => {
+      const pool = createStackLensPool(process.env.TEST_DATABASE_URL!, undefined, {
+        max: 1,
+        maxUses: 1,
+      });
+      pools.push(pool);
+      const client = await pool.connect();
+      let firstPid: number | undefined;
+      try {
+        await client.query("BEGIN");
+        const first = await client.query<{ pid: number }>("SELECT pg_backend_pid() AS pid");
+        firstPid = first.rows[0]!.pid;
+        const second = await client.query<{ pid: number }>("SELECT pg_backend_pid() AS pid");
+        expect(second.rows[0]!.pid).toBe(firstPid);
+        await client.query("COMMIT");
+      } finally {
+        client.release();
+      }
+
+      const queued = await Promise.all(
+        Array.from({ length: 4 }, async () =>
+          pool.query<{ pid: number }>("SELECT pg_backend_pid() AS pid"),
+        ),
+      );
+      const pids = queued.map((result) => result.rows[0]!.pid);
+      expect(firstPid).toBeDefined();
+      expect(new Set([firstPid, ...pids]).size).toBe(5);
+      expect(pool.idleCount).toBe(0);
+      expect(pool.totalCount).toBe(0);
+      expect(pool.waitingCount).toBe(0);
+    },
+  );
 
   it.skipIf(process.env.TEST_DATABASE_URL === undefined)(
     "reports the hosted API label to PostgreSQL for connection attribution",
@@ -70,6 +106,12 @@ describe("Hosted PostgreSQL configuration [FR-003, FR-022, NFR-009, SEC-007]", (
       );
     },
   );
+
+  it.each([0, -1, 1.5, Infinity, NaN])("rejects invalid injected use limit: %s", (maxUses) => {
+    expect(() => createStackLensPool(connectionString, undefined, { maxUses })).toThrow(
+      "Database connection use limit must be a positive integer.",
+    );
+  });
 
   it("fails closed on empty or malformed CA values and invalid URLs", () => {
     expect(() => readStackLensPoolOptions({ STACKLENS_DATABASE_SSL_CA: " " })).toThrow(
