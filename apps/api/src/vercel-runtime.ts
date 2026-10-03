@@ -19,7 +19,11 @@ export async function createVercelApiRuntime(
 
   return createStackLensApiRuntime({
     connectionString: environment.DATABASE_URL,
-    databasePoolOptions: { ...poolOptions, max: poolOptions.max ?? 1 },
+    databasePoolOptions: {
+      ...poolOptions,
+      max: poolOptions.max ?? 1,
+      applicationName: "stacklens-api-vercel",
+    },
     retentionHours,
     logger: false,
     startDeliveryPump: false,

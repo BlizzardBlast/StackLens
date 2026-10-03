@@ -158,6 +158,18 @@ records 23 Chromium layout checks with synthetic local responses across all six 
 separation, description alignment and left-aligned current-stage text pass. This is viewport
 emulation, not physical-device or spoken screen-reader acceptance.
 
+### Browser engine acceptance
+
+`tests/browser/acceptance.spec.ts` runs the built SPA through Playwright in Chromium, Firefox and
+WebKit at 1280px and 320px. API traffic is intercepted with synthetic contract-valid responses;
+unexpected `/v1/` calls receive a test error rather than reaching a host. Repository reports use
+schema 2.0.0; quick reports exercise the historical schema 1.0.0 reader. The tests measure actual
+stage geometry and overflow, exercise evidence focus return, native file replacement and keyboard
+input-mode selection, and verify terminal/404 polling stop plus deep-link reload. Reduced motion
+is configured and checked through the actual media query. Full local checks and CI run the suite.
+These engine results do not substitute for physical-device, real Safari or spoken screen-reader
+acceptance. See the [operational follow-up](operational-preview-validation.md).
+
 ## Deployment notes
 
 The Vite development server proxies `/v1` to the local Fastify server on port 3000.

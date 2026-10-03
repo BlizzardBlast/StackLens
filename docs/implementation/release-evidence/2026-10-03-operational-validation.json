@@ -1,0 +1,1156 @@
+{
+  "date": "2026-10-03",
+  "requirementIds": [
+    "FR-002",
+    "FR-003",
+    "FR-004",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "NFR-006",
+    "NFR-007",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-007"
+  ],
+  "source": {
+    "baseCommit": "063a1be4e6707a666e07300aed61abdec449f53a",
+    "dirty": true,
+    "fileSha256": {
+      "playwright.config.ts": "1d2154fd9dff041a19a2f4a51c6c77c7fc250cd31f9411ad52b6cdc52ebf06f9",
+      "tests/browser/acceptance.spec.ts": "dca4300bd641bed3a50cc0bde9f91ffb3f38582e467a2fc5b724d453ef8117f4",
+      "tests/browser/tsconfig.json": "bdc86693d9300a16d307a10ebc6e13161c498fc4da7e97aac6d9857ea292ee61",
+      "apps/api/src/vercel-runtime.ts": "26659182ebc1a50682d723ac5f2813241dfdc5793ed0139389d9add5578c31de",
+      "apps/api/test/main.test.ts": "897848ef1e23904aa048d6d2728eee55e12bd4ca59a5b3eb86b261ea2fb2c578",
+      "packages/persistence/src/pool.ts": "d0f18393b5cd8ce407cc9e8ca3bdc3d3a19c1d2fbbcbb3f3d906fac0923f8810",
+      "packages/persistence/test/pool.test.ts": "fb11138e801ba87cb446579c79d4bb1800fa244d8adae86733a7b2a3a142b923"
+    }
+  },
+  "browser": {
+    "tool": "@playwright/test 1.62.1",
+    "host": "Windows",
+    "engines": [
+      "Chromium 151.0.7922.34",
+      "Firefox 153.0",
+      "WebKit 26.5"
+    ],
+    "viewportWidths": [
+      1280,
+      320
+    ],
+    "colorScheme": "dark",
+    "reducedMotion": "reduce",
+    "syntheticApi": true,
+    "reportSchemas": [
+      "2.0.0",
+      "1.0.0"
+    ],
+    "stats": {
+      "startTime": "2026-10-03T02:02:45.531Z",
+      "duration": 104185.09300000001,
+      "expected": 18,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "limitations": [
+      "Headless viewport emulation is not physical-device testing.",
+      "WebKit is not an actual Safari/iOS test.",
+      "DOM focus and semantics do not verify spoken screen-reader output."
+    ]
+  },
+  "apiBeforeAttribution": {
+    "requirementIds": [
+      "FR-003",
+      "FR-004",
+      "NFR-008",
+      "NFR-009",
+      "SEC-007"
+    ],
+    "sourceCommit": "063a1be4e6707a666e07300aed61abdec449f53a",
+    "target": "https://stacklens-api.vercel.app",
+    "status": "needs_review",
+    "observerConnections": 1,
+    "requestConcurrency": 4,
+    "requests": [
+      {
+        "index": 0,
+        "phase": "first_request",
+        "status": 404,
+        "elapsedMs": 3872,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 3,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 409,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 4,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 452,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 1,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 514,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 2,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 3410,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 8,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 92,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 7,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 93,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 6,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 142,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 5,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 316,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 9,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 87,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 11,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 88,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 12,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 92,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 10,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 2636,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 15,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 492,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 13,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 500,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 14,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 506,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 16,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 549,
+        "jsonError": true,
+        "cached": false
+      }
+    ],
+    "samples": [
+      {
+        "elapsedMs": 742,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 1805,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 2876,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 3947,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 5019,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 6083,
+        "phase": "first_request",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 7151,
+        "phase": "first_request",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 8215,
+        "phase": "first_request",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 9282,
+        "phase": "first_request",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 10351,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 11420,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 12482,
+        "phase": "burst",
+        "clients": 8,
+        "active": 3,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 13543,
+        "phase": "burst",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 14616,
+        "phase": "burst",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 15688,
+        "phase": "burst",
+        "clients": 9,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 2
+      },
+      {
+        "elapsedMs": 16746,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 17813,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 18884,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 19948,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 21013,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 22081,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 23162,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 24254,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 25338,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 26406,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 27488,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 28571,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 29632,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 30705,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 31768,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 32839,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 33908,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 34973,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 36045,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 37110,
+        "phase": "idle",
+        "clients": 10,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 38172,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 39246,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 40305,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 41375,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 42449,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 43522,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 44587,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 45654,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 46717,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 47785,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 48866,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 49924,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 50987,
+        "phase": "resume",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 52053,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 53118,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 54191,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 55277,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 56356,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 57426,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 58492,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 59567,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 60628,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 61706,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 62782,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 63851,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 64920,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 66062,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 67131,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 68200,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 69263,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 70338,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 71406,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 72469,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 73535,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 74600,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 75661,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 76730,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 77796,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 78862,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 79928,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 80992,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 82059,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 83125,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 84189,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 85256,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 86320,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      }
+    ],
+    "limitations": [
+      "First request is not proof of a platform cold start.",
+      "Idle release is not independent proof of Vercel function suspension.",
+      "A bounded burst does not establish an autoscaling-wide connection ceiling."
+    ],
+    "maxConnections": 20,
+    "reservedConnections": 3,
+    "baselineClients": 5,
+    "peakClients": 10,
+    "finalClients": 6,
+    "finalIdleInTransaction": 0,
+    "idleReturnedToBaseline": false,
+    "recordedAt": "2026-10-03T01:35:38.809Z",
+    "durationMs": 87333
+  },
+  "workerSoak": {
+    "requirementIds": [
+      "FR-003",
+      "FR-004",
+      "NFR-008",
+      "NFR-009",
+      "SEC-001",
+      "SEC-002",
+      "SEC-007"
+    ],
+    "sourceCommit": "063a1be4e6707a666e07300aed61abdec449f53a",
+    "target": "Silly Development 60761d98",
+    "status": "verified_six_serial_jobs",
+    "jobs": [
+      {
+        "index": 0,
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "33f21aa2-03a2-43ea-852b-01d8437c7523",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:39:27.613Z",
+        "durationMs": 135174,
+        "contractValid": true,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "schemaVersion": "2.0.0",
+        "limitations": 24,
+        "partialFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ]
+      },
+      {
+        "index": 1,
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "a73b1ea9-2a66-408c-b85c-ab90d4f1d54b",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:41:42.798Z",
+        "durationMs": 108120,
+        "contractValid": true,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "schemaVersion": "2.0.0",
+        "limitations": 5,
+        "partialFailureCodes": []
+      },
+      {
+        "index": 2,
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "a311646b-63ce-4971-8d29-73a1b92cc4c3",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:43:30.926Z",
+        "durationMs": 136394,
+        "contractValid": true,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "schemaVersion": "2.0.0",
+        "limitations": 24,
+        "partialFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ]
+      },
+      {
+        "index": 3,
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "2b6dfda1-f34a-4f82-9894-b51878aa2bfb",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:45:47.377Z",
+        "durationMs": 110307,
+        "contractValid": true,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "schemaVersion": "2.0.0",
+        "limitations": 5,
+        "partialFailureCodes": []
+      },
+      {
+        "index": 4,
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "1786c29a-4e63-4211-aeaf-53f485787411",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:47:37.690Z",
+        "durationMs": 135529,
+        "contractValid": true,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "schemaVersion": "2.0.0",
+        "limitations": 24,
+        "partialFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ]
+      },
+      {
+        "index": 5,
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "0511f709-c0e6-4194-bac9-c7a4e989bbcb",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:49:53.231Z",
+        "durationMs": 110366,
+        "contractValid": true,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "schemaVersion": "2.0.0",
+        "limitations": 5,
+        "partialFailureCodes": []
+      }
+    ],
+    "requestConcurrency": 1,
+    "pollIntervalMs": 3000,
+    "limitations": [
+      "Panel memory samples are not a cgroup peak.",
+      "Six serial jobs are a bounded soak, not a sustained capacity guarantee.",
+      "Provider limitations remain part of each report."
+    ],
+    "durationMs": 736005,
+    "recordedAt": "2026-10-03T01:51:43.617Z"
+  },
+  "workerResources": {
+    "samples": [
+      {
+        "recordedAt": "2026-10-03T01:39:36.790Z",
+        "memoryMiB": 135.63,
+        "cpuAbsolutePercent": 7.13
+      },
+      {
+        "recordedAt": "2026-10-03T01:41:07.900Z",
+        "memoryMiB": 188.6,
+        "cpuAbsolutePercent": 24.89
+      }
+    ],
+    "samplingInterrupted": true,
+    "limitations": [
+      "Only two panel samples were captured before browser inspection lost its connection.",
+      "No cgroup peak or restart/OOM event history was captured in this soak.",
+      "Completing six jobs does not close general sustained capacity."
+    ]
+  },
+  "backups": {
+    "providerSchedule": {
+      "observedOn": "2026-10-03",
+      "service": "stacklens-preview-pg",
+      "plan": "Free",
+      "snapshotTimes": [
+        "2026-10-01T12:33:43Z",
+        "2026-10-02T07:58:08Z"
+      ],
+      "location": "do-blr1",
+      "displayedTotalBytes": "68 MB",
+      "encryptedDailyBackupsDocumented": true,
+      "freeRetentionGuaranteed": false,
+      "freeForkAvailable": false
+    },
+    "logicalRestore": {
+      "status": "verified",
+      "source": "Aiven preview database",
+      "target": "Separate owned Aiven database",
+      "format": "PostgreSQL 18 custom archive",
+      "schemas": [
+        "public",
+        "graphile_worker"
+      ],
+      "scheduledBackup": false,
+      "startedAt": "2026-10-03T01:40:38.515Z",
+      "sourceSnapshot": {
+        "public.analysis": {
+          "count": 5,
+          "sha256": "695efea168e981b148cc7520fb036c00831a5d88bf4392d0dcc4b0047ea6f2d6"
+        },
+        "public.analysis_report": {
+          "count": 4,
+          "sha256": "2bfdd62f271f44dcfc9ab3fa19c2d2f6c71d76da5222636c52c51d013796b875"
+        },
+        "public.analysis_delivery": {
+          "count": 5,
+          "sha256": "1a4b65fa7dd5ce348a37c43cd18dc4f0f899c5c4cb004c8418b2235794a906b5"
+        },
+        "graphile_worker._private_jobs": {
+          "count": 1,
+          "sha256": "e57b2143346505a410973fc71b7b2b5103bdff597c0350ed9155788f1f8f4c59"
+        },
+        "graphile_worker._private_job_queues": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "graphile_worker._private_tasks": {
+          "count": 1,
+          "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+        },
+        "graphile_worker.migrations": {
+          "count": 20,
+          "sha256": "51d30730fab702480bc6551836acbf8e8ccc02c5d95a641dfab9e5075998b716"
+        }
+      },
+      "archiveBytes": 275174,
+      "archiveSha256": "9b8cee12f7740f6439f09ec9c22f22db16c93fa219d7039fa38e00fa6f928663",
+      "restoreCompletedAt": "2026-10-03T01:41:10.695Z",
+      "restoredSnapshot": {
+        "public.analysis": {
+          "count": 5,
+          "sha256": "695efea168e981b148cc7520fb036c00831a5d88bf4392d0dcc4b0047ea6f2d6"
+        },
+        "public.analysis_report": {
+          "count": 4,
+          "sha256": "2bfdd62f271f44dcfc9ab3fa19c2d2f6c71d76da5222636c52c51d013796b875"
+        },
+        "public.analysis_delivery": {
+          "count": 5,
+          "sha256": "1a4b65fa7dd5ce348a37c43cd18dc4f0f899c5c4cb004c8418b2235794a906b5"
+        },
+        "graphile_worker._private_jobs": {
+          "count": 1,
+          "sha256": "e57b2143346505a410973fc71b7b2b5103bdff597c0350ed9155788f1f8f4c59"
+        },
+        "graphile_worker._private_job_queues": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "graphile_worker._private_tasks": {
+          "count": 1,
+          "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+        },
+        "graphile_worker.migrations": {
+          "count": 20,
+          "sha256": "51d30730fab702480bc6551836acbf8e8ccc02c5d95a641dfab9e5075998b716"
+        }
+      },
+      "schemaCounts": {
+        "2.0.0": 4
+      },
+      "apiReportReads": 4,
+      "historicalRowsUnchanged": true,
+      "isolatedDatabaseRemoved": true,
+      "privateArchiveRemoved": true,
+      "recordedAt": "2026-10-03T01:41:16.993Z",
+      "logicalCopyRestoreMs": 32180,
+      "totalRehearsalMs": 38478
+    },
+    "limitations": [
+      "Logical rehearsal is not a restore of the managed backup.",
+      "No retained logical archive or new off-provider destination was activated.",
+      "Full disaster RPO/RTO and queue replay remain unverified."
+    ]
+  },
+  "manualAcceptance": {
+    "status": "deferred_by_user",
+    "physicalDevice": false,
+    "spokenScreenReader": false
+  },
+  "remainingGates": [
+    "Forced cold start and actual Function suspension",
+    "Autoscaling-wide connection ceiling",
+    "General sustained Worker capacity",
+    "Confirmed Free backup retention and no-card disaster recovery",
+    "Physical-device and spoken screen-reader acceptance"
+  ],
+  "recordedAt": "2026-10-03T02:05:38.868Z",
+  "quality": {
+    "command": "pnpm check",
+    "testDatabase": "isolated local PostgreSQL 18",
+    "databaseBacked": true,
+    "status": "passed",
+    "turboTestTasks": 22,
+    "turboTestCacheHits": 19,
+    "browserTests": 18,
+    "checks": [
+      "build",
+      "compiled native API and Worker smoke",
+      "shadcn configuration",
+      "strict workspace and browser typecheck",
+      "deployment and workspace tests",
+      "browser acceptance",
+      "lint",
+      "format"
+    ]
+  }
+}

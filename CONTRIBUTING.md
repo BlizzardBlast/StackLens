@@ -38,6 +38,19 @@ Per **NFR-002** and **GOV-004**:
 - acceptance tests should identify the requirement IDs they verify;
 - heuristic behavior must test both positive findings and cases where evidence is insufficient.
 
+## Browser acceptance
+
+`pnpm check` includes the built web application's Playwright acceptance suite. After installing
+dependencies, install its official engines once with `pnpm exec playwright install chromium firefox webkit`.
+Run `pnpm build` followed by `pnpm test:browser` for a focused pass. CI installs Linux engine
+dependencies and runs Chromium, Firefox and WebKit at 1280px and 320px with synthetic API responses.
+The suite covers current and historical report readers, progress reflow, evidence focus, native file
+replacement, error correction, terminal polling and deep links (FR-002/003/004/017/021/022,
+NFR-006/007/008). It creates no live repository jobs. Local runs use one browser worker; CI uses two.
+`pnpm typecheck:browser` checks the suite and configuration under the shared strict compiler policy.
+Browser traces and results stay in ignored `.cache/playwright/`. WebKit emulation does not establish
+physical Safari/iOS or spoken screen-reader acceptance.
+
 ## Product behavior vs implementation choices
 
 Requirements define **what** StackLens must do. Architecture and technology choices define **how** it does it.

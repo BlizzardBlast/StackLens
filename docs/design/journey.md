@@ -2332,3 +2332,35 @@ must be resolved for review. These screenshot corrections do not close physical-
 screen-reader acceptance, which remains open at the user's request.
 
 **Traceability:** NFR-006/007/008, GOV-002/006/007; ADR-0006/0007.
+
+## 2026-10-03 — Extend operational and browser release evidence
+
+The next release pass adds Playwright acceptance in Chromium, Firefox and WebKit at desktop/320px
+widths, using synthetic API responses and both report readers. The suite verifies progress geometry,
+keyboard/native-file input, report/evidence focus, deep-link reload and terminal/404 polling.
+Strict browser-suite typechecking, the full local gate and CI now enforce it. Local runs use one
+worker after Firefox reload contention; CI uses two. Tests preserve the original timeout and run
+without retries. Harness corrections cover keyboard activation, fixture disclosure order and
+the actual reduced-motion configuration; product UI behavior does not change.
+
+The live API burst observes ten peak connections against Aiven's twenty-connection limit, but its
+idle count stays one above baseline. The Vercel pool now carries a constant source-free application
+label for attribution. Six serial hosted repository analyses complete with contract-valid reports
+in 12m 16s. Two panel samples are preserved; missing later samples do not become a cgroup/OOM pass.
+A new logical restore matches seven table hashes and reads four reports; all private rehearsal
+assets and its owned database are removed. The backup policy records the managed daily schedule
+and the Free-plan fork restriction without activating a paid service or new credential destination.
+
+The [dated record](../implementation/operational-preview-validation.md) distinguishes bounded
+observations from cold-start/suspension, global capacity, disaster recovery and actual assistive
+technology/device acceptance. The user has deferred manual checks; free built-in reader instructions
+are documented. Contributor, implementation, current handover and public status documents are
+updated. Accepted product behavior and architecture remain unchanged; no new ADR is required.
+The follow-up uses the existing publication approval for draft PR #41; no merge is authorized.
+
+**Traceability:** FR-002/003/004/017/021/022, NFR-006/007/008/009, SEC-001/002/003/007, GOV-002/007.
+
+The first full gate exposed a cold persistence-barrel transform inside an API configuration test.
+A two-worker experiment still failed. The unit test now uses the actual small options parser
+through its mocked persistence boundary; runtime integration tests retain the full stack. Assertions,
+isolation and timeouts remain unchanged. The failed runs remain separate from final verification.

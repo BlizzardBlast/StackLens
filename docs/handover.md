@@ -161,6 +161,24 @@ the dirty capture remains the timing basis rather than claiming it observed a la
 Documentation pushes can rebuild both targets. The PR stays draft; no merge has been authorized.
 Preserve the earlier dated runtime evidence rather than rewriting it as a later pass.
 
+### October 3 operational follow-up
+
+The [operational record](implementation/operational-preview-validation.md) adds 18 synthetic
+Chromium/Firefox/WebKit acceptance checks at 1280px/320px, now included in `pnpm check` and CI.
+Both report readers, native file replacement, focus, reflow and polling recovery are covered.
+Six serial hosted jobs completed with contract-valid limited reports in 736,005 ms. Only two panel
+resource samples were captured; no new cgroup peak or OOM history is claimed. A four-report logical
+restore matched all recorded hashes, with the private dump and owned target removed afterward.
+The [backup policy](implementation/preview-backups.md) records the existing daily encrypted schedule
+and Free-plan fork limitation; no paid or new secret destination was activated.
+
+The first API burst peaked at ten clients including its observer, under the twenty-connection limit.
+Five baseline clients became six after idle, so the result needs review. The Vercel pool now uses
+`stacklens-api-vercel` for safe attribution in repeated measurements. Actual cold-start/suspension,
+autoscaling-wide ceilings, general capacity, no-card disaster recovery and manual acceptance stay
+open. Preserve each observation's original source revision. Resolve PR #41's current HEAD and actual
+CI/deployments; it remains draft and no merge has been authorized.
+
 ### Earlier portable preparation evidence
 
 The user selected Vercel and requested backend preparation. The [web runbook](implementation/vercel-hosting.md)

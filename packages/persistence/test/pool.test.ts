@@ -36,6 +36,18 @@ describe("Hosted PostgreSQL configuration [FR-003, FR-022, NFR-009, SEC-007]", (
     expect(client.ssl).toEqual({ ca, rejectUnauthorized: true });
   });
 
+  it.skipIf(process.env.TEST_DATABASE_URL === undefined)(
+    "reports the hosted API label to PostgreSQL for connection attribution",
+    async () => {
+      const pool = createStackLensPool(process.env.TEST_DATABASE_URL!, undefined, {
+        applicationName: "stacklens-api-vercel",
+      });
+      pools.push(pool);
+      const result = await pool.query("SELECT current_setting('application_name') AS label");
+      expect(result.rows).toEqual([{ label: "stacklens-api-vercel" }]);
+    },
+  );
+
   it.each([
     "sslmode=require",
     "sslmode=no-verify",

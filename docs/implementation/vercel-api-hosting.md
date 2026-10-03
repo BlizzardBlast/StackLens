@@ -71,6 +71,13 @@ the number of instances. Include Worker pools, migrations, administration and de
 when observing connection usage. This target is a low-traffic personal preview; load and availability
 claims require separate measurements.
 
+The Vercel pool uses the constant PostgreSQL application name `stacklens-api-vercel` for source-free
+connection attribution. `pg_stat_activity` can distinguish API clients from the existing Worker and
+provider connections without reading SQL text, addresses or credentials. This is observability
+metadata, not a global connection cap or a change to job/scoring behavior. See the
+[October 3 measurements](operational-preview-validation.md) and
+[preview backup policy](preview-backups.md) for bounded evidence and remaining release gates.
+
 ## Verification and activation
 
 Local preparation selected `app.mjs` with the real `@vercel/fastify` 12.0.0 builder and traced

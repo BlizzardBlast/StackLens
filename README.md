@@ -50,6 +50,15 @@ Headroom remains small. Sustained capacity, Function suspension/aggregate connec
 backup policy and real screen-reader/device acceptance remain open. This personal preview is not
 a production-readiness claim.
 
+The [October 3 operational follow-up](docs/implementation/operational-preview-validation.md) adds
+continuous Chromium/Firefox/WebKit acceptance, six successful serial hosted analyses and a fresh
+four-report restore rehearsal. A bounded API burst peaked at ten of twenty connections; its idle
+result requires attribution, so API pools now carry a constant diagnostic label. The
+[backup policy](docs/implementation/preview-backups.md) records Aiven's existing daily backups and
+the Free-plan recovery limitation. Cold-start/suspension, general capacity, disaster recovery and
+manual device/screen-reader gates remain open. `pnpm check` now includes browser acceptance; install
+the engines once with `pnpm exec playwright install chromium firefox webkit`.
+
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 
 ## Local development

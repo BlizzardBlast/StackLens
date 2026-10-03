@@ -44,6 +44,7 @@ export function createStackLensPool(
   }
   const pool = new Pool({
     connectionString,
+    ...(options.applicationName === undefined ? {} : { application_name: options.applicationName }),
     connectionTimeoutMillis: options.connectionTimeoutMillis ?? 10_000,
     ...(options.max === undefined ? {} : { max: options.max }),
     ...(options.sslCa === undefined

@@ -26,6 +26,12 @@ short quotation of spoken output when useful.
 Use an installed screen reader such as Windows Narrator/NVDA or VoiceOver on a real browser.
 Listen to actual speech while performing these checks:
 
+No purchase is needed: [Windows Narrator](https://support.microsoft.com/en-us/accessibility/windows/narrator/complete-guide-to-narrator)
+is built in and starts/stops with **Windows + Ctrl + Enter**. Android includes
+[TalkBack](https://support.google.com/accessibility/android/answer/6283677?hl=en); enable it under
+Settings -> Accessibility -> TalkBack. The user has deferred these manual results. Do not mark
+them passed because a reader exists or automated engine/axe checks pass.
+
 | Check | Expected outcome |
 | --- | --- |
 | Navigate the page | Page heading, main landmark, skip link and input-mode navigation are identifiable |

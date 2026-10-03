@@ -79,6 +79,12 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Install browser engines
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Browser acceptance
+        run: pnpm test:browser
+
       - name: Lint
         run: pnpm lint
 

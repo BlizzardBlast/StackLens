@@ -10,6 +10,12 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../src/runtime.js", () => ({
   createStackLensApiRuntime: mocks.start,
 }));
+// Configuration tests need the real options parser, not Drizzle/Graphile's full import graph.
+vi.mock("@stacklens/persistence", async () => {
+  const { readStackLensPoolOptions } =
+    await import("../../../packages/persistence/src/pool-options.js");
+  return { readStackLensPoolOptions };
+});
 
 const signals = ["SIGINT", "SIGTERM"] as const;
 const registration = vi.spyOn(process, "once");
