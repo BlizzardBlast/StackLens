@@ -30,7 +30,7 @@ It currently owns:
 - the minimal provider-free `JavaScriptAnalysisMetadata` shape consumed by JS/TS rules;
 - `JS-NPM-006@1` factual outdated-dependency findings for exact SemVer declarations;
 - `JS-NPM-007@1` factual explicit npm deprecation findings;
-- `JS-NPM-010@1` neutral npm Registry health-signal facts;
+- `JS-NPM-010@2` neutral npm Registry health-signal facts;
 - the `JS-VULN-011@1` factual finding rule for exact-version OSV matches;
 - `JS-OVERLAP-008@1` curated medium-confidence dependency-overlap heuristics;
 - `JS-TOOL-012@1` manifest-backed framework/tool facts;
@@ -167,14 +167,19 @@ maintenance interpretation.
 
 ### npm Registry health signal
 
-`JS-NPM-010@1` is a fact rule for **FR-010**.
+`JS-NPM-010@2` is a fact rule for **FR-010**.
 
-For each declared package with usable source-bound npm metadata, it emits one neutral
+For each external declared package with usable source-bound npm metadata, it emits one neutral
 `dependency.health.npm_registry` fact containing supported verifiable metadata such as:
 
 - npm `latest` dist-tag version;
 - that release's publication timestamp when supplied;
 - registry metadata modification timestamp when supplied.
+
+Verified internal workspace links, unresolved workspace targets and peer-only constraints remain
+inventory data. They do not produce npm health facts or missing-registry limitations. When the same
+name also has an external declaration, only that declaration contributes project evidence to its
+health fact (**FR-005**, **FR-023**).
 
 The rule intentionally does not label those timestamps "healthy", "stale", "active", or
 "unmaintained". A future combined health interpretation must define and disclose its accepted

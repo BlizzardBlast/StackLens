@@ -1,10 +1,10 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.15
-> **Date:** 2026-09-27
+> **Architecture version:** 0.1.20
+> **Date:** 2026-10-03
 > **Requirements source:** [requirements.md](requirements.md)  
-> **Primary requirements:** PRD-001–PRD-007, FR-001–FR-022, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
+> **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
 ## 1. Architecture summary
 
@@ -813,11 +813,44 @@ Local development uses the checked-in `compose.yaml` for PostgreSQL 18 while web
 A specific cloud vendor is intentionally not an architectural dependency. The deployment provider may be selected later as long as it can run:
 
 - a static frontend;
-- long-running Node API and worker processes;
+- Node API runtime and a long-running worker process;
 - PostgreSQL;
 - HTTPS and environment-secret management.
 
 This preserves the open-source-core/self-hosting direction in **PRD-006**.
+
+The prepared hosted web target is Vercel under ADR-0015. Its programmatic configuration builds
+the static web dependency graph and forwards same-origin REST requests to an explicit HTTPS API
+origin. `Dockerfile` and `deploy/compose.production.yaml` prepare the separate API/Worker/PostgreSQL
+host with Caddy TLS routing; the provider remains replaceable. The local Compose boundary is unchanged.
+The managed preview preparation now uses Aiven PostgreSQL Free with an explicit CA and verified TLS.
+Shared persistence pool options configure finite connection acquisition and per-process connection
+limits; environment parsing remains outside analyzer policy. The free Node 24 Silly Worker is
+activated and both authenticated repository runs completed with limitations. After approved branch
+publication in PR #41, the Render Free Docker API attempt also requested card verification and
+created no service. ADR-0016 adds a separate optional Vercel Fastify API project: request-bound
+Functions await the atomic analysis/outbox commit, start best-effort dispatch without awaiting it,
+and disable the API recovery timer. The continuous Worker recovers pending delivery and expired
+delivery leases, and owns provider execution and retention. A runtime-injected pool attachment
+supports Fluid Compute without coupling persistence or analyzer policy to Vercel. Database secrets
+stay only on the approved API/Worker hosts; the static web project receives only a public HTTPS API origin.
+After labeled live measurements found retained idle API clients, the request-bound preview sets
+`maxUses: 1` to retire a client on release. Transactions retain their acquired client until release;
+the runtime/pool object, concurrency cap, finite acquisition timeout and verified TLS remain shared.
+Continuous API/Worker runtimes retain normal reuse. Reconnection adds TLS/connection overhead.
+The [October 3 operational record](implementation/operational-preview-validation.md) verifies
+bounded hosted cleanup and latency; exact suspension behavior and global autoscaling capacity stay open.
+The personal preview now validates separate public Vercel web/API projects with both requested
+repository reports. An initial active-job restart exposed a four-hour recovery delay; the subsequent
+planned-interruption fix resumes the same hosted analysis promptly. Bounded constrained runs and
+serial jobs pass, while general sustained Worker capacity remains open. See
+[Worker recovery](implementation/worker-recovery.md) and the dated operational record.
+Portable continuous API containers remain supported. See the
+[managed hosting runbook](implementation/managed-hosting.md) for current resources and limits.
+Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker
+maintenance purges expired terminal analysis/report/delivery records in bounded sweeps while
+preserving in-flight ownership. API responses prohibit browser/CDN caching. These are deployment
+and retention boundaries under SEC-003, not analyzer, scoring or report-schema changes.
 
 ## 19. Scaling path
 
@@ -844,7 +877,7 @@ Analyzer rule packages should remain reusable libraries even if orchestration is
 
 The following are not required to begin implementation:
 
-- hosted cloud provider;
+- backend hosted cloud provider (the static web target is selected in ADR-0015);
 - user/account authentication provider;
 - billing;
 - notification provider;
@@ -870,5 +903,9 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0010 — Static source parser compatibility under TypeScript 7](adr/0010-static-source-parser-typescript-7.md)
 - [ADR-0013 — Workspace inspection and risk/readiness scoring](adr/0013-workspace-inspection-and-scoring-v3.md)
 - [ADR-0014 — Transactional outbox for repository-analysis delivery](adr/0014-transactional-outbox-delivery.md)
+- [ADR-0015 — Vercel static web and portable backend target](adr/0015-vercel-static-web-target.md)
+- [ADR-0016 — Request-bound Fastify API on Vercel](adr/0016-vercel-request-bound-api.md)
+
+- [ADR-0017: Worker interruption and confirmed-exit recovery](adr/0017-worker-interruption-and-recovery.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).

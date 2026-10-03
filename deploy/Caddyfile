@@ -1,0 +1,3 @@
+{$STACKLENS_API_DOMAIN} {
+	reverse_proxy api:3000
+}

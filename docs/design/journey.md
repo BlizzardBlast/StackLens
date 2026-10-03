@@ -1807,3 +1807,645 @@ insufficient-evidence scores. Both affected package suites and typechecks passed
 remains in PR #40; no merge or deployment occurred.
 
 **Traceability:** FR-005, FR-023, SCORE-003, SEC-001, SEC-002, GOV-002, GOV-007.
+
+## 2026-09-30 — Live MVP release acceptance
+
+PR #40 is now merged at `f51d2b6`; its baseline quality workflow passed. The user supplied KerjaLog
+and frey-ui for live validation. Both immutable revisions completed through the real local React,
+Fastify, PostgreSQL, transactional delivery, Graphile Worker and GitHub/npm/OSV flow. Paste/upload,
+authoritative input errors, a real nonexistent-repository failure, quick non-persistence, terminal
+polling and keyboard focus were checked. The
+[release record](../implementation/mvp-release-readiness.md) preserves exact commits, analysis IDs,
+durations, score states, provider limitations and representative screenshots.
+
+Live acceptance exposed two additional gaps. Native quick-mode radios now derive names and help
+from visible text instead of unsupported label-wrapper ARIA. `JS-NPM-010@2` filters external
+installation declarations before grouping, removing misleading missing-npm messages for internal
+links while preserving same-name external evidence. Production analyzer/rule-set identities advance
+to v6; quick-manifest v5, schema 2.0.0, historical readers and stack-health-v3 stay as documented.
+
+Both repositories were rerun after the corrections. The final frey-ui report retained three bounded
+npm response failures and a GitHub file timeout, plus one distinct Vitest advisory across three
+package scopes. Unknown scores stayed N/A. Sixteen final axe scans at verified 1280/320 CSS pixels,
+both themes and reduced motion reported zero violations and no overflow. Decorative contrast
+manual-review items were inspected separately. These observations do not claim actual screen-reader,
+physical-device or deployed-host validation. The full gate exposed jsdom worker contention; limiting
+the web suite to two isolated workers preserves its five-second timeout and makes the report/router
+tests reliable in this pass. Final database-backed `pnpm check` passed all 501 tests, compiled runtime
+smoke, typecheck, lint and formatting. Cache and cleanup details belong to the linked release record.
+Changes remain uncommitted on
+`codex/mvp-release-readiness`; no publication or deployment is part of this step.
+
+**Traceability:** FR-001–FR-006, FR-010/011/017–023, DATA-001–005, SCORE-001–004,
+NFR-005–009, SEC-001–003, SEC-007, GOV-002/007.
+
+## 2026-10-01 — Vercel web and portable backend preparation
+
+The user selected Vercel and requested a new backend target. ADR-0015 prepares the static web
+deployment with a required HTTPS API origin, preserved REST prefixes, known SPA deep links and
+browser/CDN no-store directives. Separate portable API/Worker images, PostgreSQL and Caddy TLS
+routing keep the accepted asynchronous architecture intact. The existing local Compose boundary
+remains PostgreSQL-only. Runtime images use pinned bases, production dependency trees, non-root
+execution, read-only filesystems, health checks, resource/log caps and orderly shutdown.
+
+Hosting review exposed an unenforced retention boundary. SEC-003 now makes finite hosted lifetime
+and ownership-safe cleanup explicit. API runtime assigns a configurable 24-hour default; Worker
+maintenance purges bounded expired terminal rows and cascades reports/delivery metadata while
+preserving queued/running claims and legacy null-expiry records. Origin responses prevent caching.
+A completed report removed between API reads follows the existing missing-analysis recovery.
+Production entrypoints refuse missing database configuration. Analyzer identities, scoring,
+report schemas and historical JSON remain unchanged.
+
+Both user-supplied repositories completed through the Linux containers after durable queued state
+survived an API restart with Worker stopped. KerjaLog retained a real OSV timeout and unknown
+Security; frey-ui retained three oversized npm responses. Quick/error/non-persistence, startup
+retention cascade and isolated PostgreSQL dump/restore were verified. The
+[dated preparation record](../implementation/release-evidence/2026-10-01-hosting.json) identifies
+initial and final image checks, provider limitations, quality-cache use and cleanup.
+The new database regression initially exceeded five seconds during sequential fixture creation;
+bulk inserts preserve its ownership/concurrency/cascade assertions and the normal timeout.
+Node test promises and nonmutating sort requirements were corrected before the final gate.
+Database-backed `pnpm check` passed all 511 tests, compiled runtime smoke, typecheck, lint and
+formatting. Eighteen of twenty-two test-graph tasks were cached.
+
+[Hosting](../implementation/vercel-hosting.md), [backend operations](../implementation/backend-hosting.md)
+and [manual acceptance](../implementation/manual-release-validation.md) document activation and the
+remaining real gates. No cloud account linkage, public certificate issuance, host provisioning,
+Git publication or deployment is claimed. Changes remain uncommitted on the existing branch.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009,
+SEC-001/002/003/007, GOV-002/006/007; ADR-0002/0004/0014/0015.
+
+## 2026-10-01 — Free-hosting feasibility
+
+The user asked whether the backend can also use Vercel and whether a free provider is available.
+Current primary documentation and Context7 confirm Fastify support on Vercel Functions, while
+the current continuous Graphile Worker needs a separate host or an architecture migration.
+The runbooks record Vercel Hobby's personal/non-commercial restriction and Oracle Always Free's
+current 2-OCPU/12-GB free-tenancy allowance, capacity/reclamation constraints and payment-card
+verification. Oracle remains a candidate; ARM64 runtime verification, account access and hostname
+selection are unresolved. No provider selection, provisioning, deployment or runtime code change
+was made. Documentation formatting and diff checks passed; the previous 511-test gate is historical
+verification of the prepared implementation, not evidence of either public deployment route.
+
+**Traceability:** PRD-006, NFR-004/009, SEC-003/007, GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-01 — Managed PostgreSQL and no-card deployment review
+
+The user selected Vercel, Northflank and Aiven, then retained the no-card constraint after actual
+Northflank service creation required card verification. Its empty free project remains; no service
+or payment method was created. This dashboard evidence corrects the earlier no-card blog guidance.
+Aiven project `stacklens-preview` and PostgreSQL Free service `stacklens-preview-pg` were created
+without a card, using the Free Asia Pacific allocation on DigitalOcean `blr`.
+
+The shared persistence factory now validates CA PEM and pool limits, verifies server trust and
+hostname, rejects URL SSL overrides and bounds connection acquisition. API/Worker entrypoints
+forward those settings, and container checks reuse the same CA with one connection. The managed
+configuration uses API max three and Worker max five/concurrency one. Local defaults and analyzer
+policy remain unchanged. Focused tests cover SSL override rejection, malformed values, CA forwarding
+and executable configuration. Live Aiven verification confirmed PostgreSQL 18.6, TLS, unrelated-CA
+rejection, StackLens/Graphile migrations, quick reports, durable enqueue and provider-free Worker
+startup/shutdown. The isolated verification database was removed.
+
+Initial parallel quality execution hit existing test timeouts. The database-backed test graph then
+passed serially; a subsequent lint diagnostic was fixed by validating the parsed certificate's CA
+flag. The final database-backed `pnpm check` passed with 531 tests, with eighteen of twenty-two
+test-graph tasks cached. Earlier container images are historical artifacts and must be rebuilt for
+these runtime changes. No public API/Worker or Vercel release has been verified.
+
+Railway remains a no-card candidate with limited trial/monthly credit. Its GitHub authorization
+requests new account access and is staged for user approval; no Railway deployment or secret
+transfer was performed. ClawCloud could not be resolved from the actual browser. The
+[managed runbook](../implementation/managed-hosting.md) and
+[dated evidence](../implementation/release-evidence/2026-10-01-managed-hosting.json) record resources,
+limits and remaining activation/acceptance work. Architecture v0.1.17 and ADR-0015 describe the
+managed database boundary; no requirement or report-schema change was needed.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007,
+GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-01 — No-card compute preparation and resource check
+
+The user completed Railway GitHub sign-in. A private `stacklens-preview` project now has two
+offline services with non-secret runtime variables, Dockerfile builds and API startup health
+configured. No source, database secrets, public domain, paid plan or deployment was uploaded.
+The CLI is available but unauthenticated. Local source upload is supported without a Git push;
+`.railwayignore` excludes environment files, diagnostic assets and generated outputs.
+
+The Dockerfile preserves explicit API/Worker targets and adds a non-secret `STACKLENS_RUNTIME`
+selector for hosts without a target-stage setting. Both selected Linux images rebuilt and passed
+package identity, CA-backed Aiven health, non-root and read-only runtime checks. Temporary
+containers, isolated databases and the local credential file were removed. Brief startup memory
+observations (159.2 MiB API/167.8 MiB Worker) imply roughly $3/month RAM cost at Railway's advertised
+rate, before CPU/network, exceeding its recurring $1 allowance. Its thirty-day/$5 trial therefore
+remains an inactive preview option rather than a verified ongoing free host.
+
+ClawCloud's main and regional endpoints did not resolve in the actual browser. Silly Development's
+live signup form advertises no-card, non-expiring 0.25 CPU/256 MB RAM/512 MB disk Worker hosting,
+but account access, Node 24 and outbound database connectivity remain open. A locally constrained
+Worker completed frey-ui with limitations; KerjaLog failed and the anonymous GitHub allowance was
+observed at zero afterward. Its failure payload and memory peak were not retained, so neither
+failure causality nor complete resource fit is claimed. User signup is staged before provider
+selection or credential transfer. The managed runbook/evidence distinguish these preparation
+steps from public full-stack acceptance. The earlier 531-test gate covers unchanged application
+code; fresh Linux builds verify the subsequent Docker selector change.
+
+**Traceability:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-001/002/003/007,
+GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-01 — Free Worker server and Node 24 startup rehearsal
+
+The user completed Silly Development signup and a Free `stacklens-worker-preview` Node server was
+created without a card. Node 24 and `start-worker.js` are saved; the service remains stopped.
+The panel's fixed startup runs npm for root package metadata and routes ordinary JavaScript through
+ts-node. `scripts/prepare-silly-worker.mjs` now packages the reviewed Linux image with its production
+dependencies, moves root package metadata, removes only packaged root TypeScript configs and adds
+an ESM boundary plus `deploy/silly/start-worker.js`. This avoids workspace reinstallation and the
+observed TS5083 monorepo-config lookup. The adapter loads private runtime configuration and delegates
+to the existing Worker entrypoint; analyzer and durable queue policy are unchanged.
+
+The approximately 16 MB compressed/88 MB unpacked archive passed local Node 24.17.0 panel-image
+startup, verified Aiven TLS, StackLens/Graphile migrations and continued running at 256 MiB/no swap,
+0.25 CPU and concurrency one. The memory peak reached the limit with reclaim pressure and no OOM
+kill; complete repository-analysis capacity remains unverified. Temporary containers, isolated
+databases and runtime files were removed. The final database-backed `pnpm check` passed 531 tests
+with eighteen of twenty-two test-graph tasks cached, plus build/runtime smoke/types/lint/format.
+Temporary upload API access, transfer of Aiven credentials to the new host and activation await
+specific user authorization. No code or secrets were uploaded, and no release is claimed.
+
+**Traceability:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-001/002/003/007,
+GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-01 — Free Worker activation and remote provider evidence
+
+After explicit approval, a temporary Silly Development API key uploaded the reviewed 16,808,305-byte
+Linux Worker archive and a separate private Aiven runtime file to `stacklens-worker-preview`
+(`60761d98`). Initial startup exposed a panel decompression incompatibility: pnpm symlinks became
+ordinary files, making the persistence package unavailable. The one-shot `deploy/silly/install.js`
+checks the archive SHA-256 and uses native Linux `tar` to preserve those links. Failed extraction
+files and diagnostic code were replaced, the installer/archive removed, and the normal Node 24
+entrypoint restored with no extra packages or arguments. No analyzed repository was installed or
+executed, and no paid resources or card were used.
+
+Remote startup created StackLens/Graphile schemas, and Aiven observed certificate-verified TLS
+sessions from the Worker host. A local compiled API submitted the public REST contract to the same
+database; only the remote Worker executed provider jobs. frey-ui completed with schema 2.0.0 and
+48 explicit limitations in 107.9 seconds. KerjaLog reached terminal `repository_unavailable` in
+11.3 seconds because the host's anonymous GitHub quota was exhausted. The limited report also
+retained npm response-size/timeouts. Sampled host memory peaked at 218.20 MiB; the Worker remained
+running. This is bounded partial acceptance, not proof of fully acquired repository capacity.
+
+A deliberate restart preserved terminal API payload hashes; the first immediate start request
+exceeded its deadline, and a later start succeeded. Active-job recovery, remote retention/restore,
+public HTTPS API/Vercel and real assistive-technology/device validation remain open. The upload key
+was revoked, confirmed by `401` on reuse and an empty dashboard key list. Local upload credentials
+were removed; the explicitly approved runtime file remains on the host. A public-only thirty-day
+GitHub provider token was proposed and awaits separate approval. Changes remain uncommitted and
+unpushed. The prior database-backed `pnpm check` passed 531 tests; the added installer passed fresh
+lint/format checks and actual remote hash-checked extraction/link verification.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007,
+GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-01 — Authenticated Worker acceptance and Render Free API preparation
+
+After authorization and user-completed GitHub verification, a new thirty-day public-only token
+was installed in the approved Worker's private runtime file, preserving existing settings and
+mode `0600`. Authenticated core quota was 5,000 before use. Only the remote Silly Worker executed
+the two provider jobs submitted through the local compiled API and shared Aiven database.
+frey-ui at `6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf` completed in 158.1 seconds with 24 limitations
+and three bounded npm response-size failures. KerjaLog at
+`9e5f869bbcf5b9d582f8e1453395ea2c06c79f83` completed in 127.0 seconds with five static-evidence
+limitations and no provider failures. Both schema 2.0.0 reports preserved uncertainty. The Worker
+stayed running; sampled memory reached 249.41 MiB of 256 MiB, so general capacity remains open.
+The initial anonymous failures remain historical evidence. The second temporary upload key was
+revoked, verified by `401` and an empty dashboard list; local private copies were removed.
+The approved runtime GitHub token remains on the Worker and expires 2026-10-31.
+
+The user completed Render GitHub sign-in. `deploy/render/render.yaml` prepares one Free Docker
+API in Singapore, explicit manual deployment, shared Aiven secrets as unfilled placeholders and
+`/openapi.json` startup health. It passes Render's published Draft 2020-12 schema. The actual
+dashboard form selects Free/$0, Docker, Singapore, seven non-secret variables and automatic
+deployment Off. It remains unsent, with `main` selected because the reviewed release branch has
+no remote ref. Publication and Aiven credential transfer to this new provider need authorization.
+No Render service, card, paid plan, public API or Vercel deployment was created. Free API idle
+sleep and wake-up remain live acceptance checks; the independent Worker topology is preserved.
+
+The documentation-impact pass updates current status, handover, architecture/ADR, managed/Vercel
+runbooks and source-free evidence, with a dedicated Render activation guide. Product requirements,
+analyzer policy and report contracts do not change. The existing database-backed quality baseline
+is 531 passing tests; the new configuration is validated against the provider schema, with fresh
+lint/format/diff checks recorded in the dated evidence. Public routing, active-job recovery,
+remote retention/restore and real screen-reader/device checks remain open.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007,
+GOV-002/006/007; ADR-0004/0015.
+
+## 2026-10-02 — Published release branch, Render blocker and Vercel API preparation
+
+After explicit approval, commit `7ce34f0` was published in draft PR #41 and GitHub quality run
+`36884582320` passed. The approved Render Free/$0 form selected that branch and received the two
+Aiven values privately. Deployment requested Add Card verification describing a temporary $1
+authorization. No card was entered; the fresh October 2 dashboard confirmed no services and the
+restored form was blank. Configuration schema validity did not establish no-card eligibility.
+The earlier Render preparation remains historical evidence. Worker remained running after eight
+hours, with an observed idle 176.44 MiB of 256 MiB; this does not replace workload peak measurements.
+
+ADR-0016 adds a separate optional Vercel Fastify API project rooted at `apps/api`. Its compiled
+native entrypoint keeps the public contract and awaited delivery attempt, disables only the API
+recovery timer, and attaches a one-connection default pool to Fluid Compute. The continuous Silly
+Worker retains recovery, provider execution and retention. Portable process/container startup
+remains supported. Aiven's 20-connection limit is global; per-instance pooling does not bound
+autoscaling. Database values require new-destination approval and stay outside the static web project.
+
+The real Fastify builder selected `app.mjs`, passed the configured frozen install/workspace build,
+and traced Node 24 output with 1,765 files, 8,167,198 uncompressed bytes and embedded Graphile
+migrations. A TypeScript trace problem prompted the small compiled JavaScript entrypoint; no
+compiler or strictness setting was weakened. Native local HTTP checks passed OpenAPI, malformed
+JSON, quick analysis, unknown-route JSON and uncached queued submission/polling. Database-backed
+`pnpm check` passed 539 tests plus compiled runtime smoke, including the request-bound adapter.
+The new tests initially failed two mock-type lint checks; both were corrected and the full gate passed.
+
+The documentation-impact pass corrects stale unpublished/approval-pending Render status, updates
+architecture, current handover and hosting guides, and adds dated source-free evidence. Requirements,
+analyzer/scoring policy and report schemas do not change. No Vercel cloud runtime or backend secret
+resource exists yet. Cloud TLS/cold/warm requests, public full-stack acceptance, remote recovery/
+retention/restore and real screen-reader/device gates remain open; PR #41 remains draft.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-003/007,
+GOV-002/006/007; ADR-0004/0014/0015/0016.
+
+## 2026-10-02 — Vercel Hobby API project configured without activation
+
+Adapter commit `2a507cb` was published in draft PR #41; GitHub quality run `36942657278` passed.
+The authenticated Vercel dashboard created the separate Hobby project `stacklens-api-preview`
+in `freys-projects`. An empty project was used after branch-URL imports were rejected; the existing
+GitHub integration then connected StackLens successfully. Fastify, `apps/api` root, outside-root
+workspace files, Node 24, Fluid Compute and Singapore are saved. Branch tracking selects
+`codex/mvp-release-readiness`. The UI's suggested redeployment found no existing build; the overview
+confirmed no Production or Preview deployments and zero Function invocations.
+
+Builds were paused with `exit 0` before connecting Git. Production Config values pin Corepack,
+one database connection per instance and 24-hour retention. Pull-request and commit comments are
+disabled. No backend secrets, payment card, paid plan or live deployment were added. The new
+Vercel database destination still requires approval; the prior transfer approval covered Render.
+
+The documentation-impact pass updates README, current handover, hosting guides and dated evidence.
+The earlier journey entry remains unchanged as a historical snapshot. No product behavior,
+architecture policy, analyzer rules or report schemas change. The existing 539-test database-backed
+gate and successful adapter CI remain the implementation evidence; this setup adds dashboard
+verification, the repository formatting gate, JSON parsing and diff checks. Public API/web acceptance remains pending.
+
+**Traceability:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007,
+GOV-002/006/007; ADR-0015/0016.
+
+## 2026-10-02 — Approved Vercel activation and cloud configuration correction
+
+The user explicitly approved Aiven credential transfer to `stacklens-api-preview` and activation
+on Hobby. Only the database URL and complete CA were copied from the approved Worker's private
+runtime editor into API Production Secret values. The GitHub token remains Worker-only; no private
+credential file or output was created locally. Temporary transfer bindings were cleared.
+Builds now allow only the tracked release branch. The earlier paused attempt was confirmed canceled
+by the Ignored Build Step; no card or paid plan was added.
+
+The first actual cloud attempt `GSY6Sn1HFcDhvcHiYYV2NMDnphoE`, commit `ff4d91a`, failed in two
+seconds before installation. Vercel CLI 62.1.0 rejected the `functions.app.mjs` override as an
+unmatched API-directory pattern. The isolated native builder had not exercised this CLI validation.
+The correction removes that override and preserves the 60-second limit through the supported project
+default. The authenticated dashboard confirmed 60 seconds with Fluid Compute still enabled.
+
+The documentation-impact pass updates current status, handover, hosting runbooks and dated evidence;
+the failed attempt stays recorded. No runtime, contract, analyzer or product-policy behavior changes.
+Configuration JSON parsing, formatting/diff checks and new branch CI verify the correction;
+cloud boot and public API/web acceptance remain pending.
+
+**Traceability:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007,
+GOV-002/006/007; ADR-0015/0016.
+
+## 2026-10-02 — Native Fastify startup capture correction
+
+Configuration commit `f661bec` passed GitHub quality run `36945252902` and built in 29 seconds
+as Vercel deployment `EMDGL6Zto5tD6Mcak5ekZSeNUygF`. The dashboard confirmed one Singapore
+Node 24 Function, 2.61 MB and a 60-second duration. Ready did not prove availability: the public
+OpenAPI request returned 500 with `INTERNAL_FUNCTION_INVOCATION_FAILED` and no application logs.
+
+Inspection of the current native runtime showed that it intercepts HTTP listen, imports user code,
+then binds the captured server. A local replay captured the previous entrypoint's server but its
+import remained pending until the test bound it. Awaiting Fastify listen at module scope therefore
+deadlocked startup. The entrypoint now starts listening without blocking import completion, retains
+sanitized failure handling and exports its runtime for graceful isolated teardown. A new compiled
+smoke captures the real entrypoint before binding and checks actual OpenAPI and malformed JSON HTTP
+responses. It uses disposable PostgreSQL and never registers provider tasks.
+
+The documentation-impact pass updates current status, handover, the API/web/managed runbooks,
+ADR-0016 lifecycle detail and source-free evidence. Product requirements, analyzer policy, serialized
+contracts and queue behavior remain unchanged. The corrected capture replay and database-backed
+539-test gate are required before redeployment; cloud/public full-stack acceptance remains pending.
+
+**Traceability:** PRD-006, FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0016.
+
+## 2026-10-02 — Explicit native HTTP handler export
+
+Deployment `CNCvRBZvSWjL8m8oPkHmcAvxJZQC` built capture correction `9ec89bc` in 27 seconds.
+The prior import deadlock was removed. Startup progressed through database initialization, then
+Vercel rejected the named-only module: the default export must be a function or server. Public
+OpenAPI still returned 500. The entrypoint now exports the captured HTTP server as its default
+handler. The compiled capture smoke additionally verifies that default export's type and identity.
+Pool attachment emitted three release-outside-request warnings during startup; these are recorded
+as lifecycle diagnostics, not route acceptance. The separate empty Hobby web project was created
+as `stacklens-web-preview`; it has no backend secrets or deployment.
+
+The documentation-impact pass adds this failed attempt without rewriting earlier evidence and
+updates the API runbook and ADR-0016 module contract. No product policy or report schema changes.
+Database-backed quality and public cloud revalidation are required before using the API origin.
+
+**Traceability:** FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0016.
+
+## 2026-10-02 — Host-owned native HTTP binding
+
+Deployment `4R1WiVXW1UUU3BKN6Gm2PjrDJVeK` built `2eb9da3` in 24 seconds. The server export
+was accepted, but the remaining asynchronous Fastify listen call failed and stopped the runtime;
+public OpenAPI returned 500. The invocation reported the sanitized listen failure, 2.88-second
+execution and 357 MB Fluid memory. The entrypoint now awaits Fastify readiness and exports its
+unbound HTTP server without calling listen. HTTP binding belongs entirely to the host.
+
+The smoke now forbids application binding during import, verifies the native server export, binds
+it as the host and checks OpenAPI/malformed JSON with graceful teardown. This closes a gap in the
+earlier capture-only replay, which waited for Fastify's listen call before binding and missed the
+cloud race. API process startup remains unchanged. The separate Hobby web project is connected
+to StackLens with Vite, Node 24 and the repository root; builds stay paused pending API verification.
+
+The documentation-impact pass updates the API runbook, ADR-0016 and source-free failure evidence.
+Product requirements, queue payloads, scoring and report schemas remain unchanged. The database-backed
+quality gate and a new public cloud check are required before assigning the web proxy origin.
+
+**Traceability:** FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0016.
+
+## 2026-10-02 — Public Vercel preview acceptance and Worker restart gap
+
+Runtime `75bf5a2` passed CI and built the API in 27 seconds. Exporting a ready, unbound HTTP
+server lets Vercel bind Fastify; public OpenAPI/JSON errors/quick reports now pass. The separate
+Hobby web project builds the root programmatic configuration in 14 seconds and proxies the verified
+API origin. Both targets use only the reviewed branch's Production environment. The platform label
+is a personal preview, not a release. No card or paid plan was added; Aiven secrets remain API/Worker
+only and the provider token remains Worker-only. Earlier failed cloud attempts stay recorded.
+
+Both requested repositories finish with contract-valid reports through the direct API and actual
+web forms. Provider/static limitations remain visible. Browser acceptance covers invalid input,
+quick busy/result/reset focus, native file replacement, stable deep links, terminal failure, evidence
+Close focus return and 320px emulation. CDP observes no extra terminal status requests over 62 seconds.
+Static asset types and missing-asset/API errors pass; quick identifiers remain transient.
+
+Restarting the remote Worker during KerjaLog exposed a recovery gap: the old process exited and a
+new Worker connected, but the analysis remained running. Durable completion occurred at 05:04:53 UTC,
+4h 10m after submission, consistent with Graphile's stale-lock recovery. No manual unlock ran and
+no temporary recovery helper was saved. A panel sample reached 257.36 MiB against its displayed
+256 MiB cap. These observations do not prove prompt recovery, capacity or absence of OOM.
+
+The documentation-impact pass updates README, handover, API/web/managed runbooks, architecture,
+ADR-0016 activation status, manual acceptance guidance and source-free dated evidence. Product
+requirements, analyzer/scoring policy, tokens and serialized contracts are unchanged. The same
+539-test database-backed runtime gate and successful CI cover the deployed implementation; this
+documentation pass adds formatting, JSON parsing, link/diff checks and publication CI. PR #41 remains
+draft and unmerged. Prompt Worker recovery/capacity, Function suspension, remote expiry/restore and
+real screen-reader/device acceptance remain release gates.
+
+**Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009,
+SEC-001/002/003/007, GOV-002/006/007; ADR-0015/0016.
+
+## 2026-10-02 — Permanent Vercel project names and matching domains
+
+The user requested `stacklens` for the web project and `stacklens-api` for the separate API.
+Both existing projects were renamed in place, preserving their IDs, Git integrations and approved
+database-secret destinations. Readiness remains in documentation rather than the project names.
+`stacklens-api.vercel.app` was assigned to the API. Vercel rejected `stacklens.vercel.app` because
+another team owns it; `stacklens-web.vercel.app` was available and assigned as the web address.
+The original auto-assigned domains remain compatibility aliases so existing links and deployed
+rewrites continue working during the transition.
+
+Web Production Config now points at the named API origin; routing is evaluated during the next
+deployment. Before that rebuild, both new aliases passed OpenAPI, malformed/invalid/unknown API
+errors, shared-contract paste/upload and quick non-persistence checks. The naming record preserves
+the exact domain conflict and separates those observations from post-publication verification.
+Publication CI, actual deployment source and rebuilt routing are recorded in PR #41.
+
+The documentation-impact pass updates current README, handover, hosting/manual guides and public
+acceptance links while preserving historical evidence and journey entries. Accepted requirements,
+architecture boundaries, analyzer/scoring policy, UI/tokens and report schemas are unchanged.
+Formatting, JSON parsing, local links, diff and staged-credential checks cover this documentation
+change; existing runtime checks cover the same implementation. Worker recovery/capacity and manual
+release gates remain open. The PR remains draft and unmerged.
+
+**Traceability:** PRD-006, FR-001/003/004/022, SEC-003/007, GOV-002/006/007; ADR-0015/0016.
+
+## 2026-10-02 — Worker interruption recovery and bounded hosting verification
+
+The user requested the next release work after the live restart left a job waiting for stale-lock
+recovery. The existing checkout receives an uncommitted follow-up on `405b420` under draft PR #41.
+NFR-008 now states planned interruption/retry and confirmed-dead-owner recovery explicitly;
+ADR-0017 keeps these responsibilities in Worker runtime. Provider acquisition consumes per-job
+abort signals and serializes npm packuments. Zero-delay Graphile completion/failure batching makes
+shutdown await queue writes before closing the pool. Integration exposed that Graphile 0.18 locks
+by `pool-...`; the earlier unsaved Worker-ID helper would not identify that owner. It was never run.
+
+The Silly launcher replaces its ts-node child with native Node before database startup, while
+retaining its parent and standard streams. The selected launcher uses 96 MiB old space without
+source-map loading. An uncapped workload reached memory-limit pressure; the 80 MiB experiment
+stopped before completion and was rejected. The final 256 MiB/no-swap/0.25 CPU Linux experiment
+completed both repositories at 244.25 MiB peak with zero memory-limit/OOM events and a clean stop.
+Provider bounds, input selection, analyzer/scoring policy, contracts and UI/tokens are unchanged.
+
+The compiled patch and launchers were uploaded to the existing approved Worker while confirmed
+offline; hashes and the unchanged private runtime file were checked before recording activation.
+The public web-proxy KerjaLog attempt was deliberately stopped while active. It reached offline in
+22,379 ms, released its queue lock, returned to queued with `repository_analysis_interrupted` and
+stored no report for the interrupted attempt. A new pool resumed attempt two; the same analysis ID
+finished in 192,798 ms with five limitations and no provider failures. frey-ui finished in 147,072 ms
+with 24 limitations and the same three bounded npm failures. No administrative unlock ran. A public
+submission receives 24-hour expiry; neither repository was executed, built or installed.
+
+Owned synthetic rows tested the actual remote retention pump: an expired terminal record and its
+report/delivery disappeared within 6,229 ms and lookup returned 404. Expired queued/running and
+legacy null-expiry rows remained, then the fixtures were removed. A consistent PostgreSQL 18 backup
+restored into a separate owned Aiven database with matching application/Graphile table hashes and
+eight strictly readable historical reports. API bootstrap/readback did not rewrite them. The
+copied queue was not executed; the database and private dump were removed. An earlier restore
+attempt rejected the target's existing empty public schema and was discarded without modifying
+the preview database. This does not establish scheduled backups or disaster queue replay.
+
+The database-backed `pnpm check` passes, including 27 Worker tests covering graceful retry, actual
+child-process death before targeted unlock and preservation of a separate live owner. A parallel
+cold test run also exposed API executable-test cleanup racing its async startup; the test now
+awaits that continuation. API production behavior did not change. The documentation-impact pass
+updates requirements/architecture versions, ADR-0017, Worker/hosting guidance, README, handover and
+source-free release evidence. Vercel still runs Git revision `405b420`; Worker patch hashes do not
+claim a new commit. The changes remain uncommitted/unpushed, and PR #41 remains draft/unmerged.
+
+The user explicitly left phone/spoken screen-reader acceptance open. Another browser engine,
+sustained/general capacity, Function suspension/aggregate connections and operational backup
+policy remain release gates. Small measured headroom and a planned stop/start are not proof of
+arbitrary workload fit, OOM recovery or automatic hosted failover.
+
+The final read-only review covers lifecycle, provider cancellation, persisted ownership, operator
+scope, launcher/package behavior and requirement/documentation traceability. No blocking issue
+remains in this bounded change. Both Vercel project overviews confirm Ready on `405b420`; all remote
+compiled/launcher hashes match the reviewed patch. Documentation verification checks 119 local
+Markdown links, JSON parsing, current source hashes, credential patterns and a clean diff. The
+temporary upload key was revoked (401 on reuse, empty dashboard list), private local files removed
+and disposable test containers/databases deleted. Approved hosting runtime credentials remain.
+
+**Traceability:** FR-003/021, NFR-008/009, SEC-001/002/003/007, GOV-002/006/007; ADR-0017.
+
+## 2026-10-02 — Publish the verified Worker follow-up
+
+Under the existing release-branch publication approval, the Worker source, focused regression tests,
+requirements/ADR and release evidence are published together through draft PR #41. No merge is
+authorized. The live capture remains explicitly based on dirty `405b420` plus file hashes, and
+subsequent publication/deployment evidence is recorded separately rather than rewriting its timing
+basis. The handover instructs the next session to resolve the PR's actual HEAD, CI and deployments.
+
+The same database-backed gate and final review cover the implementation. Publication CI and both
+rebuilt Vercel targets must be checked on the actual pushed commit; code behavior at the existing
+Worker is identified by its verified compiled/source hashes. Manual acceptance remains open at
+the user's request. Product/UI/scoring behavior and the remaining operational gates are unchanged.
+
+**Traceability:** FR-003/021, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0017.
+
+## 2026-10-03 — Align responsive analysis progress
+
+User-provided phone screenshots exposed right-aligned current-stage text alongside left-aligned
+headings, and a long metadata step that moved Waiting onto a new left-aligned line. The summary
+now uses left-aligned label/value text. Timeline headings reserve separate stage/status columns,
+allow names to wrap and keep statuses at one right edge. Inactive rows reserve the current row's
+border space, and descriptions retain the stage text's left edge.
+
+The four existing status-view tests and database-backed `pnpm check` pass. Browser geometry checks
+pass in 23 cases across all six stages and phone/tablet/desktop widths; the final 360px dark
+screenshot was visually reviewed. The requested 393px override measured 394px in this browser;
+the evidence records both requested and observed widths. See the
+[source-bound layout record](../implementation/release-evidence/2026-10-03-progress-alignment.json).
+
+The documentation-impact pass updates the progress design and web implementation guidance.
+Accepted product behavior, architecture, tokens, analyzer policy and public API contracts do not
+change. The fix is published through the existing draft PR #41; its current HEAD, CI and deployment
+must be resolved for review. These screenshot corrections do not close physical-device or spoken
+screen-reader acceptance, which remains open at the user's request.
+
+**Traceability:** NFR-006/007/008, GOV-002/006/007; ADR-0006/0007.
+
+## 2026-10-03 — Extend operational and browser release evidence
+
+The next release pass adds Playwright acceptance in Chromium, Firefox and WebKit at desktop/320px
+widths, using synthetic API responses and both report readers. The suite verifies progress geometry,
+keyboard/native-file input, report/evidence focus, deep-link reload and terminal/404 polling.
+Strict browser-suite typechecking, the full local gate and CI now enforce it. Local runs use one
+worker after Firefox reload contention; CI uses two. Tests preserve the original timeout and run
+without retries. Harness corrections cover keyboard activation, fixture disclosure order and
+the actual reduced-motion configuration; product UI behavior does not change.
+
+The live API burst observes ten peak connections against Aiven's twenty-connection limit, but its
+idle count stays one above baseline. The Vercel pool now carries a constant source-free application
+label for attribution. Six serial hosted repository analyses complete with contract-valid reports
+in 12m 16s. Two panel samples are preserved; missing later samples do not become a cgroup/OOM pass.
+A new logical restore matches seven table hashes and reads four reports; all private rehearsal
+assets and its owned database are removed. The backup policy records the managed daily schedule
+and the Free-plan fork restriction without activating a paid service or new credential destination.
+
+The [dated record](../implementation/operational-preview-validation.md) distinguishes bounded
+observations from cold-start/suspension, global capacity, disaster recovery and actual assistive
+technology/device acceptance. The user has deferred manual checks; free built-in reader instructions
+are documented. Contributor, implementation, current handover and public status documents are
+updated. Accepted product behavior and architecture remain unchanged; no new ADR is required.
+The follow-up uses the existing publication approval for draft PR #41; no merge is authorized.
+
+**Traceability:** FR-002/003/004/017/021/022, NFR-006/007/008/009, SEC-001/002/003/007, GOV-002/007.
+
+The first full gate exposed a cold persistence-barrel transform inside an API configuration test.
+A two-worker experiment still failed. The unit test now uses the actual small options parser
+through its mocked persistence boundary; runtime integration tests retain the full stack. Assertions,
+isolation and timeouts remain unchanged. The failed runs remain separate from final verification.
+
+## 2026-10-03 — Retire request-bound API connections on release
+
+The browser/operational follow-up was published as `d80ab03`; CI and both Vercel deployment checks
+passed. A repeated labeled 17-request API measurement then found six API clients still idle after
+35 seconds, with eleven total clients against the twenty-connection limit. Attribution exposed a
+real API release issue rather than an ambiguous Worker/client count. The exact hosting lifecycle
+cause remains unverified; no old database sessions are forcibly terminated.
+
+The request-bound preview now sets `maxUses: 1`, retiring each client when released. A transaction
+keeps its acquired client through commit/rollback, and acquisitions remain bounded by the shared
+pool. Continuous API/Worker runtimes keep normal reuse. A distinct diagnostic label identifies the
+new policy during deployment overlap. Real PostgreSQL regressions exercise transaction ownership,
+queued queries and durable submission/concurrent polling. Fresh connections add TLS/connection
+overhead, so live latency and idle behavior must be checked after publication.
+
+The documentation-impact pass updates ADR-0016, persistence configuration, hosting guidance,
+source-bound operational evidence, current handover and public status. Accepted product behavior,
+analyzer policy, serialized contracts and UI remain unchanged. Publication remains within approved
+draft PR #41; no merge is authorized. Earlier failed measurements and remaining capacity, recovery
+and human acceptance gates remain explicit.
+
+**Traceability:** FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0016.
+
+The complete database-backed gate passes with the real PostgreSQL/API regressions, compiled/native
+runtime smoke, all 22 Turbo test tasks, 18 browser checks, lint and formatting. Eighteen test tasks
+reuse valid successful cache entries. Hosted verification follows publication of this reviewed runtime.
+
+## 2026-10-03 — Verify the published connection policy
+
+Runtime `beaac25` passes CI and both Vercel deployment checks. Seventeen uncached live lookups at
+concurrency two observe the new API label during acquisition and zero API clients after both
+35-second idle periods. Aggregate clients peak at eight and return to the five-client baseline;
+there are no idle transactions or old labeled API clients in the final sample. No sessions are
+forcibly terminated. Lookup median is 455 ms and maximum 4,064 ms; changed concurrency and unknown
+cold state prevent a controlled before/after latency claim.
+
+Twelve direct API/web-proxy checks pass OpenAPI, input errors, contract-valid paste/upload and
+quick non-persistence. A fresh frey-ui submission returns 202 in 649 ms and a valid limited report
+in 143,683 ms. Original failed samples are preserved alongside this exact runtime revision.
+The documentation-impact pass completes the current evidence, handover, public status and
+architecture v0.1.20; ADR-0016 records the connection overhead tradeoff. Documentation publication
+does not relabel runtime captures. PR #41 remains draft. Global capacity, actual suspension,
+disaster recovery and human acceptance gates remain explicit.
+
+The private observer credential file and owned local PostgreSQL/Vite test services are cleaned up;
+both test ports have no listener. The temporary logical restore database/archive were already removed.
+
+**Traceability:** FR-001/002/003/004/021/022, NFR-006/007/008/009, SEC-001/002/003/007, GOV-002/006/007; ADR-0016.
+
+## 2026-10-03 — Correct PR #41 lookup, runtime CI and delivery guidance
+
+Scoped review found that a missing completed report produced authoritative 404 even when its
+analysis row survived, stopping browser recovery. The application now rereads the analysis once
+only on that failure path: actual deletion returns 404; a surviving completed record returns the
+existing sanitized 503 and can recover on a later request. Normal reads, public schemas and stored
+report versions remain unchanged. Fastify tests cover both terminal success states, genuine deletion,
+report recovery, refreshed state and dependency failures. React coverage verifies transient 503
+recovery to a v2 report followed by polling stop without changing production React code.
+
+The quality workflow now runs the existing compiled native-entry/API/Worker smoke immediately after
+build with its PostgreSQL 18 service. Current hosting guidance and ADR-0016 correct the earlier
+awaited-dispatch claim: acceptance awaits the atomic analysis/outbox commit; immediate dispatch is
+unawaited best effort, and the continuous Worker recovers pending delivery and expired leases.
+A deferred-promise HTTP test proves both sides of that boundary and releases its promises on failure.
+The portable backend guide now distinguishes the active Vercel API from the unprovisioned Compose
+host. Earlier card blockers, native startup failures, resource experiments and source-bound captures
+remain recorded; this correction does not rewrite their evidence.
+
+Phase verification passed 42 API tests (three database tests deferred to the full gate), all 53 web
+tests, the build and a real PostgreSQL 18 native-entry/compiled API/Worker smoke. The final focused
+HTTP pass includes the deferred-dispatch test and passes all 19 cases. Read-only self-review follows
+each phase. The complete uncached database-backed gate and exact-head CI/deployment results are
+recorded with [PR #41](https://github.com/BlizzardBlast/StackLens/pull/41); resolve its current HEAD
+before subsequent work rather than assigning these earlier observations to a later revision.
+The PR remains draft and unmerged. Narrator idle repetition stays P3 and user-deferred; capacity,
+Function lifecycle, disaster recovery and physical-device/spoken acceptance are not closed here.
+
+**Traceability:** FR-003/004/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0014/0016.
+
+The first uncached full run timed out in two existing PostgreSQL connection tests. All 37 persistence
+tests then passed in isolation, and a fresh uncached database-backed `pnpm check` passed without
+changing assertions, timeouts or concurrency. The final gate passes all 22 Turbo test tasks with zero
+cache hits, native/compiled smoke, strict workspace/browser types, all 18 browser acceptance checks,
+lint and formatting. Both failed and successful local logs are retained separately in the review record.

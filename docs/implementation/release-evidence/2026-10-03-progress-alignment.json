@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-03",
+  "requirements": [
+    "NFR-006",
+    "NFR-007",
+    "NFR-008",
+    "GOV-002",
+    "GOV-007"
+  ],
+  "sourceBasis": {
+    "baseCommit": "c1f78fe989ec35828865c45423ff24674da1adf8",
+    "uncommittedPatch": true,
+    "path": "apps/web/src/features/repository-analysis/analysis-progress.tsx",
+    "sha256": "ecfb86b18ff40d8838d040f9133efd5262ebada7396f0fdfb319c633b0c8ae34"
+  },
+  "environment": {
+    "browser": "Chromium in Codex in-app browser",
+    "responses": "Synthetic local API responses; no hosted jobs created",
+    "requestedViewportWidths": [
+      320,
+      360,
+      393,
+      768,
+      1280
+    ],
+    "observedViewportWidths": [
+      320,
+      360,
+      394,
+      768,
+      1280
+    ],
+    "physicalDevice": false,
+    "spokenScreenReader": false
+  },
+  "verification": {
+    "layoutCases": 23,
+    "failures": 0,
+    "stages": [
+      "queued",
+      "resolving_repository",
+      "collecting_snapshot",
+      "collecting_metadata",
+      "running_rules",
+      "scoring"
+    ],
+    "currentStageSummaryAlignment": "left",
+    "maxStatusRightEdgeSpreadPx": 0.000072479248046875,
+    "maxStatusTitleTopDifferencePx": 0,
+    "minTitleStatusGapPx": 7.99993896484375,
+    "maxDescriptionTitleLeftDifferencePx": 0,
+    "horizontalOverflow": false,
+    "longWaitingMetadataLabelWraps": true,
+    "longCurrentMetadataLabelWraps": true,
+    "focusedStatusViewTests": {
+      "files": 1,
+      "tests": 4,
+      "result": "passed"
+    },
+    "fullGate": {
+      "command": "pnpm check",
+      "testDatabase": "Disposable local PostgreSQL 18",
+      "result": "passed"
+    },
+    "visualReview": "Final 360px dark progress screenshot reviewed; current-stage summary and wrapped metadata row align consistently"
+  },
+  "limits": [
+    "Viewport emulation does not establish physical-device or spoken screen-reader acceptance.",
+    "Operational release gates remain open."
+  ]
+}

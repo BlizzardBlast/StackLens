@@ -1,0 +1,4122 @@
+{
+  "date": "2026-10-03",
+  "requirementIds": [
+    "FR-002",
+    "FR-003",
+    "FR-004",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "NFR-006",
+    "NFR-007",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-007"
+  ],
+  "source": {
+    "baseCommit": "063a1be4e6707a666e07300aed61abdec449f53a",
+    "dirty": true,
+    "fileSha256": {
+      "playwright.config.ts": "1d2154fd9dff041a19a2f4a51c6c77c7fc250cd31f9411ad52b6cdc52ebf06f9",
+      "tests/browser/acceptance.spec.ts": "dca4300bd641bed3a50cc0bde9f91ffb3f38582e467a2fc5b724d453ef8117f4",
+      "tests/browser/tsconfig.json": "bdc86693d9300a16d307a10ebc6e13161c498fc4da7e97aac6d9857ea292ee61",
+      "apps/api/src/vercel-runtime.ts": "26659182ebc1a50682d723ac5f2813241dfdc5793ed0139389d9add5578c31de",
+      "apps/api/test/main.test.ts": "897848ef1e23904aa048d6d2728eee55e12bd4ca59a5b3eb86b261ea2fb2c578",
+      "packages/persistence/src/pool.ts": "d0f18393b5cd8ce407cc9e8ca3bdc3d3a19c1d2fbbcbb3f3d906fac0923f8810",
+      "packages/persistence/test/pool.test.ts": "fb11138e801ba87cb446579c79d4bb1800fa244d8adae86733a7b2a3a142b923"
+    }
+  },
+  "browser": {
+    "tool": "@playwright/test 1.62.1",
+    "host": "Windows",
+    "engines": [
+      "Chromium 151.0.7922.34",
+      "Firefox 153.0",
+      "WebKit 26.5"
+    ],
+    "viewportWidths": [
+      1280,
+      320
+    ],
+    "colorScheme": "dark",
+    "reducedMotion": "reduce",
+    "syntheticApi": true,
+    "reportSchemas": [
+      "2.0.0",
+      "1.0.0"
+    ],
+    "stats": {
+      "startTime": "2026-10-03T02:02:45.531Z",
+      "duration": 104185.09300000001,
+      "expected": 18,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "limitations": [
+      "Headless viewport emulation is not physical-device testing.",
+      "WebKit is not an actual Safari/iOS test.",
+      "DOM focus and semantics do not verify spoken screen-reader output."
+    ]
+  },
+  "apiBeforeAttribution": {
+    "requirementIds": [
+      "FR-003",
+      "FR-004",
+      "NFR-008",
+      "NFR-009",
+      "SEC-007"
+    ],
+    "sourceCommit": "063a1be4e6707a666e07300aed61abdec449f53a",
+    "target": "https://stacklens-api.vercel.app",
+    "status": "needs_review",
+    "observerConnections": 1,
+    "requestConcurrency": 4,
+    "requests": [
+      {
+        "index": 0,
+        "phase": "first_request",
+        "status": 404,
+        "elapsedMs": 3872,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 3,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 409,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 4,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 452,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 1,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 514,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 2,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 3410,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 8,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 92,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 7,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 93,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 6,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 142,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 5,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 316,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 9,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 87,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 11,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 88,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 12,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 92,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 10,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 2636,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 15,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 492,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 13,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 500,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 14,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 506,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 16,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 549,
+        "jsonError": true,
+        "cached": false
+      }
+    ],
+    "samples": [
+      {
+        "elapsedMs": 742,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 1805,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 2876,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 3947,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 5019,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 6083,
+        "phase": "first_request",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 7151,
+        "phase": "first_request",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 8215,
+        "phase": "first_request",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 9282,
+        "phase": "first_request",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 10351,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 11420,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 12482,
+        "phase": "burst",
+        "clients": 8,
+        "active": 3,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 13543,
+        "phase": "burst",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 14616,
+        "phase": "burst",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 15688,
+        "phase": "burst",
+        "clients": 9,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 2
+      },
+      {
+        "elapsedMs": 16746,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 17813,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 18884,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 19948,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 21013,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 22081,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 23162,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 24254,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 25338,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 26406,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 27488,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 28571,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 29632,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 30705,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 31768,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 32839,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 33908,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 34973,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 36045,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 37110,
+        "phase": "idle",
+        "clients": 10,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 38172,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 39246,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 40305,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 41375,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 42449,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 43522,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 44587,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 45654,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 46717,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 47785,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 48866,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 49924,
+        "phase": "idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 50987,
+        "phase": "resume",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 52053,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 53118,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 54191,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 55277,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 56356,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 57426,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 58492,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 59567,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 60628,
+        "phase": "post_resume_idle",
+        "clients": 9,
+        "active": 1,
+        "idle": 8,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 61706,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 62782,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 63851,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 64920,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 66062,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 67131,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 68200,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 69263,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 70338,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 71406,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 72469,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 73535,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 74600,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 75661,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 76730,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 77796,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 78862,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 79928,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 80992,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 82059,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 83125,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1
+      },
+      {
+        "elapsedMs": 84189,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 85256,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      },
+      {
+        "elapsedMs": 86320,
+        "phase": "post_resume_idle",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0
+      }
+    ],
+    "limitations": [
+      "First request is not proof of a platform cold start.",
+      "Idle release is not independent proof of Vercel function suspension.",
+      "A bounded burst does not establish an autoscaling-wide connection ceiling."
+    ],
+    "maxConnections": 20,
+    "reservedConnections": 3,
+    "baselineClients": 5,
+    "peakClients": 10,
+    "finalClients": 6,
+    "finalIdleInTransaction": 0,
+    "idleReturnedToBaseline": false,
+    "recordedAt": "2026-10-03T01:35:38.809Z",
+    "durationMs": 87333
+  },
+  "workerSoak": {
+    "requirementIds": [
+      "FR-003",
+      "FR-004",
+      "NFR-008",
+      "NFR-009",
+      "SEC-001",
+      "SEC-002",
+      "SEC-007"
+    ],
+    "sourceCommit": "063a1be4e6707a666e07300aed61abdec449f53a",
+    "target": "Silly Development 60761d98",
+    "status": "verified_six_serial_jobs",
+    "jobs": [
+      {
+        "index": 0,
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "33f21aa2-03a2-43ea-852b-01d8437c7523",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:39:27.613Z",
+        "durationMs": 135174,
+        "contractValid": true,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "schemaVersion": "2.0.0",
+        "limitations": 24,
+        "partialFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ]
+      },
+      {
+        "index": 1,
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "a73b1ea9-2a66-408c-b85c-ab90d4f1d54b",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:41:42.798Z",
+        "durationMs": 108120,
+        "contractValid": true,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "schemaVersion": "2.0.0",
+        "limitations": 5,
+        "partialFailureCodes": []
+      },
+      {
+        "index": 2,
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "a311646b-63ce-4971-8d29-73a1b92cc4c3",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:43:30.926Z",
+        "durationMs": 136394,
+        "contractValid": true,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "schemaVersion": "2.0.0",
+        "limitations": 24,
+        "partialFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ]
+      },
+      {
+        "index": 3,
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "2b6dfda1-f34a-4f82-9894-b51878aa2bfb",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:45:47.377Z",
+        "durationMs": 110307,
+        "contractValid": true,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "schemaVersion": "2.0.0",
+        "limitations": 5,
+        "partialFailureCodes": []
+      },
+      {
+        "index": 4,
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "1786c29a-4e63-4211-aeaf-53f485787411",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:47:37.690Z",
+        "durationMs": 135529,
+        "contractValid": true,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "schemaVersion": "2.0.0",
+        "limitations": 24,
+        "partialFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ]
+      },
+      {
+        "index": 5,
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "0511f709-c0e6-4194-bac9-c7a4e989bbcb",
+        "status": "completed_with_limitations",
+        "submittedAt": "2026-10-03T01:49:53.231Z",
+        "durationMs": 110366,
+        "contractValid": true,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "schemaVersion": "2.0.0",
+        "limitations": 5,
+        "partialFailureCodes": []
+      }
+    ],
+    "requestConcurrency": 1,
+    "pollIntervalMs": 3000,
+    "limitations": [
+      "Panel memory samples are not a cgroup peak.",
+      "Six serial jobs are a bounded soak, not a sustained capacity guarantee.",
+      "Provider limitations remain part of each report."
+    ],
+    "durationMs": 736005,
+    "recordedAt": "2026-10-03T01:51:43.617Z"
+  },
+  "workerResources": {
+    "samples": [
+      {
+        "recordedAt": "2026-10-03T01:39:36.790Z",
+        "memoryMiB": 135.63,
+        "cpuAbsolutePercent": 7.13
+      },
+      {
+        "recordedAt": "2026-10-03T01:41:07.900Z",
+        "memoryMiB": 188.6,
+        "cpuAbsolutePercent": 24.89
+      }
+    ],
+    "samplingInterrupted": true,
+    "limitations": [
+      "Only two panel samples were captured before browser inspection lost its connection.",
+      "No cgroup peak or restart/OOM event history was captured in this soak.",
+      "Completing six jobs does not close general sustained capacity."
+    ]
+  },
+  "backups": {
+    "providerSchedule": {
+      "observedOn": "2026-10-03",
+      "service": "stacklens-preview-pg",
+      "plan": "Free",
+      "snapshotTimes": [
+        "2026-10-01T12:33:43Z",
+        "2026-10-02T07:58:08Z"
+      ],
+      "location": "do-blr1",
+      "displayedTotalBytes": "68 MB",
+      "encryptedDailyBackupsDocumented": true,
+      "freeRetentionGuaranteed": false,
+      "freeForkAvailable": false
+    },
+    "logicalRestore": {
+      "status": "verified",
+      "source": "Aiven preview database",
+      "target": "Separate owned Aiven database",
+      "format": "PostgreSQL 18 custom archive",
+      "schemas": [
+        "public",
+        "graphile_worker"
+      ],
+      "scheduledBackup": false,
+      "startedAt": "2026-10-03T01:40:38.515Z",
+      "sourceSnapshot": {
+        "public.analysis": {
+          "count": 5,
+          "sha256": "695efea168e981b148cc7520fb036c00831a5d88bf4392d0dcc4b0047ea6f2d6"
+        },
+        "public.analysis_report": {
+          "count": 4,
+          "sha256": "2bfdd62f271f44dcfc9ab3fa19c2d2f6c71d76da5222636c52c51d013796b875"
+        },
+        "public.analysis_delivery": {
+          "count": 5,
+          "sha256": "1a4b65fa7dd5ce348a37c43cd18dc4f0f899c5c4cb004c8418b2235794a906b5"
+        },
+        "graphile_worker._private_jobs": {
+          "count": 1,
+          "sha256": "e57b2143346505a410973fc71b7b2b5103bdff597c0350ed9155788f1f8f4c59"
+        },
+        "graphile_worker._private_job_queues": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "graphile_worker._private_tasks": {
+          "count": 1,
+          "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+        },
+        "graphile_worker.migrations": {
+          "count": 20,
+          "sha256": "51d30730fab702480bc6551836acbf8e8ccc02c5d95a641dfab9e5075998b716"
+        }
+      },
+      "archiveBytes": 275174,
+      "archiveSha256": "9b8cee12f7740f6439f09ec9c22f22db16c93fa219d7039fa38e00fa6f928663",
+      "restoreCompletedAt": "2026-10-03T01:41:10.695Z",
+      "restoredSnapshot": {
+        "public.analysis": {
+          "count": 5,
+          "sha256": "695efea168e981b148cc7520fb036c00831a5d88bf4392d0dcc4b0047ea6f2d6"
+        },
+        "public.analysis_report": {
+          "count": 4,
+          "sha256": "2bfdd62f271f44dcfc9ab3fa19c2d2f6c71d76da5222636c52c51d013796b875"
+        },
+        "public.analysis_delivery": {
+          "count": 5,
+          "sha256": "1a4b65fa7dd5ce348a37c43cd18dc4f0f899c5c4cb004c8418b2235794a906b5"
+        },
+        "graphile_worker._private_jobs": {
+          "count": 1,
+          "sha256": "e57b2143346505a410973fc71b7b2b5103bdff597c0350ed9155788f1f8f4c59"
+        },
+        "graphile_worker._private_job_queues": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "graphile_worker._private_tasks": {
+          "count": 1,
+          "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+        },
+        "graphile_worker.migrations": {
+          "count": 20,
+          "sha256": "51d30730fab702480bc6551836acbf8e8ccc02c5d95a641dfab9e5075998b716"
+        }
+      },
+      "schemaCounts": {
+        "2.0.0": 4
+      },
+      "apiReportReads": 4,
+      "historicalRowsUnchanged": true,
+      "isolatedDatabaseRemoved": true,
+      "privateArchiveRemoved": true,
+      "recordedAt": "2026-10-03T01:41:16.993Z",
+      "logicalCopyRestoreMs": 32180,
+      "totalRehearsalMs": 38478
+    },
+    "limitations": [
+      "Logical rehearsal is not a restore of the managed backup.",
+      "No retained logical archive or new off-provider destination was activated.",
+      "Full disaster RPO/RTO and queue replay remain unverified."
+    ]
+  },
+  "manualAcceptance": {
+    "status": "deferred_by_user",
+    "physicalDevice": false,
+    "spokenScreenReader": false
+  },
+  "remainingGates": [
+    "Forced cold start and actual Function suspension",
+    "Autoscaling-wide connection ceiling",
+    "General sustained Worker capacity",
+    "Confirmed Free backup retention and no-card disaster recovery",
+    "Physical-device and spoken screen-reader acceptance"
+  ],
+  "recordedAt": "2026-10-03T02:05:38.868Z",
+  "quality": {
+    "command": "pnpm check",
+    "testDatabase": "isolated local PostgreSQL 18",
+    "databaseBacked": true,
+    "status": "passed",
+    "turboTestTasks": 22,
+    "turboTestCacheHits": 19,
+    "browserTests": 18,
+    "checks": [
+      "build",
+      "compiled native API and Worker smoke",
+      "shadcn configuration",
+      "strict workspace and browser typecheck",
+      "deployment and workspace tests",
+      "browser acceptance",
+      "lint",
+      "format"
+    ]
+  },
+  "browserPublication": {
+    "sourceCommit": "d80ab0344a35dbec6c13563ad263fd53b831eef1",
+    "qualityRun": "https://github.com/BlizzardBlast/StackLens/actions/runs/37088585126",
+    "qualityConclusion": "success",
+    "webDeployment": "https://vercel.com/freys-projects/stacklens/GoKB6zoHiaVvnnPmTXiHL5Z6khBo",
+    "apiDeployment": "https://vercel.com/freys-projects/stacklens-api/C6enw9UDSYXJj2XhnGqtSUqP6Fww",
+    "deploymentChecks": "success"
+  },
+  "apiAfterAttribution": {
+    "requirementIds": [
+      "FR-003",
+      "FR-004",
+      "NFR-008",
+      "NFR-009",
+      "SEC-007"
+    ],
+    "sourceCommit": "d80ab0344a35dbec6c13563ad263fd53b831eef1",
+    "target": "https://stacklens-api.vercel.app",
+    "apiApplicationName": "stacklens-api-vercel",
+    "status": "needs_review",
+    "observerConnections": 1,
+    "requestConcurrency": 4,
+    "requests": [
+      {
+        "index": 0,
+        "phase": "first_request",
+        "status": 404,
+        "elapsedMs": 822,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 1,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 331,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 3,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 368,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 4,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 410,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 2,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 3225,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 7,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 84,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 8,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 94,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 5,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 323,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 6,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 334,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 10,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 74,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 11,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 82,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 9,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 118,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 12,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 132,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 16,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 150,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 13,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 212,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 15,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 261,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 14,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 3615,
+        "jsonError": true,
+        "cached": false
+      }
+    ],
+    "samples": [
+      {
+        "elapsedMs": 700,
+        "phase": "baseline",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 1759,
+        "phase": "baseline",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 2820,
+        "phase": "baseline",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 3886,
+        "phase": "baseline",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 4950,
+        "phase": "baseline",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 6023,
+        "phase": "first_request",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 6528,
+        "phase": "first_request",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 7089,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 8160,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 9216,
+        "phase": "burst",
+        "clients": 7,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 1,
+        "api_clients": 2,
+        "api_idle_in_transaction": 1,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 9811,
+        "phase": "burst",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 10203,
+        "phase": "burst",
+        "clients": 7,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 1,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 10283,
+        "phase": "burst",
+        "clients": 7,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 1,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 10393,
+        "phase": "burst",
+        "clients": 7,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 1,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 11341,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 12405,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 13464,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 1,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 14535,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 15594,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 1,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 16659,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 1,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 17717,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 18779,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 1,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 19842,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 20902,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 21962,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 23024,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 24088,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 1,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 25186,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 26251,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 27310,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 1,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 28373,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 29433,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 1,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 30494,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 31563,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 32626,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 1,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 33691,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 34753,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 35819,
+        "phase": "idle",
+        "clients": 7,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 1,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 36884,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 4
+      },
+      {
+        "elapsedMs": 37950,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 1,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 39006,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 40073,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 41133,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 1,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 42190,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 43254,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 44315,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 45374,
+        "phase": "idle",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 46443,
+        "phase": "resume",
+        "clients": 8,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 1,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 47501,
+        "phase": "resume",
+        "clients": 8,
+        "active": 1,
+        "idle": 7,
+        "idle_in_transaction": 0,
+        "api_clients": 3,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 48566,
+        "phase": "resume",
+        "clients": 11,
+        "active": 2,
+        "idle": 8,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 1,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 49069,
+        "phase": "resume",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 1,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 49632,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 50704,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 51767,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 52830,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 53893,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 54957,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 56025,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 57089,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 58146,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 59207,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 60264,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 61327,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 62394,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 63459,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 64518,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 65589,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 66652,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 67712,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 68769,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 69831,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 70890,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 71962,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 73025,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 74089,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 75147,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 76208,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 77279,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 78343,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 79401,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 80464,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 81531,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 82588,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 9,
+        "idle_in_transaction": 1,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      },
+      {
+        "elapsedMs": 83653,
+        "phase": "post_resume_idle",
+        "clients": 11,
+        "active": 1,
+        "idle": 10,
+        "idle_in_transaction": 0,
+        "api_clients": 6,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3
+      }
+    ],
+    "startedAt": "2026-10-03T02:11:25.842Z",
+    "limitations": [
+      "First request is not proof of a platform cold start.",
+      "Idle release is not independent proof of Vercel function suspension.",
+      "A bounded burst does not establish an autoscaling-wide connection ceiling.",
+      "Unlabeled connections cannot be attributed to an application."
+    ],
+    "maxConnections": 20,
+    "reservedConnections": 3,
+    "baselineClients": 6,
+    "baselineApiClients": 1,
+    "peakClients": 11,
+    "peakApiClients": 6,
+    "finalClients": 11,
+    "finalApiClients": 6,
+    "finalIdleInTransaction": 0,
+    "idleApiClients": 3,
+    "idleReturnedToBaseline": false,
+    "apiLabelObserved": true,
+    "recordedAt": "2026-10-03T02:12:50.502Z",
+    "durationMs": 84657
+  },
+  "connectionPolicy": {
+    "requirementIds": [
+      "FR-003",
+      "FR-004",
+      "FR-022",
+      "NFR-008",
+      "NFR-009",
+      "SEC-003",
+      "SEC-007"
+    ],
+    "source": {
+      "baseCommit": "d80ab0344a35dbec6c13563ad263fd53b831eef1",
+      "dirty": true,
+      "fileSha256": {
+        "apps/api/src/vercel-runtime.ts": "a114ee81b5ca7bc919f65cc7b7e03d1e089114c0e1275424af12dd621c766548",
+        "apps/api/test/vercel-runtime.test.ts": "665347c8307cb16518a2eab65a5e4549724848acaca52b03552deecdd1ee8ed9",
+        "apps/api/test/runtime.test.ts": "919e77f38ca918970077ce516cae0b429b8834ff98a7aad208edbfed3971cf62",
+        "packages/persistence/src/pool-options.ts": "534b8215d8a4a70d62247ae8369995010ca33270378d43532a5fe6364838fde8",
+        "packages/persistence/src/pool.ts": "1ad866c7176902d03dc3706bf581557d74d3a09a23991d2f04a95f8d0f742b17",
+        "packages/persistence/test/pool.test.ts": "fc251ff3ad6d585fc23273270de133145caed0fbedfe32bf72966b5d82f8b312"
+      }
+    },
+    "maxUses": 1,
+    "apiApplicationName": "stacklens-api-vercel-single-use",
+    "localDatabaseBackedCheck": "passed",
+    "hostedMeasurement": "verified_bounded_labeled_burst_and_idle",
+    "cause": "Exact hosting lifecycle/context cause is unverified.",
+    "tradeoff": "Each released acquisition retires its client; fresh connections add connection/TLS overhead.",
+    "unchanged": [
+      "Transaction retains its acquired client until release",
+      "Shared pool concurrency and finite acquisition timeout",
+      "Verified CA TLS",
+      "Continuous API/Worker reuse policy",
+      "REST and report contracts"
+    ],
+    "legacySessions": "Earlier labeled connections are not forcibly terminated.",
+    "quality": {
+      "command": "pnpm check",
+      "testDatabase": "isolated local PostgreSQL 18",
+      "databaseBacked": true,
+      "status": "passed",
+      "turboTestTasks": 22,
+      "turboTestCacheHits": 18,
+      "browserTests": 18,
+      "checks": [
+        "build",
+        "compiled native API and Worker smoke",
+        "shadcn configuration",
+        "strict workspace and browser typecheck",
+        "deployment and workspace tests",
+        "browser acceptance",
+        "lint",
+        "format"
+      ],
+      "recordedAt": "2026-10-03T02:24:44.781Z"
+    }
+  },
+  "policyPublication": {
+    "sourceCommit": "beaac2541a213f23da21c6b3610aaf89edf967af",
+    "sourceFileHashesVerified": true,
+    "qualityRun": "https://github.com/BlizzardBlast/StackLens/actions/runs/37089763781",
+    "qualityConclusion": "success",
+    "webDeployment": "https://vercel.com/freys-projects/stacklens/FKVUR2nAoB2BWASpjdcb7NvKqD4b",
+    "apiDeployment": "https://vercel.com/freys-projects/stacklens-api/26Uyi2bYN3SVgkKMhkL7UZy1iNCU",
+    "deploymentChecks": "success"
+  },
+  "apiSingleUse": {
+    "requirementIds": [
+      "FR-003",
+      "FR-004",
+      "NFR-008",
+      "NFR-009",
+      "SEC-007"
+    ],
+    "sourceCommit": "beaac2541a213f23da21c6b3610aaf89edf967af",
+    "target": "https://stacklens-api.vercel.app",
+    "apiApplicationName": "stacklens-api-vercel-single-use",
+    "status": "verified_bounded_labeled_burst_and_idle",
+    "observerConnections": 1,
+    "requestConcurrency": 2,
+    "burstWaves": 6,
+    "resumeWaves": 2,
+    "requests": [
+      {
+        "index": 0,
+        "phase": "first_request",
+        "status": 404,
+        "elapsedMs": 822,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 1,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 455,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 2,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 755,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 3,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 586,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 4,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 4064,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 6,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 332,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 5,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 688,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 7,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 342,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 8,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 686,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 9,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 356,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 10,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 356,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 11,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 347,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 12,
+        "phase": "burst",
+        "status": 404,
+        "elapsedMs": 351,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 13,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 503,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 14,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 3902,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 15,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 350,
+        "jsonError": true,
+        "cached": false
+      },
+      {
+        "index": 16,
+        "phase": "resume",
+        "status": 404,
+        "elapsedMs": 352,
+        "jsonError": true,
+        "cached": false
+      }
+    ],
+    "samples": [
+      {
+        "elapsedMs": 603,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 1669,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 2728,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 3784,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 4849,
+        "phase": "baseline",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 5910,
+        "phase": "first_request",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 6234,
+        "phase": "first_request",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 4,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 6448,
+        "phase": "first_request",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 6549,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 6865,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 7187,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 7259,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 7500,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 7823,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 8142,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 8454,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 8769,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 9089,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 9405,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 9725,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 10039,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1,
+        "api_clients": 1,
+        "api_idle_in_transaction": 1,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 10356,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 10674,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 10979,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 11294,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 5,
+        "idle_in_transaction": 0,
+        "api_clients": 1,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 11378,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 11613,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 4,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 11931,
+        "phase": "burst",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 4,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 12121,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 12247,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 12564,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 12863,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 12918,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 13235,
+        "phase": "burst",
+        "clients": 7,
+        "active": 1,
+        "idle": 6,
+        "idle_in_transaction": 0,
+        "api_clients": 2,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 13289,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 13550,
+        "phase": "burst",
+        "clients": 7,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 5,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 13696,
+        "phase": "burst",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 13873,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 14942,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 16005,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 17071,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 18128,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 19194,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 20248,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 21306,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 22370,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 23433,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 24494,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 25558,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 26621,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 27678,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 28744,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 29805,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 30865,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 31932,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 33000,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 34062,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 35125,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 36184,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 37242,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 38305,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 39378,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 40442,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 41499,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 42559,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 43626,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 44681,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 45743,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 46805,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 47865,
+        "phase": "idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 48923,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 49240,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 49559,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 49880,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 50195,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 50513,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 50833,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 51155,
+        "phase": "resume",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 4,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 51468,
+        "phase": "resume",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 1,
+        "api_clients": 1,
+        "api_idle_in_transaction": 1,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 51786,
+        "phase": "resume",
+        "clients": 6,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 4,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 52119,
+        "phase": "resume",
+        "clients": 6,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 4,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 52439,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 52659,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 52755,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 53063,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 53118,
+        "phase": "resume",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 53379,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 54440,
+        "phase": "post_resume_idle",
+        "clients": 8,
+        "active": 2,
+        "idle": 5,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 55498,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 56557,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 57619,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 58685,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 59749,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 60809,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 61869,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 62935,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 63990,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 65048,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 66112,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 67182,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 68253,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 69310,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 70374,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 71434,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 72493,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 73560,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 74621,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 75680,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 76739,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 77799,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 78858,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 79913,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 80972,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 82030,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 83088,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 84152,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 85214,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 3,
+        "idle_in_transaction": 1,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 86275,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      },
+      {
+        "elapsedMs": 87333,
+        "phase": "post_resume_idle",
+        "clients": 5,
+        "active": 1,
+        "idle": 4,
+        "idle_in_transaction": 0,
+        "api_clients": 0,
+        "api_idle_in_transaction": 0,
+        "unlabeled_clients": 3,
+        "legacy_api_clients": 0
+      }
+    ],
+    "startedAt": "2026-10-03T02:26:54.271Z",
+    "limitations": [
+      "First request is not proof of a platform cold start.",
+      "Idle release is not independent proof of Vercel function suspension.",
+      "A bounded burst does not establish an autoscaling-wide connection ceiling.",
+      "Unlabeled connections cannot be attributed to an application.",
+      "Two-request waves preserve connection headroom during overlap with earlier deployments."
+    ],
+    "maxConnections": 20,
+    "reservedConnections": 3,
+    "baselineClients": 5,
+    "baselineApiClients": 0,
+    "peakClients": 8,
+    "peakApiClients": 2,
+    "finalClients": 5,
+    "baselineLegacyApiClients": 0,
+    "finalLegacyApiClients": 0,
+    "requestLatencyMs": {
+      "min": 332,
+      "median": 455,
+      "p95": 4064,
+      "max": 4064
+    },
+    "finalApiClients": 0,
+    "finalIdleInTransaction": 0,
+    "idleApiClients": 0,
+    "idleReturnedToBaseline": true,
+    "apiLabelObserved": true,
+    "recordedAt": "2026-10-03T02:28:22.611Z",
+    "durationMs": 88339
+  },
+  "publicSingleUse": {
+    "requirementIds": [
+      "FR-001",
+      "FR-002",
+      "FR-004",
+      "FR-021",
+      "FR-022",
+      "NFR-009",
+      "SEC-003",
+      "SEC-007"
+    ],
+    "sourceCommit": "beaac2541a213f23da21c6b3610aaf89edf967af",
+    "status": "verified_direct_api_and_web_proxy",
+    "requests": [
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "path": "/openapi.json",
+        "method": "GET",
+        "status": 200,
+        "elapsedMs": 266,
+        "cached": false
+      },
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "path": "/v1/analyze/manifest",
+        "method": "POST",
+        "status": 400,
+        "elapsedMs": 49,
+        "cached": false
+      },
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "path": "/v1/analyze/manifest",
+        "method": "POST",
+        "status": 200,
+        "elapsedMs": 139,
+        "cached": false,
+        "inputKind": "paste",
+        "contractValid": true,
+        "schemaVersion": "2.0.0"
+      },
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "path": "/v1/analyses/3af1097d-639a-44a3-98f3-cceb19f1f299",
+        "method": "GET",
+        "status": 404,
+        "elapsedMs": 346,
+        "cached": false
+      },
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "path": "/v1/analyze/manifest",
+        "method": "POST",
+        "status": 200,
+        "elapsedMs": 42,
+        "cached": false,
+        "inputKind": "upload",
+        "contractValid": true,
+        "schemaVersion": "2.0.0"
+      },
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "path": "/v1/analyses/70596378-ff32-41d4-8129-368a162ed42b",
+        "method": "GET",
+        "status": 404,
+        "elapsedMs": 337,
+        "cached": false
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "path": "/openapi.json",
+        "method": "GET",
+        "status": 200,
+        "elapsedMs": 389,
+        "cached": false
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "path": "/v1/analyze/manifest",
+        "method": "POST",
+        "status": 400,
+        "elapsedMs": 324,
+        "cached": false
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "path": "/v1/analyze/manifest",
+        "method": "POST",
+        "status": 200,
+        "elapsedMs": 348,
+        "cached": false,
+        "inputKind": "paste",
+        "contractValid": true,
+        "schemaVersion": "2.0.0"
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "path": "/v1/analyses/ef079aad-00cf-4ecd-b96b-ee4a44f3e37c",
+        "method": "GET",
+        "status": 404,
+        "elapsedMs": 601,
+        "cached": false
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "path": "/v1/analyze/manifest",
+        "method": "POST",
+        "status": 200,
+        "elapsedMs": 52,
+        "cached": false,
+        "inputKind": "upload",
+        "contractValid": true,
+        "schemaVersion": "2.0.0"
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "path": "/v1/analyses/bdbd5593-6922-4705-80da-fdcb556a5077",
+        "method": "GET",
+        "status": 404,
+        "elapsedMs": 389,
+        "cached": false
+      }
+    ],
+    "startedAt": "2026-10-03T02:29:07.816Z",
+    "recordedAt": "2026-10-03T02:29:11.113Z"
+  },
+  "hostedSingleUse": {
+    "requirementIds": [
+      "FR-003",
+      "FR-004",
+      "NFR-008",
+      "NFR-009",
+      "SEC-001",
+      "SEC-002",
+      "SEC-007"
+    ],
+    "sourceCommit": "beaac2541a213f23da21c6b3610aaf89edf967af",
+    "target": "Silly Development 60761d98",
+    "status": "verified_hosted_submission_and_report",
+    "jobs": [
+      {
+        "index": 0,
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "13bc31cb-4c5e-42b8-8adc-878363f20690",
+        "status": "completed_with_limitations",
+        "submissionElapsedMs": 649,
+        "submittedAt": "2026-10-03T02:29:20.704Z",
+        "durationMs": 143683,
+        "contractValid": true,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "schemaVersion": "2.0.0",
+        "limitations": 24,
+        "partialFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ]
+      }
+    ],
+    "requestConcurrency": 1,
+    "pollIntervalMs": 3000,
+    "limitations": [
+      "Panel memory samples are not a cgroup peak.",
+      "One follow-up job verifies the API connection policy path, not sustained Worker capacity.",
+      "Provider limitations remain part of each report."
+    ],
+    "durationMs": 143686,
+    "recordedAt": "2026-10-03T02:31:44.390Z"
+  },
+  "followupRecordedAt": "2026-10-03T02:32:12.661Z",
+  "temporaryAssetsCleanup": {
+    "privateObserverEnvRemoved": true,
+    "ownedPostgresContainerRemoved": true,
+    "previewPortHasListener": false,
+    "testDatabasePortHasListener": false,
+    "recordedAt": "2026-10-03T02:34:49.3133659Z"
+  }
+}

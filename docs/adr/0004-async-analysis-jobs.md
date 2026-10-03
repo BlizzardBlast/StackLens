@@ -83,6 +83,12 @@ Any temporary local files used by a worker must be deleted after the analysis li
 
 Anonymous analysis data must have a finite retention period. The exact hosted default is an operational/product launch decision and must be documented before deployment.
 
+ADR-0015 records the initial default of 24 hours from submission, configurable through
+`STACKLENS_RETENTION_HOURS` (1–8760 integer hours). Worker sweeps remove expired terminal records
+and cascade reports/delivery metadata. Queued/running claims remain until terminal completion.
+Legacy null-expiry records are not silently backfilled; an existing host must document a separate
+data-migration decision. Operators must align backup/log expiry and monitor stalled jobs.
+
 Retention must satisfy **SEC-003**. Private source retention, when private repository support is introduced, remains governed by **SEC-004**.
 
 ### Job payload

@@ -66,6 +66,7 @@ DATABASE_URL=postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens
 STACKLENS_API_HOST=127.0.0.1
 STACKLENS_API_PORT=3000
 STACKLENS_WORKER_CONCURRENCY=2
+STACKLENS_RETENTION_HOURS=24
 
 # Optional. Keep a real value secret and out of source control.
 # STACKLENS_GITHUB_TOKEN=
@@ -73,6 +74,13 @@ STACKLENS_WORKER_CONCURRENCY=2
 
 The defaults are intentionally local-only convenience values. Deployed API/Worker processes should
 provide an explicit `DATABASE_URL` through their environment/secret manager.
+
+Optional hosted configuration uses `STACKLENS_DATABASE_POOL_MAX` for a positive integer pool
+maximum and `STACKLENS_DATABASE_SSL_CA` for actual multiline CA PEM. Explicit CA connections
+require PostgreSQL URLs without `ssl*` parameters and verify certificate trust and hostname.
+Unset options retain local pool defaults. Runtime connection acquisition is limited to ten seconds.
+Container health checks use the same CA with one connection and a five-second connection timeout.
+See [managed hosting](managed-hosting.md) for the Aiven preview configuration.
 
 With `DATABASE_URL` unset, both executable entrypoints use the Compose database on port 55432;
 copying `.env.example` is optional. An explicit `DATABASE_URL` takes precedence unchanged.
@@ -85,6 +93,13 @@ manager, never in `.env.example`, committed `.env` files, logs, or screenshots.
 
 `VITE_STACKLENS_API_BASE_URL` remains optional. Leave it unset for the development proxy or
 same-origin deployment.
+
+Executable API runtime assigns repository retention from `STACKLENS_RETENTION_HOURS`, defaulting to
+24 integer hours (supported range 1–8760). Worker maintenance deletes expired terminal analyses and
+cascades reports/delivery rows; queued/running ownership and legacy null-expiry records are preserved.
+Quick reports remain transient. API responses prevent browser/CDN caching. Production entrypoints
+require an explicit nonempty `DATABASE_URL`; their local fallback remains available in development.
+See [portable backend hosting](backend-hosting.md) for deployment, backups and lifetime boundaries.
 
 ## Runtime boundaries
 
@@ -167,4 +182,9 @@ After the build, `pnpm check` runs `pnpm runtime:smoke`. It always imports the c
 rules-JavaScript entry under Node 24, catching real ESM dependency-resolution failures. When
 `TEST_DATABASE_URL` is set, it also creates and stops the compiled API and Worker runtimes against
 PostgreSQL, exercising persistence bootstrap and Graphile initialization without contacting external
-providers.
+  providers.
+
+The same compiled smoke also starts the request-bound Vercel API adapter, verifies a durable queued
+submission and uncached status, and checks that quick analysis remains transient. Its recovery
+pump is disabled; the smoke-local Worker task never claims or executes repository/provider jobs.
+This verifies local lifecycle composition, not cloud deployment or Function suspension.

@@ -5,6 +5,26 @@ import type { QuickManifestAnalysisInput } from "./quick-analysis-api.js";
 import { QuickAnalysisForm } from "./quick-analysis-form.js";
 
 describe("QuickAnalysisForm [FR-001, FR-002, FR-004, FR-022, NFR-006, NFR-007]", () => {
+  it("names native mode radios from their visible titles and associates their descriptions", () => {
+    const onSubmit = vi
+      .fn<(input: QuickManifestAnalysisInput) => Promise<void>>()
+      .mockResolvedValue(undefined);
+    render(<QuickAnalysisForm onSubmit={onSubmit} />);
+
+    const paste = screen.getByRole("radio", { name: "Paste manifest" });
+    const upload = screen.getByRole("radio", { name: "Choose local file" });
+    expect(paste).toHaveAccessibleDescription(
+      "Best when package.json is already open in your editor.",
+    );
+    expect(upload).toHaveAccessibleDescription(
+      "Read package.json locally, then send only its text to StackLens.",
+    );
+    expect(paste).toBeChecked();
+    fireEvent.click(upload);
+    expect(upload).toBeChecked();
+    expect(screen.getByLabelText("Local package.json")).toBeInTheDocument();
+  });
+
   it("keeps explicit spacing between the input legend and mode choices", () => {
     const onSubmit = vi
       .fn<(input: QuickManifestAnalysisInput) => Promise<void>>()

@@ -30,12 +30,15 @@ Graphile Worker without either application importing the other.
 The composition root owns no formula itself. Detection/priority/recommendation policy remains in
 `@stacklens/rules-javascript`; numeric scoring remains in `@stacklens/scoring`.
 
-Production identities are `javascript-production-v5`, `javascript-rules-v5`, and
+Production identities are `javascript-production-v6`, `javascript-rules-v6`, and
 `stack-health-v3`, writing schema 2.0.0 under ADR-0013. The same package exports the provider-free
 quick-manifest composition so the API does not reconstruct priority or scoring policy.
 Quick identities are `javascript-quick-manifest-v5` and `javascript-quick-manifest-rules-v5`.
 The v5 evidence corrections advance `JS-INSPECTION-018` to 2 and `JS-MIGRATION-014` to 3;
 report schema 2.0.0 and stack-health-v3 formulas remain unchanged.
+The v6 correction advances `JS-NPM-010` to 2 so npm health evaluation shares provider eligibility:
+internal links, unresolved workspace targets and peer-only constraints do not receive missing-npm
+messages. Existing reports retain their original identities and values.
 Transient project metadata includes acquisition counts/completeness, acquired lockfile paths, and
 lockfile normalization issue counts. These support evidence-backed setup checks; file/script bodies
 remain transient and only high-level observations enter the report.

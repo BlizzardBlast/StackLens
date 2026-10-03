@@ -13,6 +13,60 @@ The canonical product and system requirements are in **[docs/requirements.md](do
 For the current implementation sequence and fresh-session handover, see **[docs/handover.md](docs/handover.md)**.
 The automated acceptance baseline is documented in
 **[docs/implementation/mvp-acceptance.md](docs/implementation/mvp-acceptance.md)**.
+The [September 30 live release evidence](docs/implementation/mvp-release-readiness.md) covers both
+public repositories through the local web/API/worker/database stack, paste/upload, error recovery
+and verified 320px layouts. It records provider limitations and the remaining real screen-reader
+and physical-device checks; it does not claim a deployed release.
+
+The [personal preview](https://stacklens-web.vercel.app) is live on Vercel Hobby with a separate
+[Fastify API](https://stacklens-api.vercel.app), shared Aiven Free PostgreSQL and the continuous
+Silly Development Node 24 Worker. No card or paid plan was added. Both requested repositories
+completed with explicit limitations through the public API and actual web forms. Same-origin JSON
+routing, transient paste/upload, native file replacement, stable deep links, evidence focus return,
+terminal polling stop and 320px Chromium emulation pass. See the
+[October 2 public evidence](docs/implementation/public-preview-validation.md).
+
+The Vercel projects are named `stacklens` and `stacklens-api`. The web uses
+`stacklens-web.vercel.app` because `stacklens.vercel.app` belongs to another team. Original
+auto-assigned addresses remain compatibility aliases; see the
+[naming record](docs/implementation/release-evidence/2026-10-02-project-naming.json).
+
+The API native entrypoint exports a ready, unbound HTTP server; Vercel owns binding. Earlier failed
+configuration and startup attempts remain in the dated evidence. Runtime commit `75bf5a2` passed
+CI and the 539-test database-backed gate, including the native-entry and compiled API/Worker smokes.
+The reviewed branch remains in draft [PR #41](https://github.com/BlizzardBlast/StackLens/pull/41).
+
+Repository acceptance waits for the atomic analysis/outbox commit; immediate dispatch is best
+effort and recovery belongs to the continuous Worker. A completed analysis whose report is missing
+returns a retryable `503`; `404` remains reserved for an absent analysis after a bounded reread.
+CI now runs the compiled native-entry/API/Worker smoke after its build with PostgreSQL 18, matching
+the local `pnpm check` runtime gate. See the [API contract](docs/implementation/repository-api.md)
+and [contributor verification guidance](CONTRIBUTING.md#compiled-runtime-verification).
+
+The [managed runbook](docs/implementation/managed-hosting.md) records rejected card-required
+Northflank/Render activation and the inactive credit-limited Railway candidate. The public preview
+still has release gaps: an active Worker restart delayed KerjaLog completion to 4h 10m after
+submission; sampled memory reached 257.36 MiB against its displayed 256 MiB limit. Immediate
+recovery was subsequently fixed and verified with a hosted active-job stop/start. The same analysis
+finished in 3m 13s. The final constrained Linux run completed both repositories with a 244.25 MiB
+peak and no memory-limit/OOM events. Remote expiry cleanup and isolated restoration of eight stored
+reports pass. See the [Worker recovery record](docs/implementation/worker-recovery.md) for exact
+scope and source hashes. The recovery observations were captured on a dirty base `405b420`; the
+follow-up is published through draft PR #41. Resolve its current HEAD and deployments for review.
+Headroom remains small. General capacity, Function suspension/global connection ceilings, full
+disaster recovery and real screen-reader/device acceptance remain open. This personal preview is not
+a production-readiness claim.
+
+The [October 3 operational follow-up](docs/implementation/operational-preview-validation.md) adds
+continuous Chromium/Firefox/WebKit acceptance, six successful serial hosted analyses and a fresh
+four-report restore rehearsal. Labeled live measurement exposed API clients remaining idle after
+requests. The deployed request-bound adapter retires each released client; both measured idle
+intervals ended with zero API clients, and direct/proxied quick flows plus a fresh repository
+submission passed. Connection/TLS overhead and the exact runtime revision are recorded. The
+[backup policy](docs/implementation/preview-backups.md) records Aiven's existing daily backups and
+the Free-plan recovery limitation. Cold-start/suspension, general capacity, disaster recovery and
+manual device/screen-reader gates remain open. `pnpm check` now includes browser acceptance; install
+the engines once with `pnpm exec playwright install chromium firefox webkit`.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 

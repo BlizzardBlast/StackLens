@@ -38,6 +38,10 @@ pnpm --filter @stacklens/worker dev
 
 The worker defaults to the local Compose `DATABASE_URL` and concurrency 2. Override
 `DATABASE_URL` or `STACKLENS_WORKER_CONCURRENCY` through the process environment when needed.
+Hosted databases also accept `STACKLENS_DATABASE_SSL_CA` (actual multiline CA PEM) and
+`STACKLENS_DATABASE_POOL_MAX` (positive integer). Remove URL SSL parameters when supplying the
+explicit CA. The managed preview starts with a pool of five and concurrency one; database/provider
+secrets remain backend-only. See [managed hosting](../../docs/implementation/managed-hosting.md).
 
 `STACKLENS_GITHUB_TOKEN` is optional. When present, the worker uses it only to authenticate
 read-only GitHub REST requests for the already-supported **public repository** analysis flow, which
@@ -47,3 +51,17 @@ boundary. Leave the variable unset to keep anonymous public GitHub access.
 
 The runtime owns Graphile/StackLens migrations and provider composition; the process entrypoint owns
 signals and graceful shutdown.
+
+Shutdown consumes Graphile's job abort signal, cancels provider I/O, and returns interrupted
+attempts for bounded retry without writing an incomplete report. Zero-delay queue-write batching
+ensures the final queue writes are awaited before pool closure. Npm packuments are acquired one at
+a time per job. Startup logs the pool owner ID needed for confirmed-exit operator recovery.
+See [Worker recovery](../../docs/implementation/worker-recovery.md) and ADR-0017; never unlock a
+live owner or infer ownership from a slow public stage.
+
+Worker runtime starts bounded expired-terminal cleanup on startup and every sixty seconds after
+the prior sweep. It preserves queued/running claims and cascades reports/delivery rows through the
+persistence boundary. Shutdown waits for active maintenance before closing the pool. Retention
+errors are logged by name only. The compiled smoke explicitly disables retention cleanup so it
+does not delete existing rows. Production startup requires `DATABASE_URL`. See
+[backend hosting](../../docs/implementation/backend-hosting.md).

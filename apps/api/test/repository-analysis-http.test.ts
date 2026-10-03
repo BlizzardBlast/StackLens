@@ -187,7 +187,150 @@ async function testApi(
 }
 
 describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () => {
-  it("validates, canonicalizes, persists, and enqueues repository work before returning 202", async () => {
+  it.each(["completed", "completed_with_limitations"] as const)(
+    "SEC-003 returns 404 when retention removes a %s analysis between reads",
+    async (status) => {
+      const persistence = repositoryHarness(record({ status, progressStage: status }));
+      persistence.findReport.mockImplementationOnce(async () => {
+        persistence.setAnalysis(undefined);
+        return undefined;
+      });
+      const jobs = deliveryDispatcherHarness();
+      const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
+      const response = await app.inject({ method: "GET", url: "/v1/analyses/analysis-test-001" });
+      expect(response.statusCode).toBe(404);
+      expect(response.json()).toEqual({
+        code: "analysis_not_found",
+        message: "Analysis was not found.",
+      });
+      expect(response.headers["cache-control"]).toBe("private, no-store");
+      expect(response.headers["cdn-cache-control"]).toBe("no-store");
+      expect(response.headers["vercel-cdn-cache-control"]).toBe("no-store");
+      expect(persistence.findAnalysis).toHaveBeenCalledTimes(2);
+    },
+  );
+
+  it.each(["completed", "completed_with_limitations"] as const)(
+    "NFR-008 returns 503 while a %s report is missing and serves it on a later request",
+    async (status) => {
+      const persistence = repositoryHarness(record({ status, progressStage: status }));
+      const jobs = deliveryDispatcherHarness();
+      const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
+      const unavailable = await app.inject({
+        method: "GET",
+        url: "/v1/analyses/analysis-test-001",
+      });
+      expect(unavailable.statusCode).toBe(503);
+      expect(unavailable.json()).toEqual({
+        code: "analysis_unavailable",
+        message: "Repository analysis is temporarily unavailable.",
+      });
+      expect(persistence.findAnalysis).toHaveBeenCalledTimes(2);
+
+      const storedReport = report("analysis-test-001");
+      persistence.setReport({
+        analysisId: "analysis-test-001",
+        reportSchemaVersion: storedReport.schemaVersion,
+        report: storedReport,
+        createdAt,
+      });
+      const recovered = await app.inject({ method: "GET", url: "/v1/analyses/analysis-test-001" });
+      expect(recovered.statusCode).toBe(200);
+      expect(recovered.json()).toMatchObject({
+        status,
+        progressStage: status,
+        report: storedReport,
+      });
+      expect(persistence.findAnalysis).toHaveBeenCalledTimes(3);
+      for (const response of [unavailable, recovered]) {
+        expect(response.headers["cache-control"]).toBe("private, no-store");
+        expect(response.headers["cdn-cache-control"]).toBe("no-store");
+        expect(response.headers["vercel-cdn-cache-control"]).toBe("no-store");
+      }
+    },
+  );
+
+  it("NFR-008 returns refreshed progress when the terminal record changes between reads", async () => {
+    const persistence = repositoryHarness(
+      record({ status: "completed", progressStage: "completed" }),
+    );
+    persistence.findReport.mockImplementationOnce(async () => {
+      persistence.setAnalysis(record({ status: "running", progressStage: "resolving_repository" }));
+      return undefined;
+    });
+    const jobs = deliveryDispatcherHarness();
+    const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
+    const response = await app.inject({ method: "GET", url: "/v1/analyses/analysis-test-001" });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({
+      status: "running",
+      progressStage: "resolving_repository",
+    });
+    expect(response.json()).not.toHaveProperty("report");
+    expect(persistence.findAnalysis).toHaveBeenCalledTimes(2);
+    expect(persistence.findReport).toHaveBeenCalledOnce();
+  });
+
+  it.each(["report", "recheck"] as const)(
+    "NFR-009 returns a sanitized 503 when the terminal %s lookup fails",
+    async (lookup) => {
+      const persistence = repositoryHarness(
+        record({ status: "completed", progressStage: "completed" }),
+      );
+      const privateFailure = new Error("synthetic private database detail");
+      if (lookup === "report") {
+        persistence.findReport.mockRejectedValueOnce(privateFailure);
+      } else {
+        persistence.findAnalysis.mockResolvedValueOnce(
+          record({ status: "completed", progressStage: "completed" }),
+        );
+        persistence.findAnalysis.mockRejectedValueOnce(privateFailure);
+      }
+      const jobs = deliveryDispatcherHarness();
+      const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
+      const response = await app.inject({ method: "GET", url: "/v1/analyses/analysis-test-001" });
+      expect(response.statusCode).toBe(503);
+      expect(response.json()).toEqual({
+        code: "analysis_unavailable",
+        message: "Repository analysis is temporarily unavailable.",
+      });
+      expect(response.body).not.toContain(privateFailure.message);
+      expect(response.headers["cache-control"]).toBe("private, no-store");
+      expect(response.headers["cdn-cache-control"]).toBe("no-store");
+      expect(response.headers["vercel-cdn-cache-control"]).toBe("no-store");
+    },
+  );
+  it("SEC-003 assigns configured expiry and prevents caching of accepted and failed requests", async () => {
+    const persistence = repositoryHarness();
+    const jobs = deliveryDispatcherHarness();
+    const app = await createStackLensApi({
+      repository: persistence.repository,
+      deliveryDispatcher: jobs.deliveryDispatcher,
+      createAnalysisId: () => "retention-test",
+      now: () => createdAt,
+      retentionHours: 24,
+    });
+    openApps.push(app);
+    const response = await app.inject({
+      method: "POST",
+      url: "/v1/analyses/repository",
+      payload: { repositoryUrl: "https://github.com/acme/demo" },
+    });
+    expect(response.statusCode).toBe(202);
+    expect(persistence.createQueuedRepositoryAnalysisWithDelivery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        retentionExpiresAt: new Date(new Date(createdAt).getTime() + 86_400_000).toISOString(),
+      }),
+    );
+    const missing = await app.inject({ method: "GET", url: "/v1/analyses/missing" });
+    expect(missing.statusCode).toBe(404);
+    for (const result of [response, missing]) {
+      expect(result.headers["cache-control"]).toBe("private, no-store");
+      expect(result.headers["cdn-cache-control"]).toBe("no-store");
+      expect(result.headers["vercel-cdn-cache-control"]).toBe("no-store");
+    }
+  });
+  it("validates, canonicalizes, and durably accepts repository work before best-effort dispatch", async () => {
     const persistence = repositoryHarness();
     const jobs = deliveryDispatcherHarness();
     const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
@@ -268,6 +411,49 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
     expect(jobs.dispatchReady).toHaveBeenCalledOnce();
   });
 
+  it("FR-003 awaits the atomic commit but returns 202 without waiting for best-effort dispatch", async () => {
+    const persistence = repositoryHarness();
+    const jobs = deliveryDispatcherHarness();
+    const durableCreation = Promise.withResolvers<RepositoryAnalysisRecord>();
+    const delivery = Promise.withResolvers<void>();
+    persistence.createQueuedRepositoryAnalysisWithDelivery.mockReturnValueOnce(
+      durableCreation.promise,
+    );
+    jobs.dispatchReady.mockReturnValueOnce(delivery.promise);
+    const app = await testApi(persistence.repository, jobs.deliveryDispatcher);
+    let responseSettled = false;
+    const responsePromise = app
+      .inject({
+        method: "POST",
+        url: "/v1/analyses/repository",
+        payload: { repositoryUrl: "https://github.com/acme/demo" },
+      })
+      .then((response) => {
+        responseSettled = true;
+        return response;
+      });
+
+    try {
+      await vi.waitFor(() =>
+        expect(persistence.createQueuedRepositoryAnalysisWithDelivery).toHaveBeenCalledOnce(),
+      );
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      expect(responseSettled).toBe(false);
+      expect(jobs.dispatchReady).not.toHaveBeenCalled();
+
+      durableCreation.resolve(record());
+      await vi.waitFor(() => expect(responseSettled).toBe(true));
+      const response = await responsePromise;
+      expect(response.statusCode).toBe(202);
+      expect(response.json()).toEqual({ analysisId: "analysis-test-001" });
+      expect(jobs.dispatchReady).toHaveBeenCalledOnce();
+    } finally {
+      durableCreation.resolve(record());
+      delivery.resolve();
+      await responsePromise;
+    }
+  });
+
   it("returns a stable availability error when durable creation fails", async () => {
     const persistence = repositoryHarness();
     persistence.createQueuedRepositoryAnalysisWithDelivery.mockRejectedValue(
@@ -322,6 +508,7 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
       updatedAt: "2026-09-21T12:00:02.000Z",
     });
     expect(persistence.findReport).not.toHaveBeenCalled();
+    expect(persistence.findAnalysis).toHaveBeenCalledOnce();
     expect(response.body).not.toContain("job");
   });
 
@@ -392,6 +579,7 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
         report: analysisReport,
       });
       expect(persistence.findReport).toHaveBeenCalledWith("analysis-test-001");
+      expect(persistence.findAnalysis).toHaveBeenCalledOnce();
     },
   );
 
@@ -448,6 +636,8 @@ describe("repository analysis Fastify transport [FR-003, FR-004, NFR-008]", () =
       code: "analysis_not_found",
       message: "Analysis was not found.",
     });
+    expect(persistence.findAnalysis).toHaveBeenCalledOnce();
+    expect(persistence.findReport).not.toHaveBeenCalled();
   });
 
   it("publishes the repository analysis polling contract through OpenAPI", async () => {

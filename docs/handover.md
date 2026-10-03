@@ -1,5 +1,289 @@
 # StackLens Session Handover
 
+> **Prepared:** 2026-10-03\
+> **Architecture:** v0.1.20; requirements v0.1.3\
+> **Milestone:** PR #41 draft; Worker planned recovery, remote expiry and restore verified; manual gates open\
+> **Branch:** `codex/mvp-release-readiness`, existing checkout; PR #41\
+> **Verified main:** `f51d2b61f4740172558bb4b38087af60af8d791a`, confirmed through the remote main ref\
+> **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
+
+## Current handover
+
+### October 3 scoped PR review corrections
+
+PR #41 now distinguishes actual retention deletion from a missing terminal report. The application
+performs one analysis reread only when the report is missing: an absent row produces `404`, while a
+surviving completed record produces sanitized `503` and can recover on a later request. Existing
+report readers, public schemas and Query cancellation/polling behavior are preserved.
+
+Submission waits for the atomic analysis/outbox commit, then starts unawaited best-effort dispatch.
+The continuous Worker recovers pending deliveries and expired leases; the Vercel API has no pump.
+ADR-0016 and current hosting guidance correct their earlier awaited-dispatch claim. The quality
+workflow now runs the existing compiled native-entry/API/Worker smoke after build with PostgreSQL 18.
+See the [API contract](implementation/repository-api.md) and
+[verification guidance](../CONTRIBUTING.md#compiled-runtime-verification).
+
+Resolve the actual PR #41 HEAD, its quality run and both deployment revisions before further work;
+publication evidence is recorded in the PR. Keep it draft and unmerged. This scoped correction does
+not extend the dated runtime measurements below or close capacity, Function lifecycle, full disaster
+recovery or manual device/spoken-output gates. Narrator idle repetition remains P3 and user-deferred.
+
+### Hosting history and current resources
+
+The user requested Vercel project names `stacklens` (web) and `stacklens-api` (API). Both are renamed
+in place with their original project IDs. Current addresses are
+[StackLens](https://stacklens-web.vercel.app) and [API](https://stacklens-api.vercel.app).
+Vercel rejected `stacklens.vercel.app` as belonging to another team. Both original auto-assigned
+addresses remain compatibility aliases. Web Production Config now uses the named API origin;
+publication must rebuild routing and verify the actual current HEAD. See the
+[naming record](implementation/release-evidence/2026-10-02-project-naming.json) and PR #41 for the
+subsequent deployment/CI results. Project renaming does not establish release readiness.
+
+The user requires free hosting without a payment card. Aiven project `stacklens-preview` and
+PostgreSQL Free service `stacklens-preview-pg` are created in DigitalOcean `blr` (Asia Pacific).
+Live isolated verification confirmed PostgreSQL 18.6, verified TLS, unrelated-CA rejection,
+StackLens/Graphile migrations, quick analysis, durable enqueue and provider-free Worker startup/
+shutdown. The isolated database was removed. The preview database retains the remote validation
+analyses and reports under the configured finite retention policy.
+See [managed hosting](implementation/managed-hosting.md) and the
+[new evidence](implementation/release-evidence/2026-10-01-managed-hosting.json).
+
+Shared persistence now accepts verified CA and finite pool/connection settings. Executable API
+and Worker parse `STACKLENS_DATABASE_SSL_CA` and `STACKLENS_DATABASE_POOL_MAX`; the intended
+managed settings are portable API max three, Vercel API max one per instance and Worker max five/
+concurrency one. Container health checks use the same CA and a separate one-connection pool.
+URL SSL overrides and malformed options fail
+without exposing values. Analyzer policy, contracts and requirements behavior are unchanged.
+
+Northflank's created `stacklens-preview` project is empty. Its actual Sandbox service form requires
+a card, contradicting the earlier blog-based recommendation, and the user explicitly rejected
+card verification. Do not retry card setup or claim Northflank satisfies the constraint. Railway
+has a private `stacklens-preview` project and configured offline API/Worker services after the user
+completed GitHub sign-in. Its CLI remains unauthenticated; no source, backend secrets, public
+domain or deployment was uploaded. Trial allocation is thirty days/$5; startup memory observations
+of 159.2/167.8 MiB imply roughly $3/month RAM cost at the advertised rate, above recurring $1 credit.
+It is only an inactive trial candidate. ClawCloud's main and regional browser endpoints did not
+resolve. The user completed Silly Development signup and a Free `stacklens-worker-preview`
+server (`60761d98`) was created without a card. Node 24 and `start-worker.js` are configured;
+reviewed code and Aiven runtime credentials were uploaded after explicit approval, and the Worker
+activated. Remote TLS/migrations passed. The initial anonymous run completed frey-ui with
+48 limitations and failed KerjaLog at GitHub's metadata rate limit. After authorization and
+user-completed GitHub verification, a new public-only token with zero account/private-repository
+permissions was created and installed in the private Worker runtime file. It expires 2026-10-31.
+The authenticated rerun completed frey-ui in 158.1 seconds with 24 limitations and three bounded
+npm response-size failures; KerjaLog completed in 127.0 seconds with five static-evidence limitations
+and no provider failures. Both reports use schema 2.0.0. Sampled memory reached 249.41 MiB of 256 MiB,
+and the Worker stayed running. Capacity headroom is tight; this is not proof of arbitrary workload fit.
+Broader CLI credentials must not be reused. The temporary upload key was revoked again (`401` and
+an empty dashboard list), and local private copies were removed. The expiring GitHub runtime token
+remains on the approved Worker host.
+A 256 MiB/no-swap/0.25 CPU local Worker previously completed frey-ui with limitations;
+KerjaLog failed, and the anonymous GitHub allowance was observed exhausted afterward. Failure
+classification and peak memory were not retained; do not present that experiment as full resource
+acceptance. No paid upgrade or purchase occurred.
+
+`scripts/prepare-silly-worker.mjs` packages the Linux production image for the panel's automatic
+npm/ts-node startup without reinstalling workspace dependencies. The adapted 16 MB archive passed
+Node 24.17.0 startup, certificate-verified Aiven health, StackLens/Graphile migrations and continued
+running state at 256 MiB/0.25 CPU. The peak reached the memory cap without OOM; full analysis fit is
+still open. Temporary local containers, databases and private runtime files were removed. The
+adapter imports the existing Worker entrypoint and keeps secrets in a separate private runtime file.
+The panel's unpacker converted pnpm links into files, causing a missing persistence package.
+The one-shot `deploy/silly/install.js` verified the archive SHA-256 and used native Linux `tar`,
+preserving links. It was removed, with the normal main file restored and arguments cleared.
+Read [managed hosting](implementation/managed-hosting.md) before repeating that deployment.
+Remote stop/start and unchanged terminal report readback passed after retrying the start request;
+the first immediate start attempt exceeded its deadline. This earlier check did not exercise an
+active job; the October 2 restart result below records delayed recovery.
+The temporary Silly upload key was revoked (`401` on reuse and no keys in the dashboard). Local
+upload credentials were removed; the approved private runtime file remains on the Worker host.
+
+The Dockerfile's final selector accepts `STACKLENS_RUNTIME=api` or `worker` as a non-secret build
+argument while preserving explicit Compose targets. Both Linux images rebuilt successfully and
+passed non-root/read-only health against an isolated Aiven database, which was removed along with
+the temporary containers. `.railwayignore` protects local environment files and diagnostic assets
+if a trial upload is later authorized.
+
+After explicit approval, commit `7ce34f0` was published in draft
+[PR #41](https://github.com/BlizzardBlast/StackLens/pull/41). Render's approved Free submission
+requested card verification; no card or service was added. The separate Vercel API destination
+was explicitly approved. Only the Aiven URL and CA are saved as API Production Secret values;
+the provider token remains Worker-only. Earlier configuration/native startup failures are preserved
+in the [API record](implementation/release-evidence/2026-10-02-api-target.json).
+
+Runtime revision `75bf5a2f37d32b98925dd922eb0c6410df3f55fc` passed
+[quality run 36947487085](https://github.com/BlizzardBlast/StackLens/actions/runs/36947487085).
+Its native entrypoint exports the ready, unbound Fastify server and lets Vercel bind HTTP. The
+539-test database-backed gate includes fresh native-entry and compiled API/Worker smoke. API
+deployment `Fd6qZs1W8XvuG44FbqZ6upyuT4jW` and separate root/Vite web deployment
+`BxtVh6H5U5DGpdkAYusTn4k1V3Vp` were the first verified public builds. The dated acceptance record
+preserves their source revisions; resolve current PR HEAD and deployment IDs for later work.
+Both Hobby projects track the release branch,
+build only Production. API PR/commit comments are disabled; the web deployment posted a Vercel bot
+comment, so comment suppression is not established for the web project. That platform label is a personal preview.
+Web Config values contain Corepack and the public API origin only; no backend secret is transferred.
+
+The [public validation](implementation/public-preview-validation.md) and
+[source-free record](implementation/release-evidence/2026-10-02-public-preview.json) cover direct
+API and web-proxy HTTP errors/cache/transient quick reports, both repository reports, actual web
+forms, native file replacement, evidence focus return, deep-link reload, terminal polling stop and
+320px Chromium emulation. Reports retain acquisition/static limitations; analyzed code is never
+installed or executed. First/warm observations do not prove a forced cold start.
+
+The active KerjaLog panel restart exposed delayed recovery: durable submission at 00:54:08 UTC,
+completion at 05:04:53 UTC, 15,044,783 ms later. The old Worker exited and a new Worker connected,
+but the public analysis stayed running until delayed recovery. No manual unlock ran; the temporary
+recovery editor was not saved. A panel sample of 257.36 MiB exceeds the displayed 256 MiB cap;
+it is not a cgroup peak or an OOM-absence proof. Immediate recovery, capacity, remote expiry/restore,
+Function suspension/aggregate connections and real assistive-technology/device acceptance remain open.
+Drain before planned restart; unlock only a confirmed dead Worker through Graphile's supported
+administrative function. Do not add a public recovery endpoint or unlock live workers.
+
+### October 2 Worker recovery follow-up
+
+The follow-up was validated on a dirty base `405b42046108367a374f73c923b1c60b397d28d6` in the existing
+checkout and is published through draft PR #41. It adds per-job cancellation, serialized npm acquisition, awaited Graphile queue writes,
+shared shutdown completion and confirmed-dead-owner recovery. Graphile 0.18 locks by its `pool-...`
+ID; an individual `worker-...` logger ID is insufficient. The Silly launcher replaces its ts-node
+child with native Node and a 96 MiB old-space cap. The parent remains. An 80 MiB experiment stopped
+before completion and was rejected. The final Linux two-repository run peaked at 244.25 MiB under
+256 MiB/no swap/0.25 CPU, with zero memory-limit/OOM events. This does not prove sustained/general fit.
+
+The compiled Worker patch is activated on the existing approved host; no runtime credentials were
+changed. During capture Vercel web/API used `405b420`. A hosted active-job Stop/offline/Start released the
+exact old queue owner in 22,379 ms, queued the interrupted attempt without a report, and resumed
+the same KerjaLog ID on attempt two under a different pool. It finished in 192,798 ms with five
+limitations and no provider failures. No administrative unlock ran. Local integration also verifies
+actual child-process death before targeted recovery while preserving a second live owner's lock.
+
+Remote Worker expiry cleanup removed an owned synthetic terminal analysis/report/delivery within
+6,229 ms and public lookup returned 404. Expired queued/running and legacy null-expiry fixtures were
+preserved, then all owned fixtures were removed. Fresh public submissions receive 24-hour expiry.
+A consistent private PostgreSQL 18 backup restored into a separate owned Aiven database with
+matching application/Graphile table hashes. Eight historical reports passed strict repository/API
+readback without rewriting. The copied active queue was not executed. The database/dump were
+removed; this proves a restore rehearsal, not scheduled backup policy or disaster queue replay.
+
+The database-backed `pnpm check` passes, including 27 Worker tests. API startup tests now await
+startup completion before resetting modules/environment; no API production behavior changed.
+See [ADR-0017](adr/0017-worker-interruption-and-recovery.md), the
+[runbook](implementation/worker-recovery.md) and exact
+[source/evidence record](implementation/release-evidence/2026-10-02-worker-recovery.json).
+The user explicitly left real phone/screen-reader acceptance open. Another browser engine,
+Function suspension/aggregate connections, sustained capacity and operational backup policy remain
+release gates. The public-only provider token still expires 2026-10-31.
+The temporary upload key was revoked (401 on reuse, no keys in the dashboard); local private files,
+owned rehearsal databases and the disposable PostgreSQL container were removed. Final review and
+documentation/credential/link checks pass for this bounded follow-up.
+
+Next session: resolve current PR #41 HEAD and `main`, inspect its diff and check publication CI plus
+both actual Vercel deployment revisions. Match the Worker files to the published source hashes;
+the dirty capture remains the timing basis rather than claiming it observed a later commit.
+Documentation pushes can rebuild both targets. The PR stays draft; no merge has been authorized.
+Preserve the earlier dated runtime evidence rather than rewriting it as a later pass.
+
+### October 3 operational follow-up
+
+The [operational record](implementation/operational-preview-validation.md) adds 18 synthetic
+Chromium/Firefox/WebKit acceptance checks at 1280px/320px, now included in `pnpm check` and CI.
+Both report readers, native file replacement, focus, reflow and polling recovery are covered.
+Six serial hosted jobs completed with contract-valid limited reports in 736,005 ms. Only two panel
+resource samples were captured; no new cgroup peak or OOM history is claimed. A four-report logical
+restore matched all recorded hashes, with the private dump and owned target removed afterward.
+The [backup policy](implementation/preview-backups.md) records the existing daily encrypted schedule
+and Free-plan fork limitation; no paid or new secret destination was activated.
+
+The first API burst peaked at ten clients including its observer, under the twenty-connection limit.
+Five baseline clients became six after idle. The labeled follow-up on `d80ab03` found six API clients
+remaining after the final idle interval despite lifecycle attachment. That commit's CI and both
+deployment checks passed. The request-bound adapter now retires clients with `maxUses: 1` and uses
+`stacklens-api-vercel-single-use` to distinguish its policy. On `beaac25`, CI and both deployments
+passed. Seventeen lookups at concurrency two peaked at eight total clients; both idle intervals
+ended with zero new-policy API clients and the aggregate returned to its five-client baseline.
+Lookup median was 455 ms and maximum 4,064 ms. Twelve direct/proxied checks passed; a fresh frey-ui
+submission returned 202 in 649 ms and a valid limited report in 143,683 ms. Preserve the earlier
+failed samples and the successful capture's exact runtime revision. Actual cold-start/suspension,
+autoscaling-wide ceilings, general capacity, no-card disaster recovery and manual acceptance stay
+open. Preserve each observation's original source revision. Resolve PR #41's current HEAD and actual
+CI/deployments; it remains draft and no merge has been authorized.
+
+### Earlier portable preparation evidence
+
+The user selected Vercel and requested backend preparation. The [web runbook](implementation/vercel-hosting.md)
+and [backend runbook](implementation/backend-hosting.md) describe the prepared target: static web on
+Vercel with an explicit HTTPS API origin, plus portable API/Worker/PostgreSQL containers and Caddy
+TLS routing. `vercel.mjs`, the production Dockerfile and separate production/rehearsal Compose files
+were ready for review. At that earlier preparation there was no linked Vercel project, external
+host, public origin or deployment; the current API project status is recorded above.
+The local root Compose definition remains PostgreSQL-only.
+
+The API assigns configurable anonymous expiry (24 hours by default); Worker maintenance removes
+expired terminal analysis/report/delivery state with bounded row locking. Queued/running ownership
+and legacy null-expiry records are preserved. Origin and Vercel routes prohibit API caching.
+At that preparation, a missing completed report returned 404 even if the analysis survived. The
+scoped correction above now rereads once and distinguishes actual deletion from missing-report 503.
+Production entrypoints require a database URL. Analyzer v6, quick-manifest v5, both report readers,
+schema 2.0.0 and stack-health-v3 remain as recorded in the prior live pass.
+
+The [October 1 evidence](implementation/release-evidence/2026-10-01-hosting.json) records Linux container
+builds, actual healthy non-root/read-only execution, queued submissions surviving API restart,
+both repositories completing with explicit provider limitations, quick non-persistence, retention
+cascade and isolated PostgreSQL restore. KerjaLog's OSV timeout leaves Security unknown; frey-ui
+retains the three bounded npm failures. This evidence covers a local container rehearsal, not Vercel
+edge behavior or public TLS. Database-backed `pnpm check` passed 511 tests with eighteen of twenty-two
+test-graph tasks cached. Final image verification and cleanup are recorded in the evidence file.
+
+At that preparation, activation required a backend host/domain and the intended Vercel account/project, followed by
+public preview acceptance, finite off-host backup/log policies and the
+[real screen-reader/device checks](implementation/manual-release-validation.md). New branch CI must
+run after publication. No commit, push, purchase, provisioning or deployment was performed in that pass.
+The initial free-host comparison recorded Vercel Hobby's personal-use boundary
+and Oracle Always Free as a candidate for the current containers. No backend provider was selected then.
+An Oracle Ampere host requires a fresh ARM64 build/runtime rehearsal; moving the Worker to Vercel
+instead requires an explicit architecture decision. The existing local evidence covers neither route.
+Resolve and verify the then-current `main` before further work; do not invent a milestone merge SHA.
+
+## Previous handover: local live MVP release validation
+
+> **Prepared:** 2026-09-30\
+> **Architecture:** v0.1.15\
+> **Milestone:** Local live MVP release validation\
+> **Branch:** `codex/mvp-release-readiness`, existing checkout; changes uncommitted\
+> **Baseline:** `f51d2b61f4740172558bb4b38087af60af8d791a`, merged PR #40\
+> **Traceability:** FR-001–FR-006, FR-010/011/017–023, NFR-005–009, SEC-001–003, GOV-002/007
+
+### Previous live validation details
+
+[Live release evidence](implementation/mvp-release-readiness.md) records KerjaLog and frey-ui through
+the real local web/API/PostgreSQL/Worker stack and live providers. Both immutable inputs completed
+with limitations before and after the acceptance corrections. Paste/upload, actual GitHub failure,
+stable input errors, quick non-persistence, keyboard focus, reduced motion and verified 320px layouts
+were checked. The [baseline quality run](https://github.com/BlizzardBlast/StackLens/actions/runs/36728238578)
+passed for merged PR #40. Resolve and verify the current `main` HEAD before continuing; these local
+changes have no published PR or deployment.
+
+The live pass corrected native quick-mode radio names/descriptions and misleading npm-health
+limitations on internal workspace links. `JS-NPM-010@2`, `javascript-production-v6` and
+`javascript-rules-v6` identify the correction. Quick-manifest v5, both strict report readers, schema
+2.0.0 and stack-health-v3 formulas remain unchanged. Existing reports retain their original values.
+
+frey-ui's actual report preserves three oversized npm responses and, on the v6 rerun, one GitHub
+file timeout. It detects OSV advisory GHSA-82fw-gwwq-j7x9 for three package-scoped Vitest declarations;
+the report records one distinct advisory and a medium Security band. Unknown categories stay N/A.
+Do not reinterpret scores as safety, test results or runtime coverage.
+
+The web jsdom suite now caps isolated workers at two after default concurrency caused three
+existing tests to time out. The final database-backed `pnpm check` passed all 501 tests, compiled
+runtime smoke, build, typecheck, lint and formatting; the release record distinguishes cached tasks
+from fresh execution and records cleanup.
+Actual screen-reader, physical-device and production-host verification remain release gates. The
+next step is that manual verification and publication/review of this branch when authorized.
+
+## Previous handover: eight-finding remediation
+
+The following snapshot predates PR #40's merge. Its publication/merge claims are historical;
+the current handover above supersedes them.
+
 > **Prepared:** 2026-09-30
 > **Architecture:** v0.1.15
 > **Milestone:** Eight-finding review remediation
@@ -8,7 +292,7 @@
 > **Baseline:** `962146e0352386a15d7ba40ee5eb745a918d4a6d` (`main` and `origin/main`)
 > **Traceability:** FR-002/003/005/014/017–023, SCORE-002/003, NFR-006–009, SEC-001/002, GOV-002/007
 
-## Current handover
+### Previous handover details
 
 The approved remediation addresses CR-P1-001–004 and CR-P2-001–004. The
 [remediation ledger](implementation/review-findings-remediation.md) records each finding,

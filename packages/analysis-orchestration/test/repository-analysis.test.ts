@@ -78,6 +78,9 @@ describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-
     expect(osvProvider.fetchMock).not.toHaveBeenCalled();
     if (!result.ok) throw new Error("Expected workspace report");
     expect(result.report.partialFailures).toEqual([]);
+    expect(result.report.limitations.filter((item) => item.ruleIds.includes("JS-NPM-010"))).toEqual(
+      [],
+    );
     expect(result.report.facts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -165,6 +168,9 @@ describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-
       if (!result.ok) throw new Error("Expected workspace report");
       expect(result.report.partialFailures).toEqual([]);
       expect(
+        result.report.limitations.filter((item) => item.ruleIds.includes("JS-NPM-010")),
+      ).toEqual([]);
+      expect(
         result.report.facts.some(
           (fact) => fact.type === "dependency.inventory" && fact.subject.name === "local-lib",
         ),
@@ -247,6 +253,16 @@ describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-
       ],
     });
     if (!result.ok) throw new Error("Expected workspace report");
+    expect(
+      result.report.facts.filter((fact) => fact.type === "dependency.health.npm_registry"),
+    ).toEqual([
+      expect.objectContaining({ subject: expect.objectContaining({ name: "shared" }) }),
+      expect.objectContaining({ subject: expect.objectContaining({ name: "shared" }) }),
+      expect.objectContaining({ subject: expect.objectContaining({ name: "shared" }) }),
+    ]);
+    expect(result.report.limitations.filter((item) => item.ruleIds.includes("JS-NPM-010"))).toEqual(
+      [],
+    );
     expect(
       result.report.facts.filter((fact) => fact.details?.kind === "workspace_package"),
     ).toHaveLength(4);
@@ -332,8 +348,8 @@ describe("analyzePublicGitHubRepository [FR-003–FR-023, NFR-003, NFR-008, NFR-
       },
     });
     expect(result.report.analyzer).toEqual({
-      version: "javascript-production-v5",
-      ruleSetVersion: "javascript-rules-v5",
+      version: "javascript-production-v6",
+      ruleSetVersion: "javascript-rules-v6",
       scoringVersion: "stack-health-v3",
     });
 

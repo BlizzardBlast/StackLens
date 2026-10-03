@@ -10,6 +10,12 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../src/runtime.js", () => ({
   createStackLensApiRuntime: mocks.start,
 }));
+// Configuration tests need the real options parser, not Drizzle/Graphile's full import graph.
+vi.mock("@stacklens/persistence", async () => {
+  const { readStackLensPoolOptions } =
+    await import("../../../packages/persistence/src/pool-options.js");
+  return { readStackLensPoolOptions };
+});
 
 const signals = ["SIGINT", "SIGTERM"] as const;
 const registration = vi.spyOn(process, "once");
@@ -23,6 +29,8 @@ beforeEach(() => {
   vi.stubEnv("DATABASE_URL", undefined);
   vi.stubEnv("STACKLENS_API_HOST", undefined);
   vi.stubEnv("STACKLENS_API_PORT", undefined);
+  vi.stubEnv("STACKLENS_DATABASE_POOL_MAX", undefined);
+  vi.stubEnv("STACKLENS_DATABASE_SSL_CA", undefined);
   mocks.start.mockResolvedValue({ app: { listen: mocks.listen }, stop: mocks.stop });
 });
 
@@ -38,6 +46,26 @@ afterEach(() => {
 
 // FR-003, FR-022, NFR-009: default local startup and explicit overrides.
 describe("API executable configuration", () => {
+  it("forwards hosted database settings [FR-003, FR-022, SEC-007]", async () => {
+    vi.stubEnv("STACKLENS_DATABASE_POOL_MAX", "3");
+    vi.stubEnv("STACKLENS_DATABASE_SSL_CA", "fixture CA forwarded to pool validation");
+    await import("../src/main.js");
+    await vi.waitFor(
+      () => {
+        expect(mocks.start).toHaveBeenCalledWith(
+          expect.objectContaining({
+            databasePoolOptions: { max: 3, sslCa: "fixture CA forwarded to pool validation" },
+          }),
+        );
+        // Wait for startup's async continuation before resetModules/environment cleanup.
+        expect(mocks.listen).toHaveBeenCalledOnce();
+        expect(process.rawListeners("SIGTERM")).toHaveLength(
+          (previousListeners.get("SIGTERM")?.length ?? 0) + 1,
+        );
+      },
+      { timeout: 5_000 },
+    );
+  });
   it.each([
     [undefined, "postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens"],
     [

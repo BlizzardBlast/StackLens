@@ -1,11 +1,13 @@
 import type { FastifyInstance } from "fastify";
 import { makeWorkerUtils } from "graphile-worker";
+import type { Pool } from "pg";
 
 import {
   createStackLensDatabase,
   createStackLensPool,
   DrizzleAnalysisRepository,
   migrateStackLensDatabase,
+  type StackLensPoolOptions,
 } from "@stacklens/persistence";
 import {
   createRepositoryAnalysisDeliveryDispatcher,
@@ -20,7 +22,12 @@ import { createStackLensApi } from "./server.js";
 export interface StackLensApiRuntimeOptions {
   readonly connectionString: string;
   readonly logger?: boolean;
+  readonly retentionHours?: number;
+  readonly databasePoolOptions?: StackLensPoolOptions;
   readonly onDatabasePoolError?: (error: Error) => void;
+  /** Request-bound hosts rely on the continuously running Worker for outbox recovery. */
+  readonly startDeliveryPump?: boolean;
+  readonly onDatabasePoolCreated?: (pool: Pool) => void;
 }
 
 export interface StackLensApiRuntime {
@@ -31,9 +38,14 @@ export interface StackLensApiRuntime {
 export async function createStackLensApiRuntime(
   options: StackLensApiRuntimeOptions,
 ): Promise<StackLensApiRuntime> {
-  const pool = createStackLensPool(options.connectionString, options.onDatabasePoolError);
+  const pool = createStackLensPool(
+    options.connectionString,
+    options.onDatabasePoolError,
+    options.databasePoolOptions,
+  );
 
   try {
+    options.onDatabasePoolCreated?.(pool);
     const database = createStackLensDatabase(pool);
     await migrateStackLensDatabase(database);
 
@@ -53,11 +65,14 @@ export async function createStackLensApiRuntime(
         repository,
         queue: createGraphileRepositoryJobQueue(jobAdder),
       });
-      deliveryPump = startRepositoryAnalysisDeliveryPump(deliveryDispatcher);
+      if (options.startDeliveryPump !== false) {
+        deliveryPump = startRepositoryAnalysisDeliveryPump(deliveryDispatcher);
+      }
       const app = await createStackLensApi({
         repository,
         deliveryDispatcher,
         quickManifestAnalyzer,
+        retentionHours: options.retentionHours ?? 24,
         ...(options.logger === undefined ? {} : { logger: options.logger }),
       });
 

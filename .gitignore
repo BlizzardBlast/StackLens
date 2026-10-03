@@ -23,6 +23,7 @@ report.*.json
 .cache/
 .nyc_output/
 .playwright-mcp/
+.vercel/
 
 # Editor and OS files
 .idea/

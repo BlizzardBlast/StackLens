@@ -1,0 +1,1675 @@
+{
+  "recordedAt": "2026-10-01T15:19:23.264Z",
+  "status": "authenticated_remote_worker_jobs_completed_with_limitations_Render_API_prepared_public_stack_pending",
+  "requirements": [
+    "PRD-006",
+    "FR-001",
+    "FR-003",
+    "FR-004",
+    "FR-022",
+    "NFR-004",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "source": {
+    "branch": "codex/mvp-release-readiness",
+    "workingTree": "uncommitted_and_unpushed",
+    "productionInputSha256": {
+      "Dockerfile": "1e6dae26c36b3426b8a2c281b87a8c9d5621bd65bb60636eaa31e5d2af325895",
+      ".dockerignore": "e4e3c62d1e28196190eb184dabde5a779c943958577946792935c6c69390eb00",
+      "package.json": "3c2bb0c524f8469557c2bb7f56cf3af0367607e20d6190ea0e07a6eeecadb65e",
+      "pnpm-lock.yaml": "8cf2ea4a30473be74fdf9544805402bbabad7f31eb6eefa2849b1559d390e0e1",
+      "packages/persistence/src/pool-options.ts": "0a66b866bc8c647f253d9f59c3161cc8c9b3f73126d1386b87f96e2c25ab2143",
+      "packages/persistence/src/pool.ts": "e8285c65b492972e2aaf7dc2b90e0747f23702b485543862270f4a5f52ded9b8",
+      "packages/persistence/src/index.ts": "41f094fc5f7daf65303e9ff687c7bdb3fd9c1b1466ecbb85585d32bc4fb3faa8",
+      "apps/api/src/main.ts": "6206e3599531ed70cba0ccc1d1892772d8513b1bd11e8e80dd627fa366ae117d",
+      "apps/api/src/runtime.ts": "91c5b4687dad9018f7ea5168d60445420c1ca4d3d4fd026a93afee6a4f945a4f",
+      "apps/worker/src/main.ts": "6b7cedcead73b153f6e8289a7d21ebdcf9689c17cd56e89b3dae8cb3ca09c37d",
+      "apps/worker/src/runtime.ts": "2a5fc56c81fe495893571d0808293d960489b3b11ea91444568612bd14eec094",
+      "scripts/container-health.mjs": "41e484b5db1a213d85b96063a68e17170e18c2acc456c6c1b6acd1ca86a7d3f7",
+      "scripts/vercel-config.mjs": "c6d6da328f47624a06c4c8a2f099f9df413d086a18ab07ab1ae66ed362edbbed",
+      "vercel.mjs": "29fe0fe14d211726b25a9efbe001d25807c1387ce97bbb818f77401656439d7b",
+      ".railwayignore": "ccaf2166ad1f4b088a801ac6add4b4cfd236e2b4749961b4021e3a1e5da9d087",
+      "deploy/silly/start-worker.js": "1e19ec242f970f0b8491af6ee7d66337702e6df6ae0a52a85564590b2e54a4e5",
+      "deploy/silly/install.js": "0a8801ed6d3b27019b046fff2c23353291f0346295beb7a16d1a3f3799022e78",
+      "scripts/prepare-silly-worker.mjs": "10d89bc945fad9f8687113d0e4ad5c8822e7475bcc792eaa2233a2e2e4ea38b5",
+      "deploy/render/render.yaml": "a173392ce0b70e8e47b53ec5ac2f88bbc02e02c2c92bee8fe52cfbb89cfb5519"
+    }
+  },
+  "userConstraint": {
+    "free": true,
+    "paymentCard": false
+  },
+  "resources": {
+    "aiven": {
+      "project": "stacklens-preview",
+      "service": "stacklens-preview-pg",
+      "plan": "Free-1-1gb",
+      "region": "digitalocean-blr",
+      "version": "18.6",
+      "vcpu": 1,
+      "memoryGb": 1,
+      "storageGb": 1,
+      "displayedConnectionLimit": 20,
+      "cardSupplied": false
+    },
+    "northflank": {
+      "project": "stacklens-preview",
+      "region": "us-central",
+      "serviceCount": 0,
+      "serviceCreation": "card_required_by_actual_dashboard",
+      "cardSupplied": false,
+      "previousNoCardRecommendation": "corrected",
+      "userDecision": "reject_card_verification"
+    },
+    "railway": {
+      "status": "configured_offline_services",
+      "project": "stacklens-preview",
+      "projectId": "c8f1d587-f7db-4675-8d29-e81173ec0b70",
+      "environmentName": "production",
+      "environmentUse": "preview_only",
+      "environmentId": "99c6b4de-48ff-463c-bb1d-cb78cb75c8b7",
+      "serviceCount": 2,
+      "services": [
+        {
+          "name": "stacklens-api",
+          "id": "2d1ff067-d4f1-4cb3-ac78-f8e45d705686",
+          "status": "offline",
+          "builder": "Dockerfile",
+          "dockerfilePath": "Dockerfile",
+          "healthcheckPath": "/openapi.json",
+          "variables": {
+            "NODE_ENV": "production",
+            "STACKLENS_RUNTIME": "api",
+            "STACKLENS_DATABASE_POOL_MAX": "3",
+            "STACKLENS_API_HOST": "0.0.0.0",
+            "STACKLENS_API_PORT": "3000",
+            "PORT": "3000",
+            "STACKLENS_RETENTION_HOURS": "24"
+          }
+        },
+        {
+          "name": "stacklens-worker",
+          "id": "2e504c4e-ca05-44de-859e-bc5ed7ca688b",
+          "status": "offline",
+          "builder": "Dockerfile",
+          "dockerfilePath": "Dockerfile",
+          "variables": {
+            "NODE_ENV": "production",
+            "STACKLENS_RUNTIME": "worker",
+            "STACKLENS_DATABASE_POOL_MAX": "5",
+            "STACKLENS_WORKER_CONCURRENCY": "1"
+          }
+        }
+      ],
+      "githubSignIn": "completed_by_user",
+      "cliVersion": "5.63.1",
+      "cliAuthentication": "pending",
+      "sourceUploaded": false,
+      "transferredBackendSecrets": false,
+      "continuousMonthlyResourceFit": "startup_memory_estimate_exceeds_recurring_credit",
+      "displayedTrialCreditUsd": 5,
+      "displayedTrialDays": 30,
+      "displayedTrialCpuLimit": 2,
+      "displayedTrialMemoryGb": 1,
+      "advertisedMonthlyFreeCreditUsd": 1,
+      "startupMemoryEstimate": {
+        "apiMiB": 159.2,
+        "workerMiB": 167.8,
+        "continuousRamOnlyUsdPerMonthApprox": 3,
+        "limitation": "brief_local_startup_samples_not_host_billing_measurements"
+      }
+    },
+    "vercel": {
+      "linkedProject": false,
+      "apiOrigin": null,
+      "deployment": null
+    },
+    "render": {
+      "status": "form_prepared_not_submitted",
+      "accountSignIn": "completed_by_user",
+      "serviceName": "stacklens-api-preview",
+      "plan": "free",
+      "displayedMonthlyPriceUsd": 0,
+      "displayedCpu": 0.1,
+      "displayedMemoryMb": 512,
+      "region": "singapore",
+      "runtime": "docker",
+      "intendedBranch": "codex/mvp-release-readiness",
+      "actualFormBranch": "main",
+      "releaseBranchPublished": false,
+      "healthCheckPath": "/openapi.json",
+      "autoDeployTrigger": "off",
+      "sourceMode": "public_git_repository",
+      "githubRepositoryAppInstalled": false,
+      "backendSecretsEntered": false,
+      "serviceCreated": false,
+      "cardSupplied": false,
+      "deployment": null
+    },
+    "clawCloud": {
+      "status": "unverified_main_and_regional_browser_dns_failure"
+    },
+    "sillyDevelopment": {
+      "status": "activated_running",
+      "server": "stacklens-worker-preview",
+      "serverId": "60761d98",
+      "plan": "Free",
+      "cardSupplied": false,
+      "advertisedPaymentCardRequired": false,
+      "advertisedMonthlyPrice": 0,
+      "advertisedCpu": 0.25,
+      "advertisedMemoryMb": 256,
+      "advertisedDiskMb": 512,
+      "advertisedContinuousRuntime": true,
+      "accountAccess": "signup_completed_by_user",
+      "node24": "selected_and_persisted",
+      "selectedImage": "ghcr.io/ptero-eggs/yolks:nodejs_24",
+      "mainFile": "start-worker.js",
+      "outboundAivenConnectivity": "verified_remote_certificate_validated_TLS",
+      "sourceUploaded": true,
+      "transferredBackendSecrets": true,
+      "uploadAuthorization": "explicit_user_approval",
+      "temporaryApiKey": "revoked_verified_401_and_dashboard_no_keys",
+      "runtimeEnvPermissions": "0600",
+      "githubProviderToken": "approved_public_only_30_day_token_installed_expires_2026_10_31",
+      "monthlyResourceFit": "both_requested_jobs_completed_with_limitations_sampled_249_41_MiB_arbitrary_workload_headroom_unverified"
+    }
+  },
+  "validation": {
+    "liveAiven": {
+      "database": "Aiven PostgreSQL Free",
+      "status": "verified",
+      "checks": {
+        "tls": true,
+        "incorrectCaRejected": true,
+        "stackLensAndGraphileMigrations": true,
+        "quickManifest": true,
+        "queueDelivery": true,
+        "workerStartupAndShutdown": true,
+        "isolatedDatabaseRemoved": true
+      },
+      "postgresVersion": "18.6",
+      "checkedAt": "2026-10-01T12:52:55.818Z"
+    },
+    "portableWorkerProductionHealth": {
+      "portableProductionHealth": true,
+      "checkedAt": "2026-10-01T12:53:45.719Z"
+    },
+    "localQuality": {
+      "command": "pnpm check",
+      "databaseBacked": true,
+      "status": "passed",
+      "vitestTests": 516,
+      "designTokenTests": 10,
+      "deploymentTests": 5,
+      "totalTests": 531,
+      "cachedTestGraphTasks": 18,
+      "testGraphTasks": 22,
+      "compiledApiWorkerSmoke": "passed",
+      "initialParallelAttempt": "existing_test_timeouts",
+      "serialTestGraph": "passed",
+      "subsequentLintIssue": "CA_validation_no_new_fixed"
+    },
+    "linuxContainerRebuild": {
+      "status": "verified",
+      "checks": {
+        "apiHealthy": true,
+        "apiNonRootReadOnly": true,
+        "workerHealthy": true,
+        "workerNonRootReadOnly": true,
+        "isolatedDatabaseRemoved": true,
+        "ownedContainersRemoved": true
+      },
+      "images": {
+        "api": {
+          "tag": "stacklens-api:managed-20261001",
+          "id": "sha256:3997447b8d0f6e81e412219d3fdc86c46995aa4ced2fde7811fecb3237f8b51a",
+          "user": "node",
+          "command": [
+            "node",
+            "--enable-source-maps",
+            "dist/main.js"
+          ],
+          "packageName": "@stacklens/api",
+          "observedIdleMemory": "159.2MiB / 900.4MiB",
+          "observedCpu": "0.14%"
+        },
+        "worker": {
+          "tag": "stacklens-worker:managed-20261001",
+          "id": "sha256:a4345c381cc41f41279376b798da22d08bc232bf5173ef12c79346cc83c34e2b",
+          "user": "node",
+          "command": [
+            "node",
+            "--enable-source-maps",
+            "dist/main.js"
+          ],
+          "packageName": "@stacklens/worker",
+          "observedIdleMemory": "167.8MiB / 900.4MiB",
+          "observedCpu": "3.45%"
+        }
+      },
+      "checkedAt": "2026-10-01T13:15:38.472Z"
+    },
+    "sillyPanelRuntimeRehearsal": {
+      "status": "verified",
+      "image": "ghcr.io/ptero-eggs/yolks:nodejs_24@sha256:5c5a3e74fb39f25c2dc65851ca7255d7e739af54d94c6df46cdb91a496ee51f4",
+      "memoryLimitMiB": 256,
+      "cpuLimit": 0.25,
+      "checks": {
+        "panelTsNodeStartup": true,
+        "aivenVerifiedTlsAndMigrations": true,
+        "workerRemainsRunningAfterMigrations": true
+      },
+      "memoryPeakBytes": 268435456,
+      "memoryEvents": "low 0\nhigh 0\nmax 494\noom 0\noom_kill 0\noom_group_kill 0",
+      "isolatedDatabaseRemoved": true,
+      "checkedAt": "2026-10-01T13:59:37.890Z",
+      "coverage": "local_startup_migrations_only_not_remote_provider_acceptance",
+      "memoryPressure": "reached_cap_with_reclaim_no_oom_kill",
+      "initialFailure": "TS5083_packaged_monorepo_tsconfig_removed_in_artifact_only"
+    },
+    "sillyWorkerArchive": {
+      "filename": "stacklens-worker-silly.tar.gz",
+      "compressedBytes": 16808305,
+      "unpackedMiBApprox": 88,
+      "sha256": "d82fb1023f547664692b65fb66114472bf49bb40dbb686cb512cb1d2a4f375e5",
+      "containsSecrets": false,
+      "status": "uploaded_hash_verified_and_native_tar_extracted",
+      "platform": "linux_amd64"
+    },
+    "sillyUpload": {
+      "recordedAt": "2026-10-01T14:16:18.294Z",
+      "serverId": "60761d98",
+      "action": "upload",
+      "operations": [
+        {
+          "operation": "archive_uploaded",
+          "bytes": 16808305,
+          "status": 200,
+          "host": "node2.sillydev.co.uk"
+        },
+        {
+          "operation": "archive_decompressed"
+        },
+        {
+          "operation": "runtime_credentials_uploaded"
+        },
+        {
+          "operation": "runtime_env_permissions_600"
+        },
+        {
+          "operation": "root_file_inventory",
+          "files": [
+            {
+              "name": ".turbo",
+              "size": 4096,
+              "isFile": false
+            },
+            {
+              "name": "dist",
+              "size": 4096,
+              "isFile": false
+            },
+            {
+              "name": "node_modules",
+              "size": 4096,
+              "isFile": false
+            },
+            {
+              "name": "src",
+              "size": 4096,
+              "isFile": false
+            },
+            {
+              "name": "test",
+              "size": 4096,
+              "isFile": false
+            },
+            {
+              "name": "README.md",
+              "size": 2989,
+              "isFile": true
+            },
+            {
+              "name": "container-health.mjs",
+              "size": 829,
+              "isFile": true
+            },
+            {
+              "name": "pnpm-lock.yaml",
+              "size": 59848,
+              "isFile": true
+            },
+            {
+              "name": "pnpm-workspace.yaml",
+              "size": 31,
+              "isFile": true
+            },
+            {
+              "name": "runtime.env",
+              "size": 1784,
+              "isFile": true
+            },
+            {
+              "name": "stacklens-worker-silly.tar.gz",
+              "size": 16808305,
+              "isFile": true
+            },
+            {
+              "name": "start-worker.js",
+              "size": 575,
+              "isFile": true
+            },
+            {
+              "name": "vitest.config.ts",
+              "size": 132,
+              "isFile": true
+            },
+            {
+              "name": "worker.package.json",
+              "size": 1063,
+              "isFile": true
+            }
+          ],
+          "rootPackageJsonPresent": false
+        },
+        {
+          "operation": "uploaded_archive_removed_after_extraction"
+        }
+      ]
+    },
+    "sillyNativeInstallation": {
+      "recordedAt": "2026-10-01T14:24:01.771Z",
+      "serverId": "60761d98",
+      "action": "install-finish",
+      "operations": [
+        {
+          "operation": "native_tar_installation_complete",
+          "files": [
+            {
+              "name": "analysis-orchestration",
+              "isSymlink": true,
+              "isFile": true
+            },
+            {
+              "name": "data-sources",
+              "isSymlink": true,
+              "isFile": true
+            },
+            {
+              "name": "persistence",
+              "isSymlink": true,
+              "isFile": true
+            },
+            {
+              "name": "repository-jobs",
+              "isSymlink": true,
+              "isFile": true
+            }
+          ]
+        }
+      ],
+      "originalPanelDecompressionFailure": "pnpm_symlinks_converted_to_files_ERR_MODULE_NOT_FOUND",
+      "sourceFreeDiagnostic": "removed_by_clean_native_extraction",
+      "oneShotInstallerRemoved": true,
+      "mainFileRestored": true,
+      "nodeArgumentsCleared": true
+    },
+    "sillyRemoteWorker": {
+      "status": "verified_with_limitations",
+      "checkedAt": "2026-10-01T15:02:03.140Z",
+      "host": "Silly Development",
+      "serverId": "60761d98",
+      "coverage": "local_API_with_remote_Worker_and_live_Aiven_not_public_Vercel_stack",
+      "checks": {
+        "remoteStartupAndMigrations": true,
+        "remoteTlsSessions": {
+          "remote_sessions": 3,
+          "all_remote_tls": true
+        },
+        "localQuickManifest": true,
+        "postAnalysisWorkerRunning": true
+      },
+      "samples": [
+        {
+          "at": "2026-10-01T15:02:03.500Z",
+          "state": "running",
+          "memory_bytes": 116457472,
+          "cpu_absolute": 0.461,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 73325,
+          "network_tx_bytes": 82525,
+          "uptime": 70031
+        },
+        {
+          "at": "2026-10-01T15:02:06.365Z",
+          "state": "running",
+          "memory_bytes": 116457472,
+          "cpu_absolute": 0.461,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 73325,
+          "network_tx_bytes": 82525,
+          "uptime": 70031
+        },
+        {
+          "at": "2026-10-01T15:02:16.721Z",
+          "state": "running",
+          "memory_bytes": 116457472,
+          "cpu_absolute": 0.461,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 73325,
+          "network_tx_bytes": 82525,
+          "uptime": 70031
+        },
+        {
+          "at": "2026-10-01T15:02:27.180Z",
+          "state": "running",
+          "memory_bytes": 156102656,
+          "cpu_absolute": 4.519,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 953477,
+          "network_tx_bytes": 216832,
+          "uptime": 96871
+        },
+        {
+          "at": "2026-10-01T15:02:37.557Z",
+          "state": "running",
+          "memory_bytes": 156102656,
+          "cpu_absolute": 4.519,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 953477,
+          "network_tx_bytes": 216832,
+          "uptime": 96871
+        },
+        {
+          "at": "2026-10-01T15:02:48.191Z",
+          "state": "running",
+          "memory_bytes": 170934272,
+          "cpu_absolute": 25.111,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 1488748,
+          "network_tx_bytes": 308671,
+          "uptime": 118630
+        },
+        {
+          "at": "2026-10-01T15:02:58.911Z",
+          "state": "running",
+          "memory_bytes": 170934272,
+          "cpu_absolute": 25.111,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 1488748,
+          "network_tx_bytes": 308671,
+          "uptime": 118630
+        },
+        {
+          "at": "2026-10-01T15:03:09.396Z",
+          "state": "running",
+          "memory_bytes": 185696256,
+          "cpu_absolute": 25.894,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 1496224,
+          "network_tx_bytes": 309157,
+          "uptime": 139874
+        },
+        {
+          "at": "2026-10-01T15:03:19.761Z",
+          "state": "running",
+          "memory_bytes": 185696256,
+          "cpu_absolute": 25.894,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 1496224,
+          "network_tx_bytes": 309157,
+          "uptime": 139874
+        },
+        {
+          "at": "2026-10-01T15:03:30.233Z",
+          "state": "running",
+          "memory_bytes": 196493312,
+          "cpu_absolute": 24.883,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 1500676,
+          "network_tx_bytes": 309157,
+          "uptime": 161701
+        },
+        {
+          "at": "2026-10-01T15:03:40.592Z",
+          "state": "running",
+          "memory_bytes": 196493312,
+          "cpu_absolute": 24.883,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 1500676,
+          "network_tx_bytes": 309157,
+          "uptime": 161701
+        },
+        {
+          "at": "2026-10-01T15:03:51.013Z",
+          "state": "running",
+          "memory_bytes": 261525504,
+          "cpu_absolute": 25.522,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 9363701,
+          "network_tx_bytes": 418535,
+          "uptime": 180650
+        },
+        {
+          "at": "2026-10-01T15:04:01.398Z",
+          "state": "running",
+          "memory_bytes": 261525504,
+          "cpu_absolute": 25.522,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 9363701,
+          "network_tx_bytes": 418535,
+          "uptime": 180650
+        },
+        {
+          "at": "2026-10-01T15:04:11.820Z",
+          "state": "running",
+          "memory_bytes": 259252224,
+          "cpu_absolute": 19.489,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 17687752,
+          "network_tx_bytes": 544561,
+          "uptime": 203508
+        },
+        {
+          "at": "2026-10-01T15:04:22.176Z",
+          "state": "running",
+          "memory_bytes": 259252224,
+          "cpu_absolute": 19.489,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 17687752,
+          "network_tx_bytes": 544561,
+          "uptime": 203508
+        },
+        {
+          "at": "2026-10-01T15:04:32.690Z",
+          "state": "running",
+          "memory_bytes": 259276800,
+          "cpu_absolute": 21.864,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 27430751,
+          "network_tx_bytes": 635628,
+          "uptime": 222864
+        },
+        {
+          "at": "2026-10-01T15:04:43.046Z",
+          "state": "running",
+          "memory_bytes": 259276800,
+          "cpu_absolute": 21.864,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 27430751,
+          "network_tx_bytes": 635628,
+          "uptime": 222864
+        },
+        {
+          "at": "2026-10-01T15:04:44.139Z",
+          "state": "running",
+          "memory_bytes": 259276800,
+          "cpu_absolute": 21.864,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 27430751,
+          "network_tx_bytes": 635628,
+          "uptime": 222864
+        },
+        {
+          "at": "2026-10-01T15:04:54.574Z",
+          "state": "running",
+          "memory_bytes": 187625472,
+          "cpu_absolute": 5.394,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 28047611,
+          "network_tx_bytes": 2231199,
+          "uptime": 245608
+        },
+        {
+          "at": "2026-10-01T15:05:04.996Z",
+          "state": "running",
+          "memory_bytes": 187625472,
+          "cpu_absolute": 5.394,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 28047611,
+          "network_tx_bytes": 2231199,
+          "uptime": 245608
+        },
+        {
+          "at": "2026-10-01T15:05:15.420Z",
+          "state": "running",
+          "memory_bytes": 184262656,
+          "cpu_absolute": 7.665,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 28856874,
+          "network_tx_bytes": 2387065,
+          "uptime": 265480
+        },
+        {
+          "at": "2026-10-01T15:05:25.771Z",
+          "state": "running",
+          "memory_bytes": 184262656,
+          "cpu_absolute": 7.665,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 28856874,
+          "network_tx_bytes": 2387065,
+          "uptime": 265480
+        },
+        {
+          "at": "2026-10-01T15:05:36.547Z",
+          "state": "running",
+          "memory_bytes": 194994176,
+          "cpu_absolute": 25.381,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 29195439,
+          "network_tx_bytes": 2444338,
+          "uptime": 288520
+        },
+        {
+          "at": "2026-10-01T15:05:47.131Z",
+          "state": "running",
+          "memory_bytes": 194994176,
+          "cpu_absolute": 25.381,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 29195439,
+          "network_tx_bytes": 2444338,
+          "uptime": 288520
+        },
+        {
+          "at": "2026-10-01T15:05:57.610Z",
+          "state": "running",
+          "memory_bytes": 200634368,
+          "cpu_absolute": 19.924,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 29863223,
+          "network_tx_bytes": 2471455,
+          "uptime": 307702
+        },
+        {
+          "at": "2026-10-01T15:06:08.369Z",
+          "state": "running",
+          "memory_bytes": 200634368,
+          "cpu_absolute": 19.924,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 29863223,
+          "network_tx_bytes": 2471455,
+          "uptime": 307702
+        },
+        {
+          "at": "2026-10-01T15:06:18.792Z",
+          "state": "running",
+          "memory_bytes": 232525824,
+          "cpu_absolute": 19.912,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 40532427,
+          "network_tx_bytes": 2620788,
+          "uptime": 329968
+        },
+        {
+          "at": "2026-10-01T15:06:29.161Z",
+          "state": "running",
+          "memory_bytes": 232525824,
+          "cpu_absolute": 19.912,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 40532427,
+          "network_tx_bytes": 2620788,
+          "uptime": 329968
+        },
+        {
+          "at": "2026-10-01T15:06:39.588Z",
+          "state": "running",
+          "memory_bytes": 251330560,
+          "cpu_absolute": 2.421,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 45602732,
+          "network_tx_bytes": 3007461,
+          "uptime": 351416
+        },
+        {
+          "at": "2026-10-01T15:06:50.151Z",
+          "state": "running",
+          "memory_bytes": 251330560,
+          "cpu_absolute": 2.421,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 45602732,
+          "network_tx_bytes": 3007461,
+          "uptime": 351416
+        },
+        {
+          "at": "2026-10-01T15:06:50.862Z",
+          "state": "running",
+          "memory_bytes": 251330560,
+          "cpu_absolute": 2.421,
+          "disk_bytes": 68173832,
+          "network_rx_bytes": 45602732,
+          "network_tx_bytes": 3007461,
+          "uptime": 351416
+        }
+      ],
+      "repositories": [
+        {
+          "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+          "analysisId": "772a6371-8214-4e14-8a9a-91e7c4dcc5da",
+          "status": "completed_with_limitations",
+          "events": [
+            {
+              "at": "2026-10-01T15:02:06.422Z",
+              "status": "queued",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:02:16.776Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:02:27.237Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:02:37.612Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:02:48.616Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:02:58.966Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:03:09.451Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:03:19.816Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:03:30.289Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:03:40.646Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:03:51.068Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:04:01.453Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:04:11.875Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:04:22.230Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:04:32.745Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:04:43.581Z",
+              "status": "completed_with_limitations",
+              "stage": null
+            }
+          ],
+          "durationMs": 158103,
+          "reportSchemaVersion": "2.0.0",
+          "limitationCount": 24,
+          "partialFailures": [
+            {
+              "id": "failure-npm-705cd4edcffff8b0-baf33c5971cb3319",
+              "scope": "source",
+              "sourceId": "source-npm-705cd4edcffff8b0",
+              "code": "npm_response_too_large",
+              "message": "Provider response exceeded the 16777216-byte limit",
+              "retryable": false,
+              "occurredAt": "2026-10-01T15:03:59.404Z"
+            },
+            {
+              "id": "failure-npm-40b65597feb59bfa-baf33c5971cb3319",
+              "scope": "source",
+              "sourceId": "source-npm-40b65597feb59bfa",
+              "code": "npm_response_too_large",
+              "message": "Provider response exceeded the 16777216-byte limit",
+              "retryable": false,
+              "occurredAt": "2026-10-01T15:04:17.816Z"
+            },
+            {
+              "id": "failure-npm-e9d3a168e2214314-baf33c5971cb3319",
+              "scope": "source",
+              "sourceId": "source-npm-e9d3a168e2214314",
+              "code": "npm_response_too_large",
+              "message": "Provider response exceeded the 16777216-byte limit",
+              "retryable": false,
+              "occurredAt": "2026-10-01T15:04:26.399Z"
+            }
+          ],
+          "failure": null
+        },
+        {
+          "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+          "analysisId": "7027ecde-46c2-4854-a366-85456f16b079",
+          "status": "completed_with_limitations",
+          "events": [
+            {
+              "at": "2026-10-01T15:04:44.194Z",
+              "status": "queued",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:04:54.628Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:05:05.051Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:05:15.474Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:05:26.172Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:05:36.601Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:05:47.186Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:05:58.017Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:06:08.424Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:06:18.847Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:06:29.218Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:06:39.643Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T15:06:50.584Z",
+              "status": "completed_with_limitations",
+              "stage": null
+            }
+          ],
+          "durationMs": 126989,
+          "reportSchemaVersion": "2.0.0",
+          "limitationCount": 5,
+          "partialFailures": [],
+          "failure": null
+        }
+      ],
+      "finishedAt": "2026-10-01T15:06:50.863Z",
+      "maxObservedMemoryBytes": 261525504,
+      "memoryMeasurement": "periodic_host_samples_not_cgroup_peak"
+    },
+    "initialAnonymousRemoteWorker": {
+      "status": "partial",
+      "checkedAt": "2026-10-01T14:24:23.167Z",
+      "host": "Silly Development",
+      "serverId": "60761d98",
+      "coverage": "local_API_with_remote_Worker_and_live_Aiven_not_public_Vercel_stack",
+      "checks": {
+        "remoteStartupAndMigrations": true,
+        "remoteTlsSessions": {
+          "remote_sessions": 1,
+          "all_remote_tls": true
+        },
+        "localQuickManifest": true,
+        "postAnalysisWorkerRunning": true
+      },
+      "samples": [
+        {
+          "at": "2026-10-01T14:24:23.602Z",
+          "state": "running",
+          "memory_bytes": 0,
+          "cpu_absolute": 0,
+          "disk_bytes": 16810089,
+          "network_rx_bytes": 0,
+          "network_tx_bytes": 0,
+          "uptime": 0
+        },
+        {
+          "at": "2026-10-01T14:24:34.312Z",
+          "state": "running",
+          "memory_bytes": 0,
+          "cpu_absolute": 0,
+          "disk_bytes": 16810089,
+          "network_rx_bytes": 0,
+          "network_tx_bytes": 0,
+          "uptime": 0
+        },
+        {
+          "at": "2026-10-01T14:24:45.095Z",
+          "state": "running",
+          "memory_bytes": 113704960,
+          "cpu_absolute": 26.173,
+          "disk_bytes": 16810089,
+          "network_rx_bytes": 5360,
+          "network_tx_bytes": 1120,
+          "uptime": 18978
+        },
+        {
+          "at": "2026-10-01T14:24:55.849Z",
+          "state": "running",
+          "memory_bytes": 113704960,
+          "cpu_absolute": 26.173,
+          "disk_bytes": 16810089,
+          "network_rx_bytes": 5360,
+          "network_tx_bytes": 1120,
+          "uptime": 18978
+        },
+        {
+          "at": "2026-10-01T14:25:06.626Z",
+          "state": "running",
+          "memory_bytes": 114626560,
+          "cpu_absolute": 0.638,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 32513,
+          "network_tx_bytes": 90960,
+          "uptime": 41289
+        },
+        {
+          "at": "2026-10-01T14:25:09.325Z",
+          "state": "running",
+          "memory_bytes": 114626560,
+          "cpu_absolute": 0.638,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 32513,
+          "network_tx_bytes": 90960,
+          "uptime": 41289
+        },
+        {
+          "at": "2026-10-01T14:25:19.686Z",
+          "state": "running",
+          "memory_bytes": 114626560,
+          "cpu_absolute": 0.638,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 32513,
+          "network_tx_bytes": 90960,
+          "uptime": 41289
+        },
+        {
+          "at": "2026-10-01T14:25:30.141Z",
+          "state": "running",
+          "memory_bytes": 161193984,
+          "cpu_absolute": 25.473,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 527270,
+          "network_tx_bytes": 183775,
+          "uptime": 63964
+        },
+        {
+          "at": "2026-10-01T14:25:40.511Z",
+          "state": "running",
+          "memory_bytes": 161193984,
+          "cpu_absolute": 25.473,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 527270,
+          "network_tx_bytes": 183775,
+          "uptime": 63964
+        },
+        {
+          "at": "2026-10-01T14:25:51.387Z",
+          "state": "running",
+          "memory_bytes": 179318784,
+          "cpu_absolute": 25.535,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 532614,
+          "network_tx_bytes": 183775,
+          "uptime": 85434
+        },
+        {
+          "at": "2026-10-01T14:26:03.070Z",
+          "state": "running",
+          "memory_bytes": 179318784,
+          "cpu_absolute": 25.535,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 532614,
+          "network_tx_bytes": 183775,
+          "uptime": 85434
+        },
+        {
+          "at": "2026-10-01T14:26:13.499Z",
+          "state": "running",
+          "memory_bytes": 228487168,
+          "cpu_absolute": 8.093,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 8808526,
+          "network_tx_bytes": 333422,
+          "uptime": 108548
+        },
+        {
+          "at": "2026-10-01T14:26:23.873Z",
+          "state": "running",
+          "memory_bytes": 228487168,
+          "cpu_absolute": 8.093,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 8808526,
+          "network_tx_bytes": 333422,
+          "uptime": 108548
+        },
+        {
+          "at": "2026-10-01T14:26:34.323Z",
+          "state": "running",
+          "memory_bytes": 228798464,
+          "cpu_absolute": 18.329,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 16786958,
+          "network_tx_bytes": 469040,
+          "uptime": 129850
+        },
+        {
+          "at": "2026-10-01T14:26:44.725Z",
+          "state": "running",
+          "memory_bytes": 228798464,
+          "cpu_absolute": 18.329,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 16786958,
+          "network_tx_bytes": 469040,
+          "uptime": 129850
+        },
+        {
+          "at": "2026-10-01T14:26:55.533Z",
+          "state": "running",
+          "memory_bytes": 225619968,
+          "cpu_absolute": 7.573,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 26086680,
+          "network_tx_bytes": 1799999,
+          "uptime": 151113
+        },
+        {
+          "at": "2026-10-01T14:26:56.829Z",
+          "state": "running",
+          "memory_bytes": 225619968,
+          "cpu_absolute": 7.573,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 26086680,
+          "network_tx_bytes": 1799999,
+          "uptime": 151113
+        },
+        {
+          "at": "2026-10-01T14:27:07.580Z",
+          "state": "running",
+          "memory_bytes": 225619968,
+          "cpu_absolute": 7.573,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 26086680,
+          "network_tx_bytes": 1799999,
+          "uptime": 151113
+        },
+        {
+          "at": "2026-10-01T14:27:07.906Z",
+          "state": "running",
+          "memory_bytes": 225619968,
+          "cpu_absolute": 7.573,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 26086680,
+          "network_tx_bytes": 1799999,
+          "uptime": 151113
+        }
+      ],
+      "repositories": [
+        {
+          "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+          "analysisId": "99ee54da-8cb9-4492-bf04-f70946424fcd",
+          "status": "completed_with_limitations",
+          "events": [
+            {
+              "at": "2026-10-01T14:25:09.382Z",
+              "status": "queued",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T14:25:19.742Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T14:25:30.196Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T14:25:40.905Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T14:25:51.441Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T14:26:03.123Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T14:26:13.553Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T14:26:23.927Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T14:26:34.377Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T14:26:44.781Z",
+              "status": "running",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T14:26:56.297Z",
+              "status": "completed_with_limitations",
+              "stage": null
+            }
+          ],
+          "durationMs": 107859,
+          "reportSchemaVersion": "2.0.0",
+          "limitationCount": 48,
+          "partialFailures": [
+            {
+              "id": "failure-github-de40b6c3501ba730",
+              "scope": "source",
+              "sourceId": "source-github-876472cfed8e512e",
+              "code": "github_blob_rate_limited",
+              "message": "GitHub API rate limit reached while fetching repository file content. Retry after 2026-10-01T15:25:12.000Z. Configure STACKLENS_GITHUB_TOKEN for authenticated public-repository requests and a higher rate limit.",
+              "retryable": false,
+              "occurredAt": "2026-10-01T14:25:20.516Z"
+            },
+            {
+              "id": "failure-github-1727f2226d72f37e",
+              "scope": "source",
+              "sourceId": "source-github-876472cfed8e512e",
+              "code": "github_blob_rate_limited",
+              "message": "GitHub API rate limit reached while fetching repository file content. Retry after 2026-10-01T15:25:12.000Z. Configure STACKLENS_GITHUB_TOKEN for authenticated public-repository requests and a higher rate limit.",
+              "retryable": false,
+              "occurredAt": "2026-10-01T14:25:20.519Z"
+            },
+            {
+              "id": "failure-github-27b07596affcf6da",
+              "scope": "source",
+              "sourceId": "source-github-876472cfed8e512e",
+              "code": "github_blob_rate_limited",
+              "message": "GitHub API rate limit reached while fetching repository file content. Retry after 2026-10-01T15:25:12.000Z. Configure STACKLENS_GITHUB_TOKEN for authenticated public-repository requests and a higher rate limit.",
+              "retryable": false,
+              "occurredAt": "2026-10-01T14:25:20.522Z"
+            },
+            {
+              "id": "failure-npm-705cd4edcffff8b0-baf33c5971cb3319",
+              "scope": "source",
+              "sourceId": "source-npm-705cd4edcffff8b0",
+              "code": "npm_response_too_large",
+              "message": "Provider response exceeded the 16777216-byte limit",
+              "retryable": false,
+              "occurredAt": "2026-10-01T14:26:19.931Z"
+            },
+            {
+              "id": "failure-npm-91721758fa2cbe95-622d110498f4b5d0",
+              "scope": "source",
+              "sourceId": "source-npm-91721758fa2cbe95",
+              "code": "npm_request_timeout",
+              "message": "npm Registry request timed out for react.",
+              "retryable": true,
+              "occurredAt": "2026-10-01T14:26:29.942Z"
+            },
+            {
+              "id": "failure-npm-85ce7b348c8f0114-622d110498f4b5d0",
+              "scope": "source",
+              "sourceId": "source-npm-85ce7b348c8f0114",
+              "code": "npm_request_timeout",
+              "message": "npm Registry request timed out for react-dom.",
+              "retryable": true,
+              "occurredAt": "2026-10-01T14:26:29.946Z"
+            },
+            {
+              "id": "failure-npm-40b65597feb59bfa-baf33c5971cb3319",
+              "scope": "source",
+              "sourceId": "source-npm-40b65597feb59bfa",
+              "code": "npm_response_too_large",
+              "message": "Provider response exceeded the 16777216-byte limit",
+              "retryable": false,
+              "occurredAt": "2026-10-01T14:26:37.839Z"
+            },
+            {
+              "id": "failure-npm-e9d3a168e2214314-baf33c5971cb3319",
+              "scope": "source",
+              "sourceId": "source-npm-e9d3a168e2214314",
+              "code": "npm_response_too_large",
+              "message": "Provider response exceeded the 16777216-byte limit",
+              "retryable": false,
+              "occurredAt": "2026-10-01T14:26:44.643Z"
+            }
+          ],
+          "failure": null
+        },
+        {
+          "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+          "analysisId": "a0012430-8ea1-414d-b2f5-e278fb607aac",
+          "status": "failed",
+          "events": [
+            {
+              "at": "2026-10-01T14:26:57.242Z",
+              "status": "queued",
+              "stage": null
+            },
+            {
+              "at": "2026-10-01T14:27:07.638Z",
+              "status": "failed",
+              "stage": null
+            }
+          ],
+          "durationMs": 11324,
+          "reportSchemaVersion": null,
+          "limitationCount": null,
+          "partialFailures": null,
+          "failure": {
+            "code": "repository_unavailable",
+            "message": "GitHub API rate limit reached while fetching repository metadata. Retry after 2026-10-01T15:25:12.000Z. Configure STACKLENS_GITHUB_TOKEN for authenticated public-repository requests and a higher rate limit.",
+            "retryable": false
+          }
+        }
+      ],
+      "finishedAt": "2026-10-01T14:27:07.942Z",
+      "maxObservedMemoryBytes": 228798464,
+      "memoryMeasurement": "periodic_host_samples_not_cgroup_peak"
+    },
+    "authenticatedTerminalReports": [
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "772a6371-8214-4e14-8a9a-91e7c4dcc5da",
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "status": "completed_with_limitations",
+        "schemaVersion": "2.0.0",
+        "terminalPayloadSha256": "37089594ccef57dd2dae56dfda208af0c4afb1c8c6f59c8b26fd4e5de5433637",
+        "githubSources": [
+          {
+            "id": "source-github-876472cfed8e512e",
+            "provider": "github-rest",
+            "status": "available",
+            "retrievedAt": "2026-10-01T15:02:35.929Z",
+            "reference": "https://github.com/BlizzardBlast/frey-ui/tree/6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf"
+          }
+        ],
+        "limitationCount": 24,
+        "limitationReasonCounts": {
+          "configuration_fields_unresolved": 4,
+          "deprecation_evidence_unavailable": 3,
+          "check_evidence_unavailable": 1,
+          "insufficient_evidence": 16
+        },
+        "partialFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ]
+      },
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "7027ecde-46c2-4854-a366-85456f16b079",
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "status": "completed_with_limitations",
+        "schemaVersion": "2.0.0",
+        "terminalPayloadSha256": "f8a0d7e462251c8869db69fd2db559f62dde4c4a48a5cf45f69b2d74824b81eb",
+        "githubSources": [
+          {
+            "id": "source-github-f37fb5626751143a",
+            "provider": "github-rest",
+            "status": "available",
+            "retrievedAt": "2026-10-01T15:05:20.497Z",
+            "reference": "https://github.com/BlizzardBlast/KerjaLog/tree/9e5f869bbcf5b9d582f8e1453395ea2c06c79f83"
+          }
+        ],
+        "limitationCount": 5,
+        "limitationReasonCounts": {
+          "configuration_fields_unresolved": 2,
+          "check_evidence_unavailable": 2,
+          "insufficient_evidence": 1
+        },
+        "partialFailureCodes": []
+      }
+    ],
+    "authenticatedReportContracts": {
+      "recordedAt": "2026-10-01T15:18:39.872Z",
+      "schema": "AnalysisReportSchema",
+      "reports": [
+        {
+          "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+          "analysisId": "772a6371-8214-4e14-8a9a-91e7c4dcc5da",
+          "schemaVersion": "2.0.0",
+          "status": "passed",
+          "issueCount": 0
+        },
+        {
+          "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+          "analysisId": "7027ecde-46c2-4854-a366-85456f16b079",
+          "schemaVersion": "2.0.0",
+          "status": "passed",
+          "issueCount": 0
+        }
+      ]
+    },
+    "publicGithubProviderToken": {
+      "recordedAt": "2026-10-01T14:59:31.335Z",
+      "serverId": "60761d98",
+      "tokenName": "StackLens preview public GitHub",
+      "repositoryAccess": "public_read_only",
+      "accountPermissions": 0,
+      "privateRepositoryPermissions": 0,
+      "expiresOn": "2026-10-31",
+      "authenticatedCoreRateLimit": 5000,
+      "authenticatedCoreRateRemaining": 5000,
+      "tokenStoredOn": "approved_worker_runtime_env_only",
+      "runtimeEnvMode": "0600",
+      "existingSettingsPreserved": true
+    },
+    "providerTokenWorkerReload": {
+      "recordedAt": "2026-10-01T15:00:43.328Z",
+      "serverId": "60761d98",
+      "action": "reload-provider",
+      "operations": [
+        {
+          "operation": "worker_restart_for_provider_token"
+        }
+      ]
+    },
+    "renderBlueprintSchema": {
+      "schemaDownloaded": true,
+      "schemaValidation": "passed",
+      "schemaSha256": "57aa0a1ff9c3b2d0fcb91b790b7b285aef6397adb0c92930e6e601054444cfe5",
+      "schemaDialect": "https://json-schema.org/draft/2020-12/schema",
+      "blueprintSha256": "a173392ce0b70e8e47b53ec5ac2f88bbc02e02c2c92bee8fe52cfbb89cfb5519",
+      "serviceCount": 1
+    },
+    "renderPreparedDashboardForm": {
+      "recordedAt": "2026-10-01T15:12:02.475Z",
+      "status": "prepared_not_submitted",
+      "sourceRepository": "https://github.com/BlizzardBlast/StackLens",
+      "desiredBranch": "codex/mvp-release-readiness",
+      "visibleForm": {
+        "buttons": [
+          "Docker",
+          "Singapore (Southeast Asia)",
+          "Off",
+          "Deploy web service"
+        ],
+        "freeSelected": [
+          "$0 / month\n0.1 CPU\n512 MB RAM\nFree"
+        ],
+        "inputs": [
+          {
+            "label": "_r_p_",
+            "value": "https://github.com/BlizzardBlast/StackLens"
+          },
+          {
+            "label": "serviceName",
+            "value": "stacklens-api-preview"
+          },
+          {
+            "label": "branch",
+            "value": "main"
+          },
+          {
+            "label": "rootDir",
+            "value": ""
+          },
+          {
+            "label": "dockerfilePath",
+            "value": "./Dockerfile"
+          },
+          {
+            "label": "_r_1l_",
+            "value": "NODE_ENV"
+          },
+          {
+            "label": "_r_2i_",
+            "value": "STACKLENS_RUNTIME"
+          },
+          {
+            "label": "_r_2k_",
+            "value": "STACKLENS_API_HOST"
+          },
+          {
+            "label": "_r_2m_",
+            "value": "STACKLENS_API_PORT"
+          },
+          {
+            "label": "_r_2o_",
+            "value": "PORT"
+          },
+          {
+            "label": "_r_2q_",
+            "value": "STACKLENS_DATABASE_POOL_MAX"
+          },
+          {
+            "label": "_r_2s_",
+            "value": "STACKLENS_RETENTION_HOURS"
+          },
+          {
+            "label": "healthCheckPath",
+            "value": "/openapi.json"
+          },
+          {
+            "label": "baseDir",
+            "value": "."
+          },
+          {
+            "label": "dockerfilePath",
+            "value": "./Dockerfile"
+          },
+          {
+            "label": "dockerCommand",
+            "value": ""
+          },
+          {
+            "label": "preDeployCommand",
+            "value": ""
+          }
+        ]
+      },
+      "backendSecretsEntered": false,
+      "cardSupplied": false,
+      "serviceCreated": false,
+      "limitation": "main remains selected because release branch is unpublished"
+    },
+    "providerCredentialCleanup": {
+      "recordedAt": "2026-10-01T15:13:21.000Z",
+      "apiKeyReuseStatus": 401,
+      "dashboardRemainingKeys": 0,
+      "temporaryUploadKeyRevoked": true,
+      "publicGithubRuntimeTokenRetained": true,
+      "privateLocalCopiesRemoved": true
+    },
+    "sillyRestartAndStoredReadback": {
+      "status": "verified",
+      "startedAt": "2026-10-01T14:33:41.555Z",
+      "serverId": "60761d98",
+      "coverage": "remote_restart_and_stored_terminal_report_readback_not_active_job_recovery",
+      "before": [
+        {
+          "id": "99ee54da-8cb9-4492-bf04-f70946424fcd",
+          "status": "completed_with_limitations",
+          "sha256": "9ac5ad80835c6d95eddce74a6a67dea11fd39ca5becb19f95411ceb3bba42fb1"
+        },
+        {
+          "id": "a0012430-8ea1-414d-b2f5-e278fb607aac",
+          "status": "failed",
+          "sha256": "187c70fadfe5912f284d1b72dd7d1589a8591733e3bfaba0e8d0eb1930c5380f"
+        }
+      ],
+      "stopped": true,
+      "originalAttempt": {
+        "status": "failed",
+        "error": "Worker restart deadline exceeded",
+        "finishedAt": "2026-10-01T14:32:08.599Z"
+      },
+      "powerStartRetryRequired": true,
+      "restarted": true,
+      "afterResources": {
+        "current_state": "running",
+        "is_suspended": false,
+        "resources": {
+          "memory_bytes": 115220480,
+          "cpu_absolute": 0.489,
+          "disk_bytes": 68173715,
+          "network_rx_bytes": 65810,
+          "network_tx_bytes": 74201,
+          "uptime": 64661
+        }
+      },
+      "remoteTlsSessions": {
+        "sessions": 3,
+        "tls": true
+      },
+      "after": [
+        {
+          "id": "99ee54da-8cb9-4492-bf04-f70946424fcd",
+          "status": "completed_with_limitations",
+          "sha256": "9ac5ad80835c6d95eddce74a6a67dea11fd39ca5becb19f95411ceb3bba42fb1"
+        },
+        {
+          "id": "a0012430-8ea1-414d-b2f5-e278fb607aac",
+          "status": "failed",
+          "sha256": "187c70fadfe5912f284d1b72dd7d1589a8591733e3bfaba0e8d0eb1930c5380f"
+        }
+      ],
+      "terminalReadbackUnchanged": true,
+      "finishedAt": "2026-10-01T14:33:44.559Z"
+    },
+    "sillyTemporaryKeyRevocation": {
+      "recordedAt": "2026-10-01T15:11:17.308Z",
+      "serverId": "60761d98",
+      "action": "revoke",
+      "operations": [
+        {
+          "operation": "temporary_api_key_revoked",
+          "unauthorizedStatus": 401
+        }
+      ]
+    },
+    "installerQuality": {
+      "lint": "passed",
+      "formatCheck": "passed_294_files",
+      "meaningfulValidation": "actual_remote_hash_checked_extraction_and_dependency_symlink_inventory"
+    },
+    "constrainedWorkerExperiment": {
+      "status": "failed",
+      "memoryLimitMiB": 256,
+      "cpuLimit": 0.25,
+      "workerConcurrency": 1,
+      "repositories": [
+        {
+          "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+          "status": "completed_with_limitations",
+          "durationMs": 51088,
+          "reportSchemaVersion": "2.0.0",
+          "limitationCount": 26,
+          "partialFailureCount": 4
+        },
+        {
+          "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+          "status": "failed",
+          "durationMs": 2291,
+          "reportSchemaVersion": null,
+          "limitationCount": null,
+          "partialFailureCount": null
+        }
+      ],
+      "errorName": "Error",
+      "errorMessage": "Analysis failed under resource budget",
+      "isolatedDatabaseRemoved": true,
+      "checkedAt": "2026-10-01T13:22:20.009Z",
+      "coverage": "partial_not_full_resource_acceptance",
+      "failureClassification": "not_retained",
+      "peakMemory": "not_retained",
+      "subsequentGitHubAnonymousRateLimitRemaining": 0,
+      "failureCausality": "unverified"
+    },
+    "earlierContainerImages": "historical_prior_runtime_hashes",
+    "publicFullStackAcceptance": "pending",
+    "remoteProviderJobExecution": "both_requested_repositories_completed_with_limitations_no_GitHub_provider_failure",
+    "remoteActiveJobRecovery": "pending_terminal_readback_after_restart_verified",
+    "githubProviderTokenApproval": "authorized_created_and_installed_public_only_expires_2026_10_31",
+    "renderPublicationAndCredentialApproval": "pending",
+    "renderPreparationQuality": {
+      "providerSchema": "passed",
+      "lint": "passed",
+      "format": "passed_295_files",
+      "diffWhitespace": "passed",
+      "databaseBackedFullSuite": "prior_531_test_baseline_not_rerun_for_config_and_docs_only"
+    },
+    "remoteRetentionAndRestore": "pending",
+    "realScreenReaderAndDevice": "pending"
+  },
+  "cleanup": {
+    "isolatedAivenDatabase": "removed_after_shutdown",
+    "localQualityContainer": "removed",
+    "managedLinuxContainers": "removed",
+    "budgetWorkerContainer": "removed",
+    "panelRuntimeContainerAndDatabase": "removed",
+    "privateCredentialFile": "removed",
+    "temporarySillyApiKey": "revoked",
+    "remoteArchiveInstallerAndDiagnostic": "removed",
+    "remoteRuntimeCredentials": "retained_on_explicitly_approved_host_only"
+  },
+  "purchases": false,
+  "gitPublication": false
+}

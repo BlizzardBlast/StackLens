@@ -1,0 +1,1228 @@
+{
+  "date": "2026-09-30",
+  "baselineCommit": "f51d2b61f4740172558bb4b38087af60af8d791a",
+  "branch": "codex/mvp-release-readiness",
+  "environment": {
+    "os": "Windows",
+    "node": "24.19.0",
+    "pnpm": "12.4.2",
+    "postgres": "18",
+    "browser": "Codex in-app Chromium",
+    "githubAuthentication": "existing operator token; no client login",
+    "database": "isolated disposable release database"
+  },
+  "repositoryRuns": [
+    {
+      "label": "KerjaLog",
+      "analysisId": "7bd51d91-adac-43a3-8452-ea31f4dd9dc6",
+      "baseline": true,
+      "repository": {
+        "provider": "github",
+        "owner": "BlizzardBlast",
+        "name": "KerjaLog",
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "ref": "main"
+      },
+      "analyzer": {
+        "version": "javascript-production-v5",
+        "ruleSetVersion": "javascript-rules-v5",
+        "scoringVersion": "stack-health-v3"
+      },
+      "schemaVersion": "2.0.0",
+      "createdAt": "2026-09-30T14:36:11.089Z",
+      "startedAt": "2026-09-30T14:36:11.191Z",
+      "completedAt": "2026-09-30T14:37:04.527Z",
+      "elapsedSeconds": 53.438,
+      "status": "completed_with_limitations",
+      "facts": 289,
+      "factTypes": {
+        "project.configuration.biome": 1,
+        "project.configuration.eslint": 1,
+        "project.configuration.typescript": 1,
+        "dependency.inventory": 47,
+        "project.workspace.package": 1,
+        "project.inspection.check": 100,
+        "dependency.health.npm_registry": 47,
+        "dependency.resolution": 47,
+        "project.tool.linter_formatter": 1,
+        "project.tool.observability": 1,
+        "project.tool.linter": 1,
+        "project.tool.framework": 2,
+        "project.tool.routing": 1,
+        "project.tool.test_framework": 1,
+        "project.tool.ui_library": 1,
+        "project.tool.language_tool": 1,
+        "dependency.usage.static": 35
+      },
+      "findings": 32,
+      "findingRules": {
+        "JS-MIGRATION-014": 5,
+        "JS-NPM-006": 26,
+        "JS-OVERLAP-008": 1
+      },
+      "recommendations": 27,
+      "limitations": 5,
+      "sourceStates": {
+        "github-rest:available": 1,
+        "npm-registry:available": 47,
+        "osv:available": 1
+      },
+      "partialFailures": [],
+      "npmHealthLimitations": [],
+      "advisories": [],
+      "scores": {
+        "overall": {
+          "status": "insufficient_evidence"
+        },
+        "categories": {
+          "dependencies": {
+            "status": "available",
+            "value": 100
+          },
+          "security": {
+            "status": "available",
+            "value": 100
+          },
+          "maintainability": {
+            "status": "insufficient_evidence"
+          },
+          "testing": {
+            "status": "insufficient_evidence"
+          },
+          "tooling": {
+            "status": "available",
+            "value": 100
+          }
+        }
+      },
+      "observedCollectorTransitions": [
+        {
+          "key": "completed_with_limitations:completed_with_limitations",
+          "observedAt": "2026-09-30T14:39:05.283Z",
+          "updatedAt": "2026-09-30T14:37:04.527Z"
+        }
+      ]
+    },
+    {
+      "label": "frey-ui",
+      "analysisId": "c07b8957-994c-4555-a6bf-4a7d9c48f2ed",
+      "baseline": true,
+      "repository": {
+        "provider": "github",
+        "owner": "BlizzardBlast",
+        "name": "frey-ui",
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "ref": "main"
+      },
+      "analyzer": {
+        "version": "javascript-production-v5",
+        "ruleSetVersion": "javascript-rules-v5",
+        "scoringVersion": "stack-health-v3"
+      },
+      "schemaVersion": "2.0.0",
+      "createdAt": "2026-09-30T14:39:03.631Z",
+      "startedAt": "2026-09-30T14:39:03.724Z",
+      "completedAt": "2026-09-30T14:39:49.582Z",
+      "elapsedSeconds": 45.951,
+      "status": "completed_with_limitations",
+      "facts": 403,
+      "factTypes": {
+        "project.configuration.biome": 1,
+        "project.configuration.typescript": 7,
+        "project.configuration.vite": 1,
+        "project.configuration.vitest": 2,
+        "project.configuration.rollup": 1,
+        "dependency.inventory": 67,
+        "project.workspace.package": 4,
+        "project.inspection.check": 144,
+        "dependency.workspace.internal": 2,
+        "dependency.health.npm_registry": 60,
+        "dependency.resolution": 63,
+        "project.tool.linter_formatter": 3,
+        "project.tool.test_framework": 4,
+        "project.tool.language_tool": 3,
+        "project.tool.ui_library": 2,
+        "project.tool.build_tool": 2,
+        "dependency.usage.static": 37
+      },
+      "findings": 61,
+      "findingRules": {
+        "JS-MIGRATION-014": 13,
+        "JS-NPM-006": 45,
+        "JS-VULN-011": 3
+      },
+      "recommendations": 48,
+      "limitations": 26,
+      "sourceStates": {
+        "github-rest:available": 1,
+        "npm-registry:available": 45,
+        "npm-registry:unavailable": 3,
+        "osv:available": 1
+      },
+      "partialFailures": [
+        {
+          "code": "npm_response_too_large",
+          "retryable": false,
+          "sourceReference": "https://registry.npmjs.org/chromatic"
+        },
+        {
+          "code": "npm_response_too_large",
+          "retryable": false,
+          "sourceReference": "https://registry.npmjs.org/storybook"
+        },
+        {
+          "code": "npm_response_too_large",
+          "retryable": false,
+          "sourceReference": "https://registry.npmjs.org/vite"
+        }
+      ],
+      "npmHealthLimitations": [
+        {
+          "message": "npm Registry metadata is unavailable for @frey-ui/storybook; provider-backed dependency analysis cannot make a supported conclusion for this package.",
+          "packagePaths": [
+            "apps/playwright"
+          ]
+        },
+        {
+          "message": "npm Registry metadata is unavailable for chromatic; provider-backed dependency analysis cannot make a supported conclusion for this package.",
+          "packagePaths": [
+            "apps/storybook"
+          ]
+        },
+        {
+          "message": "npm Registry metadata is unavailable for frey-ui; provider-backed dependency analysis cannot make a supported conclusion for this package.",
+          "packagePaths": [
+            "apps/storybook"
+          ]
+        },
+        {
+          "message": "npm Registry metadata is unavailable for storybook; provider-backed dependency analysis cannot make a supported conclusion for this package.",
+          "packagePaths": [
+            "apps/storybook"
+          ]
+        },
+        {
+          "message": "npm Registry metadata is unavailable for vite; provider-backed dependency analysis cannot make a supported conclusion for this package.",
+          "packagePaths": [
+            "apps/storybook"
+          ]
+        }
+      ],
+      "advisories": [
+        {
+          "packagePath": ".",
+          "kind": "advisory",
+          "advisoryId": "GHSA-82fw-gwwq-j7x9",
+          "aliases": [
+            "CVE-2026-84373",
+            "GHSA-82fw-gwwq-j7x9"
+          ],
+          "packageName": "vitest",
+          "version": "4.1.10",
+          "severity": "medium",
+          "ratings": [
+            {
+              "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "version": "3.1",
+              "source": "OSV",
+              "baseScore": 5.9
+            }
+          ]
+        },
+        {
+          "packagePath": "apps/storybook",
+          "kind": "advisory",
+          "advisoryId": "GHSA-82fw-gwwq-j7x9",
+          "aliases": [
+            "CVE-2026-84373",
+            "GHSA-82fw-gwwq-j7x9"
+          ],
+          "packageName": "vitest",
+          "version": "4.1.10",
+          "severity": "medium",
+          "ratings": [
+            {
+              "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "version": "3.1",
+              "source": "OSV",
+              "baseScore": 5.9
+            }
+          ]
+        },
+        {
+          "packagePath": "packages/frey-ui",
+          "kind": "advisory",
+          "advisoryId": "GHSA-82fw-gwwq-j7x9",
+          "aliases": [
+            "CVE-2026-84373",
+            "GHSA-82fw-gwwq-j7x9"
+          ],
+          "packageName": "vitest",
+          "version": "4.1.10",
+          "severity": "medium",
+          "ratings": [
+            {
+              "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "version": "3.1",
+              "source": "OSV",
+              "baseScore": 5.9
+            }
+          ]
+        }
+      ],
+      "scores": {
+        "overall": {
+          "status": "insufficient_evidence"
+        },
+        "categories": {
+          "dependencies": {
+            "status": "insufficient_evidence"
+          },
+          "security": {
+            "status": "available",
+            "value": 70
+          },
+          "maintainability": {
+            "status": "insufficient_evidence"
+          },
+          "testing": {
+            "status": "available",
+            "value": 100
+          },
+          "tooling": {
+            "status": "available",
+            "value": 100
+          }
+        }
+      },
+      "observedCollectorTransitions": [
+        {
+          "key": "completed_with_limitations:completed_with_limitations",
+          "observedAt": "2026-09-30T14:39:58.998Z",
+          "updatedAt": "2026-09-30T14:39:49.582Z"
+        }
+      ]
+    },
+    {
+      "label": "KerjaLog-v6",
+      "analysisId": "5961ca36-7ae3-447e-82d3-7ed19d04653f",
+      "baseline": false,
+      "repository": {
+        "provider": "github",
+        "owner": "BlizzardBlast",
+        "name": "KerjaLog",
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "ref": "main"
+      },
+      "analyzer": {
+        "version": "javascript-production-v6",
+        "ruleSetVersion": "javascript-rules-v6",
+        "scoringVersion": "stack-health-v3"
+      },
+      "schemaVersion": "2.0.0",
+      "createdAt": "2026-09-30T15:06:10.880Z",
+      "startedAt": "2026-09-30T15:06:10.921Z",
+      "completedAt": "2026-09-30T15:07:12.207Z",
+      "elapsedSeconds": 61.327,
+      "status": "completed_with_limitations",
+      "facts": 289,
+      "factTypes": {
+        "project.configuration.biome": 1,
+        "project.configuration.eslint": 1,
+        "project.configuration.typescript": 1,
+        "dependency.inventory": 47,
+        "project.workspace.package": 1,
+        "project.inspection.check": 100,
+        "dependency.health.npm_registry": 47,
+        "dependency.resolution": 47,
+        "project.tool.linter_formatter": 1,
+        "project.tool.observability": 1,
+        "project.tool.linter": 1,
+        "project.tool.framework": 2,
+        "project.tool.routing": 1,
+        "project.tool.test_framework": 1,
+        "project.tool.ui_library": 1,
+        "project.tool.language_tool": 1,
+        "dependency.usage.static": 35
+      },
+      "findings": 32,
+      "findingRules": {
+        "JS-MIGRATION-014": 5,
+        "JS-NPM-006": 26,
+        "JS-OVERLAP-008": 1
+      },
+      "recommendations": 27,
+      "limitations": 5,
+      "sourceStates": {
+        "github-rest:available": 1,
+        "npm-registry:available": 47,
+        "osv:available": 1
+      },
+      "partialFailures": [],
+      "npmHealthLimitations": [],
+      "advisories": [],
+      "scores": {
+        "overall": {
+          "status": "insufficient_evidence"
+        },
+        "categories": {
+          "dependencies": {
+            "status": "available",
+            "value": 100
+          },
+          "security": {
+            "status": "available",
+            "value": 100
+          },
+          "maintainability": {
+            "status": "insufficient_evidence"
+          },
+          "testing": {
+            "status": "insufficient_evidence"
+          },
+          "tooling": {
+            "status": "available",
+            "value": 100
+          }
+        }
+      },
+      "observedCollectorTransitions": [
+        {
+          "key": "running:resolving_repository",
+          "observedAt": "2026-09-30T15:06:54.206Z",
+          "updatedAt": "2026-09-30T15:06:10.925Z"
+        },
+        {
+          "key": "running:collecting_metadata",
+          "observedAt": "2026-09-30T15:07:02.288Z",
+          "updatedAt": "2026-09-30T15:07:02.230Z"
+        },
+        {
+          "key": "completed_with_limitations:completed_with_limitations",
+          "observedAt": "2026-09-30T15:07:12.447Z",
+          "updatedAt": "2026-09-30T15:07:12.207Z"
+        }
+      ]
+    },
+    {
+      "label": "frey-ui-v6",
+      "analysisId": "af229bbd-29f4-4b78-bd36-6de87483c5f5",
+      "baseline": false,
+      "repository": {
+        "provider": "github",
+        "owner": "BlizzardBlast",
+        "name": "frey-ui",
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "ref": "main"
+      },
+      "analyzer": {
+        "version": "javascript-production-v6",
+        "ruleSetVersion": "javascript-rules-v6",
+        "scoringVersion": "stack-health-v3"
+      },
+      "schemaVersion": "2.0.0",
+      "createdAt": "2026-09-30T15:06:10.459Z",
+      "startedAt": "2026-09-30T15:06:10.517Z",
+      "completedAt": "2026-09-30T15:07:08.373Z",
+      "elapsedSeconds": 57.914,
+      "status": "completed_with_limitations",
+      "facts": 403,
+      "factTypes": {
+        "project.configuration.biome": 1,
+        "project.configuration.typescript": 7,
+        "project.configuration.vite": 1,
+        "project.configuration.vitest": 2,
+        "project.configuration.rollup": 1,
+        "dependency.inventory": 67,
+        "project.workspace.package": 4,
+        "project.inspection.check": 144,
+        "dependency.workspace.internal": 2,
+        "dependency.health.npm_registry": 60,
+        "dependency.resolution": 63,
+        "project.tool.linter_formatter": 3,
+        "project.tool.test_framework": 4,
+        "project.tool.language_tool": 3,
+        "project.tool.ui_library": 2,
+        "project.tool.build_tool": 2,
+        "dependency.usage.static": 37
+      },
+      "findings": 61,
+      "findingRules": {
+        "JS-MIGRATION-014": 13,
+        "JS-NPM-006": 45,
+        "JS-VULN-011": 3
+      },
+      "recommendations": 48,
+      "limitations": 25,
+      "sourceStates": {
+        "github-rest:partial": 1,
+        "npm-registry:available": 45,
+        "npm-registry:unavailable": 3,
+        "osv:available": 1
+      },
+      "partialFailures": [
+        {
+          "code": "github_blob_timeout",
+          "retryable": true,
+          "sourceReference": "https://github.com/BlizzardBlast/frey-ui/tree/6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf"
+        },
+        {
+          "code": "npm_response_too_large",
+          "retryable": false,
+          "sourceReference": "https://registry.npmjs.org/chromatic"
+        },
+        {
+          "code": "npm_response_too_large",
+          "retryable": false,
+          "sourceReference": "https://registry.npmjs.org/storybook"
+        },
+        {
+          "code": "npm_response_too_large",
+          "retryable": false,
+          "sourceReference": "https://registry.npmjs.org/vite"
+        }
+      ],
+      "npmHealthLimitations": [
+        {
+          "message": "npm Registry metadata is unavailable for chromatic; provider-backed dependency analysis cannot make a supported conclusion for this package.",
+          "packagePaths": [
+            "apps/storybook"
+          ]
+        },
+        {
+          "message": "npm Registry metadata is unavailable for storybook; provider-backed dependency analysis cannot make a supported conclusion for this package.",
+          "packagePaths": [
+            "apps/storybook"
+          ]
+        },
+        {
+          "message": "npm Registry metadata is unavailable for vite; provider-backed dependency analysis cannot make a supported conclusion for this package.",
+          "packagePaths": [
+            "apps/storybook"
+          ]
+        }
+      ],
+      "advisories": [
+        {
+          "packagePath": ".",
+          "kind": "advisory",
+          "advisoryId": "GHSA-82fw-gwwq-j7x9",
+          "aliases": [
+            "CVE-2026-84373",
+            "GHSA-82fw-gwwq-j7x9"
+          ],
+          "packageName": "vitest",
+          "version": "4.1.10",
+          "severity": "medium",
+          "ratings": [
+            {
+              "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "version": "3.1",
+              "source": "OSV",
+              "baseScore": 5.9
+            }
+          ]
+        },
+        {
+          "packagePath": "apps/storybook",
+          "kind": "advisory",
+          "advisoryId": "GHSA-82fw-gwwq-j7x9",
+          "aliases": [
+            "CVE-2026-84373",
+            "GHSA-82fw-gwwq-j7x9"
+          ],
+          "packageName": "vitest",
+          "version": "4.1.10",
+          "severity": "medium",
+          "ratings": [
+            {
+              "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "version": "3.1",
+              "source": "OSV",
+              "baseScore": 5.9
+            }
+          ]
+        },
+        {
+          "packagePath": "packages/frey-ui",
+          "kind": "advisory",
+          "advisoryId": "GHSA-82fw-gwwq-j7x9",
+          "aliases": [
+            "CVE-2026-84373",
+            "GHSA-82fw-gwwq-j7x9"
+          ],
+          "packageName": "vitest",
+          "version": "4.1.10",
+          "severity": "medium",
+          "ratings": [
+            {
+              "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "version": "3.1",
+              "source": "OSV",
+              "baseScore": 5.9
+            }
+          ]
+        }
+      ],
+      "scores": {
+        "overall": {
+          "status": "insufficient_evidence"
+        },
+        "categories": {
+          "dependencies": {
+            "status": "insufficient_evidence"
+          },
+          "security": {
+            "status": "available",
+            "value": 70
+          },
+          "maintainability": {
+            "status": "insufficient_evidence"
+          },
+          "testing": {
+            "status": "available",
+            "value": 100
+          },
+          "tooling": {
+            "status": "available",
+            "value": 100
+          }
+        }
+      },
+      "observedCollectorTransitions": [
+        {
+          "key": "running:collecting_snapshot",
+          "observedAt": "2026-09-30T15:06:54.166Z",
+          "updatedAt": "2026-09-30T15:06:53.552Z"
+        },
+        {
+          "key": "running:collecting_metadata",
+          "observedAt": "2026-09-30T15:06:56.196Z",
+          "updatedAt": "2026-09-30T15:06:56.028Z"
+        },
+        {
+          "key": "running:running_rules",
+          "observedAt": "2026-09-30T15:07:08.325Z",
+          "updatedAt": "2026-09-30T15:07:08.194Z"
+        },
+        {
+          "key": "completed_with_limitations:completed_with_limitations",
+          "observedAt": "2026-09-30T15:07:10.398Z",
+          "updatedAt": "2026-09-30T15:07:08.373Z"
+        }
+      ]
+    }
+  ],
+  "failedRepository": {
+    "analysisId": "fbbef55a-d08f-46af-a830-36aac0cafd4b",
+    "repository": "https://github.com/BlizzardBlast/stacklens-release-missing-20260930",
+    "status": "failed",
+    "code": "repository_unavailable",
+    "retryable": false
+  },
+  "quickRuns": [
+    {
+      "kind": "paste",
+      "status": 200,
+      "analysisId": "f65c160d-1088-40ba-85a3-e9f8b396fa00",
+      "schemaVersion": "2.0.0",
+      "analyzer": {
+        "version": "javascript-quick-manifest-v5",
+        "ruleSetVersion": "javascript-quick-manifest-rules-v5",
+        "scoringVersion": "stack-health-v3"
+      },
+      "inventoryCount": 47,
+      "sources": 0,
+      "scoreStates": {
+        "dependencies": "insufficient_evidence",
+        "security": "insufficient_evidence",
+        "maintainability": "insufficient_evidence",
+        "testing": "insufficient_evidence",
+        "tooling": "insufficient_evidence"
+      }
+    },
+    {
+      "kind": "upload",
+      "status": 200,
+      "analysisId": "c68b5625-e23d-4de8-95ac-6a88bd1e035f",
+      "schemaVersion": "2.0.0",
+      "analyzer": {
+        "version": "javascript-quick-manifest-v5",
+        "ruleSetVersion": "javascript-quick-manifest-rules-v5",
+        "scoringVersion": "stack-health-v3"
+      },
+      "inventoryCount": 10,
+      "sources": 0,
+      "scoreStates": {
+        "dependencies": "insufficient_evidence",
+        "security": "insufficient_evidence",
+        "maintainability": "insufficient_evidence",
+        "testing": "insufficient_evidence",
+        "tooling": "insufficient_evidence"
+      }
+    }
+  ],
+  "apiChecks": [
+    {
+      "case": "openapi",
+      "status": 200,
+      "version": "3.1.0",
+      "paths": [
+        "/v1/analyses/repository",
+        "/v1/analyses/{analysisId}",
+        "/v1/analyze/manifest"
+      ]
+    },
+    {
+      "case": "malformed_json",
+      "status": 400,
+      "body": {
+        "code": "invalid_request",
+        "message": "Request does not match the API schema."
+      }
+    },
+    {
+      "case": "unsupported_content_type",
+      "status": 400,
+      "body": {
+        "code": "invalid_request",
+        "message": "Request does not match the API schema."
+      }
+    },
+    {
+      "case": "unknown_request_field",
+      "status": 400,
+      "body": {
+        "code": "invalid_request",
+        "message": "Request does not match the API schema."
+      }
+    },
+    {
+      "case": "wrong_upload_filename",
+      "status": 400,
+      "body": {
+        "code": "unsupported_upload",
+        "message": "Uploaded quick-analysis files must be named package.json."
+      }
+    },
+    {
+      "case": "invalid_manifest_group",
+      "status": 400,
+      "body": {
+        "code": "invalid_manifest",
+        "message": "package.json is not a supported manifest: package.json dependencies must be an object when present"
+      }
+    },
+    {
+      "case": "non_github_url",
+      "status": 400,
+      "body": {
+        "code": "invalid_repository_url",
+        "message": "repositoryUrl must be a public HTTPS GitHub repository URL."
+      }
+    },
+    {
+      "case": "quick_privacy_and_nonpersistence",
+      "status": 200,
+      "analysisId": "0fe9d197-d1d1-45d4-a9cc-3ce56aa7abe9",
+      "durableLookupStatus": 404,
+      "markerRetained": false,
+      "sources": [],
+      "scores": {
+        "dependencies": "insufficient_evidence",
+        "security": "insufficient_evidence",
+        "maintainability": "insufficient_evidence",
+        "testing": "insufficient_evidence",
+        "tooling": "insufficient_evidence"
+      }
+    }
+  ],
+  "privacy": {
+    "operatorTokenAbsentFromReports": true,
+    "rawInputAndCredentialFieldsAbsentFromReports": true
+  },
+  "browser": {
+    "axeVersion": "4.13.0",
+    "tags": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21a",
+      "wcag21aa",
+      "wcag22aa"
+    ],
+    "postFixScans": [
+      {
+        "page": "KerjaLog",
+        "width": 1280,
+        "theme": "light",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 1265,
+          "scrollWidth": 1265,
+          "width": 1280
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 64
+          }
+        ],
+        "passes": 24,
+        "timestamp": "2026-09-30T15:09:48.721Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "KerjaLog",
+        "width": 1280,
+        "theme": "dark",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 1265,
+          "scrollWidth": 1265,
+          "width": 1280
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 64
+          }
+        ],
+        "passes": 24,
+        "timestamp": "2026-09-30T15:09:50.153Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "KerjaLog",
+        "width": 320,
+        "theme": "light",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 305,
+          "scrollWidth": 305,
+          "width": 320
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 64
+          }
+        ],
+        "passes": 24,
+        "timestamp": "2026-09-30T15:09:51.575Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "KerjaLog",
+        "width": 320,
+        "theme": "dark",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 305,
+          "scrollWidth": 305,
+          "width": 320
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 64
+          }
+        ],
+        "passes": 24,
+        "timestamp": "2026-09-30T15:09:52.994Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "frey-ui",
+        "width": 1280,
+        "theme": "light",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 1265,
+          "scrollWidth": 1265,
+          "width": 1280
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 122
+          }
+        ],
+        "passes": 24,
+        "timestamp": "2026-09-30T15:09:55.717Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "frey-ui",
+        "width": 1280,
+        "theme": "dark",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 1265,
+          "scrollWidth": 1265,
+          "width": 1280
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 122
+          }
+        ],
+        "passes": 24,
+        "timestamp": "2026-09-30T15:09:57.859Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "frey-ui",
+        "width": 320,
+        "theme": "light",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 305,
+          "scrollWidth": 305,
+          "width": 320
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 122
+          }
+        ],
+        "passes": 24,
+        "timestamp": "2026-09-30T15:10:00.305Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "frey-ui",
+        "width": 320,
+        "theme": "dark",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 305,
+          "scrollWidth": 305,
+          "width": 320
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 122
+          }
+        ],
+        "passes": 24,
+        "timestamp": "2026-09-30T15:10:02.636Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "quick-form",
+        "mode": "Paste manifest",
+        "width": 1280,
+        "theme": "light",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 1265,
+          "scrollWidth": 1265,
+          "width": 1280
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2
+          }
+        ],
+        "passes": 23,
+        "timestamp": "2026-09-30T15:11:18.028Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "quick-form",
+        "mode": "Choose local file",
+        "width": 1280,
+        "theme": "light",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 1265,
+          "scrollWidth": 1265,
+          "width": 1280
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2
+          }
+        ],
+        "passes": 23,
+        "timestamp": "2026-09-30T15:11:18.171Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "quick-form",
+        "mode": "Paste manifest",
+        "width": 1280,
+        "theme": "dark",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 1265,
+          "scrollWidth": 1265,
+          "width": 1280
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2
+          }
+        ],
+        "passes": 23,
+        "timestamp": "2026-09-30T15:11:18.345Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "quick-form",
+        "mode": "Choose local file",
+        "width": 1280,
+        "theme": "dark",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 1265,
+          "scrollWidth": 1265,
+          "width": 1280
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2
+          }
+        ],
+        "passes": 23,
+        "timestamp": "2026-09-30T15:11:18.475Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "quick-form",
+        "mode": "Paste manifest",
+        "width": 320,
+        "theme": "light",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 305,
+          "scrollWidth": 305,
+          "width": 320
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2
+          }
+        ],
+        "passes": 23,
+        "timestamp": "2026-09-30T15:11:18.653Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "quick-form",
+        "mode": "Choose local file",
+        "width": 320,
+        "theme": "light",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 305,
+          "scrollWidth": 305,
+          "width": 320
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2
+          }
+        ],
+        "passes": 23,
+        "timestamp": "2026-09-30T15:11:18.785Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "quick-form",
+        "mode": "Paste manifest",
+        "width": 320,
+        "theme": "dark",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 305,
+          "scrollWidth": 305,
+          "width": 320
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2
+          }
+        ],
+        "passes": 23,
+        "timestamp": "2026-09-30T15:11:18.949Z",
+        "version": "4.13.0",
+        "violations": []
+      },
+      {
+        "page": "quick-form",
+        "mode": "Choose local file",
+        "width": 320,
+        "theme": "dark",
+        "reducedMotion": true,
+        "layout": {
+          "activeAnimations": 0,
+          "bodyScrollWidth": 305,
+          "scrollWidth": 305,
+          "width": 320
+        },
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2
+          }
+        ],
+        "passes": 23,
+        "timestamp": "2026-09-30T15:11:19.107Z",
+        "version": "4.13.0",
+        "violations": []
+      }
+    ],
+    "manualContrastReview": [
+      {
+        "page": "KerjaLog",
+        "groups": [
+          {
+            "id": "color-contrast",
+            "count": 64,
+            "allDecorative": true,
+            "glyphs": [
+              "◆",
+              "→",
+              "●"
+            ],
+            "nonDecorative": []
+          }
+        ]
+      },
+      {
+        "page": "frey-ui",
+        "groups": [
+          {
+            "id": "color-contrast",
+            "count": 122,
+            "allDecorative": true,
+            "glyphs": [
+              "●",
+              "→",
+              "◆"
+            ],
+            "nonDecorative": []
+          }
+        ]
+      },
+      {
+        "page": "quick-form",
+        "groups": [
+          {
+            "id": "color-contrast",
+            "count": 2,
+            "allDecorative": true,
+            "glyphs": [
+              "✓"
+            ],
+            "nonDecorative": []
+          }
+        ]
+      }
+    ],
+    "realScreenReaderTested": false,
+    "physicalDeviceTested": false
+  },
+  "qualityGate": {
+    "status": "passed",
+    "command": "pnpm check",
+    "exitCode": 0,
+    "database": "stacklens_release_check_20260930",
+    "vitestTestsPassed": 491,
+    "tokenTestsPassed": 10,
+    "totalTestsPassed": 501,
+    "testGraphTasks": 22,
+    "testGraphTasksSuccessful": 22,
+    "testGraphCachedTasks": 21,
+    "compiledRuntimeSmoke": "passed against PostgreSQL with provider-free smoke task",
+    "build": "passed",
+    "uiConfiguration": "passed",
+    "typecheck": "passed",
+    "lint": "passed",
+    "format": "passed",
+    "logSha256": "dee83f5c1d8abf81f40b4b6a31c6d71fdfa05a16c7d0e5d7a13e3e1c06da64fb",
+    "correctedFailures": [
+      "Unsupported Testing Library exact option in the new test; removed",
+      "Three existing web tests timed out with default worker count; capped isolated workers at two",
+      "New mock omitted required type parameters; added explicit submission signature"
+    ],
+    "nonBlockingWarnings": [
+      "Vite web JavaScript chunk 510.88 kB minified / 155.27 kB gzip",
+      "Graphile executable detection is unsupported on Windows; no crontab configured"
+    ]
+  },
+  "cleanup": {
+    "status": "complete",
+    "databasesRemoved": [
+      "stacklens_release_20260930",
+      "stacklens_release_check_20260930"
+    ],
+    "databaseConnectionsBeforeRemoval": 0,
+    "defaultDatabaseUntouched": true,
+    "postgresVolumePreserved": true,
+    "composeContainerAndNetworkRemoved": true,
+    "dockerEngineLeftRunning": true,
+    "applicationAndPostgresPortsRestoredToUnused": [
+      3000,
+      5173,
+      55432
+    ],
+    "browserEmulationReset": true,
+    "taskBrowserTabsClosed": 4,
+    "javascriptKernelReset": true,
+    "temporaryInputsToolsAndLogsRemoved": true,
+    "committed": false,
+    "pushed": false,
+    "deployed": false
+  },
+  "persistenceChecks": {
+    "durableRepositoryAnalyses": 5,
+    "durableReports": 4,
+    "terminalFailedAnalyses": 1,
+    "deliveredOutboxRecords": 5,
+    "deliveryAttemptsPerRecord": 1,
+    "remainingGraphileJobs": 0,
+    "quickAnalysisRows": 0,
+    "privacyMarkerAbsentFromStoredReports": true
+  }
+}

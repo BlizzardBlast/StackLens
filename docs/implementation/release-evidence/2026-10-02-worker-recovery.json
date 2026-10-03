@@ -1,0 +1,478 @@
+{
+  "recordedAt": "2026-10-02T14:16:55.545Z",
+  "requirements": [
+    "FR-003",
+    "FR-021",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "source": {
+    "baseRevision": "405b42046108367a374f73c923b1c60b397d28d6",
+    "dirty": true,
+    "committed": false,
+    "pushed": false,
+    "vercelWebApiRevision": "405b42046108367a374f73c923b1c60b397d28d6",
+    "workerPatchMode": "Verified compiled files and launchers on existing approved host",
+    "sourceHashes": [
+      {
+        "path": "apps/worker/src/main.ts",
+        "sha256": "24478b9e06bbeb73fd6c681ae8bb8d60d9de314326b8344b7f4b5cf58fa1a148"
+      },
+      {
+        "path": "apps/worker/src/runtime.ts",
+        "sha256": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf"
+      },
+      {
+        "path": "apps/worker/src/task.ts",
+        "sha256": "0dc578dccd542a6e75d78514b098c9890d486be97302ff502bf7fa6bf5375ba5"
+      },
+      {
+        "path": "apps/worker/src/providers.ts",
+        "sha256": "f8b7d49b9e98b1dbb1af86dddbe04634a44f5b890513b2d01020c67e3be301db"
+      },
+      {
+        "path": "apps/worker/src/recover.ts",
+        "sha256": "b6883c0182050357e4ae53044eb761b911f2798b5054a00496460ff9f3940e5f"
+      },
+      {
+        "path": "apps/worker/src/recovery.ts",
+        "sha256": "2808f1b310f44b3122762357603e6fca9157499a6fe20827c3807e150f6a0779"
+      },
+      {
+        "path": "deploy/silly/start-worker.js",
+        "sha256": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+      },
+      {
+        "path": "deploy/silly/recover.js",
+        "sha256": "33ca4c6bb2e99aeb649ed3cfc339ce356f33b4c40eaf430fd2a66cb4c0724689"
+      },
+      {
+        "path": "scripts/prepare-silly-worker.mjs",
+        "sha256": "32a23fa93d9e1fa7948c39e8b5e077d97041291a71ebb1fbd7371bc9cef03b9f"
+      }
+    ],
+    "compiledFiles": [
+      {
+        "file": "main.js",
+        "sha256": "4c9c2ddb96c7d6ed1439abce3493806cdcadd8af131c0583ac53451e2dffe0ab"
+      },
+      {
+        "file": "main.js.map",
+        "sha256": "c536614cc0d807baa5587a10f02c8c52df39478d90237cd9361400430ffe8ec8"
+      },
+      {
+        "file": "runtime.js",
+        "sha256": "5d34d3f4794c0358bfb1fbd613cd5e8662bb421ca5a9092792a0b3237520436f"
+      },
+      {
+        "file": "runtime.js.map",
+        "sha256": "d2104f7403f4ed6e9f595cc42777fc88fb5c5939f4f5a7add17774fe2040612c"
+      },
+      {
+        "file": "task.js",
+        "sha256": "80a61de9335f251169e2886f307d67331b1f44d672569856d65f84c416b3d981"
+      },
+      {
+        "file": "task.js.map",
+        "sha256": "4d30a5c36effcb758e2cf09714dc68e1d0837f8f9d393667e0d437031bcbca29"
+      },
+      {
+        "file": "providers.js",
+        "sha256": "bf1af91c0215cefbcf9bf93a437610b80e278e0ac32edaf5670ea6a834e26d60"
+      },
+      {
+        "file": "providers.js.map",
+        "sha256": "f4e2be583254ad3bf6f895cb85ce29ec2cb3e423f3dd0ca80d27a5c8ca2649a5"
+      },
+      {
+        "file": "recovery.js",
+        "sha256": "c49c57c9022628c6c584f3a101b9e6295aafc4e1a8cbaf3fa0eac9afda14b199"
+      },
+      {
+        "file": "recovery.js.map",
+        "sha256": "2c872d3976a078d6c180d6552490cb0cc6228f2601edc067ee88a3730f494148"
+      },
+      {
+        "file": "recover.js",
+        "sha256": "56ed51aefb948babfe49021c8addbdd6bd2810311aee77c7e0f49d1f4ec3b697"
+      },
+      {
+        "file": "recover.js.map",
+        "sha256": "4dbc82a056cbc4271c780a71e0e6ac411b24092106e058a4380f6c654362b830"
+      }
+    ],
+    "launchers": [
+      {
+        "file": "start-worker.js",
+        "sha256": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+      },
+      {
+        "file": "recover.js",
+        "sha256": "33ca4c6bb2e99aeb649ed3cfc339ce356f33b4c40eaf430fd2a66cb4c0724689"
+      }
+    ],
+    "remoteHashesVerified": true,
+    "privateRuntimeUnchanged": true,
+    "vercelVerification": {
+      "web": {
+        "project": "stacklens",
+        "deploymentId": "A4Dw7GgAv7BnNNUckiXMxWamYCLc",
+        "state": "Ready"
+      },
+      "api": {
+        "project": "stacklens-api",
+        "deploymentId": "39YjLZyoE273cEsivzUBJX1SsA2P",
+        "state": "Ready"
+      },
+      "bothSourceRevision": "405b42046108367a374f73c923b1c60b397d28d6",
+      "observedFrom": "Authenticated project overview pages",
+      "recordedAt": "2026-10-02T14:16:55.439Z"
+    },
+    "packagedArtifact": {
+      "imageId": "sha256:0f60af301967ce3b45366a7ece76e07d0f389720dd769ad2de08dbd65cdeac29",
+      "bytes": 16818998,
+      "sha256": "e04f94248cb103642f899f499c935077488f74a0d81fbeb9aef9a0647a3a2648"
+    }
+  },
+  "localQuality": {
+    "command": "pnpm check",
+    "databaseEnvironment": "TEST_DATABASE_URL set to disposable local PostgreSQL 18",
+    "exitCode": 0,
+    "workerTests": 27,
+    "gracefulRetry": true,
+    "confirmedChildProcessDeathBeforeUnlock": true,
+    "differentLiveOwnerPreserved": true,
+    "apiChange": "Test synchronization only; production API unchanged"
+  },
+  "constrainedLinux": {
+    "status": "verified",
+    "memoryLimitMiB": 256,
+    "cpuLimit": 0.25,
+    "workerConcurrency": 1,
+    "repositories": [
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "c3d6b62c-a1f1-4221-b146-c44bbea025a9",
+        "status": "completed_with_limitations",
+        "durationMs": 107765,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "schemaVersion": "2.0.0",
+        "limitationCount": 24,
+        "partialFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ],
+        "failureCode": null
+      },
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "cc3b99bf-7457-4efb-bf8a-c8b18471289a",
+        "status": "completed_with_limitations",
+        "durationMs": 93715,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "schemaVersion": "2.0.0",
+        "limitationCount": 5,
+        "partialFailureCodes": [],
+        "failureCode": null
+      }
+    ],
+    "memoryPeakBytes": 256110592,
+    "memoryEvents": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+    "processes": [
+      "3507                3483                15492               node /usr/local/bin/ts-node --esm start-worker.js",
+      "3531                3507                157392              /usr/local/bin/node --max-old-space-size=96 ./dist/main.js"
+    ],
+    "heapAllocationFailure": false,
+    "exitCode": 0,
+    "oomKilled": false,
+    "isolatedDatabaseRemoved": true,
+    "recordedAt": "2026-10-02T13:57:53.683Z"
+  },
+  "configurationExperiments": {
+    "uncapped": {
+      "completedBothRepositories": true,
+      "memoryPeakBytes": 269299712,
+      "memoryLimitEvents": 925,
+      "oomEvents": 0,
+      "oomKillEvents": 0,
+      "accepted": false
+    },
+    "oldSpace96WithSourceMaps": {
+      "status": "verified",
+      "memoryLimitMiB": 256,
+      "cpuLimit": 0.25,
+      "workerConcurrency": 1,
+      "repositories": [
+        {
+          "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+          "analysisId": "c63b3ff4-f634-487b-8aa5-15862ff23118",
+          "status": "completed_with_limitations",
+          "durationMs": 104832,
+          "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+          "schemaVersion": "2.0.0",
+          "limitationCount": 24,
+          "partialFailureCodes": [
+            "npm_response_too_large",
+            "npm_response_too_large",
+            "npm_response_too_large"
+          ],
+          "failureCode": null
+        },
+        {
+          "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+          "analysisId": "9ce65033-e6a3-45d9-afe1-856f24555ed8",
+          "status": "completed_with_limitations",
+          "durationMs": 89486,
+          "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+          "schemaVersion": "2.0.0",
+          "limitationCount": 5,
+          "partialFailureCodes": [],
+          "failureCode": null
+        }
+      ],
+      "checks": {},
+      "memoryPeakBytes": 266883072,
+      "memoryEvents": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+      "processes": [
+        "2965                2943                14628               node /usr/local/bin/ts-node --esm start-worker.js",
+        "2990                2965                138812              /usr/local/bin/node --max-old-space-size=96 --enable-source-maps ./dist/main.js"
+      ],
+      "exitCode": 0,
+      "oomKilled": false,
+      "isolatedDatabaseRemoved": true,
+      "recordedAt": "2026-10-02T13:44:39.564Z"
+    },
+    "oldSpace80": {
+      "status": "failed",
+      "memoryLimitMiB": 256,
+      "cpuLimit": 0.25,
+      "workerConcurrency": 1,
+      "repositories": [],
+      "checks": {},
+      "oomKilled": false,
+      "errorName": "Error",
+      "reason": "Budget Worker stopped",
+      "exitCode": 1,
+      "isolatedDatabaseRemoved": true,
+      "recordedAt": "2026-10-02T13:50:47.758Z"
+    },
+    "selected": {
+      "oldSpaceMiB": 96,
+      "sourceMapsEnabled": false,
+      "sourceSelectionOrResponseBoundsChanged": false
+    }
+  },
+  "hosted": {
+    "status": "verified",
+    "origin": "https://stacklens-web.vercel.app",
+    "host": "60761d98",
+    "repositories": [
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "dd5ef4cb-914b-48b8-9b9c-012f94b93944",
+        "status": "completed_with_limitations",
+        "durationMs": 192798,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "schemaVersion": "2.0.0",
+        "limitationCount": 5,
+        "partialFailureCodes": [],
+        "retentionHours": 24
+      },
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "4c6ff96e-660e-4eb7-a182-639aedd6f8b2",
+        "status": "completed_with_limitations",
+        "durationMs": 147072,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "schemaVersion": "2.0.0",
+        "limitationCount": 24,
+        "partialFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ],
+        "retentionHours": 24
+      }
+    ],
+    "restart": {
+      "analysisId": "dd5ef4cb-914b-48b8-9b9c-012f94b93944",
+      "oldOwner": "pool-ff88e7932be81c6a90",
+      "jobId": "11",
+      "attemptBefore": 1,
+      "stageBefore": null,
+      "requestedAt": "2026-10-02T13:59:05.961Z",
+      "offlineAfterMs": 22379,
+      "ownerAfterStop": null,
+      "statusAfterStop": "queued",
+      "failureCodeAfterStop": "repository_analysis_interrupted",
+      "reportCountAfterStop": 0,
+      "startedAt": "2026-10-02T13:59:29.223Z",
+      "resumedOwnerObserved": "pool-b8655e22040ffe97c0",
+      "resumedAttemptObserved": 2,
+      "resumedObservationAt": "2026-10-02T14:00:34.264Z"
+    },
+    "remainingQueueCount": 0,
+    "privateRuntimeMatchesLocal": true,
+    "resources": {
+      "memory_bytes": 168816640,
+      "cpu_absolute": 14.29,
+      "disk_bytes": 68187695,
+      "network_rx_bytes": 45570044,
+      "network_tx_bytes": 1906210,
+      "uptime": 282820
+    },
+    "hostState": "running",
+    "recordedAt": "2026-10-02T14:04:25.999Z"
+  },
+  "retention": {
+    "status": "verified",
+    "syntheticOwnedFixtures": true,
+    "fixtureIds": [
+      "e5ae9c17-339d-4ea7-9c84-0b422f878f45",
+      "cdd1ab57-0567-4a85-b976-634ac6187f19",
+      "7f5c53c5-cd33-42b7-9ffa-6aaa69e12fc5",
+      "62cad08c-b26a-43e5-82c1-d796d7802e9e"
+    ],
+    "deletionAfterMs": 6229,
+    "cascadedReportCount": 0,
+    "cascadedDeliveryCount": 0,
+    "preservedStates": [
+      {
+        "status": "failed",
+        "has_claim": false,
+        "legacy_null_expiry": true
+      },
+      {
+        "status": "queued",
+        "has_claim": false,
+        "legacy_null_expiry": false
+      },
+      {
+        "status": "running",
+        "has_claim": true,
+        "legacy_null_expiry": false
+      }
+    ],
+    "publicLookupAfterDeletion": 404,
+    "ownedFixturesRemoved": true,
+    "recordedAt": "2026-10-02T14:02:14.097Z"
+  },
+  "restore": {
+    "status": "verified",
+    "source": "Aiven preview database",
+    "target": "Separate owned Aiven database",
+    "format": "PostgreSQL 18 custom archive",
+    "schemas": [
+      "public",
+      "graphile_worker"
+    ],
+    "scheduledBackup": false,
+    "sourceSnapshot": {
+      "public.analysis": {
+        "count": 11,
+        "sha256": "2c61898b6f921498e76d5490dbe5be93ac3dab801d6acc0f4062b0047640fd90"
+      },
+      "public.analysis_report": {
+        "count": 8,
+        "sha256": "1278e131b884726b0016aca1545be5fd496fd2da2561eb8f507541dc968a8052"
+      },
+      "public.analysis_delivery": {
+        "count": 11,
+        "sha256": "df486b73433b5fa9c7f4ab16ab10a68afa1dadbca4c8e76d262f6e3de4eb1630"
+      },
+      "graphile_worker._private_jobs": {
+        "count": 1,
+        "sha256": "30a9cf3b9f050e13040c358324d2f251f9451cb3ee83beeb68b36f07b90594ec"
+      },
+      "graphile_worker._private_job_queues": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_tasks": {
+        "count": 1,
+        "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+      },
+      "graphile_worker.migrations": {
+        "count": 20,
+        "sha256": "51d30730fab702480bc6551836acbf8e8ccc02c5d95a641dfab9e5075998b716"
+      }
+    },
+    "archiveBytes": 503116,
+    "archiveSha256": "c32906b3bac53df2c76c3984b791a3a7a3acc5ef8c130eac339bdc4bd9325451",
+    "restoredSnapshot": {
+      "public.analysis": {
+        "count": 11,
+        "sha256": "2c61898b6f921498e76d5490dbe5be93ac3dab801d6acc0f4062b0047640fd90"
+      },
+      "public.analysis_report": {
+        "count": 8,
+        "sha256": "1278e131b884726b0016aca1545be5fd496fd2da2561eb8f507541dc968a8052"
+      },
+      "public.analysis_delivery": {
+        "count": 11,
+        "sha256": "df486b73433b5fa9c7f4ab16ab10a68afa1dadbca4c8e76d262f6e3de4eb1630"
+      },
+      "graphile_worker._private_jobs": {
+        "count": 1,
+        "sha256": "30a9cf3b9f050e13040c358324d2f251f9451cb3ee83beeb68b36f07b90594ec"
+      },
+      "graphile_worker._private_job_queues": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_tasks": {
+        "count": 1,
+        "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+      },
+      "graphile_worker.migrations": {
+        "count": 20,
+        "sha256": "51d30730fab702480bc6551836acbf8e8ccc02c5d95a641dfab9e5075998b716"
+      }
+    },
+    "schemaCounts": {
+      "2.0.0": 8
+    },
+    "apiReportReads": 8,
+    "historicalRowsUnchanged": true,
+    "isolatedDatabaseRemoved": true,
+    "privateArchiveRemoved": true,
+    "recordedAt": "2026-10-02T14:00:18.475Z"
+  },
+  "postflight": {
+    "remainingOwnedRehearsalDatabaseNames": [],
+    "queuedJobs": 0,
+    "verifiedTls": true
+  },
+  "credentialCleanup": {
+    "temporaryUploadKeys": "Revoked; authenticated reuse returned 401; dashboard reports no API keys",
+    "privateLocalCopies": "Removed; approved runtime credentials remain only on their existing hosting destinations"
+  },
+  "remainingGates": [
+    "Physical phone and spoken screen-reader acceptance left open by user",
+    "Another browser engine",
+    "Sustained/general Worker capacity; measured headroom is limited",
+    "Function suspension and aggregate connection behavior",
+    "Scheduled operational backup retention and recovery objectives",
+    "Abrupt hosted crash/disaster queue replay not established by planned restart"
+  ],
+  "pullRequest": {
+    "number": 41,
+    "state": "Draft and unmerged",
+    "mergeAuthorized": false
+  },
+  "documentationVerification": {
+    "localMarkdownLinksChecked": 119,
+    "allCurrentSourceHashesMatch": true,
+    "changedFilesCredentialScan": "passed",
+    "jsonParsed": true
+  },
+  "finalLocalCheck": "pnpm check with TEST_DATABASE_URL passed after final production changes"
+}

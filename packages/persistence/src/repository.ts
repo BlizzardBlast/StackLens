@@ -118,6 +118,29 @@ export interface AnalysisRepository {
 export class DrizzleAnalysisRepository implements AnalysisRepository {
   constructor(private readonly database: StackLensDatabase) {}
 
+  /** SEC-003: bounded cleanup never deletes queued/running claims or edits Graphile internals. */
+  async purgeExpiredTerminalAnalyses(now: string, limit = 100): Promise<number> {
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 1_000) {
+      throw new Error("Analysis retention batch limit must be an integer from 1 to 1000.");
+    }
+    const timestamp = isoTimestamp(now);
+    const result = await this.database.execute(sql`
+      WITH expired AS (
+        SELECT id FROM analysis
+        WHERE retention_expires_at <= ${timestamp}::timestamptz
+          AND status IN ('completed', 'completed_with_limitations', 'failed')
+          AND active_job_id IS NULL
+        ORDER BY retention_expires_at, id
+        LIMIT ${limit}
+        FOR UPDATE SKIP LOCKED
+      )
+      DELETE FROM analysis USING expired
+      WHERE analysis.id = expired.id
+      RETURNING analysis.id
+    `);
+    return result.rows.length;
+  }
+
   async createQueuedRepositoryAnalysis(
     input: CreateQueuedRepositoryAnalysis,
   ): Promise<RepositoryAnalysisRecord> {

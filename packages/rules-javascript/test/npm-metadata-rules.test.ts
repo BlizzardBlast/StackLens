@@ -208,7 +208,7 @@ describe("npmRegistryHealthFactRule [FR-010, DATA-001, DATA-002, NFR-003]", () =
       },
       rule: {
         id: "JS-NPM-010",
-        version: "1",
+        version: "2",
       },
       requirementIds: ["FR-010"],
     });
@@ -220,6 +220,59 @@ describe("npmRegistryHealthFactRule [FR-010, DATA-001, DATA-002, NFR-003]", () =
     expect(result.facts?.[0]?.evidenceIds).toContain(npmEvidenceId);
     expect(result.facts?.[0]?.statement.toLowerCase()).not.toContain("healthy");
     expect(result.facts?.[0]?.statement.toLowerCase()).not.toContain("unhealthy");
+  });
+
+  it.each([
+    { declaredSpecifier: "workspace:*" },
+    { internalPackagePath: "packages/lib" },
+    { unresolvedInternalTarget: true as const },
+    { peerOnly: true as const },
+  ])("does not request health evidence for non-external declarations: %j [FR-023]", (scope) => {
+    const fixture = createRuleContext({ metadata: {}, sources: [], externalEvidence: [] });
+    const result = npmRegistryHealthFactRule.evaluate({
+      ...fixture.context,
+      project: {
+        ...fixture.project,
+        dependencies: fixture.project.dependencies.map((declaration) => ({
+          ...declaration,
+          ...scope,
+        })),
+      },
+    });
+
+    expect(result.facts).toEqual([]);
+    expect(result.limitations).toEqual([]);
+  });
+
+  it("keeps same-name external evidence separate from an internal declaration [FR-005, FR-023]", () => {
+    const fixture = createRuleContext({
+      manifest: {
+        dependencies: { [packageName]: "1.0.0" },
+        optionalDependencies: { [packageName]: "1.0.0" },
+      },
+    });
+    const external = fixture.project.dependencies.find((item) => item.group === "dependencies")!;
+    const internal = {
+      ...fixture.project.dependencies.find((item) => item.group === "optionalDependencies")!,
+      internalPackagePath: "packages/lib",
+    };
+    const result = npmRegistryHealthFactRule.evaluate({
+      ...fixture.context,
+      project: { ...fixture.project, dependencies: [external, internal] },
+    });
+
+    expect(result.limitations).toEqual([]);
+    expect(result.facts).toHaveLength(1);
+    const externalEvidence = createDependencyInventoryEvidence({
+      ...fixture.project,
+      dependencies: [external],
+    });
+    const internalEvidence = createDependencyInventoryEvidence({
+      ...fixture.project,
+      dependencies: [internal],
+    });
+    expect(result.facts?.[0]?.evidenceIds).toContain(externalEvidence[0]?.id);
+    expect(result.facts?.[0]?.evidenceIds).not.toContain(internalEvidence[0]?.id);
   });
 
   it("retains observed health metadata from a partial source while disclosing the limitation", () => {

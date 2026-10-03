@@ -1,16 +1,21 @@
-import { makeWorkerUtils, run, runMigrations, type Runner, type TaskList } from "graphile-worker";
-import type { Pool } from "pg";
+import { EventEmitter } from "node:events";
 
 import {
-  GitHubRepositoryAdapter,
-  NpmRegistryAdapter,
-  OsvVulnerabilityAdapter,
-} from "@stacklens/data-sources";
+  makeWorkerUtils,
+  run,
+  runMigrations,
+  type Runner,
+  type TaskList,
+  type WorkerEvents,
+} from "graphile-worker";
+import type { Pool } from "pg";
+
 import {
   createStackLensDatabase,
   createStackLensPool,
   DrizzleAnalysisRepository,
   migrateStackLensDatabase,
+  type StackLensPoolOptions,
 } from "@stacklens/persistence";
 import {
   createGraphileRepositoryJobQueue,
@@ -19,13 +24,19 @@ import {
   type GraphileJobAdder,
 } from "@stacklens/repository-jobs";
 
+import { createWorkerAnalysisDependencies } from "./providers.js";
+import { startAnalysisRetentionPump } from "./retention.js";
 import { createRepositoryAnalysisTaskList } from "./task.js";
 
 export interface WorkerRuntimeOptions {
   readonly connectionString: string;
   readonly concurrency?: number;
+  readonly databasePoolOptions?: StackLensPoolOptions;
   readonly githubToken?: string;
   readonly onDatabasePoolError?: (error: Error) => void;
+  readonly onRetentionError?: (error: unknown) => void;
+  readonly onQueueOwnerId?: (ownerId: string) => void;
+  readonly retentionCleanup?: boolean;
   /**
    * Internal composition seam for runtime verification. Production leaves this unset so the
    * repository-analysis task remains the only configured worker task.
@@ -42,7 +53,11 @@ export interface StackLensWorkerRuntime {
 export async function startStackLensWorker(
   options: WorkerRuntimeOptions,
 ): Promise<StackLensWorkerRuntime> {
-  const pool = createStackLensPool(options.connectionString, options.onDatabasePoolError);
+  const pool = createStackLensPool(
+    options.connectionString,
+    options.onDatabasePoolError,
+    options.databasePoolOptions,
+  );
 
   try {
     const database = createStackLensDatabase(pool);
@@ -51,6 +66,7 @@ export async function startStackLensWorker(
 
     const workerUtils = await makeWorkerUtils({ pgPool: pool });
     let deliveryPump: ReturnType<typeof startRepositoryAnalysisDeliveryPump> | undefined;
+    let retentionPump: ReturnType<typeof startAnalysisRetentionPump> | undefined;
 
     try {
       const repository = new DrizzleAnalysisRepository(database);
@@ -69,49 +85,70 @@ export async function startStackLensWorker(
         options.taskList ??
         createRepositoryAnalysisTaskList({
           repository,
-          analysisDependencies: {
-            githubRepositoryProvider: new GitHubRepositoryAdapter({
-              authToken: options.githubToken,
-            }),
-            npmRegistryProvider: new NpmRegistryAdapter(),
-            osvProvider: new OsvVulnerabilityAdapter(),
-          },
+          analysisDependencies: createWorkerAnalysisDependencies(
+            new AbortController().signal,
+            options.githubToken,
+          ),
+          createAnalysisDependencies: (signal) =>
+            createWorkerAnalysisDependencies(signal, options.githubToken),
         });
 
+      const events = new EventEmitter() as WorkerEvents;
+      events.on("pool:create", ({ workerPool }) => options.onQueueOwnerId?.(workerPool.id));
       const runner = await run({
         pgPool: pool,
         taskList,
         concurrency: options.concurrency ?? 2,
         noHandleSignals: true,
+        gracefulShutdownAbortTimeout: 1_000,
+        events,
+        // In Graphile 0.18 the immediate completion/failure callbacks are fire-and-forget.
+        // Zero-delay batching gives shutdown a releaser that awaits the final queue writes.
+        preset: { worker: { completeJobBatchDelay: 0, failJobBatchDelay: 0 } },
       });
+      if (options.retentionCleanup ?? true) {
+        retentionPump = startAnalysisRetentionPump({
+          repository,
+          ...(options.onRetentionError === undefined ? {} : { onError: options.onRetentionError }),
+        });
+      }
 
-      let stopped = false;
+      let stopPromise: Promise<void> | undefined;
 
       return {
         pool,
         runner,
-        async stop() {
-          if (stopped) {
-            return;
-          }
-
-          stopped = true;
-
-          try {
-            await deliveryPump?.stop();
-            await runner.stop();
-          } finally {
+        stop() {
+          stopPromise ??= (async () => {
             try {
-              await workerUtils.release();
+              // Stop claiming jobs immediately, even if a maintenance query is still running.
+              const results = await Promise.allSettled([
+                runner.stop(),
+                deliveryPump?.stop(),
+                retentionPump?.stop(),
+              ]);
+              const failures = results.filter((result) => result.status === "rejected");
+              if (failures.length > 0) {
+                throw new AggregateError(
+                  failures.map((failure) => failure.reason),
+                  "Worker shutdown failed.",
+                );
+              }
             } finally {
-              await pool.end();
+              try {
+                await workerUtils.release();
+              } finally {
+                await pool.end();
+              }
             }
-          }
+          })();
+          return stopPromise;
         },
       };
     } catch (error) {
       try {
         await deliveryPump?.stop();
+        await retentionPump?.stop();
       } finally {
         await workerUtils.release();
       }

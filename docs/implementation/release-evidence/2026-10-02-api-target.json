@@ -1,0 +1,370 @@
+{
+  "date": "2026-10-02",
+  "timezone": "Asia/Jakarta",
+  "recordedAt": "2026-10-01T23:45:42.507Z",
+  "setupUpdatedAt": "2026-10-02T11:30:28.450Z",
+  "requirementIds": [
+    "PRD-006",
+    "FR-001",
+    "FR-003",
+    "FR-004",
+    "FR-022",
+    "NFR-004",
+    "NFR-008",
+    "NFR-009",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007",
+    "NFR-006",
+    "NFR-007"
+  ],
+  "source": {
+    "branch": "codex/mvp-release-readiness",
+    "pullRequest": "https://github.com/BlizzardBlast/StackLens/pull/41",
+    "initialPublishedCommit": "7ce34f0eebd86dfcbc3646984db90dc92234ee1a",
+    "verifiedMain": "f51d2b61f4740172558bb4b38087af60af8d791a",
+    "initialQualityRun": {
+      "id": 36884582320,
+      "conclusion": "success"
+    },
+    "adapterRevision": "2a507cb50f076e682cf203474e8be77ae92ac186",
+    "adapterQualityRun": {
+      "id": 36942657278,
+      "conclusion": "success",
+      "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/36942657278"
+    },
+    "merged": false,
+    "configurationRevision": "f661bec0351ecf5a7cc15663fee8326aaf4e9cca",
+    "configurationQualityRun": {
+      "id": 36945252902,
+      "conclusion": "success",
+      "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/36945252902"
+    },
+    "captureQualityRun": {
+      "id": 36946766454,
+      "conclusion": "success",
+      "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/36946766454"
+    },
+    "runtimeRevision": "75bf5a2f37d32b98925dd922eb0c6410df3f55fc",
+    "runtimeQualityRun": {
+      "id": 36947487085,
+      "conclusion": "success",
+      "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/36947487085"
+    }
+  },
+  "render": {
+    "attempted": true,
+    "branchSelected": "codex/mvp-release-readiness",
+    "plan": "Free $0/month",
+    "region": "Singapore",
+    "runtime": "Docker API",
+    "aivenCredentialsEnteredAfterApproval": true,
+    "cardVerificationPrompt": true,
+    "temporaryAuthorizationUsd": 1,
+    "cardEntered": false,
+    "serviceCreated": false,
+    "publicOrigin": null,
+    "dashboardVerifiedEmpty": true,
+    "restoredFormBlank": true
+  },
+  "worker": {
+    "host": "Silly Development",
+    "server": "60761d98",
+    "stateObserved": "Running",
+    "uptimeObserved": "8h 23m 18s",
+    "idleMemoryMiB": 176.44,
+    "memoryLimitMiB": 256,
+    "notes": "Periodic UI observation, not cgroup peak or new workload acceptance. Prior authenticated repository evidence remains in the October 1 record.",
+    "currentObservation": {
+      "recordedAt": "2026-10-02T11:35:40.551Z",
+      "state": "Running",
+      "uptimeObserved": "10h 37m 36s",
+      "idleMemoryMiB": 169.88,
+      "displayedMemoryLimitMiB": 256,
+      "cpuPercent": 0.36,
+      "displayedCpuLimitPercent": 25,
+      "temporaryRecoveryHelperSaved": false
+    }
+  },
+  "vercel": {
+    "target": "separate API project",
+    "proposedName": "stacklens-api-preview",
+    "projectName": "stacklens-api-preview",
+    "projectId": "prj_Zd0NV89v672Ru0RntrsFNZ2b7O7s",
+    "team": "freys-projects",
+    "dashboard": "https://vercel.com/freys-projects/stacklens-api-preview",
+    "gitRepository": "BlizzardBlast/StackLens",
+    "trackedProductionBranch": "codex/mvp-release-readiness",
+    "planObserved": "Hobby",
+    "rootDirectory": "apps/api",
+    "framework": "fastify",
+    "node": "24.x",
+    "region": "sin1",
+    "fluidComputeObservedEnabled": true,
+    "outsideRootFilesEnabled": true,
+    "ignoredBuildBehavior": "Only build production",
+    "nonSecretProductionConfig": {
+      "ENABLE_EXPERIMENTAL_COREPACK": "1",
+      "STACKLENS_DATABASE_POOL_MAX": "1",
+      "STACKLENS_RETENTION_HOURS": "24"
+    },
+    "pullRequestCommentsEnabled": false,
+    "commitCommentsEnabled": false,
+    "branchTrackingSaved": true,
+    "suggestedRedeployFoundNoExistingDeployment": true,
+    "maxDurationSeconds": 60,
+    "maxDurationConfiguredIn": "project Functions Advanced Settings",
+    "databasePoolMaxPerInstance": 1,
+    "apiDeliveryPump": false,
+    "continuousRecovery": "Silly Worker",
+    "backendSecretTransferApproved": true,
+    "backendSecretsTransferred": true,
+    "backendSecretEnvironment": "API project Production only",
+    "providerTokenTransferred": false,
+    "projectCreated": true,
+    "deployed": true,
+    "publicOrigin": "https://project-q766o.vercel.app",
+    "cloudAttempts": [
+      {
+        "id": "GSY6Sn1HFcDhvcHiYYV2NMDnphoE",
+        "commit": "ff4d91ac60eacf7217168783c5ba8cccbc2eca68",
+        "status": "error",
+        "durationSeconds": 2,
+        "cli": "62.1.0",
+        "stage": "before install and native builder",
+        "failure": "functions.app.mjs did not match a Serverless Function in the api directory",
+        "correction": "Remove the functions override and save the 60-second project default"
+      },
+      {
+        "id": "EMDGL6Zto5tD6Mcak5ekZSeNUygF",
+        "commit": "f661bec0351ecf5a7cc15663fee8326aaf4e9cca",
+        "status": "ready",
+        "durationSeconds": 29,
+        "resources": {
+          "functions": 1,
+          "path": "/index",
+          "region": "sin1",
+          "runtime": "Node.js 24.x",
+          "sizeMB": 2.61,
+          "maxDurationSeconds": 60
+        },
+        "publicHttp": {
+          "path": "/openapi.json",
+          "status": 500,
+          "errorCode": "INTERNAL_FUNCTION_INVOCATION_FAILED",
+          "applicationLogs": 0
+        },
+        "correction": "Do not await the listen promise during native entrypoint import"
+      },
+      {
+        "id": "CNCvRBZvSWjL8m8oPkHmcAvxJZQC",
+        "commit": "9ec89bccd1f50708179c26613facfb695f5dd523",
+        "status": "ready",
+        "durationSeconds": 27,
+        "publicHttp": {
+          "path": "/openapi.json",
+          "status": 500,
+          "errorCode": "FUNCTION_INVOCATION_FAILED",
+          "applicationFailure": "Default export must be a function or server",
+          "poolReleaseWarningsOutsideRequestScope": 3
+        },
+        "correction": "Export the captured HTTP server as the default handler"
+      },
+      {
+        "id": "4R1WiVXW1UUU3BKN6Gm2PjrDJVeK",
+        "commit": "2eb9da3ac71a448c6618138c838536c3d1cc41b5",
+        "status": "ready",
+        "durationSeconds": 24,
+        "publicHttp": {
+          "path": "/openapi.json",
+          "status": 500,
+          "errorCode": "FUNCTION_INVOCATION_FAILED",
+          "applicationFailure": "StackLens Vercel API failed to listen",
+          "executionSeconds": 2.88,
+          "fluidMemoryMB": 357
+        },
+        "correction": "Await Fastify readiness and export the unbound HTTP server; let Vercel perform binding"
+      },
+      {
+        "id": "Fd6qZs1W8XvuG44FbqZ6upyuT4jW",
+        "commit": "75bf5a2f37d32b98925dd922eb0c6410df3f55fc",
+        "status": "ready",
+        "durationSeconds": 27,
+        "publicHttp": {
+          "recordedAt": "2026-10-02T00:45:05.400Z",
+          "origin": "https://project-q766o.vercel.app",
+          "openapi": {
+            "firstMs": 3146,
+            "warmMs": 58,
+            "status": 200,
+            "vercelId": "sin1::sin1::mvmgl-1790901900665-fbf3872ea403",
+            "note": "First observed request; no claim of forced Function cold start."
+          },
+          "malformedJson": 400,
+          "unknownApiJson": 404,
+          "invalidRepository": 400,
+          "quick": [
+            {
+              "kind": "paste",
+              "status": 200,
+              "analysisId": "29148fb0-b3ef-45a2-a2b0-f0c50ed94938",
+              "schemaVersion": "2.0.0",
+              "contractValid": true,
+              "lookup": 404,
+              "transient": true,
+              "noStore": true,
+              "ms": 353
+            },
+            {
+              "kind": "upload",
+              "status": 200,
+              "analysisId": "892d7915-25e1-454d-8128-d5c37a98e692",
+              "schemaVersion": "2.0.0",
+              "contractValid": true,
+              "lookup": 404,
+              "transient": true,
+              "noStore": true,
+              "ms": 57
+            }
+          ],
+          "database": "shared Aiven through Vercel API",
+          "providerJobs": false
+        }
+      }
+    ],
+    "build": {
+      "recordedAt": "2026-10-01T23:43:35.229Z",
+      "builder": "12.0.0",
+      "entrypoint": "app.mjs",
+      "runtime": "nodejs24.x",
+      "handler": "apps\\api\\app.mjs",
+      "files": 1765,
+      "uncompressedBytes": 8167198,
+      "graphileEmbeddedMigrations": 1,
+      "routes": [
+        {
+          "handle": "filesystem"
+        },
+        {
+          "src": "/(.*)",
+          "dest": "/",
+          "transforms": [
+            {
+              "type": "request.path",
+              "op": "set",
+              "args": "/$1"
+            }
+          ]
+        }
+      ]
+    },
+    "nativeHttp": {
+      "recordedAt": "2026-10-01T23:41:02.479Z",
+      "nativeEntry": "apps/api/app.mjs",
+      "database": "local disposable PostgreSQL 18",
+      "http": {
+        "openapi": 200,
+        "malformedJson": 400,
+        "unknownPath": 404,
+        "quick": 200,
+        "submitted": 202,
+        "queuedLookup": 200,
+        "noStore": true
+      },
+      "providerCalls": false,
+      "cloudFunction": false
+    },
+    "assignedOrigin": "https://project-q766o.vercel.app",
+    "publicOriginVerified": true,
+    "nativeCapture": {
+      "previousEntry": {
+        "serverCaptured": true,
+        "moduleSettledBeforeBind": false,
+        "observationMillis": 15000
+      },
+      "correctedEntry": {
+        "moduleSettledBeforeBind": true,
+        "openapi": 200,
+        "malformedJson": 400,
+        "gracefulTeardown": true,
+        "defaultExportMatchesCapturedHttpServer": true,
+        "captureScope": "Historical capture replay; current smoke verifies an unbound Fastify HTTP server",
+        "applicationBinding": false,
+        "defaultExportMatchesFastifyHttpServer": true
+      },
+      "database": "disposable local PostgreSQL 18",
+      "cloudFunction": false
+    },
+    "databaseInitializationObservedInCloud": true,
+    "databaseInitializationProof": "Public durable submission and contract-valid repository reports through the shared certificate-verified Aiven pool"
+  },
+  "quality": {
+    "command": "pnpm check",
+    "database": "disposable local PostgreSQL 18",
+    "passed": true,
+    "tests": 539,
+    "vitestTests": 524,
+    "designTokenTests": 10,
+    "deploymentTests": 5,
+    "testGraphTasks": 22,
+    "cachedTestGraphTasks": 21,
+    "compiledVercelRuntimeSmoke": true,
+    "build": true,
+    "typecheck": true,
+    "lint": true,
+    "format": true
+  },
+  "boundaries": {
+    "analyzerPolicyChanged": false,
+    "reportSchemasChanged": false,
+    "providerCallsInNewVerification": true,
+    "analyzedRepositoryExecution": false,
+    "paidPlanOrCard": false,
+    "nativeSmokeProviderCalls": false
+  },
+  "pending": [
+    "Worker restart recovery latency: restarted active job stayed running until Graphile lock expiry; no prompt recovery proved",
+    "Worker capacity and pool concurrency under load; panel sampled 257.36 MiB against displayed 256 MiB limit",
+    "Forced cold start and Function pool suspension behavior",
+    "Remote finite expiry and backup restore",
+    "Real screen-reader, physical-device and second-browser-engine validation"
+  ],
+  "web": {
+    "projectName": "stacklens-web-preview",
+    "projectId": "prj_RWR5i1zdAHfFdVBDh8IbNPJcBGC4",
+    "team": "freys-projects",
+    "created": true,
+    "gitConnected": true,
+    "backendSecretsTransferred": false,
+    "deployed": true,
+    "framework": "vite",
+    "node": "24.x",
+    "rootDirectory": "repository root",
+    "ignoredBuildBehavior": "Only build production",
+    "publicOrigin": "https://project-j0e3o.vercel.app",
+    "publicOriginVerified": true,
+    "deploymentId": "BxtVh6H5U5DGpdkAYusTn4k1V3Vp",
+    "sourceRevision": "75bf5a2f37d32b98925dd922eb0c6410df3f55fc",
+    "durationSeconds": 14,
+    "trackedProductionBranch": "codex/mvp-release-readiness",
+    "configEnvironment": "Production only",
+    "nonSecretConfig": {
+      "ENABLE_EXPERIMENTAL_COREPACK": "1",
+      "STACKLENS_API_ORIGIN": "https://project-q766o.vercel.app"
+    },
+    "browserApiOverride": false,
+    "pausedGitDeployment": {
+      "id": "A2YBBRsvXFMMTKcW9PycLaaYECvD",
+      "status": "canceled"
+    }
+  },
+  "publicValidationRecord": "2026-10-02-public-preview.json",
+  "documentationVerification": {
+    "formatCheck": true,
+    "diffCheck": true,
+    "jsonParsed": true,
+    "implementationChangedSinceRuntimeGate": false
+  }
+}

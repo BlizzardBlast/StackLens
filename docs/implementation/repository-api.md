@@ -55,7 +55,11 @@ Graphile job IDs, attempts, internal queue rows, retry-pending failure details, 
 source files, manifest text, scripts, provider response bodies, and secrets are not exposed.
 
 A `completed` or `completed_with_limitations` analysis without its transactionally expected report
-is treated as temporarily unavailable rather than synthesized into a successful result.
+triggers one bounded analysis reread. If retention removed the analysis between reads, return
+`404 analysis_not_found`. If the completed record still exists without its report, return
+`503 analysis_unavailable`; a later request can recover when the report is available. If the reread
+observes a different status, return that refreshed state. Do not synthesize a successful report.
+Normal nonterminal and successful report reads do not incur this extra lookup.
 
 ## Validation and public errors
 
@@ -101,8 +105,10 @@ The Worker remains responsible for consuming the queue and invoking
 ## Delivery failure edge
 
 The API accepts a repository request after `analysis` and the source-free outbox row commit in the
-same transaction. If the immediate delivery attempt fails or is ambiguous, the response remains
-`202 { analysisId }`; an API or Worker delivery pump retries through the stable Graphile job key.
+same transaction. Immediate dispatch is best effort and is not awaited before the response. If it
+is still pending, fails or is interrupted, the response remains `202 { analysisId }`; a continuous
+API or Worker delivery pump recovers pending deliveries and expired leases through the stable
+Graphile job key. The request-bound Vercel API has no pump and relies on the continuous Worker.
 Public polling remains `queued` and exposes neither delivery attempts nor Graphile internals.
 
 Only failure to create that durable record returns `503 analysis_unavailable`. This preserves a
@@ -113,12 +119,13 @@ truthful acceptance boundary without moving queue SQL into Fastify. See
 
 Focused Fastify injection tests cover:
 
-- accepted URL canonicalization, atomic durable creation, and a `202` that remains successful while
-  internal delivery retries;
+- accepted URL canonicalization, awaiting atomic durable creation, and a `202` that does not wait
+  for best-effort dispatch and remains successful while internal delivery retries;
 - unsupported URLs and strict unknown-field rejection before durable work;
 - source-free `503` behavior when durable creation fails;
 - running durable progress without queue internals;
-- completed report delivery;
+- completed v1/v2 report delivery, genuine retention deletion races, missing-report `503` recovery,
+  refreshed status and sanitized report/recheck failures;
 - terminal typed failure delivery;
 - unknown analysis `404`;
 - OpenAPI publication with the repository submission/polling operations.

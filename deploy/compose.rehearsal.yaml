@@ -1,0 +1,6 @@
+# Local rehearsal only. Keep database and API bound to loopback.
+services:
+  postgres:
+    ports: ["127.0.0.1:55433:5432"]
+  api:
+    ports: ["127.0.0.1:3300:3000"]

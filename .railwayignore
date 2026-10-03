@@ -1,0 +1,15 @@
+.git
+.vercel
+.turbo
+.cache
+.pnpm-store
+node_modules
+**/node_modules
+**/dist
+**/coverage
+**/.env
+**/.env.*
+docs
+design/prototype
+.playwright-mcp
+*.log
