@@ -63,6 +63,12 @@ Stages mirror the accepted architecture:
 - scoring
 - completed / completed with limitations / failed
 
+The current-stage summary uses left-aligned label/value text, matching the target identity and
+headings at every viewport width. Each timeline row reserves a right-aligned status column;
+long stage names wrap in the adjacent text column without moving Done, In progress or Waiting
+underneath the name. Active and inactive rows use the same inset. This supports **NFR-006**,
+**NFR-007** and **NFR-008**.
+
 ## Screen 3 — Report overview
 
 **Requirements:** FR-005–FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004

@@ -110,7 +110,7 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
             </div>
           </div>
 
-          <div className="rounded-lg border bg-background px-3 py-2 text-right">
+          <div className="min-w-0 rounded-lg border bg-background px-3 py-2 text-left">
             <p className="text-xs font-medium text-muted-foreground">Current stage</p>
             <p className="mt-0.5 text-sm font-semibold">{currentContent.label}</p>
           </div>
@@ -163,8 +163,8 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
                 aria-current={isCurrent ? "step" : undefined}
                 className={
                   isCurrent
-                    ? "relative grid grid-cols-[2rem_1fr] gap-3 overflow-hidden rounded-xl border border-primary/25 bg-primary/5 p-3"
-                    : "grid grid-cols-[2rem_1fr] gap-3 rounded-xl p-3"
+                    ? "relative grid grid-cols-[2rem_minmax(0,1fr)] gap-3 overflow-hidden rounded-xl border border-primary/25 bg-primary/5 p-3"
+                    : "grid grid-cols-[2rem_minmax(0,1fr)] gap-3 rounded-xl border border-transparent p-3"
                 }
               >
                 {isCurrent ? (
@@ -189,11 +189,11 @@ export function AnalysisProgress({ repositoryUrl, stage }: Readonly<AnalysisProg
                 </span>
 
                 <div className="relative z-10 grid min-w-0 gap-0.5">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-2">
                     <span className={isCurrent ? "text-sm font-semibold" : "text-sm font-medium"}>
                       {stageContent[progressStage].label}
                     </span>
-                    <span className="text-[0.6875rem] font-semibold tracking-wide text-muted-foreground uppercase">
+                    <span className="justify-self-end pt-0.5 text-right text-[0.6875rem] font-semibold tracking-wide whitespace-nowrap text-muted-foreground uppercase">
                       {isComplete ? "Done" : isCurrent ? "In progress" : "Waiting"}
                     </span>
                   </div>

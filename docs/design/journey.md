@@ -2310,3 +2310,25 @@ Worker is identified by its verified compiled/source hashes. Manual acceptance r
 the user's request. Product/UI/scoring behavior and the remaining operational gates are unchanged.
 
 **Traceability:** FR-003/021, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0017.
+
+## 2026-10-03 — Align responsive analysis progress
+
+User-provided phone screenshots exposed right-aligned current-stage text alongside left-aligned
+headings, and a long metadata step that moved Waiting onto a new left-aligned line. The summary
+now uses left-aligned label/value text. Timeline headings reserve separate stage/status columns,
+allow names to wrap and keep statuses at one right edge. Inactive rows reserve the current row's
+border space, and descriptions retain the stage text's left edge.
+
+The four existing status-view tests and database-backed `pnpm check` pass. Browser geometry checks
+pass in 23 cases across all six stages and phone/tablet/desktop widths; the final 360px dark
+screenshot was visually reviewed. The requested 393px override measured 394px in this browser;
+the evidence records both requested and observed widths. See the
+[source-bound layout record](../implementation/release-evidence/2026-10-03-progress-alignment.json).
+
+The documentation-impact pass updates the progress design and web implementation guidance.
+Accepted product behavior, architecture, tokens, analyzer policy and public API contracts do not
+change. The fix is published through the existing draft PR #41; its current HEAD, CI and deployment
+must be resolved for review. These screenshot corrections do not close physical-device or spoken
+screen-reader acceptance, which remains open at the user's request.
+
+**Traceability:** NFR-006/007/008, GOV-002/006/007; ADR-0006/0007.

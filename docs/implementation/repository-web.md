@@ -78,6 +78,11 @@ current row adds a restrained pulsing semantic-primary surface layer while keepi
 the animation is disabled by reduced-motion preferences and never implies measurable numeric
 progress.
 
+The header's current-stage summary is left-aligned. Timeline headings use separate grid columns
+for wrapping stage text and a nonwrapping, right-aligned status. The outer row has a shrinkable
+text track, and inactive rows reserve the same border space as the current row so all statuses
+share one right edge. Descriptions retain the stage text's left edge at narrow widths.
+
 Transient status failures use a bounded retry policy. A public `404` stops interval polling and
 automatic focus/reconnect refetches, including when older nonterminal data is cached. Users can
 explicitly retry; a successful response clears the error and resumes polling for nonterminal status.
@@ -146,6 +151,12 @@ analysis route -> terminal report.
 
 No live GitHub, npm, OSV, Worker, or database dependency is required for web component or
 production-router acceptance tests.
+
+The [October 3 progress alignment evidence](release-evidence/2026-10-03-progress-alignment.json)
+records 23 Chromium layout checks with synthetic local responses across all six stages, including
+320px reflow, wrapped metadata labels and tablet/desktop layouts. Status right edges, title/status
+separation, description alignment and left-aligned current-stage text pass. This is viewport
+emulation, not physical-device or spoken screen-reader acceptance.
 
 ## Deployment notes
 
