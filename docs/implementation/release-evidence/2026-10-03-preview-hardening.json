@@ -1,0 +1,678 @@
+{
+  "capturedDate": "2026-10-03",
+  "requirementIds": [
+    "FR-003",
+    "FR-004",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "development": {
+    "branch": "codex/preview-operational-hardening",
+    "baseCommit": "33de1db44aa416f5d6cf4d39669eaef4feb7171d",
+    "uncommitted": true,
+    "currentFileHashes": {
+      "apps/api/src/vercel-runtime.ts": "ca4eba087202d4551451d4ec402183609540d320ab7e37b7ccf5bca9b721eda0",
+      "apps/worker/src/runtime.ts": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf",
+      "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1",
+      "scripts/operations/api-lifecycle.mjs": "599c091af29fe24b219cef0bcfa90af1fbeea4fbc11a54fa6284cc01c74b6f20",
+      "scripts/operations/api-process.mjs": "62cb45f09da17866922f8da40d87d2125ae0158d946035f3fc7f944ebe2423ec",
+      "scripts/operations/backup-envelope.mjs": "34f26dbc3aae829528b1d591854331ea50a5b5432014cbaf1a7c4441806d2efd",
+      "scripts/operations/backup-envelope.test.mjs": "2f659ac48736119443661e7d2a02e044f556d14c0f226bd010d1341f3096bcb3",
+      "scripts/operations/backup-retention.test.mjs": "4116e1d1868ee2deacfb657595eb5cc0df5a0d6a1c184ffbfc8335db6429b5d5",
+      "scripts/operations/backup.mjs": "6c05c883895d5a5e23e80f24de685923c2171c0330446d108dc36592e298178c",
+      "scripts/operations/common.mjs": "b4be2891038e124ba4663de1ef03dc61bedb3bb035e75c5bcc478854ac79fcf1",
+      "scripts/operations/configuration.test.mjs": "f52261b18f38bae1bc7f84f89df672d4d590d35cf3dd9cd58f8bddb461398e44",
+      "scripts/operations/connection-budget.mjs": "f6fae6ba4649b9c156a4ef3456bdb09fbdeaa8ebd5ef493c2c519c0f9a8a5137",
+      "scripts/operations/connection-budget.test.mjs": "9b52cad7833d62ceab0397766381b1dc70da42efcdd49510250c9c39b16a2d6a",
+      "scripts/operations/hosted-connections.mjs": "b487c7301b1d679536f022b91d829ad34f33b32b2a82076c500f863c8b14eab6",
+      "scripts/operations/recovery-rehearsal.mjs": "4f6d22ae981924e5ebc4194c981b5121f484d1938d62d195152a16dce330810f",
+      "scripts/operations/worker-soak.mjs": "ae38d621f83493ba57b7af3911caddd734ebfa6e5064c8ef0ed29d9e1818726b"
+    },
+    "captureIdentity": "Runtime captures retain their original base/source hashes; current tooling hashes are a later review snapshot."
+  },
+  "remoteBaseline": {
+    "main": "33de1db44aa416f5d6cf4d39669eaef4feb7171d",
+    "mergedPr": 41,
+    "formerPrHead": "8d0993356e4507678b111d4c45aafabd188186ea",
+    "trackedTreesIdentical": true
+  },
+  "hostedDeployments": {
+    "observedIn": "Google Chrome",
+    "productionBranch": "codex/mvp-release-readiness",
+    "web": {
+      "id": "Gq4WZy2H43i3Uq3jpubw8HEgsU2y",
+      "status": "Ready",
+      "commit": "8d0993356e4507678b111d4c45aafabd188186ea"
+    },
+    "api": {
+      "id": "8aAjQ1Cee1E3Zn4FFMbHPsYQZajk",
+      "status": "Ready",
+      "commit": "8d0993356e4507678b111d4c45aafabd188186ea"
+    },
+    "changed": false,
+    "newStartupDiagnosticDeployed": false
+  },
+  "localApi": {
+    "requirementIds": [
+      "FR-003",
+      "FR-004",
+      "FR-022",
+      "NFR-008",
+      "NFR-009",
+      "SEC-003",
+      "SEC-007"
+    ],
+    "baseCommit": "33de1db44aa416f5d6cf4d39669eaef4feb7171d",
+    "sourceHashes": {
+      "apps/api/src/vercel-runtime.ts": "ca4eba087202d4551451d4ec402183609540d320ab7e37b7ccf5bca9b721eda0",
+      "apps/worker/src/runtime.ts": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf",
+      "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+    },
+    "scope": "Local Docker/Linux process simulation; not Vercel suspension or autoscaling proof",
+    "startedAt": "2026-10-03T13:35:26.442Z",
+    "instances": [
+      {
+        "index": 0,
+        "startupMs": 3758,
+        "origin": "http://127.0.0.1:51773"
+      },
+      {
+        "index": 1,
+        "startupMs": 3860,
+        "origin": "http://127.0.0.1:55018"
+      },
+      {
+        "index": 2,
+        "startupMs": 6457,
+        "origin": "http://127.0.0.1:55064"
+      }
+    ],
+    "status": "verified_local_cold_instances_and_freeze_resume",
+    "concurrentLookups": 24,
+    "freezeResumeRequestMs": 1816,
+    "finalApiClients": 0,
+    "peakApiClients": 2,
+    "runtimeInitializations": [
+      {
+        "event": "stacklens_api_runtime_ready",
+        "revision": "33de1db44aa416f5d6cf4d39669eaef4feb7171d",
+        "startupDurationMs": 830
+      },
+      {
+        "event": "stacklens_api_runtime_ready",
+        "revision": "33de1db44aa416f5d6cf4d39669eaef4feb7171d",
+        "startupDurationMs": 396
+      },
+      {
+        "event": "stacklens_api_runtime_ready",
+        "revision": "33de1db44aa416f5d6cf4d39669eaef4feb7171d",
+        "startupDurationMs": 494
+      }
+    ],
+    "cleanedUp": true,
+    "finishedAt": "2026-10-03T13:36:03.808Z"
+  },
+  "hostedApi": {
+    "requirementIds": [
+      "NFR-008",
+      "NFR-009",
+      "SEC-007"
+    ],
+    "target": "https://stacklens-api.vercel.app",
+    "deployedCommit": "8d0993356e4507678b111d4c45aafabd188186ea",
+    "startedAt": "2026-10-03T13:37:58.455Z",
+    "status": "verified_bounded_hosted_burst_idle_resume",
+    "requests": [
+      {
+        "index": 0,
+        "phase": "burst_1",
+        "status": 404,
+        "durationMs": 1014
+      },
+      {
+        "index": 1,
+        "phase": "burst_2",
+        "status": 404,
+        "durationMs": 445
+      },
+      {
+        "index": 2,
+        "phase": "burst_2",
+        "status": 404,
+        "durationMs": 1079
+      },
+      {
+        "index": 3,
+        "phase": "burst_4",
+        "status": 404,
+        "durationMs": 445
+      },
+      {
+        "index": 5,
+        "phase": "burst_4",
+        "status": 404,
+        "durationMs": 804
+      },
+      {
+        "index": 6,
+        "phase": "burst_4",
+        "status": 404,
+        "durationMs": 1169
+      },
+      {
+        "index": 4,
+        "phase": "burst_4",
+        "status": 404,
+        "durationMs": 3886
+      },
+      {
+        "index": 7,
+        "phase": "resume",
+        "status": 404,
+        "durationMs": 519
+      },
+      {
+        "index": 8,
+        "phase": "resume",
+        "status": 404,
+        "durationMs": 590
+      }
+    ],
+    "limitations": [
+      "Idle/resume observations alone do not prove platform suspension.",
+      "Sampled concurrency does not prove the autoscaling topology."
+    ],
+    "maxConnections": 20,
+    "reservedConnections": 3,
+    "sharedRoleLimit": -1,
+    "normalConnectionSlots": 17,
+    "peakClients": 7,
+    "peakApiClients": 1,
+    "finalApiClients": 0,
+    "finishedAt": "2026-10-03T13:39:17.592Z"
+  },
+  "constrainedWorker": {
+    "requirementIds": [
+      "FR-003",
+      "FR-017",
+      "FR-021",
+      "NFR-008",
+      "NFR-009",
+      "SEC-001",
+      "SEC-002",
+      "SEC-007"
+    ],
+    "baseCommit": "33de1db44aa416f5d6cf4d39669eaef4feb7171d",
+    "sourceHashes": {
+      "apps/api/src/vercel-runtime.ts": "ca4eba087202d4551451d4ec402183609540d320ab7e37b7ccf5bca9b721eda0",
+      "apps/worker/src/runtime.ts": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf",
+      "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+    },
+    "scope": "Local Linux panel image with live providers and an isolated local database",
+    "memoryLimitBytes": 268435456,
+    "cpuLimit": 0.25,
+    "workerConcurrency": 1,
+    "requestedJobs": 8,
+    "startedAt": "2026-10-03T13:57:56.200Z",
+    "jobs": [
+      {
+        "index": 0,
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "d384150a-42df-4148-9535-3603531fcec2",
+        "status": "completed_with_limitations",
+        "durationMs": 79794,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "limitationCount": 24,
+        "providerFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ],
+        "failureCode": null,
+        "memoryPeakBytes": 253841408,
+        "memoryEvents": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      {
+        "index": 1,
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "12ebaa3e-242a-40f5-a4dc-5ccbcc664457",
+        "status": "completed_with_limitations",
+        "durationMs": 80895,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "limitationCount": 5,
+        "providerFailureCodes": [],
+        "failureCode": null,
+        "memoryPeakBytes": 253841408,
+        "memoryEvents": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      {
+        "index": 2,
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "42f035dd-a054-4d29-bc4c-074345771d59",
+        "status": "completed_with_limitations",
+        "durationMs": 84499,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "limitationCount": 24,
+        "providerFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ],
+        "failureCode": null,
+        "memoryPeakBytes": 253841408,
+        "memoryEvents": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      {
+        "index": 3,
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "110ef36d-55d3-4bec-a2ae-21df3af16762",
+        "status": "completed_with_limitations",
+        "durationMs": 78690,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "limitationCount": 5,
+        "providerFailureCodes": [],
+        "failureCode": null,
+        "memoryPeakBytes": 261808128,
+        "memoryEvents": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      {
+        "index": 4,
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "71bfccb0-7339-4846-9581-f1aa7927d3ca",
+        "status": "completed_with_limitations",
+        "durationMs": 78996,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "limitationCount": 24,
+        "providerFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ],
+        "failureCode": null,
+        "memoryPeakBytes": 261808128,
+        "memoryEvents": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      {
+        "index": 5,
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "b7d4107a-eb76-4cc2-a10c-408eb933815a",
+        "status": "completed_with_limitations",
+        "durationMs": 77568,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "limitationCount": 5,
+        "providerFailureCodes": [],
+        "failureCode": null,
+        "memoryPeakBytes": 261808128,
+        "memoryEvents": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      {
+        "index": 6,
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "77d315d1-34d8-4aed-8488-cf67aed91b96",
+        "status": "completed_with_limitations",
+        "durationMs": 71499,
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "limitationCount": 24,
+        "providerFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ],
+        "failureCode": null,
+        "memoryPeakBytes": 261808128,
+        "memoryEvents": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      },
+      {
+        "index": 7,
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "bc9c4315-e8fd-4168-80e9-8adc4a57f9c9",
+        "status": "completed_with_limitations",
+        "durationMs": 75939,
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "limitationCount": 5,
+        "providerFailureCodes": [],
+        "failureCode": null,
+        "memoryPeakBytes": 261808128,
+        "memoryEvents": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        }
+      }
+    ],
+    "status": "verified_bounded_live_provider_soak",
+    "memoryPeakBytes": 261808128,
+    "beforeStop": {
+      "running": true,
+      "exitCode": 0,
+      "oomKilled": false
+    },
+    "exitCode": 0,
+    "oomKilled": false,
+    "cleanedUp": true,
+    "finishedAt": "2026-10-03T14:08:38.897Z",
+    "totalAnalysisDurationMs": 627880,
+    "peakMiB": 249.6796875,
+    "workerArchiveSha256": "fb120c834e9ae37cd53a83ce6413136759e4256dbfe091ed18e295c54d62104c"
+  },
+  "previousIncompleteSoak": {
+    "startedAt": "2026-10-03T13:35:29.965Z",
+    "finishedAt": "2026-10-03T13:49:23.149Z",
+    "status": "failed",
+    "requestedJobs": 8,
+    "recordedCompletedJobs": 6,
+    "postCleanupExitCode": 137,
+    "oomKilled": false,
+    "cause": "Uncaptured; not classified as OOM or a successful eight-job soak."
+  },
+  "connectionBudget": {
+    "plan": {
+      "requirementIds": [
+        "NFR-008",
+        "NFR-009",
+        "SEC-007"
+      ],
+      "status": "reviewable_plan",
+      "at": "2026-10-03T14:23:19.768Z",
+      "mode": "plan",
+      "serverMaximum": 20,
+      "normalSlots": 17,
+      "previousRoleLimit": -1,
+      "requestedRoleLimit": 14,
+      "observedRoleLimit": -1,
+      "observedRoleClients": 4,
+      "sessionsTerminated": 0,
+      "limitations": [
+        "Shared API and Worker role; no exclusive Worker reservation.",
+        "PostgreSQL describes role connection limits as approximately enforced; this is an overload guard, not an exact autoscaling bound."
+      ]
+    },
+    "attempt": {
+      "requirementIds": [
+        "NFR-008",
+        "NFR-009",
+        "SEC-007"
+      ],
+      "status": "failed",
+      "mode": "apply",
+      "at": "2026-10-03T14:04:49.064Z",
+      "failureCode": "42501",
+      "sessionsTerminated": 0
+    },
+    "activated": false,
+    "localNonSuperuserSaturationAndRecovery": "passed",
+    "localFixtureRoleLimit": 3,
+    "privilegeExpansion": false
+  },
+  "managedBackups": {
+    "observedIn": "Google Chrome",
+    "latest": "2026-10-03T07:58:06.000Z",
+    "older": [
+      "2026-10-02T07:58:08.000Z",
+      "2026-10-01T12:33:43.000Z"
+    ],
+    "totalDisplayedMB": 103,
+    "location": "do-blr1",
+    "freeGuaranteedRetentionConfirmed": false
+  },
+  "encryptedLogicalBackup": {
+    "requirementIds": [
+      "FR-003",
+      "FR-017",
+      "NFR-008",
+      "NFR-009",
+      "SEC-003",
+      "SEC-007"
+    ],
+    "status": "verified",
+    "action": "create",
+    "source": {
+      "public.analysis": {
+        "count": 11,
+        "sha256": "512df6c7fc6a5ba71664b8a2df64e46dae5d524cff3605b8884df0566438bbb5"
+      },
+      "public.analysis_report": {
+        "count": 11,
+        "sha256": "f97c58d366bfcb1faa1c48302fd07704e51987c2368a4f3f98e8aab94d50d43a"
+      },
+      "public.analysis_delivery": {
+        "count": 11,
+        "sha256": "0f1f52653797b1fc1eba0ebac23fdcfb9a8be4c850929c18a3a5921e07898538"
+      },
+      "graphile_worker._private_jobs": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_job_queues": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_tasks": {
+        "count": 1,
+        "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+      },
+      "graphile_worker.migrations": {
+        "count": 20,
+        "sha256": "51d30730fab702480bc6551836acbf8e8ccc02c5d95a641dfab9e5075998b716"
+      }
+    },
+    "createdAt": "2026-10-03T13:44:31.995Z",
+    "expiresAt": "2026-10-04T13:44:31.995Z",
+    "encryptedBytes": 705390,
+    "encryptedSha256": "2a27d6e71d6964c65da51c9228539209a5677ef1deaa4098cab229954e27a1b9",
+    "archiveLocation": "Outside checkout on operator workstation",
+    "keyLocation": "Separate protected directory on the same workstation",
+    "automaticRefresh": false,
+    "automaticDeletion": false
+  },
+  "independentPreviewRestore": {
+    "requirementIds": [
+      "FR-003",
+      "FR-017",
+      "NFR-008",
+      "NFR-009",
+      "SEC-003",
+      "SEC-007"
+    ],
+    "status": "verified",
+    "action": "restore",
+    "databaseName": "stacklens_restore_ae1c0f9b2d5f4cbfa8366ec714c8046c",
+    "restoredSnapshot": {
+      "public.analysis": {
+        "count": 11,
+        "sha256": "512df6c7fc6a5ba71664b8a2df64e46dae5d524cff3605b8884df0566438bbb5"
+      },
+      "public.analysis_report": {
+        "count": 11,
+        "sha256": "f97c58d366bfcb1faa1c48302fd07704e51987c2368a4f3f98e8aab94d50d43a"
+      },
+      "public.analysis_delivery": {
+        "count": 11,
+        "sha256": "0f1f52653797b1fc1eba0ebac23fdcfb9a8be4c850929c18a3a5921e07898538"
+      },
+      "graphile_worker._private_jobs": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_job_queues": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_tasks": {
+        "count": 1,
+        "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+      },
+      "graphile_worker.migrations": {
+        "count": 20,
+        "sha256": "51d30730fab702480bc6551836acbf8e8ccc02c5d95a641dfab9e5075998b716"
+      }
+    },
+    "expiredTerminalRowsRemoved": 0,
+    "reportsRead": 11,
+    "metadata": {
+      "version": 1,
+      "createdAt": "2026-10-03T13:44:31.995Z",
+      "expiresAt": "2026-10-04T13:44:31.995Z"
+    },
+    "queueStarted": false,
+    "reportsReadViaApi": 11,
+    "snapshotHashesMatched": true,
+    "at": "2026-10-03T14:24:21.418Z",
+    "target": "Separate local PostgreSQL 18 container",
+    "originalQueueStarted": false
+  },
+  "copiedQueueRecovery": {
+    "requirementIds": [
+      "FR-003",
+      "FR-017",
+      "FR-021",
+      "FR-022",
+      "NFR-008",
+      "NFR-009",
+      "SEC-003",
+      "SEC-007"
+    ],
+    "baseCommit": "33de1db44aa416f5d6cf4d39669eaef4feb7171d",
+    "sourceHashes": {
+      "apps/api/src/vercel-runtime.ts": "ca4eba087202d4551451d4ec402183609540d320ab7e37b7ccf5bca9b721eda0",
+      "apps/worker/src/runtime.ts": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf",
+      "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+    },
+    "startedAt": "2026-10-03T14:21:52.797Z",
+    "scope": "Synthetic providers; separate local PostgreSQL clusters; no live queue or routing changes",
+    "status": "verified_separate_cluster_restore_and_copied_queue_replay",
+    "originalExecutorExited": true,
+    "snapshotHashesMatched": true,
+    "expiredTerminalRowsRemoved": 1,
+    "replayed": {
+      "activeQueueJob": 1,
+      "queuedJob": 1,
+      "pendingOutbox": 1
+    },
+    "publicReadbacks": 4,
+    "sourceClaimsUnchanged": true,
+    "historicalReportUnchanged": true,
+    "cleanedUp": true,
+    "finishedAt": "2026-10-03T14:21:59.885Z"
+  },
+  "failureCleanupCheck": {
+    "scenario": "Intentional invalid Worker archive",
+    "status": "failed",
+    "failureCode": "constrained_worker_stopped",
+    "cleanupFailures": [],
+    "cleanedUp": true
+  },
+  "quality": {
+    "status": "verified_database_backed_pnpm_check",
+    "initialFullGate": "failed: existing database/UI timeouts",
+    "serialUncachedTasks": 22,
+    "serialUncachedPassedTests": 559,
+    "finalTestGraphCachedTasks": 22,
+    "operatorChecks": 5,
+    "deploymentChecks": 5,
+    "browserChecks": 18,
+    "compiledNativeRuntimeSmoke": "passed",
+    "strictTypes": "passed",
+    "lint": "passed",
+    "format": "passed",
+    "assertionsAndTimeoutsChanged": false,
+    "logs": {
+      "initial": ".cache/operations/pnpm-check.log",
+      "serial": ".cache/operations/serial-tests.log",
+      "final": ".cache/operations/pnpm-check-final.log"
+    }
+  },
+  "acceptanceRemaining": [
+    "Actual deployed initialization and platform suspension",
+    "Supported aggregate API/Worker connection isolation",
+    "General workload capacity beyond two measured revisions",
+    "Automatic finite archive refresh/deletion and confirmed Free managed retention",
+    "Replacement public API/Worker hosting and routing cutover",
+    "User-deferred physical-device and spoken screen-reader checks"
+  ],
+  "externalChanges": {
+    "paidServices": 0,
+    "cards": 0,
+    "sessionsTerminated": 0,
+    "privilegesExpanded": 0,
+    "hostedQueueReplay": false,
+    "publicDeployments": 0,
+    "commits": 0,
+    "pushes": 0
+  },
+  "teardown": {
+    "at": "2026-10-03T14:38:03.176Z",
+    "ownedContainersRemoved": 3,
+    "ownedAnonymousDatabaseVolumesRemoved": 3,
+    "privateConfigurationFilesRemoved": 2,
+    "privateDirectoryEmpty": true,
+    "testPortsWithoutListeners": [
+      55432,
+      55434,
+      55435
+    ],
+    "encryptedArchiveAndDedicatedKeyRetained": true
+  }
+}

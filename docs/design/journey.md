@@ -2449,3 +2449,57 @@ tests then passed in isolation, and a fresh uncached database-backed `pnpm check
 changing assertions, timeouts or concurrency. The final gate passes all 22 Turbo test tasks with zero
 cache hits, native/compiled smoke, strict workspace/browser types, all 18 browser acceptance checks,
 lint and formatting. Both failed and successful local logs are retained separately in the review record.
+
+## 2026-10-03 — Prepare preview operational hardening after PR #41 merge
+
+Remote main resolves to `33de1db44aa416f5d6cf4d39669eaef4feb7171d`, the merged PR #41. Chrome
+inspection confirms both Ready Vercel deployments still use the equivalent release-branch head.
+The next milestone uses `codex/preview-operational-hardening` in the existing checkout. Earlier
+journey entries retain their original draft/capture state; this entry records the subsequent merge.
+
+The API now emits a source-free successful initialization event with a validated revision or null
+and composition duration. Privacy/failure regressions pass. Opt-in operator tools verify three fresh
+local API instances, 24 concurrent lookups, process freeze/resume and final zero API clients. A bounded
+live burst also returns to zero API clients. These scopes do not prove Vercel suspension/autoscaling.
+
+Eight serial live-provider jobs complete on the panel's Linux image at 256 MiB/no swap/0.25 CPU,
+concurrency one. All reports are contract-valid and limited; peak is 249.68 MiB, with zero limit/OOM
+events and clean shutdown. The earlier incomplete six-of-eight attempt remains recorded with unknown
+interruption cause. General capacity stays open. A disposable three-client role budget passes local
+saturation/recovery testing. A proposed hosted shared-role budget of 14 is denied with `42501`.
+No sessions are terminated or privileges broadened; the hosted guard remains inactive.
+
+An AES-256-GCM archive of 11 stored preview reports is retained outside Git with a separate protected
+key and a 24-hour restore window. A separate local PostgreSQL server matches all seven source table
+fingerprints and strictly reads all reports. Synthetic separate-cluster recovery proves original
+executor death before targeted copied-lock recovery, active/queued/outbox replay, expiry cleanup
+before API readback and unchanged historical report/source claims. No live queue is replayed.
+Archive retention/tampering/deletion tests and connection-budget tests join the root test gate.
+Automatic backup refresh/deletion, managed Free retention and public routing recovery remain open.
+
+ADR-0018 and architecture v0.1.21 record these operator boundaries. The documentation-impact pass
+updates public status, current handover, backup/API guidance and contributor commands. Accepted
+requirements already cover observability, recovery and retention; no analyzer/scoring, serialized
+report or product UI behavior changes. Device/spoken acceptance remains user-deferred. Initial full
+verification hit existing database/UI timeouts; all 22 test tasks subsequently passed uncached with
+reduced parallel load and unchanged assertions/timeouts. The final gate and safe evidence are
+recorded in the [hardening runbook](../implementation/preview-operational-hardening.md).
+
+**Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-001/002/003/007, GOV-002/006/007; ADR-0016/0017/0018.
+
+## 2026-10-04 — Review and publish preview operational hardening
+
+The user authorized publishing the prepared branch and continuing with reviewed deployment,
+connection isolation and recovery work. Final review bounded archive/key file loading before
+allocation and during streaming, with a sparse-file oversize regression. API lifecycle and recovery
+cleanup now attempts every owned resource and records failures. Three fresh API instances and the
+separate-cluster copied-queue rehearsal pass again with complete cleanup. Historical measurements
+retain their original source hashes and do not imply later deployment validation.
+
+The fresh parallel test graph hit existing database-test timeouts; all 22 tasks then passed uncached
+serially without assertion/timeout changes. The full database-backed gate subsequently passes,
+including six operator checks, five deployment checks and all 18 browser cases. Current Aiven documentation rules out Free managed
+pooling, leaving restricted API login and schema-owner migration validation as the next connection
+isolation work. No paid plan or expanded administrative privilege is introduced.
+
+**Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0018.

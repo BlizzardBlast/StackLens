@@ -6,7 +6,9 @@
 
 The [source-bound record](release-evidence/2026-10-03-operational-validation.json) preserves live
 API/Worker observations on `063a1be` and local test/source hashes for the follow-up. Publication
-does not rewrite those observations as a later revision. PR #41 remains draft; no merge is authorized.
+does not rewrite those observations as a later revision. PR #41 was draft during this capture and
+subsequently merged as `33de1db44aa416f5d6cf4d39669eaef4feb7171d`. See the later
+[hardening record](preview-operational-hardening.md) for the refreshed baseline and remaining gates.
 
 ## Browser engines
 

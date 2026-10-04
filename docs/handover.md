@@ -1,13 +1,89 @@
 # StackLens Session Handover
 
-> **Prepared:** 2026-10-03\
-> **Architecture:** v0.1.20; requirements v0.1.3\
-> **Milestone:** PR #41 draft; Worker planned recovery, remote expiry and restore verified; manual gates open\
-> **Branch:** `codex/mvp-release-readiness`, existing checkout; PR #41\
-> **Verified main:** `f51d2b61f4740172558bb4b38087af60af8d791a`, confirmed through the remote main ref\
+> **Prepared:** 2026-10-04\
+> **Architecture:** v0.1.21; requirements v0.1.3\
+> **Milestone:** PR #41 merged; preview operational hardening prepared; hosted acceptance gates remain\
+> **Branch:** `codex/preview-operational-hardening`, existing checkout; publication authorized\
+> **Verified main:** `33de1db44aa416f5d6cf4d39669eaef4feb7171d`, confirmed through the remote main ref\
 > **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
+
+### October 4 publication and operational follow-through
+
+The user authorized review, publication, CI, and subsequent deployment/operational follow-through.
+Final review tightened encrypted archive/key reads: reject oversized regular files before allocation
+and enforce the bound during streaming. Cleanup in API lifecycle and recovery rehearsals now attempts
+every owned resource and records failures rather than claiming success after partial cleanup.
+The separate-cluster synthetic replay and three-instance API lifecycle checks pass again with empty
+cleanup failures. October 3 evidence remains bound to its original source hashes and capture scope.
+
+A fresh parallel gate encountered the existing database-test timeouts. The complete uncached serial
+test graph passed all 22 tasks without changing assertions or timeouts; the full database-backed
+gate passes using that verified cache, six operator checks, five deployment checks and 18 browser
+cases, plus native/compiled smoke, types, lint and format. Current official Aiven documentation confirms Free has no connection pooling.
+A constrained API login requires separate schema-owner migration validation before activation.
+Resolve current `main` HEAD and this milestone PR before continuing; do not assume a future squash SHA.
+The sections below describe the October 3 captures and their original publication state.
+
+### October 3 preview operational hardening
+
+PR #41 is merged. Its former head `8d0993356e4507678b111d4c45aafabd188186ea` and verified main
+have identical tracked files. Chrome confirms Ready web deployment `Gq4WZy2H43i3Uq3jpubw8HEgsU2y`
+and API deployment `8aAjQ1Cee1E3Zn4FFMbHPsYQZajk` still use that old head and track
+`codex/mvp-release-readiness`. Resolve fresh remote refs and actual deployed revisions before
+promotion; no branch setting, public deployment or Worker upload was changed in this pass.
+
+The [new runbook](implementation/preview-operational-hardening.md) and
+[source-bound evidence](implementation/release-evidence/2026-10-03-preview-hardening.json) cover
+three fresh local API instances, 24 concurrent lookups, process freeze/resume, a bounded hosted
+burst with zero final API clients, and eight serial live-provider jobs in the panel's Linux image
+at 256 MiB/0.25 CPU/concurrency one. All eight reports are contract-valid and limited; cgroup peak
+is 249.68 MiB, with zero memory-limit/OOM events and clean exit. An earlier incomplete attempt is
+retained separately; its failure cause is unknown. General workload capacity remains open.
+
+The API emits a source-free successful initialization event containing only event name, validated
+revision or null, and composition milliseconds. It is prepared locally, with privacy/failure tests;
+actual Vercel startup/suspension still needs a deployment capture. Accepted analyzer/report/scoring
+behavior is unchanged. `pnpm test:operations` is included in the root test gate; live operations
+remain opt-in. ADR-0018 explains archives and the blocked connection-budget activation.
+
+The hosted database has 20 maximum connections, three superuser-reserved slots and an unlimited
+shared-role setting. A disposable three-client role budget passed local saturation/recovery tests.
+A hosted limit of 14 is prepared, but Aiven rejected applying it with SQLSTATE `42501`. The user menu
+exposes only credential reset. No sessions
+were terminated or privileges expanded. Do not call that guard active. A restricted API login or
+broker needs startup/migration privilege and host review; shared-role limits would not reserve
+exclusive Worker slots and PostgreSQL documents approximate enforcement.
+
+An encrypted logical backup of 11 stored reports is retained outside the checkout with a separate
+protected local key. Its restore window expires **October 4, 20:44:31 Jakarta**. All seven table
+hashes and strict report reads match on a separate local PostgreSQL server. The synthetic separate-
+cluster rehearsal also restores/replays copied running, queued and pending outbox work after actual
+original-executor exit, removes an expired terminal record before API readback and preserves
+historical report JSON/source claims. No hosted queue was unlocked. See the runbook for the private
+archive/key locations, authenticated expiry/deletion and owned-target cleanup. Refresh or expire the
+archive; no recurring schedule is active. Local fallback depends on this workstation surviving.
+
+Aiven Chrome inspection now lists its latest completed managed snapshot at October 3 07:58:06 UTC,
+with three visible snapshots totalling 103 MB. Free-plan retention, provider-managed restore,
+replacement public hosting/routing and automated freshness remain open. Physical-device and spoken
+screen-reader checks remain user-deferred. No card, paid service, commit or push was added.
+
+Next session: review/publish this prepared branch through normal CI when requested, resolve current
+main and Vercel source revisions, decide production-branch promotion, and capture deployed startup
+events. Resolve supported aggregate connection isolation before treating this preview as broadly
+available. Rehearse actual public replacement routing before closing disaster recovery. Earlier
+sections below describe their original capture state and do not override this current handover.
+
+Final verification: database-backed `pnpm check` passes native/compiled smoke, strict types, five
+deployment and five operator checks, 18 browser cases, lint and formatting. Its 22 Turbo test-graph
+tasks reuse the preceding uncached serial pass of 559 Vitest tests. Initial parallel timeout logs
+are retained, with unchanged assertions/timeouts. Documentation and relative-link review pass.
+Owned PostgreSQL containers and their three anonymous database volumes are removed, including the
+11-report restored copy. Ports 55432/55434/55435 have no listener. The private operator directory is
+empty; the encrypted archive and protected dedicated key are retained outside Git for their stated
+restore window. No plaintext dump or copied database credential remains in that directory.
 
 ### October 3 scoped PR review corrections
 
@@ -23,8 +99,8 @@ workflow now runs the existing compiled native-entry/API/Worker smoke after buil
 See the [API contract](implementation/repository-api.md) and
 [verification guidance](../CONTRIBUTING.md#compiled-runtime-verification).
 
-Resolve the actual PR #41 HEAD, its quality run and both deployment revisions before further work;
-publication evidence is recorded in the PR. Keep it draft and unmerged. This scoped correction does
+At that review, PR #41 was draft and unmerged; publication evidence is recorded in the PR. It has
+since merged, as recorded in the current handover above. This scoped correction did
 not extend the dated runtime measurements below or close capacity, Function lifecycle, full disaster
 recovery or manual device/spoken-output gates. Narrator idle repetition remains P3 and user-deferred.
 
@@ -179,7 +255,7 @@ documentation/credential/link checks pass for this bounded follow-up.
 Next session: resolve current PR #41 HEAD and `main`, inspect its diff and check publication CI plus
 both actual Vercel deployment revisions. Match the Worker files to the published source hashes;
 the dirty capture remains the timing basis rather than claiming it observed a later commit.
-Documentation pushes can rebuild both targets. The PR stays draft; no merge has been authorized.
+Documentation pushes can rebuild both targets. PR #41 was draft during those captures and has since merged.
 Preserve the earlier dated runtime evidence rather than rewriting it as a later pass.
 
 ### October 3 operational follow-up
@@ -205,7 +281,7 @@ submission returned 202 in 649 ms and a valid limited report in 143,683 ms. Pres
 failed samples and the successful capture's exact runtime revision. Actual cold-start/suspension,
 autoscaling-wide ceilings, general capacity, no-card disaster recovery and manual acceptance stay
 open. Preserve each observation's original source revision. Resolve PR #41's current HEAD and actual
-CI/deployments; it remains draft and no merge has been authorized.
+CI/deployments; it was draft at that capture and has since merged.
 
 ### Earlier portable preparation evidence
 
