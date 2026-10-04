@@ -1,6 +1,6 @@
 # Preview backup and recovery policy
 
-> **Status:** Encrypted independent public database replacement and rollback verified; broader recovery limits remain\
+> **Status:** Independent public replacement and first scheduled encrypted refresh verified; broader recovery limits remain\
 > **Date:** 2026-10-04\
 > **Requirements:** FR-003/004, SEC-003/007, NFR-008/009, GOV-002/007
 
@@ -67,7 +67,7 @@ The earlier unverified candidate remains separate. The active Codex heartbeat
 authenticated expired managed archives, preserving shared keys until no archive uses them. Existing
 database settings are kept in the protected local `.stacklens/operations/database.json` outside Git.
 The heartbeat requires this workstation, Docker, repository and credentials to remain usable; its
-first scheduled run is unverified. Routine success stays quiet; actionable failure or expiry is reported.
+first scheduled refresh is verified below. Routine success stays quiet; actionable failure or expiry is reported.
 
 Anonymous live analyses have a 24-hour lifetime. Provider backups can include older records until
 the provider's backup retention expires. Keep archives private and finite; do not publish report
@@ -77,7 +77,7 @@ required by SEC-003. Confirm the original executor is dead before any targeted q
 
 Release evidence records counts, hashes, timestamps and safe failure codes. The current policy
 documents the observed managed schedule, retained encrypted archive and independent local recovery.
-Confirmed Free managed retention/restore, demonstrated scheduled refresh/deletion, replacement
+Confirmed Free managed retention/restore, scheduled expired-archive deletion, replacement
 compute and workstation-loss recovery remain explicit acceptance gaps. Synthetic copied-queue
 replay closes only its local scope.
 
@@ -102,4 +102,32 @@ separate local PostgreSQL server with all seven matching canonical hashes and th
 readbacks, and expires October 5 at 13:03:00 Jakarta. Both files have user-only Windows permissions
 outside Git. The owned verification database/container/volume and transient plaintext are removed.
 Earlier unexpired archives and the shared October 4 key retain their finite windows; the heartbeat
-must preserve a shared key until no remaining archive uses it. The first scheduled run is unverified.
+must preserve a shared key until no remaining archive uses it. At this capture the first scheduled
+run was unverified; the later result follows.
+
+## October 4 first scheduled refresh and managed-backup inspection
+
+The existing heartbeat completes its first scheduled refresh at 13:22 UTC (20:22 Jakarta).
+Its new 206,693-byte encrypted archive restores all three reports into an owned local PostgreSQL 18
+database with the queue stopped, seven matching canonical table fingerprints and three strict/API
+readbacks. All owned resources and transient private files are removed. This follow-through
+independently checks the archive SHA-256, reviewed operator hashes and completed automation result;
+the restore itself is the scheduled run's recorded execution. The archive expires October 5 at
+13:21:55 UTC (20:21:55 Jakarta). Its unique archive/key remain in the protected directories outside
+Git. Five archives authenticate, but none is expired at execution, so no archive or key is deleted.
+The shared October 4 key remains intact. Scheduled refresh is verified for this run; scheduled
+expired-archive removal and workstation-loss recovery remain unverified.
+
+At 13:34 UTC, Aiven's Free service lists four managed snapshots in `do-blr1`, totalling a displayed
+139 MB. The latest is October 4 at 07:58:10 UTC (35.7 MiB); the others are October 3 at 07:58:06,
+October 2 at 07:58:08 and October 1 at 12:33:43 UTC. The latest meets the 24-hour freshness target.
+The observed three-day span does not establish a guaranteed retention window.
+
+The current fork form selects `Free-1-1gb` and displays a Free monthly price. This conflicts with
+the current [Free-plan restriction](https://aiven.io/docs/products/postgresql/concepts/pg-free-tier)
+against Free forks and its one-service-per-type limit. The
+[retention table](https://aiven.io/docs/products/postgresql/concepts/pg-backups#backup-retention-time-by-plan)
+still does not name Free. The form is closed without submitting or creating a service. Eligibility
+and managed restoration remain unverified; a UI offer does not override backend policy or the
+user's no-paid-plan constraint. The safe counts, hashes, timestamps and observations are in the
+[follow-through evidence](release-evidence/2026-10-04-capacity-follow-through.json).

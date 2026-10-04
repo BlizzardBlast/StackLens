@@ -74,6 +74,12 @@ for limits, private configuration, source identity and teardown. Local rehearsal
 owned databases; archive restore leaves its new database quarantined for readback and operator cleanup.
 Never commit an archive, key, private configuration, raw provider log or report body as evidence.
 
+The [Worker capacity harness](docs/implementation/worker-capacity.md) extends the existing soak with
+bounded burst/sustained schedules, synthetic streaming HTTP and phase/resource observations. Its
+five normal checks use small synthetic fixtures and verify independent observation/cleanup failures.
+The 256 MiB/0.25 CPU measurements are explicit operator runs, with archive/harness hashes and no
+assumption that sampled capacity is an SLA.
+
 The separate `restore-neon` action requires an exact approved direct endpoint, verified TLS,
 PostgreSQL 18 and a new UUID-owned database. It does not relax local rehearsal guards or start a
 copied queue. Its normal tests exercise endpoint/expiry/privacy/output safety without contacting

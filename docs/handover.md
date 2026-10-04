@@ -2,12 +2,71 @@
 
 > **Prepared:** 2026-10-04\
 > **Architecture:** v0.1.23; requirements v0.1.3\
-> **Milestone:** [PR #45](https://github.com/BlizzardBlast/StackLens/pull/45) records independent public database replacement, rollback and teardown; broader readiness gates remain\
-> **Branch:** `codex/independent-recovery`, existing checkout\
-> **Verified main at capture:** `3747cb9b2e7f9f173ae0288c0e03dd7f882b05a6`; resolve this milestone and current main before continuing\
-> **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
+> **Milestone:** Worker capacity and stream-memory improvements prepared locally after merged [PR #45](https://github.com/BlizzardBlast/StackLens/pull/45); broader readiness gates remain\
+> **Branch:** `codex/worker-capacity`, existing checkout; uncommitted\
+> **Verified main at capture:** `378fd8a2249a05a0da1ca1ed07bea7721d650164`; resolve current main and publication state before continuing\
+> **Traceability:** FR-003/006/011/017/021, DATA-001/003, NFR-001/003/008/009, SEC-001/002/007, GOV-002/006/007
 
 ## Current handover
+
+### October 4 Worker capacity and stream-memory milestone
+
+PR #45 is merged; the clean local/remote baseline is `378fd8a`. The new branch extends the existing
+operator soak with bounded serial, burst and sustained schedules, durable queue/execution timing,
+database counts and source-free resource profiles. The process uses the existing compiled Worker
+task-list seam, provider adapters and deterministic orchestration. Synthetic fixtures lazily stream
+eight 12 MiB npm packuments per job. Unknown fixture targets fail; normal tests use small responses.
+
+The shared response reader now iterates instead of building a recursive promise chain and releases
+failed/oversized streams. UTF-8 decoding, byte limits, full npm metadata, provider validation and
+report/scoring behavior are preserved. In the paired six-job synthetic burst, container peak is
+202.64 MiB before and 192.30 MiB after; process maximum RSS is 155.52/146.91 MiB. All outcome hashes
+match. Six jobs at concurrency two and a twelve-job sustained window at concurrency one also finish
+with equivalent reports and zero limit/OOM events. Two-worker per-job execution is slower on
+0.25 CPU, so the preview's existing concurrency one is retained. Measurements include file cache,
+observer overhead and startup; they do not establish arbitrary workload capacity.
+
+Four live frey-ui/KerjaLog burst jobs also finish with strict limited reports at their recorded
+immutable revisions: 219.85 MiB container peak, 183.26 MiB process maximum RSS, zero limit/OOM events
+and clean exits. Execution takes 71.56–98.59 seconds; queue wait extends the last completion to
+323.89 seconds. frey-ui preserves three oversized-npm failures and 24 limitations; KerjaLog has five
+limitations and no provider failures. Repeated per-repository outcome hashes match. All five runs
+remove their own Worker/database/private environment, and the owned local PostgreSQL container and
+its anonymous volume are removed after verification. No production queue or deployment changes.
+
+The latest database-backed `pnpm check` passes native/compiled smoke, types, 16 operator checks,
+deployment checks, all 22 Turbo tasks, 18 browser cases, lint and formatting. An uncached serial graph passes
+independently before the original gate; the follow-through reuses its 22 verified test tasks.
+Four stream regressions and five capacity checks are new. See the
+[runbook](implementation/worker-capacity.md) and its source-bound evidence for live results,
+resource scopes and owned teardown. Documentation-impact updates provider/operator/contributor
+guidance, README, architecture implementation notes and journey. Accepted requirements, architecture
+decisions, contracts, scoring, design and tokens are unchanged.
+
+Changes remain uncommitted; there is no new PR, push or deployment. Review/publish when requested,
+then verify actual deployed revisions independently. Review resolves CR-P2-001 (measurement failures
+were conflated with failed resource cleanup) and CR-P3-001 (observation deadline wording). Two
+regressions verify continued teardown and separate safe failure lists. A fresh two-job serial run
+has identical synthetic outcomes, empty observation/cleanup failures, clean exit and zero limit/OOM
+events. Its 193.89 MiB container peak and 150.79 MiB process maximum RSS are separate from the five
+original captures. The owned local PostgreSQL container/volume and private files are removed.
+
+The [follow-through evidence](implementation/release-evidence/2026-10-04-capacity-follow-through.json)
+also records the completed first scheduled backup: seven matching table hashes, three strict/API
+readbacks, independently matched archive/operator hashes, complete owned teardown and expiry
+October 5 at 20:21:55 Jakarta. No archive is expired at that run, so scheduled expired deletion is
+still unexercised. Protected settings, archives and shared keys remain outside Git.
+
+The API dashboard is Ready/Current in Production at `378fd8a`. Six fresh direct/proxied read and
+quick checks pass; a deployed successful initialization event takes 1,105 ms. This is startup
+evidence, not actual platform suspension/resume. Aiven's latest managed snapshot is October 4 at
+07:58:10 UTC, meeting freshness. Four visible snapshots and a Free fork form do not prove guaranteed
+retention or restoration: the current form conflicts with official Free eligibility and is closed
+without submission. Actual Function suspension, general hosted capacity, Free managed eligibility/
+retention/restore, workstation/compute-loss recovery and user-deferred device/spoken acceptance
+remain open. This milestone creates no new automation or hosting resource.
+
+The following sections retain their original capture/publication state.
 
 ### October 4 independent database recovery completed
 

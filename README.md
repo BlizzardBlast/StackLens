@@ -84,7 +84,8 @@ and active on the public API: a six-connection login with application read/inser
 owner/Graphile privileges. The seventh connection was rejected while the owner remained usable;
 both requested repositories completed again through the restricted API and Worker, with explicit
 limitations and zero final API clients. Older sampled deployment URLs require Vercel sign-in.
-The 12-hour encrypted-backup heartbeat is active, with its first scheduled run still unverified.
+The 12-hour encrypted-backup heartbeat is active. Its first scheduled refresh passes seven matching
+table fingerprints and three strict/API readbacks; the new archive expires October 5 at 20:21 Jakarta.
 The [independent database recovery rehearsal](docs/implementation/independent-preview-recovery.md)
 restores the private archive into temporary Neon Free PostgreSQL, serves both retained reports
 through the public API/web proxy, and completes fresh `frey-ui` and `KerjaLog` Worker jobs.
@@ -93,6 +94,18 @@ credentials are removed. Canonical backup fingerprints now fix collation and UTC
 a refreshed three-report archive passes separate-server restore and expires October 5 at 13:03 Jakarta.
 Actual Function suspension, general workload capacity, managed-backup/workstation-loss recovery
 and user-deferred device/spoken acceptance remain open.
+
+The [Worker capacity milestone](docs/implementation/worker-capacity.md) adds bounded burst and
+sustained-queue measurements with real provider adapters and synthetic streaming responses. An
+iterative response reader preserves byte/UTF-8 limits and report semantics while lowering observed
+memory in the paired synthetic burst. All tested accepted jobs finish; broader hosted capacity and
+release gates remain explicit. This branch is prepared locally and has not been deployed.
+Review follow-through separates failed measurements from resource cleanup, verifies a fresh two-job
+run and passes the database-backed gate with 16 operator checks. Six public read/quick checks and a
+1.105-second initialization event verify the deployed API at `378fd8a`. Aiven's latest managed
+snapshot meets the freshness target; its fork form and documented Free restriction conflict, so
+managed restore eligibility and guaranteed retention remain unverified. See the
+[follow-through evidence](docs/implementation/release-evidence/2026-10-04-capacity-follow-through.json).
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 

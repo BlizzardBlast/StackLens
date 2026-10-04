@@ -2615,3 +2615,72 @@ managed Free restore/retention, first scheduled backup, actual Function suspensi
 and user-deferred physical-device/spoken acceptance remain separate gates.
 
 **Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-001/002/003/007, GOV-002/006/007; ADR-0020.
+
+## 2026-10-04 — Measure queued Worker workloads and reduce response-stream overhead
+
+The existing operator soak now supports simultaneous bursts and a sustained three-submission
+window, durable queue/execution timings, database counts and phase/resource observations. A
+synthetic HTTP workload lazily streams eight 12 MiB npm responses per job through the real provider
+adapters and deterministic analyzer. Counts/concurrency remain bounded and local databases are
+uniquely owned; normal correctness tests use small fixtures without external requests.
+
+Metadata acquisition is the largest sampled phase. The shared bounded response reader now iterates
+over transport chunks, cancels failed/oversized bodies and releases reader locks while preserving
+UTF-8, byte bounds and JSON/metadata semantics. A paired six-job burst observes container peak
+202.64 → 192.30 MiB and process maximum RSS 155.52 → 146.91 MiB, with identical outcome hashes.
+Six jobs with two workers and twelve sustained jobs with one worker also complete without limit/OOM
+events. Two-worker per-job times rise on 0.25 CPU; the existing preview concurrency remains one.
+File-cache differences, lifetime counters, observer overhead and synthetic workload limits are
+explicit; these samples are not a general capacity or latency guarantee.
+
+Four live frey-ui/KerjaLog submissions finish with strict limited reports and repeated per-repository
+outcome hashes. Container peak is 219.85 MiB, process maximum RSS 183.26 MiB, and limit/OOM events
+are zero. Existing oversized-npm failures remain explicit. All owned workload containers/databases
+and private environment files are removed; the owned PostgreSQL container/volume is removed after
+checks. This verifies these bounded local workloads without changing public hosting or queue state.
+
+Four provider-stream regressions and three fixture/composition checks pass. The uncached serial
+Turbo graph and full database-backed `pnpm check` pass, including runtime smoke, 14 operator checks,
+18 browser cases, types, lint and format. The [capacity runbook](../implementation/worker-capacity.md)
+and its evidence retain the live workload and cleanup results. README, provider/contributor/operator
+guidance, architecture implementation notes and handover are updated. Requirements, architecture
+decisions, contracts, scoring, UI and tokens are unchanged. The branch remains uncommitted and
+undeployed; remaining hosted lifecycle/backup and user-deferred device/spoken gates stay explicit.
+
+**Traceability:** FR-003/006/011/017/021, DATA-001/003, NFR-001/003/008/009, SEC-001/002/007,
+GOV-002/006/007; ADR-0018 operator seam.
+
+## 2026-10-04 — Review capacity evidence and verify the first scheduled backup
+
+Read-only diff review found that shutdown measurements shared the resource-cleanup failure list,
+making `cleanedUp` false when an observation failed despite successful teardown. The reviewed
+harness now records observation and cleanup failures separately; either rejects validation, and
+later owned cleanup still runs. Two regressions exercise missing measurements, removal failures
+and safe diagnostics. The deadline documentation now states that observation begins after API
+acceptance; durable queue/execution durations still use persisted timestamps. The two scoped
+findings are resolved in one remediation pass without changing provider/analyzer behavior.
+
+A fresh two-job synthetic serial capture confirms equivalent outcomes, zero limit/OOM events,
+clean exit, empty failure lists and full owned teardown. Peaks are 193.89 MiB container and
+150.79 MiB process maximum RSS. The five original captures retain their original harness hashes;
+the new [follow-through evidence](../implementation/release-evidence/2026-10-04-capacity-follow-through.json)
+records the new helper/hash separately. The database-backed `pnpm check` passes 16 operator checks,
+18 browser cases, runtime smoke, types, lint and format, reusing the prior independently passed
+22-task uncached serial test graph. The owned PostgreSQL container/volume and private files are removed.
+
+The already-authorized heartbeat completes its first scheduled refresh. Its three-report archive
+passes seven matching table fingerprints and three strict/API readbacks with the restored queue
+stopped. Independent follow-through checks archive/operator hashes and the completed automation
+result. Expiry is October 5 at 20:21:55 Jakarta; complete owned teardown is recorded. No archive is
+expired during that run, so scheduled expiry deletion remains unexercised and shared keys are preserved.
+
+Six fresh public API/proxy OpenAPI, missing-analysis and quick requests pass. Vercel is Ready/Current
+at `378fd8a` and emits a successful 1,105 ms initialization event. This does not prove actual Function
+suspension/resume. Aiven lists four managed snapshots with the latest less than 24 hours old. Its
+Free fork form conflicts with current documented eligibility; the form is closed unsubmitted and
+managed restore/guaranteed retention remain unverified. No hosting/deployment settings or live queue
+are changed. README, contributor/capacity/backup/hosting guidance and handover reflect these limits;
+requirements, architecture decisions, design, contracts and policy remain unchanged. Work remains
+uncommitted on `codex/worker-capacity`.
+
+**Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-001/002/003/007, GOV-002/006/007.

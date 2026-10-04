@@ -115,6 +115,11 @@ rule semantics.
 Response bytes are counted while streaming. Content-Length is also rejected early when it already
 exceeds the configured limit.
 
+The shared bounded reader consumes chunks iteratively, preserves UTF-8 sequences split across
+chunks, cancels failed/oversized bodies and releases reader locks. Full JSON/schema validation and
+the existing limits remain unchanged. See the [Worker capacity measurements](worker-capacity.md)
+for the observed resource effect and its workload/sampling limits.
+
 The npm Registry request uses `redirect: "error"`. A redirect is classified as the existing typed
 request failure and does not disclose the redirect target or transport details in public failure
 messages.

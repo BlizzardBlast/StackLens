@@ -1,0 +1,431 @@
+{
+  "capturedOn": "2026-10-04",
+  "requirementIds": [
+    "FR-003",
+    "FR-004",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-007"
+  ],
+  "scope": "Local capacity review remediation, independently checked scheduled-backup record, and read-only hosted observations",
+  "cleanBaseCommit": "378fd8a2249a05a0da1ca1ed07bea7721d650164",
+  "branch": "codex/worker-capacity",
+  "committed": false,
+  "capacityDeployed": false,
+  "review": {
+    "mode": "working-tree diff",
+    "completeness": "COMPLETE",
+    "decision": "APPROVE for the local diff; publication/deployment not performed",
+    "baseline": "origin/HEAD at 378fd8a, preserving existing uncommitted capacity work",
+    "impactedBoundaries": "Shared provider response lifecycle and opt-in operator evidence; public contracts, policies, schema, UI and hosted configuration unchanged",
+    "risk": "low within the reviewed scope",
+    "coverage": [
+      {
+        "concern": "Provider stream lifecycle and compatibility",
+        "status": "reviewed",
+        "paths": [
+          "packages/data-sources/src/http.ts",
+          "packages/data-sources/test/http.test.ts",
+          "packages/data-sources/src/npm-registry/adapter.ts",
+          "packages/data-sources/src/github/request.ts",
+          "packages/data-sources/src/osv/adapter.ts"
+        ],
+        "evidence": "87 provider tests; original 34 jobs and two fresh jobs retain supported outcomes",
+        "limitation": "Captured workloads only"
+      },
+      {
+        "concern": "Worker scheduling, shutdown and diagnostics",
+        "status": "reviewed",
+        "paths": [
+          "scripts/operations/worker-soak.mjs",
+          "scripts/operations/worker-capacity-process.mjs",
+          "scripts/operations/worker-capacity-fixtures.mjs",
+          "scripts/operations/worker-capacity-evidence.mjs",
+          "scripts/operations/worker-capacity.test.mjs",
+          "scripts/operations/common.mjs",
+          "apps/worker/src/runtime.ts",
+          "apps/worker/src/task.ts",
+          "apps/worker/src/providers.ts"
+        ],
+        "evidence": "Five capacity checks and fresh constrained serial run",
+        "limitation": "Local panel image; two observer pools disclosed"
+      },
+      {
+        "concern": "Privacy and source identity",
+        "status": "reviewed",
+        "paths": [
+          "docs/implementation/release-evidence/2026-10-04-worker-capacity.json",
+          "docs/implementation/release-evidence/2026-10-04-capacity-follow-through.json"
+        ],
+        "evidence": "Safe metadata, matched archive/harness/capture hashes and teardown records",
+        "limitation": "Scheduled restore is recorded execution independently corroborated by hashes and completed automation result"
+      },
+      {
+        "concern": "Toolchain, verification and documentation",
+        "status": "reviewed",
+        "paths": [
+          "package.json",
+          "turbo.json",
+          "packages/data-sources/package.json",
+          "CONTRIBUTING.md",
+          "README.md",
+          "docs/architecture.md",
+          "docs/design/journey.md",
+          "docs/handover.md",
+          "docs/implementation/worker-capacity.md",
+          "docs/implementation/preview-backups.md",
+          "docs/implementation/managed-hosting.md"
+        ],
+        "evidence": "Database-backed pnpm check, final lint/format/whitespace, 163 relative links in ten affected documents",
+        "limitation": "No new branch CI or deployment"
+      },
+      {
+        "concern": "UI, schema and migrations",
+        "status": "not applicable",
+        "paths": [],
+        "evidence": "No changes to these areas in the diff",
+        "limitation": null
+      }
+    ],
+    "passes": 1,
+    "finalStatus": "RESOLVED for the two scoped findings",
+    "findings": [
+      {
+        "id": "CR-P2-001",
+        "severity": "P2",
+        "state": "resolved",
+        "change": "Separate observation failures from resource cleanup; either fails validation, cleanedUp describes teardown only",
+        "verification": "Two failure-path regressions and a fresh real container run"
+      },
+      {
+        "id": "CR-P3-001",
+        "severity": "P3",
+        "state": "resolved",
+        "change": "Document the observation deadline from API acceptance; durable timings remain creation-based",
+        "verification": "Reviewed against submit/waitForJob timing"
+      }
+    ]
+  },
+  "verification": {
+    "databaseBackedCheck": "passed",
+    "operatorChecks": 16,
+    "capacityChecks": 5,
+    "providerTests": 87,
+    "browserCases": 18,
+    "turboTestTasks": 22,
+    "turboTestCache": "Previously independently passed uncached serial graph; this follow-through reused all 22 tasks"
+  },
+  "capacity": {
+    "captureSha256": "19c8652a2b42c7b19af43596079a9fe621ba93ef42f53eb671461ffe60979fd8",
+    "databaseSampleCount": 21,
+    "requirementIds": [
+      "FR-003",
+      "FR-017",
+      "FR-021",
+      "NFR-008",
+      "NFR-009",
+      "SEC-001",
+      "SEC-002",
+      "SEC-007"
+    ],
+    "baseCommit": "378fd8a2249a05a0da1ca1ed07bea7721d650164",
+    "sourceHashes": {
+      "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+      "apps/worker/src/runtime.ts": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf",
+      "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+    },
+    "harnessHashes": {
+      "worker-soak.mjs": "6d80135facf3db9e01cd85b61bb8c2d29dec339604047e50adef15826e48ae91",
+      "worker-capacity-process.mjs": "7ca569b7f88f183be47aa26a6a4760e53627bbd053f2d923ee943f09ca844383",
+      "worker-capacity-fixtures.mjs": "1de176a3985d24a443cf3d9a4febda5efdc51e9d1c40a684c870dbe52ad2f739",
+      "worker-capacity-evidence.mjs": "f4e2ad8bde98583a9596e9718500437cf1d9302005d788fef0a35ab0651e65f3"
+    },
+    "archiveSha256": "58b64c7550b551a98f08eae690808ffd0c37641cbdd99797e1df8a26aee7ad68",
+    "scope": "Local Linux panel image with synthetic providers and an isolated local database",
+    "memoryLimitBytes": 268435456,
+    "cpuLimit": 0.25,
+    "workerConcurrency": 1,
+    "workloadMode": "serial",
+    "fixture": {
+      "packageCount": 8,
+      "responseBytes": 12582912,
+      "transportChunkBytes": 16384
+    },
+    "requestedJobs": 2,
+    "startedAt": "2026-10-04T13:26:06.649Z",
+    "jobs": [
+      {
+        "index": 0,
+        "repositoryUrl": "https://github.com/acme/capacity-fixture",
+        "analysisId": "2627f1d0-916d-4254-942f-eabc77a92291",
+        "status": "completed_with_limitations",
+        "queueDelayMs": 86,
+        "executionMs": 12959,
+        "durationMs": 13045,
+        "commitSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "limitationCount": 1,
+        "providerFailureCodes": [],
+        "failureCode": null,
+        "outcomeHash": "9d6079d619f875de0bb4dd275b4dd20cb73f84248e7e96105deb329b22e1905e"
+      },
+      {
+        "index": 1,
+        "repositoryUrl": "https://github.com/acme/capacity-fixture",
+        "analysisId": "92d24f20-2316-4be5-be3e-a1a72bf9b231",
+        "status": "completed_with_limitations",
+        "queueDelayMs": 119,
+        "executionMs": 10495,
+        "durationMs": 10614,
+        "commitSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "limitationCount": 1,
+        "providerFailureCodes": [],
+        "failureCode": null,
+        "outcomeHash": "9d6079d619f875de0bb4dd275b4dd20cb73f84248e7e96105deb329b22e1905e"
+      }
+    ],
+    "status": "verified_bounded_synthetic_serial_soak",
+    "peakDatabaseClients": 7,
+    "peakQueuedJobs": 0,
+    "beforeStop": {
+      "running": true,
+      "exitCode": 0,
+      "oomKilled": false
+    },
+    "exitCode": 0,
+    "oomKilled": false,
+    "resourceProfiles": [
+      {
+        "phase": "idle",
+        "samples": 38,
+        "cgroupCurrentBytes": 178249728,
+        "anonymousBytes": 90255360,
+        "fileCacheBytes": 107651072,
+        "rssBytes": 132218880,
+        "heapUsedBytes": 55987512,
+        "externalBytes": 4312365,
+        "maxRssBytes": 158113792
+      },
+      {
+        "phase": "repository",
+        "samples": 6,
+        "cgroupCurrentBytes": 178511872,
+        "anonymousBytes": 88494080,
+        "fileCacheBytes": 94470144,
+        "rssBytes": 132349952,
+        "heapUsedBytes": 55765416,
+        "externalBytes": 3905551,
+        "maxRssBytes": 158113792
+      },
+      {
+        "phase": "manifest",
+        "samples": 4,
+        "cgroupCurrentBytes": 178511872,
+        "anonymousBytes": 88494080,
+        "fileCacheBytes": 94470144,
+        "rssBytes": 132349952,
+        "heapUsedBytes": 55997936,
+        "externalBytes": 3913852,
+        "maxRssBytes": 158113792
+      },
+      {
+        "phase": "package_metadata",
+        "samples": 210,
+        "cgroupCurrentBytes": 202686464,
+        "anonymousBytes": 114851840,
+        "fileCacheBytes": 94470144,
+        "rssBytes": 158113792,
+        "heapUsedBytes": 92477176,
+        "externalBytes": 4566150,
+        "maxRssBytes": 158113792
+      },
+      {
+        "phase": "vulnerability_data",
+        "samples": 7,
+        "cgroupCurrentBytes": 176951296,
+        "anonymousBytes": 89681920,
+        "fileCacheBytes": 74661888,
+        "rssBytes": 130736128,
+        "heapUsedBytes": 55094712,
+        "externalBytes": 3894906,
+        "maxRssBytes": 158113792
+      },
+      {
+        "phase": "analysis",
+        "samples": 7,
+        "cgroupCurrentBytes": 177999872,
+        "anonymousBytes": 89845760,
+        "fileCacheBytes": 74661888,
+        "rssBytes": 131653632,
+        "heapUsedBytes": 55203312,
+        "externalBytes": 3894441,
+        "maxRssBytes": 158113792
+      }
+    ],
+    "memoryPeakBytes": 203313152,
+    "memoryEvents": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "observationFailures": [],
+    "cleanupFailures": [],
+    "cleanedUp": true,
+    "finishedAt": "2026-10-04T13:26:48.824Z"
+  },
+  "scheduledBackup": {
+    "automationId": "stacklens-encrypted-preview-backups",
+    "completedAutomationTurn": "01a1070a-7944-7b90-81b2-235c92499df4",
+    "status": "verified",
+    "scheduled": true,
+    "captureSha256": "e1cd7cdebf7ebd585692512c20fa0ff9986950dbacbdd3efc5acd2a7f390ae27",
+    "operatorHashes": {
+      "scripts/operations/backup.mjs": "1acd8387b6c8bec9400132fe8b2e1bf8baac4ab1a8022c1d6fed2d6210a22660",
+      "scripts/operations/backup-envelope.mjs": "a371828f89f023ebedc2267f61afbb06f1a21f65785ab6e8597aca7183d2925a",
+      "scripts/operations/common.mjs": "d5d133407e8df09502797484e2253370d465ba4145048e5a8e1ca958970d011b"
+    },
+    "archiveHashIndependentlyMatched": true,
+    "operatorHashesIndependentlyMatched": true,
+    "encryptedBytes": 206693,
+    "encryptedSha256": "1a6fc4eebfe0246b8e51ed79175b80df3f7f14006906089ad19f36bf8a16b366",
+    "createdAt": "2026-10-04T13:21:55.441Z",
+    "expiresAt": "2026-10-05T13:21:55.441Z",
+    "matchingTables": 7,
+    "strictReportReads": 3,
+    "apiReadbacks": 3,
+    "queueStarted": false,
+    "cleanup": {
+      "apiStopped": true,
+      "readPoolStopped": true,
+      "ownedDatabaseRemoved": true,
+      "ownedContainerAndVolumesRemoved": true,
+      "transientPrivateFilesRemoved": true
+    },
+    "authenticatedArchives": 5,
+    "archivesRemoved": 0,
+    "keysRemoved": 0
+  },
+  "hostedObservations": {
+    "apiDeployment": {
+      "id": "4vvpdgcj52LLEUQSBEFdnHT197W9",
+      "revision": "378fd8a2249a05a0da1ca1ed07bea7721d650164",
+      "status": "Ready",
+      "environment": "Production",
+      "current": true
+    },
+    "publicChecks": {
+      "captureSha256": "2d4010b420c25b351bedd6ace5f3e317cb4eac3a71704086a50ba38032990a91",
+      "at": "2026-10-04T13:35:54.223Z",
+      "requests": [
+        {
+          "origin": "https://stacklens-api.vercel.app",
+          "path": "/openapi.json",
+          "status": 200,
+          "durationMs": 3469
+        },
+        {
+          "origin": "https://stacklens-api.vercel.app",
+          "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
+          "status": 404,
+          "durationMs": 360
+        },
+        {
+          "origin": "https://stacklens-api.vercel.app",
+          "path": "/v1/analyze/manifest",
+          "status": 200,
+          "durationMs": 99
+        },
+        {
+          "origin": "https://stacklens-web.vercel.app",
+          "path": "/openapi.json",
+          "status": 200,
+          "durationMs": 163
+        },
+        {
+          "origin": "https://stacklens-web.vercel.app",
+          "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
+          "status": 404,
+          "durationMs": 454
+        },
+        {
+          "origin": "https://stacklens-web.vercel.app",
+          "path": "/v1/analyze/manifest",
+          "status": 200,
+          "durationMs": 108
+        }
+      ],
+      "status": "verified_public_read_and_quick_flows",
+      "finishedAt": "2026-10-04T13:35:58.896Z"
+    },
+    "initializationEvent": {
+      "observedAt": "2026-10-04T13:35:53.690Z",
+      "event": "stacklens_api_runtime_ready",
+      "revision": "378fd8a2249a05a0da1ca1ed07bea7721d650164",
+      "startupDurationMs": 1105,
+      "platformSuspensionEstablished": false
+    },
+    "managedBackups": {
+      "observedAt": "2026-10-04T13:34:06Z",
+      "servicePlan": "Free-1-1gb",
+      "providerLocation": "do-blr1",
+      "displayedTotal": "139 MB",
+      "snapshots": [
+        {
+          "at": "2026-10-04T07:58:10Z",
+          "displayedMiB": 35.7
+        },
+        {
+          "at": "2026-10-03T07:58:06Z",
+          "displayedMiB": 35.6
+        },
+        {
+          "at": "2026-10-02T07:58:08Z",
+          "displayedMiB": 34.9
+        },
+        {
+          "at": "2026-10-01T12:33:43Z",
+          "displayedMiB": 33.1
+        }
+      ],
+      "latestWithin24Hours": true,
+      "retentionGuaranteeEstablished": false,
+      "restoreForm": {
+        "selectedTier": "Free",
+        "selectedPlan": "Free-1-1gb",
+        "displayedMonthlyPrice": "Free",
+        "submitted": false,
+        "conflictWithOfficialFreeForkRestriction": true,
+        "eligibilityVerified": false
+      },
+      "officialFreeTier": "https://aiven.io/docs/products/postgresql/concepts/pg-free-tier",
+      "officialBackupRetention": "https://aiven.io/docs/products/postgresql/concepts/pg-backups",
+      "screenshotHashes": {
+        "aiven-free-fork-options-20261004.png": "9af62b91883ac8c5616734bbd33095d8d519e164906c96fe0db7aa660c755850",
+        "aiven-managed-backups-20261004.png": "92abc51aea204e0f5a56a3f20005a06b6b3e989829185b775e52f3dd9e5d8c33"
+      }
+    }
+  },
+  "teardown": {
+    "ownedPostgresContainerRemoved": true,
+    "ownedAnonymousVolumeRemoved": true,
+    "transientPrivateFiles": 0
+  },
+  "remainingGates": [
+    "General hosted capacity",
+    "Actual Function suspension/resume",
+    "Free managed retention guarantee and restore eligibility",
+    "Scheduled expired-archive deletion branch",
+    "Workstation/compute-loss recovery",
+    "User-deferred physical-device and spoken acceptance"
+  ]
+}
