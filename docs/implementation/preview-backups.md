@@ -1,7 +1,7 @@
 # Preview backup and recovery policy
 
-> **Status:** Managed schedule and encrypted separate-server restore verified; public disaster recovery remains open\
-> **Date:** 2026-10-03\
+> **Status:** Encrypted independent public database replacement and rollback verified; broader recovery limits remain\
+> **Date:** 2026-10-04\
 > **Requirements:** FR-003/004, SEC-003/007, NFR-008/009, GOV-002/007
 
 ## Current schedule and limits
@@ -77,6 +77,29 @@ required by SEC-003. Confirm the original executor is dead before any targeted q
 
 Release evidence records counts, hashes, timestamps and safe failure codes. The current policy
 documents the observed managed schedule, retained encrypted archive and independent local recovery.
-Confirmed Free retention, demonstrated scheduled refresh/deletion, replacement public API/Worker hosting
-and routing cutover remain explicit acceptance gaps. Synthetic copied-queue replay closes only its
-local recovery scope, not provider-managed or public disaster recovery.
+Confirmed Free managed retention/restore, demonstrated scheduled refresh/deletion, replacement
+compute and workstation-loss recovery remain explicit acceptance gaps. Synthetic copied-queue
+replay closes only its local scope.
+
+## October 4 independent public replacement and refresh
+
+The [independent rehearsal](independent-preview-recovery.md) restores the verified archive on
+Neon Free PostgreSQL 18. After six expired terminal rows are removed, both retained reports are
+served unchanged through the public API and web proxy; two fresh hosted Worker jobs also finish.
+The original executor is offline before the target starts. Routing returns to Aiven and fresh
+delivery passes before the owned target/project and temporary credentials are removed. This
+reuses existing Vercel/Silly compute and an operator-held archive/key; it does not prove loss of
+those resources or provider-managed restoration.
+
+Legacy migration fingerprints differed because of provider collation. The unchanged source
+matches the archived legacy hash, and canonical source/target hashes match. Future captures fix
+`C` ordering and UTC with `postgres-jsonb-c-v1`; historical captures remain unchanged. The legacy
+comparison required the surviving source, so it is not an independent legacy archive guarantee.
+
+After rollback, `preview-20261004-post-recovery.slbackup` captures all three current reports with
+its dedicated `preview-20261004-post-recovery.key`. It is 206,693 encrypted bytes, restores on a
+separate local PostgreSQL server with all seven matching canonical hashes and three strict/API
+readbacks, and expires October 5 at 13:03:00 Jakarta. Both files have user-only Windows permissions
+outside Git. The owned verification database/container/volume and transient plaintext are removed.
+Earlier unexpired archives and the shared October 4 key retain their finite windows; the heartbeat
+must preserve a shared key until no remaining archive uses it. The first scheduled run is unverified.

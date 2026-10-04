@@ -1,0 +1,562 @@
+{
+  "requirementIds": [
+    "FR-003",
+    "FR-004",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "status": "verified_planned_independent_database_replacement_and_original_host_rollback",
+  "capturedAt": "2026-10-04T06:08:23.362Z",
+  "scope": "Temporary independent PostgreSQL provider through existing approved Vercel/Silly compute; operator-held encrypted archive/key; not automatic failover or provider/workstation-loss recovery",
+  "source": {
+    "baseCommit": "3747cb9b2e7f9f173ae0288c0e03dd7f882b05a6",
+    "runtimeSourceHashes": {
+      "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+      "apps/worker/src/runtime.ts": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf",
+      "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+    },
+    "finalOperatorHashes": {
+      "scripts/operations/backup.mjs": "1acd8387b6c8bec9400132fe8b2e1bf8baac4ab1a8022c1d6fed2d6210a22660",
+      "scripts/operations/neon-restore.test.mjs": "35a308d0a8e6d70d2600839ed17f9c0a56bc639f8151cac2f3f88c904ccf253a",
+      "scripts/operations/backup-fingerprint.test.mjs": "891610b57ab102f40ccbde89d7b33fc3cb845b635544136f8941dfaf738a01f2"
+    },
+    "initialHostedRestore": "Dirty operator implementation before canonical collation fix; exact initial operator hash was not retained. Final hashes identify published code and subsequent local canonical verification."
+  },
+  "target": {
+    "project": "shy-leaf-33221079",
+    "branch": "br-jolly-term-b3wjnqce",
+    "plan": "Free",
+    "region": "AWS Singapore",
+    "postgresql": "18.6",
+    "creationFormStorageGb": 0.5,
+    "cardOrPaidPlanAdded": false,
+    "clientTlsAuthorized": true,
+    "certificateRoot": "ISRG Root X1",
+    "backendSslView": "TLS terminates at Neon proxy; pg_stat_ssl=false does not describe client TLS",
+    "projectRemoved": true
+  },
+  "hostedRestore": {
+    "archiveSha256": "e072111c67cd1be6635fdd820be82f4f7aa0da7792ca1bb4021c4c3a090bfa93",
+    "strictReportsBeforeExpiry": 8,
+    "expiredTerminalRowsRemoved": 6,
+    "retainedReports": 2,
+    "legacyMatchingTables": 6,
+    "canonicalMigrationMatched": true,
+    "legacyNormalizationRequiresSurvivingSource": true,
+    "initialTableFingerprints": {
+      "public.analysis": {
+        "count": 8,
+        "sha256": "16936bec0eb6f69b659f5b953794e15517c637ea24a1bc20fe49ac0e5b2f7cfd"
+      },
+      "public.analysis_report": {
+        "count": 8,
+        "sha256": "087b216655af9dc5e56e4a4ce3bcace9eb0b54d9f40033dd1d9e25d38887bc8c"
+      },
+      "public.analysis_delivery": {
+        "count": 8,
+        "sha256": "4ec6e7ecab14af78bedd6bc0b8c4634f26697fb58edab063c8ff76e836327e53"
+      },
+      "graphile_worker._private_jobs": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_job_queues": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_tasks": {
+        "count": 1,
+        "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+      },
+      "graphile_worker.migrations": {
+        "count": 20,
+        "sha256": "8dbfd248477c0b1786982d64171449581cdc065a76904262b99a5e172ec09002"
+      }
+    },
+    "queueStartedByRestore": false,
+    "bytes": 9248768
+  },
+  "restrictedTarget": {
+    "privileges": {
+      "connection_limit": 6,
+      "superuser": false,
+      "create_database": false,
+      "create_role": false,
+      "replication": false,
+      "bypass_rls": false,
+      "create_database_objects": false,
+      "role_membership": false,
+      "create_public_objects": false,
+      "graphile_access": false,
+      "analysis_access": true,
+      "report_read": true,
+      "outbox_access": true,
+      "forbidden_writes": false
+    },
+    "probes": {
+      "missingAnalysis": 404,
+      "quickManifest": 200
+    },
+    "limit": {
+      "at": "2026-10-04T02:13:29.207Z",
+      "status": "verified_live_role_saturation",
+      "limit": 6,
+      "clientsTerminated": 0,
+      "baseline": {
+        "clients": 4,
+        "limited_clients": 0
+      },
+      "heldClients": 6,
+      "seventhClientCode": "53300",
+      "ownerHeadroom": true,
+      "finishedAt": "2026-10-04T02:13:30.355Z"
+    }
+  },
+  "publicTarget": {
+    "deployment": "3QzJFyD2W1it2ESUeJsvPHxihiHn",
+    "revision": "3747cb9b2e7f9f173ae0288c0e03dd7f882b05a6",
+    "initialization": {
+      "at": "2026-10-04T02:27:41.112Z",
+      "durationMs": 267,
+      "actualPlatformSuspensionProved": false
+    },
+    "restoredReadbacks": [
+      {
+        "id": "13bc31cb-4c5e-42b8-8adc-878363f20690",
+        "origin": "https://stacklens-api.vercel.app",
+        "status": "completed_with_limitations",
+        "schemaVersion": "2.0.0",
+        "reportSha256": "e8fade7d0e806fbab3681e3183c59b9fce7e1cc5ffbf84132dca1ca454500093"
+      },
+      {
+        "id": "13bc31cb-4c5e-42b8-8adc-878363f20690",
+        "origin": "https://stacklens-web.vercel.app",
+        "status": "completed_with_limitations",
+        "schemaVersion": "2.0.0",
+        "reportSha256": "e8fade7d0e806fbab3681e3183c59b9fce7e1cc5ffbf84132dca1ca454500093"
+      },
+      {
+        "id": "7af35c80-4d44-4065-b017-67e2a870e559",
+        "origin": "https://stacklens-api.vercel.app",
+        "status": "completed_with_limitations",
+        "schemaVersion": "2.0.0",
+        "reportSha256": "d12f334fb2c814efff287d0a7b0556525e666ade2c03113f3a12e105853c36ce"
+      },
+      {
+        "id": "7af35c80-4d44-4065-b017-67e2a870e559",
+        "origin": "https://stacklens-web.vercel.app",
+        "status": "completed_with_limitations",
+        "schemaVersion": "2.0.0",
+        "reportSha256": "d12f334fb2c814efff287d0a7b0556525e666ade2c03113f3a12e105853c36ce"
+      }
+    ],
+    "jobs": [
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "56e80015-b3b3-4958-93d7-8ed6dd5c8c42",
+        "status": "completed_with_limitations",
+        "schemaVersion": "2.0.0",
+        "durationMs": 149718,
+        "limitations": 24,
+        "confirmedTargetDatabase": true,
+        "absentFromSource": true,
+        "targetQueueOwner": "pool-c784f4ca3f6428d6c0"
+      },
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "63e369e7-5771-4825-a077-ca5eb6d48172",
+        "status": "completed_with_limitations",
+        "schemaVersion": "2.0.0",
+        "durationMs": 113726,
+        "limitations": 5,
+        "confirmedTargetDatabase": true,
+        "absentFromSource": true,
+        "targetQueueOwner": "pool-c784f4ca3f6428d6c0"
+      }
+    ],
+    "requests": [
+      {
+        "originAndStatus": "https://stacklens-api.vercel.app 200",
+        "count": 86,
+        "maximumDurationMs": 818
+      },
+      {
+        "originAndStatus": "https://stacklens-web.vercel.app 200",
+        "count": 5,
+        "maximumDurationMs": 2660
+      },
+      {
+        "originAndStatus": "https://stacklens-api.vercel.app 404",
+        "count": 3,
+        "maximumDurationMs": 320
+      },
+      {
+        "originAndStatus": "https://stacklens-web.vercel.app 404",
+        "count": 1,
+        "maximumDurationMs": 86
+      },
+      {
+        "originAndStatus": "https://stacklens-web.vercel.app 202",
+        "count": 2,
+        "maximumDurationMs": 350
+      }
+    ],
+    "samples": {
+      "count": 511,
+      "maximumObservedClients": 9,
+      "maximumObservedRestrictedClients": 1,
+      "finalRole": {
+        "api_clients": 0,
+        "api_idle_transactions": 0
+      },
+      "finalQueue": {
+        "jobs": 0,
+        "inflight": 0,
+        "pending_delivery": 0
+      }
+    },
+    "harnessCorrection": {
+      "failedCaptureRetained": true,
+      "failurePhase": "final-idle",
+      "reason": "Single all-backend idle-transaction sample caught periodic Worker maintenance; API role was already zero.",
+      "followupOwnerTransactionSamples": 20,
+      "maximumOwnerTransactionAgeMs": 514,
+      "ownerTransactionsClearBetweenSamples": true
+    }
+  },
+  "rollback": {
+    "deployment": "4FdiXkS17osUsMnUJYb1vTosvLux",
+    "revision": "3747cb9b2e7f9f173ae0288c0e03dd7f882b05a6",
+    "webDeployment": "FfVmtM3tFrS52jwSuKCBahbiRWoK",
+    "startedAt": "2026-10-04T05:59:38.833Z",
+    "finishedAt": "2026-10-04T06:01:55.077Z",
+    "originalReadbacks": [
+      {
+        "id": "e02ca99e-2fd9-4ad5-8401-f668e6999c22",
+        "origin": "https://stacklens-api.vercel.app",
+        "status": "completed_with_limitations",
+        "reportSha256": "5db102d34c8f4adaa350709341f683e65c266d97f08c450f9637b5e5fb9bc0cf"
+      },
+      {
+        "id": "e02ca99e-2fd9-4ad5-8401-f668e6999c22",
+        "origin": "https://stacklens-web.vercel.app",
+        "status": "completed_with_limitations",
+        "reportSha256": "5db102d34c8f4adaa350709341f683e65c266d97f08c450f9637b5e5fb9bc0cf"
+      },
+      {
+        "id": "552abfab-f1d2-4649-bee7-3c1dd2145896",
+        "origin": "https://stacklens-api.vercel.app",
+        "status": "completed_with_limitations",
+        "reportSha256": "8c195b29ab8798cce7e4bfd2ae9d21d199a86d6380e464d8a89f72b340f93ea7"
+      },
+      {
+        "id": "552abfab-f1d2-4649-bee7-3c1dd2145896",
+        "origin": "https://stacklens-web.vercel.app",
+        "status": "completed_with_limitations",
+        "reportSha256": "8c195b29ab8798cce7e4bfd2ae9d21d199a86d6380e464d8a89f72b340f93ea7"
+      }
+    ],
+    "freshJob": {
+      "analysisId": "326d28a0-0b5b-4b6d-b753-f2629fc17324",
+      "status": "completed_with_limitations",
+      "schemaVersion": "2.0.0",
+      "durationMs": 122478,
+      "limitations": 5,
+      "confirmedOriginalDatabase": true,
+      "absentFromTarget": true,
+      "sourceQueueOwner": "pool-a236e5b923b474c5f1"
+    },
+    "finalRole": {
+      "api_clients": 0,
+      "api_idle_transactions": 0
+    },
+    "requests": [
+      {
+        "originAndStatus": "https://stacklens-api.vercel.app 200",
+        "count": 3,
+        "maximumDurationMs": 1340
+      },
+      {
+        "originAndStatus": "https://stacklens-web.vercel.app 200",
+        "count": 38,
+        "maximumDurationMs": 1280
+      },
+      {
+        "originAndStatus": "https://stacklens-api.vercel.app 404",
+        "count": 2,
+        "maximumDurationMs": 576
+      },
+      {
+        "originAndStatus": "https://stacklens-api.vercel.app 202",
+        "count": 1,
+        "maximumDurationMs": 517
+      }
+    ],
+    "failedReadyDeployments": [
+      "4bcuiLsGAjCEskRDXMo7yfozNQoQ",
+      "7fuUftNfRyZNh1JZFB7nuEGVwaGH"
+    ],
+    "correction": "Private exact input comparison, completed URL/CA saves, redeploy latest Project Settings without build cache; original startup cause unconfirmed",
+    "seamlessAvailabilityClaimed": false
+  },
+  "routingObservations": [
+    {
+      "event": "original-worker-stop-requested",
+      "at": "2026-10-04T02:16:40.494Z"
+    },
+    {
+      "event": "original-worker-offline-confirmed",
+      "at": "2026-10-04T02:17:44.150Z"
+    },
+    {
+      "event": "worker-target-settings-saved",
+      "at": "2026-10-04T02:17:58.536Z"
+    },
+    {
+      "event": "target-worker-start-requested",
+      "at": "2026-10-04T02:18:34.223Z"
+    },
+    {
+      "event": "api-target-url-ca-saved",
+      "at": "2026-10-04T02:20:35.615Z"
+    },
+    {
+      "event": "target-api-deploy-requested",
+      "at": "2026-10-04T02:22:52.567Z",
+      "revision": "3747cb9b2e7f9f173ae0288c0e03dd7f882b05a6"
+    },
+    {
+      "event": "target-api-ready-observed",
+      "at": "2026-10-04T02:25:14.783Z",
+      "deployment": "3QzJFyD2W1it2ESUeJsvPHxihiHn"
+    },
+    {
+      "event": "target-worker-stop-requested",
+      "at": "2026-10-04T02:34:25.785Z"
+    },
+    {
+      "event": "target-worker-offline-confirmed",
+      "at": "2026-10-04T02:35:37.200Z"
+    },
+    {
+      "event": "original-worker-settings-restored",
+      "at": "2026-10-04T02:35:58.561Z"
+    },
+    {
+      "event": "original-worker-start-requested",
+      "at": "2026-10-04T02:36:19.830Z"
+    },
+    {
+      "event": "api-original-url-ca-restored",
+      "at": "2026-10-04T02:37:33.300Z"
+    },
+    {
+      "event": "original-api-deploy-requested",
+      "at": "2026-10-04T02:39:32.462Z",
+      "revision": "3747cb9b2e7f9f173ae0288c0e03dd7f882b05a6"
+    },
+    {
+      "event": "original-api-ready-observed",
+      "at": "2026-10-04T02:46:20.616Z",
+      "deployment": "4bcuiLsGAjCEskRDXMo7yfozNQoQ"
+    },
+    {
+      "event": "api-original-url-ca-resaved-confirmed",
+      "at": "2026-10-04T05:53:22.903Z",
+      "reason": "First rollback deployment failed startup; both editor saves now confirmed closed"
+    },
+    {
+      "event": "corrected-original-api-deploy-requested",
+      "at": "2026-10-04T05:54:23.758Z",
+      "revision": "3747cb9b2e7f9f173ae0288c0e03dd7f882b05a6"
+    },
+    {
+      "event": "original-api-rebuild-latest-project-settings",
+      "at": "2026-10-04T05:58:38.342Z",
+      "revision": "3747cb9b2e7f9f173ae0288c0e03dd7f882b05a6",
+      "buildCache": false
+    },
+    {
+      "event": "original-api-rebuilt-ready-observed",
+      "at": "2026-10-04T05:59:46.228Z",
+      "deployment": "4FdiXkS17osUsMnUJYb1vTosvLux"
+    },
+    {
+      "event": "original-public-rollback-verified",
+      "at": "2026-10-04T06:02:12.914Z",
+      "deployment": "4FdiXkS17osUsMnUJYb1vTosvLux",
+      "analysisId": "326d28a0-0b5b-4b6d-b753-f2629fc17324"
+    },
+    {
+      "event": "owned-neon-project-deletion-confirmed",
+      "at": "2026-10-04T06:04:06.445Z",
+      "project": "shy-leaf-33221079",
+      "remainingProjects": 0
+    }
+  ],
+  "syntheticSeparateClusterReplay": {
+    "requirementIds": [
+      "FR-003",
+      "FR-017",
+      "FR-021",
+      "FR-022",
+      "NFR-008",
+      "NFR-009",
+      "SEC-003",
+      "SEC-007"
+    ],
+    "baseCommit": "3747cb9b2e7f9f173ae0288c0e03dd7f882b05a6",
+    "sourceHashes": {
+      "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+      "apps/worker/src/runtime.ts": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf",
+      "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+    },
+    "startedAt": "2026-10-04T02:21:05.060Z",
+    "scope": "Synthetic providers; separate local PostgreSQL clusters; no live queue or routing changes",
+    "status": "verified_separate_cluster_restore_and_copied_queue_replay",
+    "originalExecutorExited": true,
+    "snapshotHashesMatched": true,
+    "expiredTerminalRowsRemoved": 1,
+    "replayed": {
+      "activeQueueJob": 1,
+      "queuedJob": 1,
+      "pendingOutbox": 1
+    },
+    "publicReadbacks": 4,
+    "sourceClaimsUnchanged": true,
+    "historicalReportUnchanged": true,
+    "cleanupFailures": [],
+    "cleanedUp": true,
+    "finishedAt": "2026-10-04T02:21:15.386Z"
+  },
+  "postRecoveryBackup": {
+    "status": "verified",
+    "at": "2026-10-04T06:02:46.791Z",
+    "backup": {
+      "source": {
+        "public.analysis": {
+          "count": 3,
+          "sha256": "1feb484c773d285799d80213ffb4e2297cf3cc3b57d7a45a4d0a292d7ac19899"
+        },
+        "public.analysis_report": {
+          "count": 3,
+          "sha256": "0e2e7420c301255c248775d89b7f8d1472393e2d73f6a5ade8f1233d2f030cca"
+        },
+        "public.analysis_delivery": {
+          "count": 3,
+          "sha256": "e387ee8ad6d7379a61efef572b9de0a2ca64dfdde6f57bc6d19c08be4b6d20d2"
+        },
+        "graphile_worker._private_jobs": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "graphile_worker._private_job_queues": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "graphile_worker._private_tasks": {
+          "count": 1,
+          "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+        },
+        "graphile_worker.migrations": {
+          "count": 20,
+          "sha256": "8dbfd248477c0b1786982d64171449581cdc065a76904262b99a5e172ec09002"
+        }
+      },
+      "fingerprintAlgorithm": "postgres-jsonb-c-v1",
+      "createdAt": "2026-10-04T06:03:00.652Z",
+      "expiresAt": "2026-10-05T06:03:00.652Z",
+      "encryptedBytes": 206693,
+      "encryptedSha256": "8395915b6cf7746bc30fc9ee1ee15812dbf2394d551e2cb7318df7af90543f88"
+    },
+    "restore": {
+      "fingerprintsMatched": true,
+      "reportsRead": 3,
+      "apiReadbacks": 3,
+      "expiredTerminalRowsRemoved": 0,
+      "queueStarted": false
+    },
+    "ownedRestoreDatabaseRemoved": true,
+    "finishedAt": "2026-10-04T06:03:02.838Z"
+  },
+  "cleanup": {
+    "databaseAndRole": {
+      "status": "owned_database_and_role_removed",
+      "at": "2026-10-04T06:02:39.014Z",
+      "database": "stacklens_restore_cf29e8fac2c345a1ac1813560df21979",
+      "project": "shy-leaf-33221079",
+      "sessionsTerminated": 0,
+      "databaseAlreadyAbsent": true
+    },
+    "privateSettings": {
+      "at": "2026-10-04T06:04:22.6225438Z",
+      "originalApiConfigurationPreserved": true,
+      "originalOwnerConfigurationPreserved": true,
+      "removedNames": [
+        "neon-recovery-owner.json",
+        "neon-restored-owner.json",
+        "neon-restored-api.json",
+        "silly-worker-rollback.env",
+        "silly-worker-neon.env"
+      ],
+      "transientPrivateFiles": 0,
+      "status": "owned_private_configuration_removed"
+    },
+    "localResources": {
+      "at": "2026-10-04T06:07:15.9961099Z",
+      "removedAnonymousVolumes": [
+        "3eeefa3e31247754c0fd041466b70f3211b7b201fe530ee745d976ac57be382d",
+        "da3b3cefac32edd1ef219f5e07b6419a0bef9323271883226b7f55482c8fd609"
+      ],
+      "listeners": [],
+      "unrelatedVolumesPreserved": 6,
+      "removedContainers": [
+        "stacklens-recovery-checks-20261004",
+        "stacklens-recovery-target-20261004"
+      ],
+      "status": "owned_local_resources_removed"
+    },
+    "projectRemoved": true,
+    "sessionsTerminated": 0,
+    "firstHelperCorrection": "Duplicate pool.end after deletion; independent follow-up confirmed database/role absence before successful recording",
+    "oldTargetDeploymentCredentialsUsable": false
+  },
+  "quality": {
+    "databaseBackedPnpmCheck": "passed",
+    "uncachedSerialTurboTasks": 22,
+    "vitestTests": 560,
+    "tokenTests": 10,
+    "operatorChecks": 11,
+    "deploymentChecks": 5,
+    "browserCases": 18,
+    "engines": [
+      "Chromium",
+      "Firefox",
+      "WebKit"
+    ],
+    "nativeAndCompiledSmoke": "passed",
+    "types": "passed",
+    "lint": "passed",
+    "format": "passed",
+    "existingParallelPersistenceTimeouts": 2,
+    "assertionsOrTimeoutsWeakened": false
+  },
+  "remainingGates": [
+    "Actual platform suspension/resume",
+    "General workload capacity and narrow Worker memory headroom",
+    "Aiven Free managed retention/restore",
+    "First scheduled encrypted backup refresh/deletion",
+    "Workstation and compute provider loss",
+    "User-deferred physical-device and spoken screen-reader acceptance"
+  ]
+}

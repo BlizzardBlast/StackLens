@@ -1,7 +1,7 @@
 /* oxlint-disable no-await-in-loop -- Fingerprints share a single consistent snapshot client; report reads stay bounded. */
 // FR-003/017, NFR-008/009, SEC-003/007: explicit operator tooling, never an analyzer execution path.
 import { randomBytes, randomUUID } from "node:crypto";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { mkdir, open, unlink, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -30,7 +30,10 @@ const tables = [
   "graphile_worker._private_tasks",
   "graphile_worker.migrations",
 ];
+export const fingerprintAlgorithm = "postgres-jsonb-c-v1";
 export async function fingerprint(connection) {
+  // Database defaults differ across providers. Fix timestamp rendering and bytewise row ordering.
+  await connection.query("SET TIME ZONE 'UTC'");
   const result = {};
   let bytes = 0;
   for (const table of tables) {
@@ -43,7 +46,9 @@ export async function fingerprint(connection) {
     );
     if (bytes > maximumArchiveBytes) throw new Error("backup_fingerprint_limit_exceeded");
     const rows = (
-      await connection.query(`SELECT to_jsonb(t) AS row FROM ${table} t ORDER BY to_jsonb(t)::text`)
+      await connection.query(
+        `SELECT to_jsonb(t) AS row FROM ${table} t ORDER BY to_jsonb(t)::text COLLATE "C"`,
+      )
     ).rows.map((item) => item.row);
     result[table] = { count: rows.length, sha256: sha256(JSON.stringify(rows)) };
   }
@@ -166,6 +171,7 @@ export async function createBackup(environment, archivePath, keyPath, privateDir
     await client.query("COMMIT");
     return {
       source,
+      fingerprintAlgorithm,
       createdAt,
       expiresAt,
       encryptedBytes: encrypted.length,
@@ -185,6 +191,80 @@ export async function createBackup(environment, archivePath, keyPath, privateDir
 }
 export async function restoreBackup(environment, archivePath, keyPath, privateDirectory) {
   const original = requireLocalDatabase(environment.DATABASE_URL);
+  return restoreFreshDatabase(environment, original, archivePath, keyPath, privateDirectory);
+}
+
+// Remote restoration is an explicit, separately guarded operator action. Local tools stay local.
+export function requireNeonRestoreTarget(environment, expectedHostname) {
+  let url;
+  try {
+    url = new URL(environment.DATABASE_URL);
+  } catch {
+    throw new Error("invalid_neon_restore_target");
+  }
+  if (
+    !["postgres:", "postgresql:"].includes(url.protocol) ||
+    typeof expectedHostname !== "string" ||
+    url.hostname !== expectedHostname ||
+    !/^ep-[a-z0-9-]+\.(?:c-[0-9]+\.)?[a-z0-9-]+\.aws\.neon\.tech$/u.test(url.hostname) ||
+    url.hostname.split(".")[0].endsWith("-pooler") ||
+    !url.username ||
+    !url.password ||
+    !url.pathname.slice(1) ||
+    (url.port && url.port !== "5432") ||
+    url.hash ||
+    [...url.searchParams.keys()].length ||
+    !environment.STACKLENS_DATABASE_SSL_CA
+  )
+    throw new Error("invalid_neon_restore_target");
+  return url;
+}
+
+export async function restoreNeonBackup(
+  environment,
+  archivePath,
+  keyPath,
+  privateDirectory,
+  expectedHostname,
+  privateOutput,
+) {
+  const original = requireNeonRestoreTarget(environment, expectedHostname);
+  if (privateOutput === undefined)
+    return restoreFreshDatabase(environment, original, archivePath, keyPath, privateDirectory);
+  // Reserve the output exclusively before creating a database; never overwrite an existing login.
+  const destination = await open(privateOutput, "wx", 0o600);
+  let saved = false;
+  try {
+    return await restoreFreshDatabase(
+      environment,
+      original,
+      archivePath,
+      keyPath,
+      privateDirectory,
+      async (result) => {
+        await destination.writeFile(
+          JSON.stringify({ ...environment, DATABASE_URL: result.connectionString }),
+        );
+        saved = true;
+      },
+    );
+  } finally {
+    try {
+      await destination.close();
+    } finally {
+      if (!saved) await removePrivateFile(privateOutput);
+    }
+  }
+}
+
+async function restoreFreshDatabase(
+  environment,
+  original,
+  archivePath,
+  keyPath,
+  privateDirectory,
+  onRestored,
+) {
   // Authenticate and check expiry before any target mutation.
   const { archive, metadata } = decryptArchive(
     await readBoundedFile(archivePath, maximumArchiveBytes + 1_024),
@@ -193,7 +273,8 @@ export async function restoreBackup(environment, archivePath, keyPath, privateDi
   const databaseName = `stacklens_restore_${randomUUID().replaceAll("-", "")}`;
   const restoredUrl = new URL(original);
   restoredUrl.pathname = `/${databaseName}`;
-  const admin = createStackLensPool(original.toString(), undefined, { max: 1 });
+  const options = databaseOptions(environment);
+  const admin = createStackLensPool(original.toString(), undefined, options);
   let created = false,
     restored,
     files,
@@ -201,11 +282,21 @@ export async function restoreBackup(environment, archivePath, keyPath, privateDi
     result,
     failure;
   try {
-    await admin.query(`CREATE DATABASE "${databaseName}"`);
+    const version = Number(
+      (await admin.query("SHOW server_version_num")).rows[0].server_version_num,
+    );
+    if (version < 180000 || version >= 190000) throw new Error("restore_requires_postgresql_18");
+    await admin.query(`CREATE DATABASE "${databaseName}" TEMPLATE template0`);
     created = true;
-    restored = createStackLensPool(restoredUrl.toString(), undefined, { max: 1 });
+    restored = createStackLensPool(restoredUrl.toString(), undefined, options);
     if ((await restored.query("SELECT current_database() AS name")).rows[0].name !== databaseName)
       throw new Error("restore_target_identity_mismatch");
+    const objects = (
+      await restored.query(
+        "SELECT count(*)::int AS count FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT IN ('pg_catalog', 'information_schema') AND n.nspname NOT LIKE 'pg_toast%'",
+      )
+    ).rows[0].count;
+    if (objects !== 0) throw new Error("restore_target_not_empty");
     await restored.query("DROP SCHEMA public");
     files = await privateClientFiles(environment, privateDirectory, databaseName);
     dumpPath = resolve(privateDirectory, `${randomUUID()}.dump`);
@@ -241,16 +332,29 @@ export async function restoreBackup(environment, archivePath, keyPath, privateDi
       connectionString: restoredUrl.toString(),
       databaseName,
       restoredSnapshot,
+      fingerprintAlgorithm,
       expiredTerminalRowsRemoved,
       reportsRead: ids.length,
       metadata,
       queueStarted: false,
     };
+    await onRestored?.(result);
   } catch (error) {
     failure = error;
-    await restored?.end();
-    restored = undefined;
-    if (created) await admin.query(`DROP DATABASE "${databaseName}"`);
+    try {
+      await restored?.end();
+    } catch {
+      failure = new Error("backup_pool_cleanup_failed");
+    } finally {
+      restored = undefined;
+    }
+    if (created) {
+      try {
+        await admin.query(`DROP DATABASE "${databaseName}"`);
+      } catch {
+        failure = new Error("backup_database_cleanup_failed");
+      }
+    }
   } finally {
     const cleanups = await Promise.allSettled([
       restored?.end(),
@@ -266,7 +370,15 @@ export async function restoreBackup(environment, archivePath, keyPath, privateDi
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  const [action, configuration, archivePath, keyPath, evidencePath] = process.argv.slice(2);
+  const [
+    action,
+    configuration,
+    archivePath,
+    keyPath,
+    evidencePath,
+    expectedHostname,
+    privateOutput,
+  ] = process.argv.slice(2);
   try {
     if (action === "init-key") {
       await mkdir(dirname(resolve(configuration)), { recursive: true });
@@ -287,9 +399,18 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           ? await createBackup(environment, archivePath, keyPath, privateDirectory)
           : action === "restore"
             ? await restoreBackup(environment, archivePath, keyPath, privateDirectory)
-            : (() => {
-                throw new Error("unknown_backup_action");
-              })();
+            : action === "restore-neon" && privateOutput
+              ? await restoreNeonBackup(
+                  environment,
+                  archivePath,
+                  keyPath,
+                  privateDirectory,
+                  expectedHostname,
+                  privateOutput,
+                )
+              : (() => {
+                  throw new Error("unknown_backup_action");
+                })();
       const { connectionString: _privateConnection, ...publicResult } = result;
       await record(evidencePath, {
         requirementIds: ["FR-003", "FR-017", "NFR-008", "NFR-009", "SEC-003", "SEC-007"],

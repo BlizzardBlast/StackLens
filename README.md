@@ -85,7 +85,13 @@ owner/Graphile privileges. The seventh connection was rejected while the owner r
 both requested repositories completed again through the restricted API and Worker, with explicit
 limitations and zero final API clients. Older sampled deployment URLs require Vercel sign-in.
 The 12-hour encrypted-backup heartbeat is active, with its first scheduled run still unverified.
-Actual Function suspension, general workload capacity, independent public replacement routing
+The [independent database recovery rehearsal](docs/implementation/independent-preview-recovery.md)
+restores the private archive into temporary Neon Free PostgreSQL, serves both retained reports
+through the public API/web proxy, and completes fresh `frey-ui` and `KerjaLog` Worker jobs.
+The preview returns to Aiven with verified fresh delivery before the Neon project and temporary
+credentials are removed. Canonical backup fingerprints now fix collation and UTC across providers;
+a refreshed three-report archive passes separate-server restore and expires October 5 at 13:03 Jakarta.
+Actual Function suspension, general workload capacity, managed-backup/workstation-loss recovery
 and user-deferred device/spoken acceptance remain open.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.

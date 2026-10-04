@@ -2571,3 +2571,47 @@ Finite encrypted archives, keys and protected maintenance settings remain outsid
 PR #44 records this hosted milestone and its completed handover, preserving observed source revisions.
 
 **Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0019.
+
+## 2026-10-04 — Rehearse independent public database replacement and rollback
+
+The approved Neon Free rehearsal adds an explicitly guarded `restore-neon` operator action while
+preserving loopback-only local tooling. It authenticates bounded finite archives before database
+access, reserves private output exclusively, creates only a fresh owned PostgreSQL 18 database,
+verifies TLS/identity/empty schema, validates stored reports, completes expiry and keeps the queue
+stopped. Failure cleanup attempts every owned resource; normal correctness tests contact no Neon.
+ADR-0020 and architecture v0.1.23 document this operator boundary. Product requirements/contracts,
+analyzer rules, scoring, UI and tokens do not change.
+
+The actual hosted restore reads eight strict reports, removes six expired terminal records and
+serves both retained reports unchanged through public direct/proxied routes. Aiven/Neon locale
+defaults reorder legacy migration fingerprints; the unchanged source matches its legacy archive
+hash, and canonical source/target hashes match. Future fingerprints fix `C` ordering and UTC;
+a real C/numeric-ICU/timezone regression passes. Historical captures remain unchanged, and legacy
+normalization's dependence on the surviving source is explicit.
+
+The restricted six-client target role passes privilege/startup checks, rejects its seventh client
+with `53300` and preserves owner access. Original Worker drain/offline precedes target startup.
+Fresh frey-ui/KerjaLog jobs finish on Neon in 149,718/113,726 ms with strict limited reports and
+verified target ownership. The first harness falsely treats one short Worker transaction as a
+persistent leak; its failure is retained, followed by scoped same-role API zero-client/transaction
+verification and samples showing brief owner transactions clearing (maximum 514 ms).
+
+Routing returns to Aiven. Two Ready rollback builds fail runtime startup; exact private input/save
+checks and a rebuild using latest Project Settings without build cache restore access. The initial
+cause is unconfirmed; no seamless failover is claimed. Original report hashes, target-only 404s,
+quick routes and fresh KerjaLog delivery (122,478 ms) pass. Target database/role/project, five private
+temporary settings and two local containers/volumes are removed, with no source-session termination.
+A cleanup helper's duplicate pool close is corrected and resource absence independently verified.
+A fresh user-only encrypted archive restores all three current reports with seven canonical hashes
+and API readbacks; its finite window ends October 5 at 13:03 Jakarta. Original Aiven settings survive.
+
+The database-backed `pnpm check` passes 11 operator checks, all 18 browser cases, compiled/native
+smoke, types, lint and format. An uncached serial graph passes 22 tasks, 560 Vitest and ten token
+tests after two unchanged existing parallel persistence timeouts. The separate-cluster synthetic
+replay verifies actual original-executor exit, active/queued/outbox delivery, historical preservation
+and expiry. README, hosting/backup/operator guidance and completed handover reflect the results.
+PR #45 contains source-bound counts/hashes/timestamps only. Full provider/workstation-loss recovery,
+managed Free restore/retention, first scheduled backup, actual Function suspension, general capacity
+and user-deferred physical-device/spoken acceptance remain separate gates.
+
+**Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-001/002/003/007, GOV-002/006/007; ADR-0020.

@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.22
+> **Architecture version:** 0.1.23
 > **Date:** 2026-10-04
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
@@ -923,5 +923,12 @@ portable/bootstrap behavior remains the default, and mode/login rollback must be
 - [ADR-0017: Worker interruption and confirmed-exit recovery](adr/0017-worker-interruption-and-recovery.md)
 - [ADR-0018: Bounded preview operations and encrypted recovery archives](adr/0018-preview-operational-recovery.md)
 - [ADR-0019: Restricted database login for request-bound APIs](adr/0019-restricted-request-bound-database-role.md)
+- [ADR-0020: Explicit independent preview database recovery](adr/0020-independent-preview-recovery.md)
+
+ADR-0020 adds a separate operator-only Neon restore path requiring an exact approved direct
+endpoint, verified TLS and a fresh UUID-owned PostgreSQL 18 database. The default restore stays
+loopback-only. Restored queues remain stopped until original-executor fencing and explicit hosted
+cutover; URL/CA pairs and the restricted API mode are maintained through rollback. Planned
+independent database replacement reuses existing compute and does not introduce automatic failover.
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).

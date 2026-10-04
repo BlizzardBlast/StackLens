@@ -124,3 +124,15 @@ transient private directory is empty and ports 55432/55435 have no listener. Pro
 configuration, encrypted archives and keys remain outside Git for the approved backup heartbeat.
 The documentation-only evidence follow-up passes 116 relative-link checks, JSON/privacy-pattern
 validation, lint and formatting; exact code correctness remains bound to PR #43's green CI.
+
+### Later October 4 independent recovery
+
+The [independent recovery milestone](independent-preview-recovery.md) supersedes the sign-in
+prerequisite above. A temporary Neon Free database restores both retained reports after expiry
+cleanup and serves them through the public restricted API. Six role clients connect and the
+seventh receives `53300`; fresh repository delivery also passes. The API/Worker return to Aiven
+and complete a fresh KerjaLog job before target teardown. The restricted role/mode, owner Worker
+artifact and existing Standard Protection remain in place. Initial rollback deployments reach
+Ready but fail runtime startup; after exact private input/save checks and a rebuild with latest
+Project Settings and no build cache, public readback and fresh delivery pass. Ready must always
+be followed by runtime verification. The underlying first-startup cause is not established.
