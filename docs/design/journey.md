@@ -2684,3 +2684,27 @@ requirements, architecture decisions, design, contracts and policy remain unchan
 uncommitted on `codex/worker-capacity`.
 
 **Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-001/002/003/007, GOV-002/006/007.
+
+## 2026-10-04 — Publish Worker capacity milestone in PR #46
+
+The user authorizes publishing, merging after CI/review, and deploying the completed capacity
+milestone. [PR #46](https://github.com/BlizzardBlast/StackLens/pull/46) publishes the iterative
+bounded provider reader, opt-in capacity harness and unchanged historical captures. The complete
+handover lives in this PR: resolve its final CI/review/merge state and current main, then verify
+the actual Vercel revisions and reviewed Worker package independently. No post-merge SHA
+placeholder or second documentation PR is required to prepare the handover.
+
+Rollout uses the existing service, private configuration and concurrency one. Planned maintenance
+drains durable queued/running work before native installation; a bounded public two-job burst
+checks strict reports, timings, limitations, sampled resources and final database state. Temporary
+deployment access must be removed and revoked. Managed Free restore/retention, actual Function
+suspension, naturally expired scheduled deletion and broader recovery remain independent gates;
+the earlier source-bound measurements do not assert that rollout already occurred.
+
+Documentation impact updates README, capacity/hosting guidance and this handover. Requirements,
+architecture decisions, contracts, scoring, UI and tokens are unchanged. Publication review
+independently matches the source/capture/archive hashes, metadata-only evidence and 163 relative
+links; the fresh database-backed gate and exact-head branch CI are required before merge.
+
+**Traceability:** FR-003/006/011/017/021, DATA-001/003, NFR-001/003/008/009,
+SEC-001/002/007, GOV-002/006/007.

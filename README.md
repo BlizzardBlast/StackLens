@@ -99,7 +99,10 @@ The [Worker capacity milestone](docs/implementation/worker-capacity.md) adds bou
 sustained-queue measurements with real provider adapters and synthetic streaming responses. An
 iterative response reader preserves byte/UTF-8 limits and report semantics while lowering observed
 memory in the paired synthetic burst. All tested accepted jobs finish; broader hosted capacity and
-release gates remain explicit. This branch is prepared locally and has not been deployed.
+release gates remain explicit. The implementation is published in
+[PR #46](https://github.com/BlizzardBlast/StackLens/pull/46); its original measurements precede
+deployment. Resolve the PR's final state and verify actual hosting revisions before attributing
+those improvements to the public preview.
 Review follow-through separates failed measurements from resource cleanup, verifies a fresh two-job
 run and passes the database-backed gate with 16 operator checks. Six public read/quick checks and a
 1.105-second initialization event verify the deployed API at `378fd8a`. Aiven's latest managed

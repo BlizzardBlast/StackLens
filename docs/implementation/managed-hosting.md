@@ -26,7 +26,8 @@ active 12-hour backup heartbeat remain outside Git. See the
 The [capacity review follow-through](release-evidence/2026-10-04-capacity-follow-through.json)
 verifies six fresh public API/proxy read and quick flows and a successful 1,105 ms initialization
 event at `378fd8a`; this establishes fresh initialization, not platform suspension/resume. Capacity
-changes remain local. The first scheduled encrypted backup restores three reports with seven
+changes are published through [PR #46](https://github.com/BlizzardBlast/StackLens/pull/46), with
+deployment verification separate from the original local captures. The first scheduled encrypted backup restores three reports with seven
 matching fingerprints and expires October 5 at 20:21 Jakarta. Aiven's latest managed snapshot is
 less than 24 hours old. Its current Free fork form conflicts with documented eligibility; no fork
 is submitted and guaranteed Free retention/managed restoration remain open.

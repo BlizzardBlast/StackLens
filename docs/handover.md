@@ -2,8 +2,8 @@
 
 > **Prepared:** 2026-10-04\
 > **Architecture:** v0.1.23; requirements v0.1.3\
-> **Milestone:** Worker capacity and stream-memory improvements prepared locally after merged [PR #45](https://github.com/BlizzardBlast/StackLens/pull/45); broader readiness gates remain\
-> **Branch:** `codex/worker-capacity`, existing checkout; uncommitted\
+> **Milestone:** Worker capacity and stream-memory improvements published in [PR #46](https://github.com/BlizzardBlast/StackLens/pull/46); broader readiness gates remain\
+> **Branch:** `codex/worker-capacity`, existing checkout; resolve PR #46 and current main before continuing\
 > **Verified main at capture:** `378fd8a2249a05a0da1ca1ed07bea7721d650164`; resolve current main and publication state before continuing\
 > **Traceability:** FR-003/006/011/017/021, DATA-001/003, NFR-001/003/008/009, SEC-001/002/007, GOV-002/006/007
 
@@ -43,8 +43,9 @@ resource scopes and owned teardown. Documentation-impact updates provider/operat
 guidance, README, architecture implementation notes and journey. Accepted requirements, architecture
 decisions, contracts, scoring, design and tokens are unchanged.
 
-Changes remain uncommitted; there is no new PR, push or deployment. Review/publish when requested,
-then verify actual deployed revisions independently. Review resolves CR-P2-001 (measurement failures
+The original captures precede publication and retain their uncommitted/undeployed status. PR #46
+publishes the reviewed implementation and documentation; verify its final CI/review and merge state,
+then resolve current main and actual deployed revisions independently. Review resolves CR-P2-001 (measurement failures
 were conflated with failed resource cleanup) and CR-P3-001 (observation deadline wording). Two
 regressions verify continued teardown and separate safe failure lists. A fresh two-job serial run
 has identical synthetic outcomes, empty observation/cleanup failures, clean exit and zero limit/OOM
@@ -65,6 +66,27 @@ retention or restoration: the current form conflicts with official Free eligibil
 without submission. Actual Function suspension, general hosted capacity, Free managed eligibility/
 retention/restore, workstation/compute-loss recovery and user-deferred device/spoken acceptance
 remain open. This milestone creates no new automation or hosting resource.
+
+### PR #46 publication and rollout handover
+
+The user authorizes publication, merge after CI/review, and deployment to the existing preview.
+Keep Worker concurrency one and preserve the private runtime configuration. Exact-head CI and
+review must pass before merging; do not substitute the earlier local captures for branch CI.
+After merge, build/package the reviewed Worker revision, drain durable queued/running work before
+planned Stop/install/Start, verify the native installer hash and deployed provider module, and
+remove/revoke temporary deployment access. Verify both Vercel projects at the merged revision.
+
+Then submit a bounded two-job hosted burst through the public REST contract, validate both terminal
+reports and retain safe queue/execution timings, provider limitations, sampled panel memory and
+database clients. Preserve the previous Worker package for rollback. Hosting samples do not prove
+cgroup peaks or arbitrary capacity. Resolve current PR #46/main state and actual hosting artifacts
+in the next session; this complete handover intentionally needs no post-merge SHA edit.
+
+Continue the remaining release gates independently: actual Function suspension/resume, guaranteed
+Free managed-backup retention/restore eligibility, naturally expired scheduled-archive deletion,
+workstation/compute-loss recovery and the user-deferred device/spoken acceptance. Do not extend
+archive expiry, delete unexpired archives, change runtime policy or activate a paid plan to make
+an operational check pass.
 
 The following sections retain their original capture/publication state.
 

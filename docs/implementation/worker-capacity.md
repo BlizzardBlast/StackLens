@@ -1,7 +1,7 @@
 # Worker capacity and response-stream memory
 
 > **Date:** 2026-10-04\
-> **Status:** Local constrained capacity evidence; hosted release gates remain\
+> **Status:** Published in PR #46 with local constrained evidence; hosted rollout requires independent verification\
 > **Requirements:** FR-003/006/011/017/021, DATA-001/003, NFR-001/003/008/009,
 > SEC-001/002/007, GOV-002/007
 
@@ -79,6 +79,13 @@ The first scheduled backup refresh is now verified separately; no archive was ex
 so scheduled expired-archive deletion has not yet been exercised.
 
 ## Repeat the measurement
+
+[PR #46](https://github.com/BlizzardBlast/StackLens/pull/46) publishes this milestone. Resolve its
+final merge state and current main before deployment. Original capture hashes remain authoritative
+for the measurements above. Follow the existing panel packaging/install procedure, preserve
+private runtime settings and concurrency one, drain durable work before planned maintenance, and
+verify deployed module hashes plus a bounded hosted burst after rollout. Complete rollout guidance
+and remaining acceptance gates are in the [handover](../handover.md).
 
 Build/package StackLens's reviewed code first using the existing
 [panel packaging procedure](preview-operational-hardening.md#repeat-local-measurements).
