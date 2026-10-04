@@ -2,12 +2,45 @@
 
 > **Prepared:** 2026-10-04\
 > **Architecture:** v0.1.22; requirements v0.1.3\
-> **Milestone:** PR #42 merged; [PR #43](https://github.com/BlizzardBlast/StackLens/pull/43) isolates API access; hosted acceptance gates remain\
-> **Branch:** `codex/restricted-preview-api`, existing checkout; PR #42 merged\
-> **Verified main at capture:** `5a5b1d3ff5f53fe3861572cfc904342a4f7a47fa`; resolve after the next merge\
+> **Milestone:** PR #42/#43 merged; [PR #44](https://github.com/BlizzardBlast/StackLens/pull/44) records active restricted hosting; independent recovery/manual gates remain\
+> **Branch:** `codex/hosted-isolation-verification`, existing checkout\
+> **Verified main at capture:** `515576a474bf50a8996aa572d26f484359a14eea`; resolve after the evidence milestone merge\
 > **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
+
+### October 4 restricted public API activated
+
+PR #43 merged after exact-head CI `37166523756`, passing database tests, compiled smoke and all
+18 browser cases. Web and API are independently Ready at main `515576a`; the API has the paired
+restricted login and Worker-managed startup mode. Its deployed initialization event takes 1,165 ms.
+The live six-client role rejects the seventh client with `53300` while the owner stays usable.
+No unrelated sessions were terminated, and the Worker login/artifact were unchanged.
+
+Direct and same-origin quick/polling checks pass. Fresh `frey-ui` and `KerjaLog` jobs complete with
+contract-valid schema 2.0.0 reports and explicit limitations. Across 89 requests and 1,646 samples,
+peak total clients are seven and restricted clients one; final API clients/idle transactions
+are zero, including a separate same-role inspection. Three sampled old immutable URLs require
+Vercel SSO under existing Standard Protection. Authenticated owner-configured rollback deployments
+remain outside the restricted public guard; exact autoscaling/workload capacity is not proved.
+See the [runbook](implementation/restricted-preview-api.md) and
+[hosted capture](implementation/release-evidence/2026-10-04-restricted-api.json).
+
+The eight-report encrypted backup is verified through October 5 at 07:24:01 Jakarta. Its protected
+owner configuration and restricted API configuration remain outside Git. The backup heartbeat is
+active every 12 hours; first scheduled execution remains unverified. Independent public recovery
+needs user sign-in to Neon Free in Chrome. No archive was sent and no independent destination was
+activated. Actual Function suspension, managed Free restore/retention, general capacity and
+user-deferred device/spoken acceptance remain open. Resolve this evidence milestone and current
+main before continuing; preserve the source-bound captures rather than inserting a post-merge SHA.
+The two owned local PostgreSQL containers and their two anonymous volumes are removed. Ports
+55432/55435 have no listener, and the transient private directory is empty. The finite encrypted
+archives, keys and persistent protected settings remain outside Git for backup maintenance.
+Documentation links (116), evidence JSON/privacy-pattern validation, lint and formatting pass.
+PR #44 contains this complete operational handover and source-bound evidence. Resolve its status
+and current main next; no post-merge documentation placeholder is required.
+
+The following sections retain their original capture/publication state.
 
 ### October 4 restricted API follow-through
 

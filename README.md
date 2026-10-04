@@ -79,10 +79,14 @@ connection limit with insufficient privileges; it remains inactive. The retained
 window originally ends October 4 at 20:44 Jakarta. [PR #42](https://github.com/BlizzardBlast/StackLens/pull/42)
 adds a verified refresh of the eight currently retained reports, expiring October 5 at 07:24 Jakarta. The startup
 diagnostic is published through merged PR #42. Both Vercel projects now track `main`; the
-[restricted API follow-up](docs/implementation/restricted-preview-api.md) prepares a six-connection
-login without owner/Graphile privileges. The 12-hour encrypted-backup heartbeat is active, with its
-first scheduled run still unverified. Actual Function suspension, aggregate overload, replacement public
-routing and user-deferred device/spoken acceptance remain open.
+[restricted API follow-up](docs/implementation/restricted-preview-api.md) is merged through PR #43
+and active on the public API: a six-connection login with application read/insert access and no
+owner/Graphile privileges. The seventh connection was rejected while the owner remained usable;
+both requested repositories completed again through the restricted API and Worker, with explicit
+limitations and zero final API clients. Older sampled deployment URLs require Vercel sign-in.
+The 12-hour encrypted-backup heartbeat is active, with its first scheduled run still unverified.
+Actual Function suspension, general workload capacity, independent public replacement routing
+and user-deferred device/spoken acceptance remain open.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 

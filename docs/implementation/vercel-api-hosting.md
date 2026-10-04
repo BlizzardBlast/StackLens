@@ -10,6 +10,11 @@ The October 4 [restricted-login follow-up](restricted-preview-api.md) adds an op
 columns without DDL/Graphile access and leaves all outbox delivery to the owner Worker. Activate
 the constrained login and mode together only after reviewed deployment and live verification.
 Both projects now track `main`; branch tracking alone does not confirm a deployed revision.
+PR #43's main revision `515576a` is separately deployed with this mode and the six-connection
+restricted login. Direct/proxied requests, both fresh repository jobs and final idle retirement
+pass; the live seventh client is rejected while the owner remains usable. See the source-bound
+hosted record in that runbook. Existing Standard Protection keeps older sampled immutable URLs
+behind Vercel authentication; the public Production domains use the current restricted deployment.
 
 ## Project boundary
 

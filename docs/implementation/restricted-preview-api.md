@@ -30,7 +30,7 @@ Migration deployment order is owner Worker/operator first, compatible API reader
 ## Login preparation and activation
 
 The existing Aiven owner can create constrained roles and owns the three application tables;
-a NOLOGIN capability probe was rolled back. The Free plan excludes managed pooling. The proposed
+a NOLOGIN capability probe was rolled back. The Free plan excludes managed pooling. The activated
 `stacklens_api_preview` login is limited to six connections, leaving 11 ordinary slots on the
 measured server for the Worker (pool max five), provider/internal clients and operators. PostgreSQL
 role limits are approximate. This guard is separate from workload/memory/lifecycle acceptance.
@@ -68,7 +68,7 @@ bootstrap, denied DDL/Graphile/update/delete operations, a pending durable deliv
 while the Worker is stopped, later Worker execution, strict report polling and quick analysis.
 It exhausts a two-connection test role, observes sanitized retryable `503`, preserves owner/Worker
 headroom and recovers API reads after release. Normal tests create only disposable local resources.
-This proves the mechanism and privilege seam; the live six-connection role needs separate validation.
+This proves the mechanism and privilege seam; the separate live validation is recorded below.
 
 The database-backed `pnpm check` passes native/compiled smoke, types, five deployment checks,
 seven operator checks, all 18 browser cases, lint and format. The 22 Turbo test-graph tasks reuse
@@ -80,5 +80,47 @@ The encrypted backup heartbeat is active every 12 hours, with a verified eight-r
 October 5 at 07:24 Jakarta. Its first scheduled refresh remains unverified and depends on the local
 workstation/Docker. Current backup, role and deployment captures remain source-bound; resolve current
 remote main after the milestone merge rather than requiring a post-merge squash-SHA documentation PR.
-Public replacement API/Worker routing, managed Free restore/retention, workstation-loss recovery,
+Independent public replacement API/Worker routing, managed Free restore/retention, workstation-loss recovery,
 actual Function suspension and user-deferred physical-device/spoken acceptance remain open.
+
+## October 4 hosted activation
+
+PR #43 merged after exact-head quality CI `37166523756` at reviewed head `358cfae` and final
+read-only review with no unresolved threads. The merged main at capture is `515576a`; resolve
+current main after the operational evidence milestone. Both projects track main. The web's Ready
+deployment is `J2JFDtW7RWWBxaw8GTitwQFwffrV`; the separately built API deployment
+`BvE9vHKUt1NuUiM1pSmnCXt1g4v3` is Ready at the same source with the paired restricted login and
+Worker-managed mode. Its fresh initialization event matches that revision and takes 1,165 ms.
+
+The actual hosted login has the reviewed privileges and connection limit six. Six held clients
+connect; the seventh is rejected with SQLSTATE `53300`, and the owner remains usable. All owned
+probe clients are released, with no unrelated sessions terminated. Compiled API readback with
+this login also passes missing-analysis and quick requests without migrations or Graphile access.
+
+Direct API and web `/v1` proxy quick/polling routes pass. Fresh `frey-ui` and `KerjaLog` submissions
+return `202` and later complete with strict schema 2.0.0 reports and explicit limitations, in
+143,537 ms and 112,525 ms respectively. The bounded burst/idle/resume and jobs produce 89 HTTP
+requests and 1,646 database observations: seven peak total clients, one peak restricted-role
+client, zero final API clients and zero final idle transactions. The owner can count the separate
+role by username but cannot inspect its private activity fields; a final same-role observer
+independently verifies zero API clients/idle transactions while excluding itself. These samples do
+not establish autoscaling topology or general workload capacity.
+
+Existing Vercel Standard Protection is enabled for all except Production Custom Domains. Three
+older immutable deployment URLs redirect anonymous requests to Vercel SSO. Earlier owner-configured
+deployments remain available to authenticated rollback users; no global bound over those users is
+claimed. No protection exception or automation bypass secret is listed. No protection setting was
+changed. The first live probe used the wrong `/api` prefix and was corrected to the checked-in `/v1`
+rewrite, with the failed harness capture retained. Application routing was unchanged.
+
+See the [source-bound hosted evidence](release-evidence/2026-10-04-restricted-api.json).
+Independent recovery is prepared around the verified finite archive and a Neon Free candidate;
+Chrome is at sign-in and user authentication is pending. No archive has been transmitted, no
+new recovery service activated and no public replacement routing claimed. This is an account
+access prerequisite, not a reason to expand existing database privileges or select a paid fork.
+
+Owned local rehearsal databases/containers and their two anonymous volumes are removed. The
+transient private directory is empty and ports 55432/55435 have no listener. Protected persistent
+configuration, encrypted archives and keys remain outside Git for the approved backup heartbeat.
+The documentation-only evidence follow-up passes 116 relative-link checks, JSON/privacy-pattern
+validation, lint and formatting; exact code correctness remains bound to PR #43's green CI.
