@@ -12,8 +12,9 @@ Vercel Hobby for a personal preview. The database is Aiven PostgreSQL Free. Grap
 continuous. The optional [Vercel API](vercel-api-hosting.md) is request-bound under ADR-0016;
 durable delivery and provider execution stay on the Worker.
 
-Current October 4 follow-through: PR #42/#43/#44 are merged; both Vercel projects track main and
-are independently Ready at captured `3747cb9`. The API uses Worker-managed initialization and a
+Current October 4 follow-through: PR #42/#43/#44/#45 are merged. The API dashboard is independently
+Ready/Current in Production at `378fd8a`; PR #45's publication verifies both Vercel projects at
+that main revision. The API uses Worker-managed initialization and a
 restricted six-connection login. The existing Worker artifact serves a temporary Neon Free restore,
 then returns to Aiven. Retained public readbacks, both fresh requested repositories on Neon and a
 fresh KerjaLog job after rollback pass. Final API clients are zero. The owned Neon database, role,
@@ -21,6 +22,15 @@ project and temporary private configuration are removed. A refreshed three-repor
 active 12-hour backup heartbeat remain outside Git. See the
 [independent recovery runbook](independent-preview-recovery.md) and
 [restricted API runbook](restricted-preview-api.md) for exact evidence and remaining gates.
+
+The [capacity review follow-through](release-evidence/2026-10-04-capacity-follow-through.json)
+verifies six fresh public API/proxy read and quick flows and a successful 1,105 ms initialization
+event at `378fd8a`; this establishes fresh initialization, not platform suspension/resume. Capacity
+changes are published through [PR #46](https://github.com/BlizzardBlast/StackLens/pull/46), with
+deployment verification separate from the original local captures. The first scheduled encrypted backup restores three reports with seven
+matching fingerprints and expires October 5 at 20:21 Jakarta. Aiven's latest managed snapshot is
+less than 24 hours old. Its current Free fork form conflicts with documented eligibility; no fork
+is submitted and guaranteed Free retention/managed restoration remain open.
 
 The following resources were created through the user's authenticated dashboards; release-branch
 references describe the October 2 capture, superseded by the October 4 main deployment above:

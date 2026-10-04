@@ -69,6 +69,11 @@ to 2–12 and each analysis has a ten-minute observation deadline. It creates/re
 database, container and transient private environment file. Keep provider rate limits in mind when
 choosing another capture; a live soak is outside CI.
 
+The [October 4 capacity extension](worker-capacity.md) adds optional burst/sustained schedules,
+Worker concurrency one/two, synthetic large-response fixtures and phase/resource observations.
+Existing CLI arguments retain serial live-provider defaults. Consult its runbook for the revised
+evidence shape and the limits of container peaks, process RSS and sampled database counts.
+
 For the synthetic restore/replay rehearsal, use two separate local PostgreSQL servers:
 
 ```powershell

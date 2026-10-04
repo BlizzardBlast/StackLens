@@ -852,6 +852,11 @@ repository reports. An initial active-job restart exposed a four-hour recovery d
 planned-interruption fix resumes the same hosted analysis promptly. Bounded constrained runs and
 serial jobs pass, while general sustained Worker capacity remains open. See
 [Worker recovery](implementation/worker-recovery.md) and the dated operational record.
+The [Worker capacity extension](implementation/worker-capacity.md) reuses the existing task-list
+seam for opt-in serial/burst/sustained measurements, with synthetic HTTP or live providers and
+source-free phase/resource observations. The shared bounded response reader iterates and releases
+failed streams without changing provider byte limits, analyzer contracts or policy. Its measured
+workloads do not establish general capacity or change the preview's concurrency one setting.
 Portable continuous API containers remain supported. See the
 [managed hosting runbook](implementation/managed-hosting.md) for current resources and limits.
 Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker

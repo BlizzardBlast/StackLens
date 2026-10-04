@@ -12,6 +12,7 @@ export async function readBoundedResponseText(
 
     if (Number.isFinite(parsedLength) && parsedLength > maxResponseBytes) {
       onLimitExceeded();
+      await response.body?.cancel().catch(() => undefined);
       throw new ProviderResponseTooLargeError(
         `Provider response exceeded the ${maxResponseBytes}-byte limit`,
       );
@@ -24,31 +25,32 @@ export async function readBoundedResponseText(
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
-  const parts: string[] = [];
+  let text = "";
   let totalBytes = 0;
+  let completed = false;
 
-  async function readNextChunk(): Promise<void> {
-    const result = await reader.read();
-
-    if (result.done) {
-      return;
+  try {
+    // A loop releases each transport chunk instead of retaining a recursive promise chain
+    // until the entire response arrives. Preserve streaming UTF-8 decoding and byte bounds.
+    while (true) {
+      // eslint-disable-next-line no-await-in-loop -- Streaming must check each chunk before reading the next.
+      const result = await reader.read();
+      if (result.done) {
+        completed = true;
+        break;
+      }
+      totalBytes += result.value.byteLength;
+      if (totalBytes > maxResponseBytes) {
+        onLimitExceeded();
+        throw new ProviderResponseTooLargeError(
+          `Provider response exceeded the ${maxResponseBytes}-byte limit`,
+        );
+      }
+      text += decoder.decode(result.value, { stream: true });
     }
-
-    totalBytes += result.value.byteLength;
-
-    if (totalBytes > maxResponseBytes) {
-      onLimitExceeded();
-      throw new ProviderResponseTooLargeError(
-        `Provider response exceeded the ${maxResponseBytes}-byte limit`,
-      );
-    }
-
-    parts.push(decoder.decode(result.value, { stream: true }));
-    return readNextChunk();
+    return text + decoder.decode();
+  } finally {
+    if (!completed) await reader.cancel().catch(() => undefined);
+    reader.releaseLock();
   }
-
-  await readNextChunk();
-  parts.push(decoder.decode());
-
-  return parts.join("");
 }
