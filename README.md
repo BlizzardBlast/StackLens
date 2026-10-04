@@ -99,16 +99,20 @@ The [Worker capacity milestone](docs/implementation/worker-capacity.md) adds bou
 sustained-queue measurements with real provider adapters and synthetic streaming responses. An
 iterative response reader preserves byte/UTF-8 limits and report semantics while lowering observed
 memory in the paired synthetic burst. All tested accepted jobs finish; broader hosted capacity and
-release gates remain explicit. The implementation is published in
-[PR #46](https://github.com/BlizzardBlast/StackLens/pull/46); its original measurements precede
-deployment. Resolve the PR's final state and verify actual hosting revisions before attributing
-those improvements to the public preview.
-Review follow-through separates failed measurements from resource cleanup, verifies a fresh two-job
-run and passes the database-backed gate with 16 operator checks. Six public read/quick checks and a
-1.105-second initialization event verify the deployed API at `378fd8a`. Aiven's latest managed
-snapshot meets the freshness target; its fork form and documented Free restriction conflict, so
-managed restore eligibility and guaranteed retention remain unverified. See the
-[follow-through evidence](docs/implementation/release-evidence/2026-10-04-capacity-follow-through.json).
+release gates remain explicit. [PR #46](https://github.com/BlizzardBlast/StackLens/pull/46) is merged
+and deployed on the existing Worker; both Vercel projects are Ready at captured main `7b54820`.
+Its exact-head CI and the database-backed gate pass. The original local measurements remain separate
+from the [hosted rollout](docs/implementation/release-evidence/2026-10-04-capacity-rollout.json).
+Both new public frey-ui/KerjaLog jobs finish with strict reports and explicit limitations. Sampled
+Worker memory peaks at 169.20 MiB, total database clients at seven; final API clients are zero and
+the queue is empty. A stalled panel Stop requires a verified-drained stop before installation;
+deployed module hashes match and temporary deployment access is revoked.
+Operator backup maintenance restores four reports with seven matching fingerprints and removes
+one naturally expired archive and its dedicated key. The fresh archive expires October 5 at
+21:44 Jakarta; the 12-hour heartbeat remains active. Scheduler-fired expired deletion still needs
+evidence. Aiven's backend rejects the displayed Free fork, confirming that restore path is
+unavailable; guaranteed Free retention remains unestablished. Actual Function suspension, general
+capacity and workstation/compute-loss recovery remain open alongside deferred manual acceptance.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 
