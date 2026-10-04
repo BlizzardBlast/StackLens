@@ -1,13 +1,57 @@
 # StackLens Session Handover
 
 > **Prepared:** 2026-10-04\
-> **Architecture:** v0.1.22; requirements v0.1.3\
-> **Milestone:** PR #42/#43 merged; [PR #44](https://github.com/BlizzardBlast/StackLens/pull/44) records active restricted hosting; independent recovery/manual gates remain\
-> **Branch:** `codex/hosted-isolation-verification`, existing checkout\
-> **Verified main at capture:** `515576a474bf50a8996aa572d26f484359a14eea`; resolve after the evidence milestone merge\
+> **Architecture:** v0.1.23; requirements v0.1.3\
+> **Milestone:** [PR #45](https://github.com/BlizzardBlast/StackLens/pull/45) records independent public database replacement, rollback and teardown; broader readiness gates remain\
+> **Branch:** `codex/independent-recovery`, existing checkout\
+> **Verified main at capture:** `3747cb9b2e7f9f173ae0288c0e03dd7f882b05a6`; resolve this milestone and current main before continuing\
 > **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
+
+### October 4 independent database recovery completed
+
+PR #44 is merged. The [independent rehearsal](implementation/independent-preview-recovery.md)
+restores the protected logical archive into owned Neon Free PostgreSQL 18 without a card/paid plan.
+Expiry cleanup leaves two strict reports; both read back unchanged through direct/proxied public
+routes. Fresh frey-ui/KerjaLog jobs finish there in 149,718/113,726 ms, with explicit limitations.
+The original executor is offline before target startup; no live-source claim is unlocked.
+The copied live queue is empty. Separate-cluster synthetic tests cover copied active/queued/outbox
+replay after actual original executor exit, historical preservation and expiry cleanup.
+
+After target drain/offline, the existing Worker returns to Aiven. Two initial rollback deployments
+reach Ready but fail startup. Protected settings pass locally; exact input/save checks and a rebuild
+with latest Vercel Project Settings and no build cache restore public access. The initial cause is
+unconfirmed and the interruption is retained. Successful API deployment `4FdiXkS17osUsMnUJYb1vTosvLux`
+and web `FfVmtM3tFrS52jwSuKCBahbiRWoK` are independently Ready at captured main `3747cb9`.
+Original report hashes, target-only 404s, quick routes and fresh Aiven KerjaLog delivery pass;
+final API clients/idle transactions are zero. No runtime policy or Worker artifact changes.
+
+The target database, limited role and Neon project are removed after identity/drain checks.
+Five temporary target/Worker configuration files, both owned local containers and their two volumes
+are removed; transient plaintext is empty. Original protected Aiven owner/API settings survive.
+A fresh dedicated encrypted archive restores all three current reports with seven matching hashes
+and strict/API readbacks; it expires October 5 at 13:03:00 Jakarta. Archive/key are user-only outside
+Git. Older unexpired archives remain finite; preserve shared keys until no archive uses them.
+The active 12-hour backup heartbeat's first scheduled execution remains unverified.
+
+The operator fingerprint fixes provider-dependent ordering/timezone using `C` and UTC, with an
+explicit algorithm and real C/numeric-ICU regression. The initial legacy restore comparison uses
+the surviving source to explain the migration hash difference; historical evidence is unchanged.
+The full database-backed gate passes 11 operator checks, 22 Turbo tasks (560 Vitest/ten token tests),
+18 browser cases, native/compiled smoke, types, lint and format. Two existing parallel five-second
+persistence timeouts are retained; the uncached serial graph passes without weaker assertions.
+See [safe evidence](implementation/release-evidence/2026-10-04-independent-recovery.json).
+
+Documentation impact includes ADR-0020, architecture, contributor/operator guidance, README,
+backup/hosting status and this complete handover. Requirements, contracts, scoring, product UI and
+tokens are unchanged. Resolve PR #45, its final CI/review state and current main before continuing;
+deployments after merge must be verified independently. No post-merge SHA placeholder is needed.
+Next work is actual Function suspension, meaningful capacity/headroom, managed Free restore/retention
+and scheduled backup execution. Workstation/compute-loss recovery is not established; device/spoken
+screen-reader acceptance remains explicitly user-deferred. Do not invent another analyzer feature.
+
+The following sections retain their original capture/publication state.
 
 ### October 4 restricted public API activated
 

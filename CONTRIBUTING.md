@@ -74,6 +74,12 @@ for limits, private configuration, source identity and teardown. Local rehearsal
 owned databases; archive restore leaves its new database quarantined for readback and operator cleanup.
 Never commit an archive, key, private configuration, raw provider log or report body as evidence.
 
+The separate `restore-neon` action requires an exact approved direct endpoint, verified TLS,
+PostgreSQL 18 and a new UUID-owned database. It does not relax local rehearsal guards or start a
+copied queue. Its normal tests exercise endpoint/expiry/privacy/output safety without contacting
+Neon. Follow the [independent recovery runbook](docs/implementation/independent-preview-recovery.md)
+for explicit hosting cutover, original-executor fencing and paired URL/CA rollback.
+
 The restricted-login integration check uses an owned database and non-superuser role. It verifies
 denied DDL/Graphile access, missing-schema failure, Worker-only durable delivery, sanitized 503 at
 role saturation and recovery after release. It uses synthetic providers; no hosted login is created

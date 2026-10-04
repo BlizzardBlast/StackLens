@@ -12,13 +12,15 @@ Vercel Hobby for a personal preview. The database is Aiven PostgreSQL Free. Grap
 continuous. The optional [Vercel API](vercel-api-hosting.md) is request-bound under ADR-0016;
 durable delivery and provider execution stay on the Worker.
 
-Current October 4 follow-through: PR #42/#43 are merged; both Vercel projects track main and are
-independently Ready at `515576a`. The API uses Worker-managed initialization and a restricted
-six-connection login. The owner Worker is unchanged. Both fresh requested repositories and
-direct/proxied quick/polling checks pass, with final zero API clients. An encrypted eight-report
-archive and active 12-hour backup heartbeat are maintained outside Git. Independent recovery
-needs Neon Free sign-in in Chrome; no backup was transmitted. See the
-[restricted API runbook](restricted-preview-api.md) for exact evidence, rollback and remaining gates.
+Current October 4 follow-through: PR #42/#43/#44 are merged; both Vercel projects track main and
+are independently Ready at captured `3747cb9`. The API uses Worker-managed initialization and a
+restricted six-connection login. The existing Worker artifact serves a temporary Neon Free restore,
+then returns to Aiven. Retained public readbacks, both fresh requested repositories on Neon and a
+fresh KerjaLog job after rollback pass. Final API clients are zero. The owned Neon database, role,
+project and temporary private configuration are removed. A refreshed three-report archive and
+active 12-hour backup heartbeat remain outside Git. See the
+[independent recovery runbook](independent-preview-recovery.md) and
+[restricted API runbook](restricted-preview-api.md) for exact evidence and remaining gates.
 
 The following resources were created through the user's authenticated dashboards; release-branch
 references describe the October 2 capture, superseded by the October 4 main deployment above:
