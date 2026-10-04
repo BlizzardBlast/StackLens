@@ -7,6 +7,7 @@ import {
   createStackLensPool,
   DrizzleAnalysisRepository,
   migrateStackLensDatabase,
+  verifyStackLensDatabase,
   type StackLensPoolOptions,
 } from "@stacklens/persistence";
 import {
@@ -28,6 +29,8 @@ export interface StackLensApiRuntimeOptions {
   /** Request-bound hosts rely on the continuously running Worker for outbox recovery. */
   readonly startDeliveryPump?: boolean;
   readonly onDatabasePoolCreated?: (pool: Pool) => void;
+  /** Restricted request-bound login: schema bootstrap and all queue delivery belong to the Worker. */
+  readonly databaseMode?: "bootstrap" | "worker-managed";
 }
 
 export interface StackLensApiRuntime {
@@ -47,6 +50,30 @@ export async function createStackLensApiRuntime(
   try {
     options.onDatabasePoolCreated?.(pool);
     const database = createStackLensDatabase(pool);
+    if (options.databaseMode === "worker-managed") {
+      await verifyStackLensDatabase(database);
+      const app = await createStackLensApi({
+        repository: new DrizzleAnalysisRepository(database),
+        // The atomic analysis/outbox commit is sufficient for acceptance; the Worker delivers it.
+        deliveryDispatcher: { async dispatchReady() {} },
+        quickManifestAnalyzer,
+        retentionHours: options.retentionHours ?? 24,
+        ...(options.logger === undefined ? {} : { logger: options.logger }),
+      });
+      let stopped = false;
+      return {
+        app,
+        async stop() {
+          if (stopped) return;
+          stopped = true;
+          try {
+            await app.close();
+          } finally {
+            await pool.end();
+          }
+        },
+      };
+    }
     await migrateStackLensDatabase(database);
 
     const workerUtils = await makeWorkerUtils({ pgPool: pool });

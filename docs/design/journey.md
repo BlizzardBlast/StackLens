@@ -2510,3 +2510,31 @@ import; the lifecycle rehearsal and lint pass again. A new encrypted backup rest
 currently retained reports on a separate local cluster with matching hashes and eight API readbacks.
 Its restore window ends October 5 at 07:24 Jakarta. The first unverified candidate is retained
 separately; no cloud queue or routing is changed by these rehearsals.
+
+## 2026-10-04 — Isolate request-bound API database access after PR #42
+
+PR #42 merged after exact-head quality CI and final review. Both Vercel projects now track main,
+and the web's Ready deployment uses its merged revision. The backup heartbeat is active every
+12 hours using protected local configuration, authenticated finite archives and owned restore
+validation; its first scheduled execution remains unverified.
+
+A rolled-back hosted NOLOGIN probe confirms limited-role creation without expanding administrator
+privileges. ADR-0019 and architecture v0.1.22 introduce opt-in Worker-managed API initialization:
+verify existing reader columns without rows/DDL, commit analysis/outbox atomically, and let the
+continuous owner Worker alone migrate and deliver. The six-connection API login receives only
+application SELECT and analysis/outbox INSERT, leaving 11 ordinary server slots outside its budget.
+Local non-superuser verification covers denied DDL/Graphile/writes, missing-schema failure,
+pending outbox acceptance before Worker startup, later completion, quick/polling reads, sanitized
+503 during connection saturation, owner headroom and recovery after release. No scoring, contract
+or UI policy changes. Hosted activation and general/public disaster-recovery gates remain separate.
+
+The database-backed gate passes seven operator checks and all 18 browser cases, native/compiled
+smoke, types, lint and format, using a verified uncached serial test graph (22 tasks, 560 Vitest
+tests and ten token tests). The existing parallel persistence timeout is retained without weakened
+assertions/timeouts. Final permission review requires read and insert individually and denies
+membership, database/schema creation and extra table privileges; the integration check passes again.
+PR #43 contains this change and its completed handover. The separately deployed PR #42 API is Ready
+on main and emits three successful initialization events at 1.31–1.58 seconds, with matching revision.
+Fresh deployment startup does not prove platform suspension/resume.
+
+**Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0019.

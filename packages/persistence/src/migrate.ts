@@ -1,6 +1,16 @@
 import { sql } from "drizzle-orm";
 
 import type { StackLensDatabase } from "./database.js";
+import { analyses, analysisDeliveries, analysisReports } from "./schema.js";
+
+/** Verify the current reader's columns without DDL or retaining report/source content. */
+export async function verifyStackLensDatabase(database: StackLensDatabase): Promise<void> {
+  await Promise.all([
+    database.select().from(analyses).limit(0),
+    database.select().from(analysisReports).limit(0),
+    database.select().from(analysisDeliveries).limit(0),
+  ]);
+}
 
 export async function migrateStackLensDatabase(database: StackLensDatabase): Promise<void> {
   await database.transaction(async (transaction) => {

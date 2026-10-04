@@ -80,6 +80,24 @@ describe("Vercel API composition [FR-003, FR-022, SEC-003, SEC-007, NFR-009]", (
     expect(mocks.create).not.toHaveBeenCalled();
   });
 
+  it("accepts only the explicit schema/delivery mode without echoing invalid configuration", async () => {
+    await createVercelApiRuntime({
+      DATABASE_URL: "fixture",
+      STACKLENS_DATABASE_MODE: "worker-managed",
+    });
+    expect(mocks.create).toHaveBeenCalledWith(
+      expect.objectContaining({ databaseMode: "worker-managed", startDeliveryPump: false }),
+    );
+    mocks.create.mockClear();
+    await expect(
+      createVercelApiRuntime({
+        DATABASE_URL: "fixture",
+        STACKLENS_DATABASE_MODE: "private-invalid-value",
+      }),
+    ).rejects.toThrow("STACKLENS_DATABASE_MODE must be bootstrap or worker-managed.");
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
   it("records only successful initialization duration and a validated public revision", async () => {
     const revision = "a".repeat(40);
     await createVercelApiRuntime({

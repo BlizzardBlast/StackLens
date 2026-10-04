@@ -35,7 +35,8 @@ The API native entrypoint exports a ready, unbound HTTP server; Vercel owns bind
 configuration and startup attempts remain in the dated evidence. Runtime commit `75bf5a2` passed
 CI and the 539-test database-backed gate, including the native-entry and compiled API/Worker smokes.
 [PR #41](https://github.com/BlizzardBlast/StackLens/pull/41) merged as `33de1db`; its previous
-deployed head has identical tracked files. Both Vercel projects still track the release branch.
+deployed head had identical tracked files. Both Vercel projects now track `main`; the October 4
+follow-through below records their actual deployment verification.
 
 Repository acceptance waits for the atomic analysis/outbox commit; immediate dispatch is best
 effort and recovery belongs to the continuous Worker. A completed analysis whose report is missing
@@ -77,7 +78,10 @@ Worker peak memory is 249.68 MiB, leaving little headroom. Aiven rejected the pr
 connection limit with insufficient privileges; it remains inactive. The retained archive's restore
 window originally ends October 4 at 20:44 Jakarta. [PR #42](https://github.com/BlizzardBlast/StackLens/pull/42)
 adds a verified refresh of the eight currently retained reports, expiring October 5 at 07:24 Jakarta. The startup
-diagnostic is prepared locally. Actual Function suspension, aggregate overload, replacement public
+diagnostic is published through merged PR #42. Both Vercel projects now track `main`; the
+[restricted API follow-up](docs/implementation/restricted-preview-api.md) prepares a six-connection
+login without owner/Graphile privileges. The 12-hour encrypted-backup heartbeat is active, with its
+first scheduled run still unverified. Actual Function suspension, aggregate overload, replacement public
 routing and user-deferred device/spoken acceptance remain open.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.

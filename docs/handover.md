@@ -1,13 +1,38 @@
 # StackLens Session Handover
 
 > **Prepared:** 2026-10-04\
-> **Architecture:** v0.1.21; requirements v0.1.3\
-> **Milestone:** PR #41 merged; PR #42 publishes preview operational hardening; hosted acceptance gates remain\
-> **Branch:** `codex/preview-operational-hardening`, existing checkout; PR #42\
-> **Verified main:** `33de1db44aa416f5d6cf4d39669eaef4feb7171d`, confirmed through the remote main ref\
+> **Architecture:** v0.1.22; requirements v0.1.3\
+> **Milestone:** PR #42 merged; [PR #43](https://github.com/BlizzardBlast/StackLens/pull/43) isolates API access; hosted acceptance gates remain\
+> **Branch:** `codex/restricted-preview-api`, existing checkout; PR #42 merged\
+> **Verified main at capture:** `5a5b1d3ff5f53fe3861572cfc904342a4f7a47fa`; resolve after the next merge\
 > **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
+
+### October 4 restricted API follow-through
+
+PR #42 merged after exact-head CI `37165057022` and final read-only review with no unresolved threads.
+Both Vercel Production settings now track `main`; web and API are independently Ready at `5a5b1d3`.
+The current main at capture is `5a5b1d3ff5f53fe3861572cfc904342a4f7a47fa`; resolve it again after
+the next milestone merge. The restricted API startup path is prepared on the current branch.
+PR #43, ADR-0019 and [its runbook](implementation/restricted-preview-api.md) describe Worker-owned schema
+bootstrap/delivery, six API connections and minimal read/insert grants. An isolated test passes
+denied DDL/Graphile access, durable pending work, later Worker delivery, sanitized 503 on role
+saturation and recovery after release. No constrained hosted login or activation is claimed yet.
+
+The full database-backed gate passes with seven operator checks and 18 browser cases, using the
+preceding uncached serial pass of all 22 Turbo tasks (560 Vitest tests and ten token tests).
+The existing parallel persistence timeout recurred; no assertions/timeouts were changed. Final
+privilege-review corrections pass the focused integration check, lint and formatting again.
+The [main API capture](implementation/release-evidence/2026-10-04-main-api.json) records three
+deployed successful initialization events (1.31–1.58 seconds) matching PR #42's main revision.
+This does not establish platform suspension/resume. Resolve PR #43 and current main after merging;
+the runbook defines paired login/mode activation and rollback without a post-merge SHA placeholder.
+
+The backup heartbeat `stacklens-encrypted-preview-backups` is active every 12 hours in this chat.
+Its private database configuration is protected outside Git; the verified eight-report archive
+expires October 5 at 07:24 Jakarta. First scheduled execution and public replacement routing remain
+unverified. The historical publication/capture sections below retain their original state.
 
 ### October 4 publication and operational follow-through
 

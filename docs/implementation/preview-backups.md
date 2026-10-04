@@ -59,6 +59,16 @@ expiry rejection alone does not delete files. Remove the dedicated obsolete key 
 
 ## Expiry and recovery boundaries
 
+On October 4, a new encrypted archive restored all eight currently retained reports on a separate
+local cluster with matching fingerprints and API readbacks. Its restore window ends October 5 at
+07:24:01 Jakarta; see the [publication evidence](release-evidence/2026-10-04-publication.json).
+The earlier unverified candidate remains separate. The active Codex heartbeat
+`stacklens-encrypted-preview-backups` runs every 12 hours in this chat to refresh, verify and delete
+authenticated expired managed archives, preserving shared keys until no archive uses them. Existing
+database settings are kept in the protected local `.stacklens/operations/database.json` outside Git.
+The heartbeat requires this workstation, Docker, repository and credentials to remain usable; its
+first scheduled run is unverified. Routine success stays quiet; actionable failure or expiry is reported.
+
 Anonymous live analyses have a 24-hour lifetime. Provider backups can include older records until
 the provider's backup retention expires. Keep archives private and finite; do not publish report
 contents, database credentials or dumps as release evidence. During an eventual recovery, finish
@@ -67,6 +77,6 @@ required by SEC-003. Confirm the original executor is dead before any targeted q
 
 Release evidence records counts, hashes, timestamps and safe failure codes. The current policy
 documents the observed managed schedule, retained encrypted archive and independent local recovery.
-Confirmed Free retention, automatic archive refresh/deletion, replacement public API/Worker hosting
+Confirmed Free retention, demonstrated scheduled refresh/deletion, replacement public API/Worker hosting
 and routing cutover remain explicit acceptance gaps. Synthetic copied-queue replay closes only its
 local recovery scope, not provider-managed or public disaster recovery.
