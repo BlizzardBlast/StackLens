@@ -2,7 +2,7 @@
 
 > **Prepared:** 2026-10-04\
 > **Architecture:** v0.1.22; requirements v0.1.3\
-> **Milestone:** PR #42/#43 merged; restricted public API active; independent recovery/manual gates remain\
+> **Milestone:** PR #42/#43 merged; [PR #44](https://github.com/BlizzardBlast/StackLens/pull/44) records active restricted hosting; independent recovery/manual gates remain\
 > **Branch:** `codex/hosted-isolation-verification`, existing checkout\
 > **Verified main at capture:** `515576a474bf50a8996aa572d26f484359a14eea`; resolve after the evidence milestone merge\
 > **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
@@ -37,6 +37,8 @@ The two owned local PostgreSQL containers and their two anonymous volumes are re
 55432/55435 have no listener, and the transient private directory is empty. The finite encrypted
 archives, keys and persistent protected settings remain outside Git for backup maintenance.
 Documentation links (116), evidence JSON/privacy-pattern validation, lint and formatting pass.
+PR #44 contains this complete operational handover and source-bound evidence. Resolve its status
+and current main next; no post-merge documentation placeholder is required.
 
 The following sections retain their original capture/publication state.
 

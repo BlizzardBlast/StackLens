@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-10-04T01:22:34.127Z",
+  "capturedAt": "2026-10-04T01:24:10.887Z",
   "requirementIds": [
     "FR-003",
     "FR-004",
@@ -20,7 +20,7 @@
     "reviewedHead": "358cfae423c6639de5fb50bea94ad0627e0f147b",
     "mergedMain": "515576a474bf50a8996aa572d26f484359a14eea",
     "source": {
-      "baseCommit": "515576a474bf50a8996aa572d26f484359a14eea",
+      "baseCommit": "ebefa2c3f4c127cb18406b56cb3d8a0253625258",
       "sourceHashes": {
         "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
         "apps/worker/src/runtime.ts": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf",
@@ -121,631 +121,6 @@
     "revision": "515576a474bf50a8996aa572d26f484359a14eea",
     "apiDeployment": "BvE9vHKUt1NuUiM1pSmnCXt1g4v3",
     "status": "verified_restricted_public_api_and_worker",
-    "requests": [
-      {
-        "origin": "https://stacklens-api.vercel.app",
-        "phase": "startup",
-        "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
-        "status": 404,
-        "durationMs": 444
-      },
-      {
-        "origin": "https://stacklens-api.vercel.app",
-        "phase": "startup",
-        "path": "/v1/analyze/manifest",
-        "status": 200,
-        "durationMs": 331
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "startup",
-        "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
-        "status": 404,
-        "durationMs": 927
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "startup",
-        "path": "/v1/analyze/manifest",
-        "status": 200,
-        "durationMs": 617
-      },
-      {
-        "origin": "https://stacklens-api.vercel.app",
-        "phase": "burst_1",
-        "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
-        "status": 404,
-        "durationMs": 654
-      },
-      {
-        "origin": "https://stacklens-api.vercel.app",
-        "phase": "burst_2",
-        "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
-        "status": 404,
-        "durationMs": 327
-      },
-      {
-        "origin": "https://stacklens-api.vercel.app",
-        "phase": "burst_2",
-        "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
-        "status": 404,
-        "durationMs": 659
-      },
-      {
-        "origin": "https://stacklens-api.vercel.app",
-        "phase": "burst_4",
-        "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
-        "status": 404,
-        "durationMs": 376
-      },
-      {
-        "origin": "https://stacklens-api.vercel.app",
-        "phase": "burst_4",
-        "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
-        "status": 404,
-        "durationMs": 726
-      },
-      {
-        "origin": "https://stacklens-api.vercel.app",
-        "phase": "burst_4",
-        "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
-        "status": 404,
-        "durationMs": 3573
-      },
-      {
-        "origin": "https://stacklens-api.vercel.app",
-        "phase": "burst_4",
-        "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
-        "status": 404,
-        "durationMs": 3673
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "resume",
-        "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
-        "status": 404,
-        "durationMs": 476
-      },
-      {
-        "origin": "https://stacklens-api.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/repository",
-        "status": 202,
-        "durationMs": 578
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 400
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 610
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 365
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 360
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 364
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 417
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 377
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 350
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 344
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 370
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 381
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 356
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 359
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 351
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 405
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 361
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 374
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 362
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 362
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 356
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 351
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 379
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 353
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 363
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 364
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 377
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 594
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 366
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 362
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 359
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 345
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 405
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 353
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 386
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 361
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 369
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 351
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 360
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 432
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 374
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 351
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_frey-ui",
-        "path": "/v1/analyses/e02ca99e-2fd9-4ad5-8401-f668e6999c22",
-        "status": 200,
-        "durationMs": 1042
-      },
-      {
-        "origin": "https://stacklens-api.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/repository",
-        "status": 202,
-        "durationMs": 554
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 361
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 365
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 389
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 373
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 366
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 356
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 399
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 415
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 347
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 377
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 358
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 353
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 380
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 404
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 352
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 363
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 365
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 360
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 344
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 362
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 374
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 347
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 352
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 372
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 363
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 364
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 366
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 410
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 390
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 361
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 378
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 358
-      },
-      {
-        "origin": "https://stacklens-web.vercel.app",
-        "phase": "repository_KerjaLog",
-        "path": "/v1/analyses/552abfab-f1d2-4649-bee7-3c1dd2145896",
-        "status": 200,
-        "durationMs": 893
-      }
-    ],
     "jobs": [
       {
         "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
@@ -772,7 +147,58 @@
     "peakClients": 7,
     "peakRestrictedApiClients": 1,
     "finalRestrictedApiClients": 0,
-    "finishedAt": "2026-10-04T01:16:00.833Z"
+    "finishedAt": "2026-10-04T01:16:00.833Z",
+    "httpRequests": 89,
+    "requestSummary": [
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "route": "/v1/analyses/:analysisId",
+        "status": 404,
+        "count": 8,
+        "minDurationMs": 327,
+        "maxDurationMs": 3673
+      },
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "route": "/v1/analyze/manifest",
+        "status": 200,
+        "count": 1,
+        "minDurationMs": 331,
+        "maxDurationMs": 331
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "route": "/v1/analyses/:analysisId",
+        "status": 404,
+        "count": 2,
+        "minDurationMs": 476,
+        "maxDurationMs": 927
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "route": "/v1/analyze/manifest",
+        "status": 200,
+        "count": 1,
+        "minDurationMs": 617,
+        "maxDurationMs": 617
+      },
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "route": "/v1/analyses/repository",
+        "status": 202,
+        "count": 2,
+        "minDurationMs": 554,
+        "maxDurationMs": 578
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "route": "/v1/analyses/:analysisId",
+        "status": 200,
+        "count": 75,
+        "minDurationMs": 344,
+        "maxDurationMs": 1042
+      }
+    ]
   },
   "observations": {
     "samples": 1646,
@@ -851,125 +277,12 @@
   "firstPublicProbe": {
     "status": "failed_harness_path",
     "detail": "Wrong /api prefix was corrected to the checked-in /v1 proxy. No application change.",
-    "capture": {
-      "at": "2026-10-04T01:09:19.367Z",
-      "revision": "515576a474bf50a8996aa572d26f484359a14eea",
-      "apiDeployment": "BvE9vHKUt1NuUiM1pSmnCXt1g4v3",
-      "status": "failed",
-      "requests": [
-        {
-          "origin": "https://stacklens-api.vercel.app",
-          "phase": "startup",
-          "path": "/v1/analyses/00000000-0000-4000-8000-000000000000",
-          "status": 404,
-          "durationMs": 864
-        },
-        {
-          "origin": "https://stacklens-api.vercel.app",
-          "phase": "startup",
-          "path": "/v1/analyze/manifest",
-          "status": 200,
-          "durationMs": 377
-        }
-      ],
-      "samples": [
-        {
-          "at": "2026-10-04T01:09:19.892Z",
-          "phase": "startup",
-          "clients": 5,
-          "restricted_api_clients": 0,
-          "older_api_clients": 0,
-          "idle_transactions": 0
-        },
-        {
-          "at": "2026-10-04T01:09:19.983Z",
-          "phase": "startup",
-          "clients": 5,
-          "restricted_api_clients": 0,
-          "older_api_clients": 0,
-          "idle_transactions": 0
-        },
-        {
-          "at": "2026-10-04T01:09:20.145Z",
-          "phase": "startup",
-          "clients": 5,
-          "restricted_api_clients": 0,
-          "older_api_clients": 0,
-          "idle_transactions": 1
-        },
-        {
-          "at": "2026-10-04T01:09:20.317Z",
-          "phase": "startup",
-          "clients": 5,
-          "restricted_api_clients": 0,
-          "older_api_clients": 0,
-          "idle_transactions": 1
-        },
-        {
-          "at": "2026-10-04T01:09:20.490Z",
-          "phase": "startup",
-          "clients": 5,
-          "restricted_api_clients": 0,
-          "older_api_clients": 0,
-          "idle_transactions": 1
-        },
-        {
-          "at": "2026-10-04T01:09:20.657Z",
-          "phase": "startup",
-          "clients": 6,
-          "restricted_api_clients": 0,
-          "older_api_clients": 0,
-          "idle_transactions": 0
-        },
-        {
-          "at": "2026-10-04T01:09:20.826Z",
-          "phase": "startup",
-          "clients": 5,
-          "restricted_api_clients": 0,
-          "older_api_clients": 0,
-          "idle_transactions": 0
-        },
-        {
-          "at": "2026-10-04T01:09:20.990Z",
-          "phase": "startup",
-          "clients": 5,
-          "restricted_api_clients": 0,
-          "older_api_clients": 0,
-          "idle_transactions": 0
-        },
-        {
-          "at": "2026-10-04T01:09:21.155Z",
-          "phase": "startup",
-          "clients": 5,
-          "restricted_api_clients": 0,
-          "older_api_clients": 0,
-          "idle_transactions": 0
-        },
-        {
-          "at": "2026-10-04T01:09:21.322Z",
-          "phase": "startup",
-          "clients": 5,
-          "restricted_api_clients": 0,
-          "older_api_clients": 0,
-          "idle_transactions": 0
-        },
-        {
-          "at": "2026-10-04T01:09:21.487Z",
-          "phase": "startup",
-          "clients": 5,
-          "restricted_api_clients": 0,
-          "older_api_clients": 0,
-          "idle_transactions": 0
-        }
-      ],
-      "jobs": [],
-      "limits": [
-        "Idle/resume does not prove platform suspension.",
-        "Historical deployment aliases retain their earlier owner configuration.",
-        "A six-connection PostgreSQL role guard is approximate and is not a capacity/SLA claim."
-      ],
-      "failureCode": "public_verification_failed",
-      "finishedAt": "2026-10-04T01:09:21.596Z"
-    }
+    "at": "2026-10-04T01:09:19.367Z",
+    "directResponses": [
+      404,
+      200
+    ],
+    "repositoryJobsSubmitted": 0,
+    "rawSafeCaptureRetainedLocally": true
   }
 }

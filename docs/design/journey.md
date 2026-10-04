@@ -2566,6 +2566,7 @@ handover; requirements/ADRs/design are unchanged. Relative links (116), evidence
 validation, lint and formatting pass. Both owned local PostgreSQL containers and their two anonymous
 volumes are removed; no listener remains on 55432/55435 and the transient private directory is empty.
 Finite encrypted archives, keys and protected maintenance settings remain outside Git.
+PR #44 records this hosted milestone and its completed handover, preserving observed source revisions.
 
 **Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0019.
 
