@@ -1,7 +1,7 @@
 # Managed hosting setup
 
 > **Status:** Public stack and Worker planned recovery verified; constrained capacity/manual gates remain\
-> **Updated:** 2026-10-02\
+> **Updated:** 2026-10-04\
 > **Requirements:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007, GOV-002/006/007\
 > **Decision:** [ADR-0015](../adr/0015-vercel-static-web-target.md)
 
@@ -12,7 +12,16 @@ Vercel Hobby for a personal preview. The database is Aiven PostgreSQL Free. Grap
 continuous. The optional [Vercel API](vercel-api-hosting.md) is request-bound under ADR-0016;
 durable delivery and provider execution stay on the Worker.
 
-Created through the user's authenticated dashboards:
+Current October 4 follow-through: PR #42/#43 are merged; both Vercel projects track main and are
+independently Ready at `515576a`. The API uses Worker-managed initialization and a restricted
+six-connection login. The owner Worker is unchanged. Both fresh requested repositories and
+direct/proxied quick/polling checks pass, with final zero API clients. An encrypted eight-report
+archive and active 12-hour backup heartbeat are maintained outside Git. Independent recovery
+needs Neon Free sign-in in Chrome; no backup was transmitted. See the
+[restricted API runbook](restricted-preview-api.md) for exact evidence, rollback and remaining gates.
+
+The following resources were created through the user's authenticated dashboards; release-branch
+references describe the October 2 capture, superseded by the October 4 main deployment above:
 
 - Aiven project `stacklens-preview`, service `stacklens-preview-pg`, PostgreSQL 18.6, Free-1-1gb:
   one CPU, 1 GB RAM, 1 GB storage and a displayed 20-connection limit. The Free region selector

@@ -2537,4 +2537,36 @@ PR #43 contains this change and its completed handover. The separately deployed 
 on main and emits three successful initialization events at 1.31–1.58 seconds, with matching revision.
 Fresh deployment startup does not prove platform suspension/resume.
 
+## 2026-10-04 — Activate and validate the restricted public API
+
+PR #43 passes exact-head CI `37166523756` and final read-only review, then merges. Aiven provisions
+the reviewed six-client API login with only application reads and analysis/outbox inserts. The
+paired mode/login are saved only in the existing API Production project, then deployed from reviewed
+main `515576a`; web and API Ready revisions are verified independently. The deployed initialization
+event takes 1,165 ms. Six real role clients connect, the seventh receives `53300`, owner access
+remains usable and all owned clients are released. The Worker login/artifact are unchanged.
+
+Direct/proxied quick/polling checks and fresh `frey-ui`/`KerjaLog` jobs pass with strict limited
+reports. The bounded public observation covers 89 requests/1,646 samples, seven peak total
+clients, one restricted-role client and zero final API clients/idle transactions. A final same-role
+inspection verifies activity hidden from the owner observer. Existing Standard Protection and
+three anonymous SSO redirects are confirmed without changing protection or deleting rollback
+deployments. An initial wrong proxy path in the operator probe is corrected to the configured `/v1`
+rewrite; its failed capture is retained without changing application routes.
+
+README, hosting/activation guidance and handover now describe the active public guard and its
+limits. No requirement, architecture, scoring, UI or token behavior changes. The finite verified
+backup and 12-hour heartbeat remain active; first scheduled execution is unverified. Independent
+public recovery is pending user sign-in to Neon Free in Chrome; no archive or secrets were
+transferred there and no paid service/card was added. Capacity, actual Function suspension and
+user-deferred device/spoken acceptance remain separate gates.
+
+The documentation-impact pass updates public guidance, hosting boundaries, safe evidence and
+handover; requirements/ADRs/design are unchanged. Relative links (116), evidence JSON/privacy-pattern
+validation, lint and formatting pass. Both owned local PostgreSQL containers and their two anonymous
+volumes are removed; no listener remains on 55432/55435 and the transient private directory is empty.
+Finite encrypted archives, keys and protected maintenance settings remain outside Git.
+
+**Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0019.
+
 **Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0019.
