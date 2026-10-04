@@ -2533,5 +2533,8 @@ smoke, types, lint and format, using a verified uncached serial test graph (22 t
 tests and ten token tests). The existing parallel persistence timeout is retained without weakened
 assertions/timeouts. Final permission review requires read and insert individually and denies
 membership, database/schema creation and extra table privileges; the integration check passes again.
+PR #43 contains this change and its completed handover. The separately deployed PR #42 API is Ready
+on main and emits three successful initialization events at 1.31–1.58 seconds, with matching revision.
+Fresh deployment startup does not prove platform suspension/resume.
 
 **Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0019.

@@ -10,6 +10,10 @@ uses merged revision `5a5b1d3ff5f53fe3861572cfc904342a4f7a47fa`. API deployment
 build was canceled as Preview before the Production branch setting changed; a new main deployment
 resolved Production and passed the existing environment-based build filter. The tracked tree matches
 PR #42's reviewed head. The new branch uses the same checkout.
+The separately reviewed restricted startup/login implementation is
+[PR #43](https://github.com/BlizzardBlast/StackLens/pull/43). Fresh deployed startup events match
+PR #42's revision and take 1.31–1.58 seconds; see the
+[source-bound capture](release-evidence/2026-10-04-main-api.json). Actual suspension remains unverified.
 
 ## Restricted startup and delivery
 

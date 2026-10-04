@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-04T00:56:00Z",
+  "requirements": ["FR-003", "FR-022", "NFR-009", "SEC-007", "GOV-007"],
+  "revision": "5a5b1d3ff5f53fe3861572cfc904342a4f7a47fa",
+  "milestonePr": 42,
+  "qualityRun": 37165057022,
+  "web": { "deployment": "Ai3ETm9bPPbnSMjZAVGuanFBYnce", "status": "Ready", "branch": "main" },
+  "api": { "deployment": "CCJjjahLnV61Eauak62SADeDM1Mm", "status": "Ready", "branch": "main", "environment": "Production" },
+  "apiPublicProbe": { "origin": "https://stacklens-api.vercel.app", "status": 404, "code": "analysis_not_found" },
+  "startupEvents": [
+    { "at": "2026-10-04T00:54:26.182Z", "startupDurationMs": 1583 },
+    { "at": "2026-10-04T00:54:26.224Z", "startupDurationMs": 1352 },
+    { "at": "2026-10-04T00:55:32.282Z", "startupDurationMs": 1310 }
+  ],
+  "startupEventRevisionMatches": true,
+  "capture": "Chrome deployment details and deployment-filtered runtime log table",
+  "limits": [
+    "Fresh deployment initialization is observed; actual platform suspension/resume is not established.",
+    "No restricted API role was active at this capture.",
+    "Ordinary public missing-analysis responses do not establish arbitrary workload capacity."
+  ]
+}
