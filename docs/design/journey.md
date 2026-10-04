@@ -2740,6 +2740,8 @@ capacity/hosting/backup guidance and the complete handover are updated for these
 operational observations. Requirements, architecture decisions, contracts, scoring, UI and tokens
 are unchanged. Metadata/hash/link/format checks and this documentation PR's exact-head CI/review
 are required before merge; the earlier database-backed implementation gate already passes.
+[PR #47](https://github.com/BlizzardBlast/StackLens/pull/47) publishes this operational record and
+complete handover; subsequent sessions resolve its merge state and current main independently.
 
 **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009,
 SEC-001/002/003/007, GOV-002/006/007.

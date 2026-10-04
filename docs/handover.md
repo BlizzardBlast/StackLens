@@ -3,7 +3,7 @@
 > **Prepared:** 2026-10-04\
 > **Architecture:** v0.1.23; requirements v0.1.3\
 > **Milestone:** PR #46 merged/deployed; bounded hosted burst and operator natural-expiry cleanup verified\
-> **Branch:** `codex/worker-capacity-rollout`, existing checkout; resolve this follow-through PR and current main before continuing\
+> **Branch:** `codex/worker-capacity-rollout`, existing checkout; resolve [PR #47](https://github.com/BlizzardBlast/StackLens/pull/47) and current main before continuing\
 > **Verified runtime main at capture:** `7b5482038dd30f1a10982aa4ee15cfb53a272bef`; independently resolve current source and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009, SEC-001/002/003/007, GOV-002/006/007
 
@@ -55,7 +55,7 @@ status and maintenance guidance; accepted requirements, architecture decisions, 
 scoring, design and tokens are unchanged. The full database-backed local gate and exact-head CI
 already pass for the implementation; this documentation PR must pass its own CI/review before merge.
 
-Next session: resolve this follow-through PR, current main and actual Vercel revisions without
+Next session: resolve [PR #47](https://github.com/BlizzardBlast/StackLens/pull/47), current main and actual Vercel revisions without
 assuming that the captured runtime SHA remains current. The Worker needs no rebuild for a
 documentation-only merge; preserve its independently verified module hashes. Check the next
 applicable heartbeat record for naturally expired deletion, keeping shared keys until no archive
