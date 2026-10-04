@@ -2,12 +2,69 @@
 
 > **Prepared:** 2026-10-04\
 > **Architecture:** v0.1.23; requirements v0.1.3\
-> **Milestone:** Worker capacity and stream-memory improvements published in [PR #46](https://github.com/BlizzardBlast/StackLens/pull/46); broader readiness gates remain\
-> **Branch:** `codex/worker-capacity`, existing checkout; resolve PR #46 and current main before continuing\
-> **Verified main at capture:** `378fd8a2249a05a0da1ca1ed07bea7721d650164`; resolve current main and publication state before continuing\
-> **Traceability:** FR-003/006/011/017/021, DATA-001/003, NFR-001/003/008/009, SEC-001/002/007, GOV-002/006/007
+> **Milestone:** PR #46 merged/deployed; bounded hosted burst and operator natural-expiry cleanup verified\
+> **Branch:** `codex/worker-capacity-rollout`, existing checkout; resolve [PR #47](https://github.com/BlizzardBlast/StackLens/pull/47) and current main before continuing\
+> **Verified runtime main at capture:** `7b5482038dd30f1a10982aa4ee15cfb53a272bef`; independently resolve current source and hosting revisions\
+> **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
+
+### October 4 hosted capacity rollout and recovery follow-through
+
+[PR #46](https://github.com/BlizzardBlast/StackLens/pull/46) merges after exact-head CI `37208842717`
+and complete read-only agent self-review. Both Vercel projects are independently Ready/Current in
+Production at `7b54820`. The existing Worker now has the native Linux artifact built from that main
+revision, four matching deployed module hashes, unchanged private settings/startup and concurrency
+one. The preceding Worker package remains available for rollback. Temporary installer/archive and
+the scoped deployment key/private file are removed; revoked access subsequently returns HTTP 401.
+
+Initial normal Stop and fallback Stop time out before extraction or runtime/startup changes.
+A fresh drain check confirms zero queued/running analyses and zero Graphile jobs; the owned drained
+Worker is killed to reach offline, then native installation and normal startup pass. No live claim
+is unlocked. The first failure is retained separately from successful rollout. Graceful panel Stop
+is not established by this capture; recheck drain before any future escalation and wait for new work.
+
+The public two-job burst finishes frey-ui/KerjaLog with strict schema 2.0.0 limited reports and
+identical direct/proxied readback. frey-ui takes 167.72 seconds execution, KerjaLog 121.03 seconds;
+queue wait extends the second completion to 296.36 seconds. Sampled panel memory reaches
+169.20 MiB and database clients seven, including observer/overlapping backup overhead. Three
+retained reports remain unchanged; both origins pass quick/OpenAPI/missing-analysis checks. Final
+API clients/idle transactions are zero and the queue is empty. These host samples do not establish
+cgroup peaks or arbitrary capacity. The 1,181 ms deployed initialization event proves startup;
+the dashboard offers no explicit suspension/resume transition evidence.
+
+An operator run of the existing backup maintenance procedure restores four reports with seven
+matching table fingerprints and strict/API readbacks. It captures a fifth active analysis/queue row
+but never starts the copied queue. The user-only encrypted archive expires October 5 at 21:44:50
+Jakarta; all owned verification resources and plaintext are removed. One naturally expired archive
+and its dedicated key are deleted, while shared keys/unexpired archives are preserved. This manual
+execution is marked `scheduled: false`. The existing 12-hour heartbeat and independently verified
+first scheduled refresh remain unchanged; scheduler-fired expired deletion is still unobserved.
+
+Aiven rejects the submitted Free-price fork with “Forking to a free plan is not allowed.” The form
+is cancelled and the project still contains only its original running Free PostgreSQL service.
+The latest managed backup is October 4 07:58:10 UTC. The displayed Free fork route is unavailable;
+guaranteed Free retention and an eligible zero-cost managed restore destination remain unresolved.
+No paid plan/card or new service is activated.
+
+The [rollout evidence](implementation/release-evidence/2026-10-04-capacity-rollout.json),
+[capacity runbook](implementation/worker-capacity.md) and [backup policy](implementation/preview-backups.md)
+retain the runtime revision, artifacts, failure/rollout sequence, scoped observations and teardown.
+Historical prepublication captures remain unchanged. This follow-through updates operational
+status and maintenance guidance; accepted requirements, architecture decisions, contracts,
+scoring, design and tokens are unchanged. The full database-backed local gate and exact-head CI
+already pass for the implementation; this documentation PR must pass its own CI/review before merge.
+
+Next session: resolve [PR #47](https://github.com/BlizzardBlast/StackLens/pull/47), current main and actual Vercel revisions without
+assuming that the captured runtime SHA remains current. The Worker needs no rebuild for a
+documentation-only merge; preserve its independently verified module hashes. Check the next
+applicable heartbeat record for naturally expired deletion, keeping shared keys until no archive
+uses them. Continue actual Function suspension, general capacity/headroom, eligible managed
+restore/retention and replacement-compute/workstation-loss recovery. Device/spoken acceptance
+remains user-deferred. Do not extend expiry, delete unexpired archives or activate a paid plan.
+This complete handover needs no post-merge SHA placeholder.
+
+The following sections retain their original capture/publication state.
 
 ### October 4 Worker capacity and stream-memory milestone
 

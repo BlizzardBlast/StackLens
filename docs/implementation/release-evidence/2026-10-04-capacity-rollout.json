@@ -1,0 +1,389 @@
+{
+  "capturedOn": "2026-10-04",
+  "requirementIds": [
+    "FR-003",
+    "FR-004",
+    "FR-006",
+    "FR-011",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "DATA-001",
+    "DATA-003",
+    "NFR-001",
+    "NFR-003",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "scope": "Verified existing-service Worker rollout, bounded hosted burst, operator backup refresh and natural-expiry cleanup, and zero-cost managed fork rejection",
+  "runtimeRevision": "7b5482038dd30f1a10982aa4ee15cfb53a272bef",
+  "captureHashes": {
+    "pr46-artifact-hashes.json": "265b96e3fa27e2f01c37b288c64c5c61fa8318486b7ce8759f492747631ecb09",
+    "pr46-worker-deployment.json": "7cf1ea1127bd0b6bc0fe5e19aaf3685096255ffc516047461eb20c8e3531b1c1",
+    "pr46-worker-deployment-attempt1.json": "9fab1a028fb57493999746c60d110c47c8e67492c529fe93453cbbbe7e9722f0",
+    "pr46-drained-kill.json": "ac6d4806ce620a0c26226317e64fec0b9d547cceead5d776cffc5d954c187dfb",
+    "pr46-source-before-kill.json": "b230976cd10d9739623d1491813a4a1e22d6bf6248c90aab57bc7c382112efa5",
+    "pr46-hosted-burst.json": "1cf753fd5c193e9b867ab94eeffe85d4f16e4c3e1aa1c91e8126c3e33d13cde6",
+    "pr46-source-before.json": "d81de51b96c0a7a61527a01e17ec887f6f0770cf54aace34c8725ec4f4a2100f",
+    "pr46-source-after.json": "b9f400717c6373a123a4dfc21f4cac15a42a753aa4f6a66b6433a58f581d69f5",
+    "pr46-deployment-access-cleanup.json": "be343ed0dae3b4cdd029bbf303e44a61c7eaae27bf1c498bb46352a221da3678",
+    "scheduled-backup-preview-20261004T144415973Z-55730115.json": "0f1896ce866d12aa869a5b2256b860a3516f932083ba4080ae4071f5a3c8ca36",
+    "pr46-aiven-fork-before.txt": "292bdf2834f2512fa8a04cc96e5a4f4f250a6222a1231c046d1426ac67af8b6f",
+    "pr46-aiven-fork-after.txt": "5a99b532ab168dbe4b08f7e8a291073f28cad17ab89cc001a55a988c81355a78",
+    "pr46-aiven-project-after.txt": "7c7e19a681d53376f5da7ae03a2cf21f58653d4fe6953e57c360c4dae51e41e2"
+  },
+  "publication": {
+    "pullRequest": "https://github.com/BlizzardBlast/StackLens/pull/46",
+    "reviewedHead": "835c652b51e9d03481d7bbe287b296d0fa79b11b",
+    "ciRun": "https://github.com/BlizzardBlast/StackLens/actions/runs/37208842717",
+    "ciConclusion": "success",
+    "review": "Complete read-only agent self-review; no actionable findings or unresolved review threads at merge",
+    "mergedAt": "2026-10-04T14:25:43Z",
+    "mergeCommit": "7b5482038dd30f1a10982aa4ee15cfb53a272bef",
+    "localDatabaseBackedCheck": "passed; 16 operator checks, 22 previously verified cached Turbo test tasks, 18 fresh browser cases, build/native smoke, types, lint and format"
+  },
+  "worker": {
+    "serviceId": "60761d98",
+    "concurrency": 1,
+    "memoryLimitMiB": 256,
+    "swapMiB": 0,
+    "cpu": 0.25,
+    "artifact": {
+      "revision": "7b5482038dd30f1a10982aa4ee15cfb53a272bef",
+      "image": "sha256:69bb11e0b68fa19460b94e40c24969838f312f3a8d65bae6b185e60ebbcc86a8",
+      "archiveSha256": "747d7f2a1ca2ca5042f9b91e32304bc4ef36ed970a899178a044eb9462722454",
+      "archiveBytes": 16824765,
+      "moduleHashes": {
+        "dist/main.js": "4c9c2ddb96c7d6ed1439abce3493806cdcadd8af131c0583ac53451e2dffe0ab",
+        "dist/runtime.js": "5d34d3f4794c0358bfb1fbd613cd5e8662bb421ca5a9092792a0b3237520436f",
+        "node_modules/@stacklens/data-sources/dist/http.js": "1180917c874c86b7e9646483223fbea54a9fc8548ba377974fbe33e7d57cb03b",
+        "container-health.mjs": "41e484b5db1a213d85b96063a68e17170e18c2acc456c6c1b6acd1ca86a7d3f7"
+      },
+      "rollback": {
+        "archiveSha256": "7983157a553a1128d4c674f120d797745678c72144af9ff82aae108e41a4c450",
+        "moduleHashes": {
+          "dist/main.js": "4c9c2ddb96c7d6ed1439abce3493806cdcadd8af131c0583ac53451e2dffe0ab",
+          "dist/runtime.js": "5d34d3f4794c0358bfb1fbd613cd5e8662bb421ca5a9092792a0b3237520436f",
+          "node_modules/@stacklens/data-sources/dist/http.js": "96888ec3561216a1a6040a27663a0ec335294118c4afdda3f0d0819fd417a380",
+          "container-health.mjs": "41e484b5db1a213d85b96063a68e17170e18c2acc456c6c1b6acd1ca86a7d3f7"
+        }
+      }
+    },
+    "initialAttempt": {
+      "startedAt": "2026-10-04T14:33:36.103Z",
+      "finishedAt": "2026-10-04T14:36:50.458Z",
+      "status": "failed",
+      "failedPhase": "stop",
+      "failureCode": "worker_deploy_deadline",
+      "stopDeadlineMs": 90000,
+      "automaticRollbackCompleted": false,
+      "artifactInstalled": false,
+      "explanation": "Upload staged the archive and installer; Stop and fallback Stop both timed out before extraction or startup/configuration changes. The false configurationUnchanged field was an unreached verification sentinel, not evidence of a changed runtime.env."
+    },
+    "drainedEscalation": {
+      "at": "2026-10-04T14:37:22.044Z",
+      "reason": "Normal panel Stop remained stopping beyond the observation deadline",
+      "activeJobs": 0,
+      "queuedJobs": 0,
+      "queueRows": 0,
+      "signal": "kill",
+      "target": "60761d98",
+      "drainObservedAt": "2026-10-04T14:37:20.548Z",
+      "state": {
+        "queued": 0,
+        "running": 0,
+        "terminal": 3
+      },
+      "queue": {
+        "jobs": 0,
+        "locked_jobs": 0
+      },
+      "liveClaimUnlocked": false
+    },
+    "rollout": {
+      "startedAt": "2026-10-04T14:38:09.248Z",
+      "finishedAt": "2026-10-04T14:39:29.789Z",
+      "status": "verified_worker_artifact_rollout",
+      "steps": [
+        {
+          "at": "2026-10-04T14:38:14.858Z",
+          "archiveUploaded": true,
+          "installerHashMatched": true
+        },
+        {
+          "at": "2026-10-04T14:38:18.956Z",
+          "power": "start"
+        },
+        {
+          "at": "2026-10-04T14:38:59.472Z",
+          "nativeExtractionVerified": true
+        },
+        {
+          "at": "2026-10-04T14:39:02.554Z",
+          "power": "start"
+        }
+      ],
+      "moduleHashesMatched": true,
+      "configurationUnchanged": true,
+      "startupUnchanged": true,
+      "installerRemoved": true,
+      "rollbackAvailable": true,
+      "finalState": "running"
+    },
+    "temporaryDeploymentAccess": {
+      "at": "2026-10-04T14:49:42.422Z",
+      "revokedKeyRejectedWith": 401,
+      "localPrivateKeyRemoved": true,
+      "scope": "Existing Worker, eleven permissions; runtime credentials preserved"
+    }
+  },
+  "vercel": {
+    "revision": "7b5482038dd30f1a10982aa4ee15cfb53a272bef",
+    "api": {
+      "project": "stacklens-api",
+      "deployment": "GZq9b1k8jhhHWE7PDMSFnx1RMSu8",
+      "status": "Ready; current Production at runtime capture",
+      "origin": "https://stacklens-api.vercel.app"
+    },
+    "web": {
+      "project": "stacklens",
+      "deployment": "6NLJPcraWbxTn8b3Pk37Y2ephm1S",
+      "status": "Ready; current Production at runtime capture",
+      "origin": "https://stacklens-web.vercel.app"
+    },
+    "initialization": {
+      "at": "2026-10-04T14:27:22.805Z",
+      "startupDurationMs": 1181,
+      "event": "stacklens_api_runtime_ready",
+      "actualSuspensionEstablished": false
+    },
+    "scope": "Authenticated deployment/log dashboards plus public probes. Request duration, initialization and memory do not establish a platform suspension/resume transition."
+  },
+  "hostedBurst": {
+    "startedAt": "2026-10-04T14:39:58.303Z",
+    "finishedAt": "2026-10-04T14:45:23.125Z",
+    "status": "verified_two_job_hosted_burst",
+    "requests": 177,
+    "sampleCount": 104,
+    "requestedPauseBetweenSamplesMs": 2000,
+    "samplingScope": "Panel resource counters are refreshed by the host; network/database/polling work extends intervals. Sampled peak is not cgroup memory.peak. Client counts include API, Worker, release observer and the overlapping operator backup late in the run.",
+    "jobs": [
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+        "analysisId": "45493416-4118-493a-9c46-e7ec0ca2c07c",
+        "status": "completed_with_limitations",
+        "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+        "schemaVersion": "2.0.0",
+        "queueDelayMs": 3345,
+        "executionMs": 167724,
+        "durationMs": 171069,
+        "limitationCount": 24,
+        "providerFailureCodes": [
+          "npm_response_too_large",
+          "npm_response_too_large",
+          "npm_response_too_large"
+        ],
+        "reportSha256": "ade024152296b41fc463fd3f34e28a6ef856d028f34a6b7b6e352e6f1b86fbeb",
+        "pairedPublicReadback": true
+      },
+      {
+        "repositoryUrl": "https://github.com/BlizzardBlast/KerjaLog",
+        "analysisId": "66236ad2-a324-4ddc-8426-47c43b458dc1",
+        "status": "completed_with_limitations",
+        "commitSha": "9e5f869bbcf5b9d582f8e1453395ea2c06c79f83",
+        "schemaVersion": "2.0.0",
+        "queueDelayMs": 175326,
+        "executionMs": 121034,
+        "durationMs": 296360,
+        "limitationCount": 5,
+        "providerFailureCodes": [],
+        "reportSha256": "19f2676ba172d0ff71fd17bfa9250b871d6829714d6c85388f031f4889db3a96",
+        "pairedPublicReadback": true
+      }
+    ],
+    "retainedReadbacks": 6,
+    "retainedReportsUnchanged": [
+      {
+        "analysisId": "326d28a0-0b5b-4b6d-b753-f2629fc17324",
+        "sha256": "e344b64c9db9bc0e619b0a1a66ab0bd6a2baa128ddc9030df1e3d2e12cfe9a7a"
+      },
+      {
+        "analysisId": "552abfab-f1d2-4649-bee7-3c1dd2145896",
+        "sha256": "8c195b29ab8798cce7e4bfd2ae9d21d199a86d6380e464d8a89f72b340f93ea7"
+      },
+      {
+        "analysisId": "e02ca99e-2fd9-4ad5-8401-f668e6999c22",
+        "sha256": "5db102d34c8f4adaa350709341f683e65c266d97f08c450f9637b5e5fb9bc0cf"
+      }
+    ],
+    "publicContractChecks": "OpenAPI 3.1, private no-store unknown-analysis 404 and strict synchronous quick report on both origins",
+    "peakSampledMemoryBytes": 177414144,
+    "peakDatabaseClients": 7,
+    "peakQueuedJobs": 2,
+    "finalApi": {
+      "api_clients": 0,
+      "api_idle_transactions": 0
+    },
+    "finalQueue": {
+      "jobs": 0
+    },
+    "finalDurableState": {
+      "at": "2026-10-04T14:46:12.507Z",
+      "state": {
+        "queued": 0,
+        "running": 0,
+        "terminal": 5
+      },
+      "queue": {
+        "jobs": 0,
+        "locked_jobs": 0
+      },
+      "clients": {
+        "clients": 5,
+        "idle_transactions": 0
+      }
+    },
+    "scope": "Two public submissions accepted together; actual hosted Worker/provider execution, sampled panel resources and database counts; no cgroup peak claim"
+  },
+  "backupMaintenance": {
+    "invocation": "Authorized operator rerun of the existing scheduled maintenance procedure",
+    "scheduled": false,
+    "automationId": "stacklens-encrypted-preview-backups",
+    "scheduleChanged": false,
+    "startedAt": "2026-10-04T14:44:15.973Z",
+    "finishedAt": "2026-10-04T14:44:58.694Z",
+    "runtimeRevision": "7b5482038dd30f1a10982aa4ee15cfb53a272bef",
+    "operatorHashes": {
+      "scripts/operations/backup.mjs": "1acd8387b6c8bec9400132fe8b2e1bf8baac4ab1a8022c1d6fed2d6210a22660",
+      "scripts/operations/backup-envelope.mjs": "a371828f89f023ebedc2267f61afbb06f1a21f65785ab6e8597aca7183d2925a",
+      "scripts/operations/common.mjs": "d5d133407e8df09502797484e2253370d465ba4145048e5a8e1ca958970d011b"
+    },
+    "userOnlyPermissionsVerified": true,
+    "verifiedSourceTls": true,
+    "backup": {
+      "source": {
+        "public.analysis": {
+          "count": 5,
+          "sha256": "0eb34cdd421e92142e7cfaebfa7ef440017d88085ec0380a06c8adced4a7ab0a"
+        },
+        "public.analysis_report": {
+          "count": 4,
+          "sha256": "30e5eef68e8f2e048c674eea503c11a4fa91dece0e4cbad00c74bec20b4ec0b4"
+        },
+        "public.analysis_delivery": {
+          "count": 5,
+          "sha256": "9c940ddcf1c45b4f97cd1b7d0c1375282c5c2d4db289991b34f3b037f7dfe1aa"
+        },
+        "graphile_worker._private_jobs": {
+          "count": 1,
+          "sha256": "d7ee68ffbacccf304d1eed4adf72d1d87730a03ec99e09b363f205cbef8bf0f7"
+        },
+        "graphile_worker._private_job_queues": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "graphile_worker._private_tasks": {
+          "count": 1,
+          "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+        },
+        "graphile_worker.migrations": {
+          "count": 20,
+          "sha256": "8dbfd248477c0b1786982d64171449581cdc065a76904262b99a5e172ec09002"
+        }
+      },
+      "fingerprintAlgorithm": "postgres-jsonb-c-v1",
+      "createdAt": "2026-10-04T14:44:50.117Z",
+      "expiresAt": "2026-10-05T14:44:50.117Z",
+      "encryptedBytes": 275302,
+      "encryptedSha256": "86fe499eb3db9e8337ce468772d030fe7fe12fb54a10492834ed1c6c6269e70b"
+    },
+    "restore": {
+      "fingerprintsMatched": true,
+      "matchingTables": 7,
+      "strictReportReads": 4,
+      "apiReadbacks": 4,
+      "reportHashes": [
+        "e344b64c9db9bc0e619b0a1a66ab0bd6a2baa128ddc9030df1e3d2e12cfe9a7a",
+        "ade024152296b41fc463fd3f34e28a6ef856d028f34a6b7b6e352e6f1b86fbeb",
+        "8c195b29ab8798cce7e4bfd2ae9d21d199a86d6380e464d8a89f72b340f93ea7",
+        "5db102d34c8f4adaa350709341f683e65c266d97f08c450f9637b5e5fb9bc0cf"
+      ],
+      "archivedReportsRead": 4,
+      "expiredTerminalRowsRemoved": 0,
+      "queueStarted": false
+    },
+    "expiryCleanup": {
+      "authenticatedArchives": 6,
+      "archivesRemoved": 1,
+      "keysRemoved": 1,
+      "unknownEntriesPreserved": 0,
+      "deleted": [
+        {
+          "archiveName": "preview-20261003.slbackup",
+          "keyName": "preview-20261003.key",
+          "version": 1,
+          "createdAt": "2026-10-03T13:44:31.995Z",
+          "expiresAt": "2026-10-04T13:44:31.995Z",
+          "encryptedBytes": 705390,
+          "encryptedSha256": "2a27d6e71d6964c65da51c9228539209a5677ef1deaa4098cab229954e27a1b9",
+          "archiveRemoved": true,
+          "keyRemoved": true
+        }
+      ],
+      "sharedKeysPreserved": true,
+      "remainingArchives": 5,
+      "schedulerFiredExpiredDeletionEstablished": false
+    },
+    "cleanup": {
+      "apiStopped": true,
+      "readPoolStopped": true,
+      "ownedDatabaseRemoved": true,
+      "ownedContainerAndVolumesRemoved": true,
+      "transientPrivateFilesRemoved": true
+    },
+    "scope": "Consistent source snapshot includes five analysis rows, four completed reports and one active queue row. Fresh owned local target matches all seven fingerprints with copied queue stopped; no source claim is unlocked. Manual invocation verifies naturally expired deletion; first scheduled refresh is recorded independently in the earlier evidence."
+  },
+  "aiven": {
+    "service": "stacklens-preview-pg",
+    "plan": "Free-1-1gb",
+    "latestManagedBackupAt": "2026-10-04T07:58:10Z",
+    "visibleManagedBackups": 4,
+    "latestManagedBackupMiB": 35.7,
+    "attemptedFork": "stacklens-pr46-restore-check",
+    "selectedPlan": "Free-1-1gb",
+    "displayedMonthlyPrice": "Free",
+    "source": "Latest transaction from existing service",
+    "submitted": true,
+    "backendRejection": "Forking to a free plan is not allowed",
+    "formCancelled": true,
+    "projectServiceCountAfter": 1,
+    "projectServiceAfter": "Existing original Free PostgreSQL service is Running; no fork resource",
+    "managedRestoreEstablished": false,
+    "guaranteedFreeRetentionEstablished": false,
+    "documentation": [
+      "https://aiven.io/docs/products/postgresql/concepts/pg-free-tier",
+      "https://aiven.io/docs/products/postgresql/concepts/pg-backups"
+    ],
+    "scope": "Backend confirms the displayed Free fork path is unavailable; visible backup span is not a guaranteed retention policy. No paid selection, payment method or new service."
+  },
+  "remainingGates": [
+    "Actual Vercel Function suspension/resume transition",
+    "General hosted workload/cgroup headroom beyond bounded observed workloads",
+    "Guaranteed Free managed backup retention and an eligible zero-cost managed restoration destination",
+    "Scheduler-fired deletion of naturally expired managed archives",
+    "Replacement compute and workstation-loss archive/key recovery",
+    "User-deferred physical-device and spoken screen-reader acceptance"
+  ],
+  "historicalEvidencePreserved": [
+    "2026-10-04-worker-capacity.json",
+    "2026-10-04-capacity-follow-through.json"
+  ],
+  "privacy": "Selected metadata, counts, timestamps, hashes, status and safe failure messages only; no report, source, provider response, archive, private configuration or credential bodies"
+}

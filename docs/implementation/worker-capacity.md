@@ -1,7 +1,7 @@
 # Worker capacity and response-stream memory
 
 > **Date:** 2026-10-04\
-> **Status:** Published in PR #46 with local constrained evidence; hosted rollout requires independent verification\
+> **Status:** PR #46 merged and deployed; bounded hosted burst verified, broader capacity gates remain\
 > **Requirements:** FR-003/006/011/017/021, DATA-001/003, NFR-001/003/008/009,
 > SEC-001/002/007, GOV-002/007
 
@@ -78,11 +78,55 @@ remain open.
 The first scheduled backup refresh is now verified separately; no archive was expired at that run,
 so scheduled expired-archive deletion has not yet been exercised.
 
+## October 4 existing-service rollout
+
+[PR #46](https://github.com/BlizzardBlast/StackLens/pull/46) merges as `7b5482038dd30f1a10982aa4ee15cfb53a272bef`
+after exact-head CI `37208842717` and complete read-only agent self-review. Both Vercel projects are
+independently Ready/Current in Production at that revision. The Worker is rebuilt from merged main,
+packaged for native Linux extraction and installed on the existing service with concurrency one.
+Four deployed module hashes match the packaged artifact; private runtime configuration and saved
+startup variables match their previous values. The temporary installer/archive are removed and
+the scoped deployment key is revoked, with subsequent access rejected by HTTP 401 and its local
+private file removed. The preceding Worker package remains available for rollback.
+
+The initial Stop and fallback Stop each exceed the 90-second observation deadline, before native
+extraction or runtime/startup changes. Its failed capture remains recorded; the unreached
+`configurationUnchanged: false` sentinel does not mean that configuration changed. A fresh drain
+check finds zero queued/running analyses and zero Graphile jobs. Only then is the owned Worker
+killed to reach offline; no live ownership claim is unlocked. Installation and normal startup then
+pass. This interruption does not establish reliable graceful panel shutdown. If another planned
+Stop stalls, recheck drain immediately before escalation and wait if new work appears.
+
+Two public submissions are accepted together, one through each public origin. Both produce strict
+schema 2.0.0 reports that read back identically through the direct API and web proxy:
+
+| Repository | Queue wait | Execution | Total | Report limits |
+| --- | --- | --- | --- | --- |
+| frey-ui | 3.35 s | 167.72 s | 171.07 s | 24 limitations, three typed oversized-npm failures |
+| KerjaLog | 175.33 s | 121.03 s | 296.36 s | Five limitations, no provider failures |
+
+Immutable repository revisions are the same as the earlier local live capture. Three retained
+reports remain unchanged. Both origins pass OpenAPI 3.1, a private no-store unknown-analysis 404
+and strict quick-manifest readback. Across 177 requests and 104 resource/database samples, panel
+memory reaches 169.20 MiB and total database clients seven. The host refreshes its counters;
+network and polling extend the requested two-second sampling pause. This is a sampled peak, not
+a cgroup lifetime peak or a paired comparison against the earlier local capacity profiles. Client
+counts include observer overhead and the later overlapping backup operator. Final API clients and
+API idle transactions are zero; the queue is empty and five terminal reports remain.
+
+The [rollout evidence](release-evidence/2026-10-04-capacity-rollout.json) keeps artifact/module
+hashes, the stalled Stop, successful installation, bounded workload and recovery checks separately
+from the original measurements. A 1,181 ms deployed initialization event establishes startup only;
+actual Function suspension remains unobserved. Aiven rejects the submitted Free fork, confirming
+that route is unavailable. Operator backup maintenance restores four reports and removes one
+naturally expired archive/key; scheduler-fired deletion remains a separate gate. See the
+[backup policy](preview-backups.md) and [handover](../handover.md).
+
 ## Repeat the measurement
 
 [PR #46](https://github.com/BlizzardBlast/StackLens/pull/46) publishes this milestone. Resolve its
-final merge state and current main before deployment. Original capture hashes remain authoritative
-for the measurements above. Follow the existing panel packaging/install procedure, preserve
+merge state, current main and actual hosting revisions before subsequent deployment. Original
+capture hashes remain authoritative for the measurements above. Follow the existing panel packaging/install procedure, preserve
 private runtime settings and concurrency one, drain durable work before planned maintenance, and
 verify deployed module hashes plus a bounded hosted burst after rollout. Complete rollout guidance
 and remaining acceptance gates are in the [handover](../handover.md).
@@ -132,4 +176,7 @@ follow-through gate reuses those 22 verified test tasks and runs all operator/br
 Requirements and architecture decisions are unchanged: this is a response lifecycle refactor and
 an extension of ADR-0018's operator measurement seam. Contributor/operator guidance, provider
 implementation documentation, README, the chronological journey and handover describe the change.
-No production deployment or hosted configuration changes are made by this milestone.
+The original measurements precede deployment; the separate rollout above verifies the existing
+preview. No accepted requirement, architecture decision, scoring, schema, design or token change
+is introduced by the operational follow-through. README, hosting/backup guidance, journey and
+handover include the new observations and remaining gates.

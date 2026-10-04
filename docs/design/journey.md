@@ -2708,3 +2708,40 @@ links; the fresh database-backed gate and exact-head branch CI are required befo
 
 **Traceability:** FR-003/006/011/017/021, DATA-001/003, NFR-001/003/008/009,
 SEC-001/002/007, GOV-002/006/007.
+
+## 2026-10-04 — Deploy PR #46 and verify hosted capacity and natural expiry
+
+PR #46 merges after exact-head CI `37208842717` and complete read-only agent self-review. Both
+Vercel projects are Ready/Current in Production at captured main `7b54820`; the native Worker
+artifact is rebuilt from that revision and installed on the existing service at concurrency one.
+Four deployed module hashes match, private configuration/startup are unchanged and temporary
+deployment access is revoked. The original capacity captures retain their prepublication state.
+
+Normal Stop and fallback Stop time out before extraction. A fresh zero-work drain check precedes
+stopping the owned Worker to offline; installation/startup then pass. No live ownership claim is
+unlocked. The failure is retained, and future escalation requires another immediate drain check.
+The public two-job frey-ui/KerjaLog burst completes with strict limited reports and paired
+direct/proxy readback. Three retained reports stay unchanged; sampled panel memory peaks at
+169.20 MiB and database clients seven, ending with zero API clients and an empty queue.
+These samples do not establish cgroup peaks/general capacity. Initialization takes 1,181 ms;
+actual Function suspension remains unobserved.
+
+An operator rerun of the existing scheduled backup procedure restores four reports with seven
+matching fingerprints, keeping its copied active queue stopped. Full owned teardown passes.
+One naturally expired archive and its dedicated key are removed; shared keys and unexpired
+archives survive. The new user-only archive expires October 5 at 21:44:50 Jakarta. This is a manual
+execution; scheduler-fired deletion remains a separate gate. The heartbeat is unchanged.
+Aiven rejects the submitted Free-price fork, and the project still has only its original service;
+the current Free restore route is unavailable and guaranteed retention remains unresolved.
+
+The [new evidence](../implementation/release-evidence/2026-10-04-capacity-rollout.json) preserves
+artifact/capture hashes, failure codes, timings, counts and scope without private bodies. README,
+capacity/hosting/backup guidance and the complete handover are updated for these substantive
+operational observations. Requirements, architecture decisions, contracts, scoring, UI and tokens
+are unchanged. Metadata/hash/link/format checks and this documentation PR's exact-head CI/review
+are required before merge; the earlier database-backed implementation gate already passes.
+[PR #47](https://github.com/BlizzardBlast/StackLens/pull/47) publishes this operational record and
+complete handover; subsequent sessions resolve its merge state and current main independently.
+
+**Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009,
+SEC-001/002/003/007, GOV-002/006/007.
