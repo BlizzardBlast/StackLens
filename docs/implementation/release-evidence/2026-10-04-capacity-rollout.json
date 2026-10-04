@@ -161,7 +161,7 @@
     "initialization": {
       "at": "2026-10-04T14:27:22.805Z",
       "startupDurationMs": 1181,
-      "code": "runtime_ready",
+      "event": "stacklens_api_runtime_ready",
       "actualSuspensionEstablished": false
     },
     "scope": "Authenticated deployment/log dashboards plus public probes. Request duration, initialization and memory do not establish a platform suspension/resume transition."
