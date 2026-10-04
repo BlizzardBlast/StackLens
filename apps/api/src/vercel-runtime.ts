@@ -17,6 +17,10 @@ export async function createVercelApiRuntime(
     throw new Error("STACKLENS_RETENTION_HOURS must be an integer from 1 to 8760.");
   }
   const poolOptions = readStackLensPoolOptions(environment);
+  const databaseMode = environment.STACKLENS_DATABASE_MODE ?? "bootstrap";
+  if (databaseMode !== "bootstrap" && databaseMode !== "worker-managed") {
+    throw new Error("STACKLENS_DATABASE_MODE must be bootstrap or worker-managed.");
+  }
 
   const runtime = await createStackLensApiRuntime({
     connectionString: environment.DATABASE_URL,
@@ -30,6 +34,7 @@ export async function createVercelApiRuntime(
     retentionHours,
     logger: false,
     startDeliveryPump: false,
+    databaseMode,
     onDatabasePoolCreated: attachDatabasePool,
     onDatabasePoolError(error) {
       process.stderr.write(`StackLens API database pool error (${error.name}).\n`);

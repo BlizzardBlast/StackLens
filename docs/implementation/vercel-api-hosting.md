@@ -1,19 +1,27 @@
 # Vercel API preview target
 
 > **Status:** Public API verified; operational release gates open\
-> **Date:** 2026-10-02\
+> **Date:** 2026-10-04\
 > **Requirements:** PRD-006, FR-003/004/022, NFR-004/008/009, SEC-003/007, GOV-002/006/007\
 > **Decision:** [ADR-0016](../adr/0016-vercel-request-bound-api.md)
+
+The October 4 [restricted-login follow-up](restricted-preview-api.md) adds an opt-in
+`STACKLENS_DATABASE_MODE=worker-managed` startup path. It verifies existing application reader
+columns without DDL/Graphile access and leaves all outbox delivery to the owner Worker. Activate
+the constrained login and mode together only after reviewed deployment and live verification.
+Both projects now track `main`; branch tracking alone does not confirm a deployed revision.
 
 ## Project boundary
 
 The separate [Vercel Hobby project](https://vercel.com/freys-projects/stacklens-api) is
 `stacklens-api`, ID `prj_Zd0NV89v672Ru0RntrsFNZ2b7O7s`, in `freys-projects`.
-It is connected to `BlizzardBlast/StackLens` and tracks `codex/mvp-release-readiness` in its
+It is connected to `BlizzardBlast/StackLens` and now tracks `main` in its
 Production environment. That platform label is for this personal preview, not a release claim.
 Root directory `apps/api`, Fastify, Node 24, outside-root workspace files, Fluid Compute and
 Singapore and the project-level 60-second duration are saved. Ignored Build Step **Only build
-production** limits builds to the reviewed release branch. The user explicitly approved transferring
+production** checks `VERCEL_ENV`: it builds Production and skips Preview. An automatic `main`
+build was canceled before the branch setting changed; a separate Production deployment of reviewed
+`5a5b1d3` is now Ready. Recheck the actual environment and source when promoting. The user explicitly approved transferring
 the two Aiven values and activating this API; both values are saved as Secret values only in its
 Production environment. The corrected native entrypoint is live at
 [public API](https://stacklens-api.vercel.app). The first verified native deployment

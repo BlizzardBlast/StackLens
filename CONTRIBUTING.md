@@ -74,6 +74,12 @@ for limits, private configuration, source identity and teardown. Local rehearsal
 owned databases; archive restore leaves its new database quarantined for readback and operator cleanup.
 Never commit an archive, key, private configuration, raw provider log or report body as evidence.
 
+The restricted-login integration check uses an owned database and non-superuser role. It verifies
+denied DDL/Graphile access, missing-schema failure, Worker-only durable delivery, sanitized 503 at
+role saturation and recovery after release. It uses synthetic providers; no hosted login is created
+by normal tests. See [ADR-0019](docs/adr/0019-restricted-request-bound-database-role.md) for deployment
+order and the [activation runbook](docs/implementation/restricted-preview-api.md).
+
 ## Product behavior vs implementation choices
 
 Requirements define **what** StackLens must do. Architecture and technology choices define **how** it does it.

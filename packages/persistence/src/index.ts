@@ -5,7 +5,7 @@ export { createStackLensPool } from "./pool.js";
 export { readStackLensPoolOptions } from "./pool-options.js";
 export type { StackLensPoolOptions } from "./pool-options.js";
 
-export { migrateStackLensDatabase } from "./migrate.js";
+export { migrateStackLensDatabase, verifyStackLensDatabase } from "./migrate.js";
 
 export { DrizzleAnalysisRepository } from "./repository.js";
 export type { AnalysisRepository } from "./repository.js";

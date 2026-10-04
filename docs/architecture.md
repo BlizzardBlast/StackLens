@@ -1,8 +1,8 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.21
-> **Date:** 2026-10-03
+> **Architecture version:** 0.1.22
+> **Date:** 2026-10-04
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
@@ -898,6 +898,13 @@ They should be selected only when the corresponding accepted requirements requir
 
 ## 21. Architecture decision records
 
+ADR-0019 adds an opt-in restricted request-bound API database mode. The owner Worker migrates
+application/Graphile schemas and dispatches the durable outbox. The API verifies required reader
+columns without fetching rows or running DDL and receives only SELECT plus analysis/outbox INSERT.
+The six-connection preview login leaves 11 ordinary slots on the measured 20-slot Aiven service.
+This approximate role guard does not establish arbitrary workload capacity or an SLA. Existing
+portable/bootstrap behavior remains the default, and mode/login rollback must be coordinated.
+
 - [ADR-0001 — Modular monolith with reusable analyzer core](adr/0001-modular-monolith.md)
 - [ADR-0002 — Technology selection](adr/0002-technology-selection.md)
 - [ADR-0003 — Repository acquisition and evidence providers](adr/0003-analysis-data-acquisition.md)
@@ -915,5 +922,6 @@ They should be selected only when the corresponding accepted requirements requir
 
 - [ADR-0017: Worker interruption and confirmed-exit recovery](adr/0017-worker-interruption-and-recovery.md)
 - [ADR-0018: Bounded preview operations and encrypted recovery archives](adr/0018-preview-operational-recovery.md)
+- [ADR-0019: Restricted database login for request-bound APIs](adr/0019-restricted-request-bound-database-role.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).
