@@ -2537,6 +2537,8 @@ PR #43 contains this change and its completed handover. The separately deployed 
 on main and emits three successful initialization events at 1.31–1.58 seconds, with matching revision.
 Fresh deployment startup does not prove platform suspension/resume.
 
+**Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0019.
+
 ## 2026-10-04 — Activate and validate the restricted public API
 
 PR #43 passes exact-head CI `37166523756` and final read-only review, then merges. Aiven provisions
@@ -2567,7 +2569,5 @@ validation, lint and formatting pass. Both owned local PostgreSQL containers and
 volumes are removed; no listener remains on 55432/55435 and the transient private directory is empty.
 Finite encrypted archives, keys and protected maintenance settings remain outside Git.
 PR #44 records this hosted milestone and its completed handover, preserving observed source revisions.
-
-**Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0019.
 
 **Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0019.
