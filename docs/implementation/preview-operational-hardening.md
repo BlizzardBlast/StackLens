@@ -162,6 +162,16 @@ cleanup attempt each owned resource independently and report failures. Both rehe
 The user has authorized publication and deployment follow-through; consult the milestone PR and
 resolve current remote `main` rather than assigning the October 3 captures to a later commit.
 
+[PR #42](https://github.com/BlizzardBlast/StackLens/pull/42) publishes this milestone. Its first CI
+run passed tests and browser acceptance, then found a Linux absolute-import warning in the API
+container fixture. Mounting the fixture beside its compiled runtime permits a relative import;
+fresh lifecycle verification and lint pass. The new [October 4 record](release-evidence/2026-10-04-publication.json)
+retains that failed run and the refreshed eight-report backup validation. The verified archive is
+`%USERPROFILE%\.stacklens\backups\preview-20261004-verified.slbackup`, using the dedicated
+October 4 key in the separate keys directory. Its restore window ends October 5 at 07:24:01 Jakarta.
+The initial October 4 candidate failed before recording verification; preserve it separately until
+authenticated expiry cleanup. The October 3 archive information above describes that dated capture.
+
 Current [Aiven Free-plan documentation](https://aiven.io/docs/products/postgresql/concepts/pg-free-tier)
 explicitly excludes connection pooling. A separate restricted API login therefore needs a tested
 startup/migration path; changing pool size alone cannot close aggregate connection acceptance.

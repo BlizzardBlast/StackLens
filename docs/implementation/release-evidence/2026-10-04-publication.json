@@ -1,0 +1,1456 @@
+{
+  "requirementIds": [
+    "FR-003",
+    "FR-004",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "NFR-008",
+    "NFR-009",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-007"
+  ],
+  "capturedAt": "2026-10-04T00:28:08.541Z",
+  "pullRequest": 42,
+  "source": {
+    "baseCommit": "c2943d1c325bca73a56de1e124d156df28055d31",
+    "sourceHashes": {
+      "apps/api/src/vercel-runtime.ts": "ca4eba087202d4551451d4ec402183609540d320ab7e37b7ccf5bca9b721eda0",
+      "apps/worker/src/runtime.ts": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf",
+      "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+    }
+  },
+  "captureScope": "Dirty operator follow-up on the first published PR commit; runtime source hashes retained",
+  "localQuality": {
+    "fullDatabaseBackedCheck": "passed",
+    "deploymentTests": 5,
+    "operatorTests": 6,
+    "browserCases": 18,
+    "turboTestTasks": 22,
+    "uncachedSerialVitestTests": 559,
+    "initialParallelTimeouts": "retained separately, unchanged test timeouts/assertions"
+  },
+  "initialCI": {
+    "runId": 37164668619,
+    "conclusion": "failure",
+    "tests": "passed",
+    "browserCases": "18 passed",
+    "failure": "Linux import/no-absolute-path in container fixture; fixed with colocated relative import"
+  },
+  "apiLifecycle": {
+    "requirementIds": [
+      "FR-003",
+      "FR-004",
+      "FR-022",
+      "NFR-008",
+      "NFR-009",
+      "SEC-003",
+      "SEC-007"
+    ],
+    "baseCommit": "c2943d1c325bca73a56de1e124d156df28055d31",
+    "sourceHashes": {
+      "apps/api/src/vercel-runtime.ts": "ca4eba087202d4551451d4ec402183609540d320ab7e37b7ccf5bca9b721eda0",
+      "apps/worker/src/runtime.ts": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf",
+      "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+    },
+    "scope": "Local Docker/Linux process simulation; not Vercel suspension or autoscaling proof",
+    "startedAt": "2026-10-04T00:26:23.349Z",
+    "instances": [
+      {
+        "index": 0,
+        "startupMs": 5171,
+        "origin": "http://127.0.0.1:58015"
+      },
+      {
+        "index": 1,
+        "startupMs": 4802,
+        "origin": "http://127.0.0.1:58058"
+      },
+      {
+        "index": 2,
+        "startupMs": 6342,
+        "origin": "http://127.0.0.1:58081"
+      }
+    ],
+    "samples": [
+      {
+        "at": "2026-10-04T00:26:23.726Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:23.833Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:23.952Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:24.060Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:24.228Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:24.423Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:24.546Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:24.661Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:24.802Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:24.920Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:25.037Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:25.144Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:25.254Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:25.371Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:25.475Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:25.584Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:25.704Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:25.808Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:25.913Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:26.021Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:26.126Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:26.231Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:26.340Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:26.445Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:26.552Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:26.655Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:26.764Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:26.872Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:26.976Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:27.082Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:27.186Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:27.297Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:27.412Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:27.520Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:27.631Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:27.750Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:27.968Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:28.083Z",
+        "phase": "initialization",
+        "clients": 2,
+        "api_clients": 1,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:28.192Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:28.307Z",
+        "phase": "initialization",
+        "clients": 2,
+        "api_clients": 1,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:28.411Z",
+        "phase": "initialization",
+        "clients": 2,
+        "api_clients": 1,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:28.515Z",
+        "phase": "initialization",
+        "clients": 2,
+        "api_clients": 1,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:28.622Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:28.726Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:28.838Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:28.959Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:29.074Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:29.191Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:29.301Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:29.409Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:29.531Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:29.649Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:29.948Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:30.070Z",
+        "phase": "initialization",
+        "clients": 2,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:30.180Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:30.306Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:30.424Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:30.542Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:30.652Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:30.767Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:30.873Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:30.980Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:31.088Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:31.196Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:31.303Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:31.434Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:31.542Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:31.649Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:31.758Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:31.867Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:31.970Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:32.082Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:32.185Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:32.293Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:32.411Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:32.519Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:32.624Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:32.733Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:32.856Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:32.970Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:33.080Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:33.196Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:33.303Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:33.407Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:33.517Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:33.752Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:33.895Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:34.021Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:34.169Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:34.288Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:34.411Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:34.522Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:34.634Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:34.758Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:34.873Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:34.983Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:35.196Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:35.313Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:35.429Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:35.561Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:35.721Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:35.838Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:35.962Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:36.082Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:36.201Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:36.317Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:36.452Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:36.593Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:36.713Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:36.865Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:36.982Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:37.142Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:37.252Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:37.358Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:37.465Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:37.583Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:37.689Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:37.858Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:37.979Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:38.085Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:38.191Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:38.295Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:38.413Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:38.532Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:38.650Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:38.765Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:38.882Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:38.990Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:39.099Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:39.215Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:39.321Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:39.426Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:39.533Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:39.638Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:39.743Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:39.847Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:39.952Z",
+        "phase": "initialization",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:40.057Z",
+        "phase": "requests",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:40.164Z",
+        "phase": "requests",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:40.267Z",
+        "phase": "requests",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:40.371Z",
+        "phase": "requests",
+        "clients": 2,
+        "api_clients": 1,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:40.507Z",
+        "phase": "requests",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:40.616Z",
+        "phase": "requests",
+        "clients": 2,
+        "api_clients": 1,
+        "idle_transactions": 1
+      },
+      {
+        "at": "2026-10-04T00:26:40.737Z",
+        "phase": "requests",
+        "clients": 2,
+        "api_clients": 1,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:40.862Z",
+        "phase": "requests",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:40.972Z",
+        "phase": "requests",
+        "clients": 2,
+        "api_clients": 1,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:41.083Z",
+        "phase": "requests",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:41.202Z",
+        "phase": "requests",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:41.305Z",
+        "phase": "requests",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:41.370Z",
+        "phase": "idle",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:41.417Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:41.534Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:41.841Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:41.954Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:42.070Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:42.178Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:42.283Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:42.389Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:42.495Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:42.599Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:42.707Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:42.810Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:42.916Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:43.022Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:43.131Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:43.235Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:43.342Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:43.445Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:43.566Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:43.674Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:43.777Z",
+        "phase": "freeze_resume",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:43.859Z",
+        "phase": "final_idle",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:43.882Z",
+        "phase": "final_idle",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:43.985Z",
+        "phase": "final_idle",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:44.107Z",
+        "phase": "final_idle",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:44.212Z",
+        "phase": "final_idle",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:44.329Z",
+        "phase": "final_idle",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      },
+      {
+        "at": "2026-10-04T00:26:44.437Z",
+        "phase": "final_idle",
+        "clients": 1,
+        "api_clients": 0,
+        "idle_transactions": 0
+      }
+    ],
+    "status": "verified_local_cold_instances_and_freeze_resume",
+    "concurrentLookups": 24,
+    "freezeResumeRequestMs": 1762,
+    "finalApiClients": 0,
+    "peakApiClients": 1,
+    "runtimeInitializations": [
+      {
+        "event": "stacklens_api_runtime_ready",
+        "revision": "c2943d1c325bca73a56de1e124d156df28055d31",
+        "startupDurationMs": 868
+      },
+      {
+        "event": "stacklens_api_runtime_ready",
+        "revision": "c2943d1c325bca73a56de1e124d156df28055d31",
+        "startupDurationMs": 362
+      },
+      {
+        "event": "stacklens_api_runtime_ready",
+        "revision": "c2943d1c325bca73a56de1e124d156df28055d31",
+        "startupDurationMs": 455
+      }
+    ],
+    "cleanupFailures": [],
+    "cleanedUp": true,
+    "finishedAt": "2026-10-04T00:27:02.256Z"
+  },
+  "syntheticRecovery": {
+    "requirementIds": [
+      "FR-003",
+      "FR-017",
+      "FR-021",
+      "FR-022",
+      "NFR-008",
+      "NFR-009",
+      "SEC-003",
+      "SEC-007"
+    ],
+    "baseCommit": "33de1db44aa416f5d6cf4d39669eaef4feb7171d",
+    "sourceHashes": {
+      "apps/api/src/vercel-runtime.ts": "ca4eba087202d4551451d4ec402183609540d320ab7e37b7ccf5bca9b721eda0",
+      "apps/worker/src/runtime.ts": "a5c38f1fd4a9333ce7f9dd00e59864415fcaef3bef54ec02726c96e4231fddcf",
+      "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+    },
+    "startedAt": "2026-10-04T00:14:41.913Z",
+    "scope": "Synthetic providers; separate local PostgreSQL clusters; no live queue or routing changes",
+    "status": "verified_separate_cluster_restore_and_copied_queue_replay",
+    "originalExecutorExited": true,
+    "snapshotHashesMatched": true,
+    "expiredTerminalRowsRemoved": 1,
+    "replayed": {
+      "activeQueueJob": 1,
+      "queuedJob": 1,
+      "pendingOutbox": 1
+    },
+    "publicReadbacks": 4,
+    "sourceClaimsUnchanged": true,
+    "historicalReportUnchanged": true,
+    "cleanupFailures": [],
+    "cleanedUp": true,
+    "finishedAt": "2026-10-04T00:14:48.944Z"
+  },
+  "backupRefresh": {
+    "creation": {
+      "status": "verified",
+      "source": {
+        "public.analysis": {
+          "count": 8,
+          "sha256": "16936bec0eb6f69b659f5b953794e15517c637ea24a1bc20fe49ac0e5b2f7cfd"
+        },
+        "public.analysis_report": {
+          "count": 8,
+          "sha256": "087b216655af9dc5e56e4a4ce3bcace9eb0b54d9f40033dd1d9e25d38887bc8c"
+        },
+        "public.analysis_delivery": {
+          "count": 8,
+          "sha256": "4ec6e7ecab14af78bedd6bc0b8c4634f26697fb58edab063c8ff76e836327e53"
+        },
+        "graphile_worker._private_jobs": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "graphile_worker._private_job_queues": {
+          "count": 0,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "graphile_worker._private_tasks": {
+          "count": 1,
+          "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+        },
+        "graphile_worker.migrations": {
+          "count": 20,
+          "sha256": "51d30730fab702480bc6551836acbf8e8ccc02c5d95a641dfab9e5075998b716"
+        }
+      },
+      "createdAt": "2026-10-04T00:24:01.799Z",
+      "expiresAt": "2026-10-05T00:24:01.799Z",
+      "encryptedBytes": 516378,
+      "encryptedSha256": "e072111c67cd1be6635fdd820be82f4f7aa0da7792ca1bb4021c4c3a090bfa93"
+    },
+    "restore": {
+      "status": "verified",
+      "at": "2026-10-04T00:25:22.985Z",
+      "fingerprintsMatched": true,
+      "storedReportsRead": 8,
+      "publicReadbacks": 8,
+      "expiryCleanup": 0,
+      "queueStarted": false,
+      "metadata": {
+        "version": 1,
+        "createdAt": "2026-10-04T00:24:01.799Z",
+        "expiresAt": "2026-10-05T00:24:01.799Z"
+      }
+    },
+    "firstAttempt": "Archive created but operation failed before recording verification; candidate is not claimed as verified",
+    "outsideGit": true,
+    "windowsPermissions": "restricted to local operator"
+  },
+  "workerObservation": {
+    "at": "2026-10-04T00:16:50Z",
+    "running": true,
+    "memoryMiB": 140.25,
+    "memoryLimitMiB": 256,
+    "uptime": "1d 10h 16m",
+    "scope": "idle panel snapshot, not soak or capacity evidence"
+  },
+  "hostedConnectionBudget": {
+    "active": false,
+    "managedPooling": "excluded by current Aiven Free documentation",
+    "roleMigrationCompatibility": "pending"
+  },
+  "publicRoutingChanged": false
+}

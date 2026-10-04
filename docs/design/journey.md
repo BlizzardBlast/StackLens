@@ -2503,3 +2503,10 @@ pooling, leaving restricted API login and schema-owner migration validation as t
 isolation work. No paid plan or expanded administrative privilege is introduced.
 
 **Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0018.
+
+PR #42's initial CI passed correctness and all browser cases, then exposed a Linux-only absolute
+import warning in the container fixture. Mounting it beside the compiled runtime permits a relative
+import; the lifecycle rehearsal and lint pass again. A new encrypted backup restores all eight
+currently retained reports on a separate local cluster with matching hashes and eight API readbacks.
+Its restore window ends October 5 at 07:24 Jakarta. The first unverified candidate is retained
+separately; no cloud queue or routing is changed by these rehearsals.

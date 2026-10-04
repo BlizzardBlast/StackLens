@@ -2,8 +2,8 @@
 
 > **Prepared:** 2026-10-04\
 > **Architecture:** v0.1.21; requirements v0.1.3\
-> **Milestone:** PR #41 merged; preview operational hardening prepared; hosted acceptance gates remain\
-> **Branch:** `codex/preview-operational-hardening`, existing checkout; publication authorized\
+> **Milestone:** PR #41 merged; PR #42 publishes preview operational hardening; hosted acceptance gates remain\
+> **Branch:** `codex/preview-operational-hardening`, existing checkout; PR #42\
 > **Verified main:** `33de1db44aa416f5d6cf4d39669eaef4feb7171d`, confirmed through the remote main ref\
 > **Traceability:** PRD-006, FR-001/003/004/022, NFR-004/006/007/008/009, SEC-001/002/003/007, GOV-002/006/007
 
@@ -12,6 +12,8 @@
 ### October 4 publication and operational follow-through
 
 The user authorized review, publication, CI, and subsequent deployment/operational follow-through.
+[PR #42](https://github.com/BlizzardBlast/StackLens/pull/42) contains this milestone. Resolve and verify
+current remote `main` after merge; the older verified main below is the capture baseline.
 Final review tightened encrypted archive/key reads: reject oversized regular files before allocation
 and enforce the bound during streaming. Cleanup in API lifecycle and recovery rehearsals now attempts
 every owned resource and records failures rather than claiming success after partial cleanup.
@@ -23,6 +25,18 @@ test graph passed all 22 tasks without changing assertions or timeouts; the full
 gate passes using that verified cache, six operator checks, five deployment checks and 18 browser
 cases, plus native/compiled smoke, types, lint and format. Current official Aiven documentation confirms Free has no connection pooling.
 A constrained API login requires separate schema-owner migration validation before activation.
+CI run `37164668619` passed the synthetic and browser suites but failed a Linux-only absolute-import
+warning in the container fixture. The fixture now mounts beside the compiled runtime and uses a
+relative import; its three-instance lifecycle rehearsal and lint pass again.
+
+The October 4 refreshed encrypted archive restores all eight currently retained reports with seven
+matching table fingerprints and eight API readbacks on a separate local cluster. The verified file
+is `%USERPROFILE%\.stacklens\backups\preview-20261004-verified.slbackup` with key
+`%USERPROFILE%\.stacklens\keys\preview-20261004.key`; both have restricted Windows permissions.
+It expires October 5 at 07:24:01 Jakarta. The first attempt created an archive but failed before a
+verification record; that candidate remains separately labeled and is not the verified fallback.
+No hosted queue or public routing changed during restoration. Automated refresh/deletion is still
+the next operational step. October 3's archive and its expiry remain historical below.
 Resolve current `main` HEAD and this milestone PR before continuing; do not assume a future squash SHA.
 The sections below describe the October 3 captures and their original publication state.
 

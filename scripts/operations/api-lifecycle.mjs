@@ -84,11 +84,11 @@ try {
       "--env",
       `VERCEL_GIT_COMMIT_SHA=${evidence.baseCommit}`,
       "--mount",
-      `type=bind,source=${resolve(root, "scripts/operations/api-process.mjs")},target=/host.mjs,readonly`,
+      `type=bind,source=${resolve(root, "scripts/operations/api-process.mjs")},target=/app/operations-host.mjs,readonly`,
       "--entrypoint",
       "node",
       image,
-      "/host.mjs",
+      "/app/operations-host.mjs",
     ]);
     const id = stdout.trim();
     containers.push(id);

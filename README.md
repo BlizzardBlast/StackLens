@@ -75,7 +75,8 @@ eight live-provider Worker jobs at 256 MiB/0.25 CPU, and encrypted restoration o
 on a separate local PostgreSQL server. Synthetic copied-queue replay and expiry cleanup also pass.
 Worker peak memory is 249.68 MiB, leaving little headroom. Aiven rejected the proposed shared-role
 connection limit with insufficient privileges; it remains inactive. The retained archive's restore
-window ends October 4 at 20:44 Jakarta and needs refresh or authenticated deletion. The startup
+window originally ends October 4 at 20:44 Jakarta. [PR #42](https://github.com/BlizzardBlast/StackLens/pull/42)
+adds a verified refresh of the eight currently retained reports, expiring October 5 at 07:24 Jakarta. The startup
 diagnostic is prepared locally. Actual Function suspension, aggregate overload, replacement public
 routing and user-deferred device/spoken acceptance remain open.
 
