@@ -80,6 +80,14 @@ metadata, not a global connection cap or a change to job/scoring behavior. See t
 [October 3 measurements](operational-preview-validation.md) and
 [preview backup policy](preview-backups.md) for bounded evidence and remaining release gates.
 
+The [subsequent hardening record](preview-operational-hardening.md) verifies the merged main
+baseline and the still-tracked release branch. Successful initialization now emits only
+`stacklens_api_runtime_ready`, a validated SHA or null, and runtime composition milliseconds.
+This diagnostic is prepared locally and must be observed after deployment; it does not measure total
+platform cold-start latency. Local fresh-process/freeze tests and the live idle burst pass, while
+actual suspension and aggregate overload remain open. Aiven rejected the shared-role budget change
+with SQLSTATE `42501`; do not treat it as active or infer a global limit from pool max one.
+
 On October 3 the earlier `stacklens-api-vercel` pool retained six idle clients after a bounded burst
 and resume despite lifecycle attachment. The request-bound adapter now fixes `maxUses: 1`, retiring
 a client on release while preserving transaction ownership, pool concurrency and finite acquisition

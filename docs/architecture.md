@@ -1,7 +1,7 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.20
+> **Architecture version:** 0.1.21
 > **Date:** 2026-10-03
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
@@ -840,6 +840,13 @@ the runtime/pool object, concurrency cap, finite acquisition timeout and verifie
 Continuous API/Worker runtimes retain normal reuse. Reconnection adds TLS/connection overhead.
 The [October 3 operational record](implementation/operational-preview-validation.md) verifies
 bounded hosted cleanup and latency; exact suspension behavior and global autoscaling capacity stay open.
+ADR-0018 adds source-free successful runtime-initialization events and opt-in operator tooling for
+bounded lifecycle/resource captures, authenticated 24-hour encrypted logical archives, and
+separate-cluster copied-queue recovery. Restore creates a fresh owned loopback database, validates
+stored reports, completes terminal expiry cleanup and leaves its queue stopped. The prepared shared
+role ceiling remains inactive after Aiven rejected it with insufficient privileges; no broad role
+grant bypasses that boundary. Archive refresh/deletion and public routing recovery remain operator
+acceptance gates. See [the hardening runbook](implementation/preview-operational-hardening.md).
 The personal preview now validates separate public Vercel web/API projects with both requested
 repository reports. An initial active-job restart exposed a four-hour recovery delay; the subsequent
 planned-interruption fix resumes the same hosted analysis promptly. Bounded constrained runs and
@@ -907,5 +914,6 @@ They should be selected only when the corresponding accepted requirements requir
 - [ADR-0016 — Request-bound Fastify API on Vercel](adr/0016-vercel-request-bound-api.md)
 
 - [ADR-0017: Worker interruption and confirmed-exit recovery](adr/0017-worker-interruption-and-recovery.md)
+- [ADR-0018: Bounded preview operations and encrypted recovery archives](adr/0018-preview-operational-recovery.md)
 
 New material architecture decisions should receive an ADR and cite the requirements they serve (**GOV-006**).

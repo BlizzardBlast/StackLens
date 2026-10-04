@@ -1,14 +1,16 @@
 # Preview backup and recovery policy
 
-> **Status:** Managed backup schedule observed; free disaster recovery remains open\
+> **Status:** Managed schedule and encrypted separate-server restore verified; public disaster recovery remains open\
 > **Date:** 2026-10-03\
 > **Requirements:** FR-003/004, SEC-003/007, NFR-008/009, GOV-002/007
 
 ## Current schedule and limits
 
 Aiven's existing Free PostgreSQL service already takes managed daily backups. On October 3 its
-Backups page listed snapshots at October 1 12:33:43 UTC and October 2 07:58:08 UTC, in `do-blr1`,
-totalling 68 MB. No paid service, card, new credential destination or custom scheduler was added.
+Backups page initially listed snapshots at October 1 12:33:43 UTC and October 2 07:58:08 UTC, in
+`do-blr1`, totalling 68 MB. A later Chrome refresh also listed October 3 07:58:06 UTC and 103 MB
+total, meeting the 24-hour freshness target at observation. No paid service, card, new credential
+destination or custom scheduler was added.
 The [PostgreSQL backup documentation](https://aiven.io/docs/products/postgresql/concepts/pg-backups)
 describes encrypted daily backups and WAL uploads every five minutes or completed WAL file.
 That upload interval is not a measured recovery-point guarantee for this preview.
@@ -38,7 +40,22 @@ hashes. Dump plus restore took 32.18 seconds; strict readback and teardown finis
 These are timings for a small logical copy into the same running Aiven service. They do not measure
 managed-backup restoration, service replacement, routing changes or disaster recovery time.
 The private dump, client settings, CA copy and owned restore database were removed after validation.
-There is no retained logical archive or newly activated off-provider backup destination.
+At that capture there was no retained logical archive or newly activated off-provider backup destination.
+
+The [later hardening rehearsal](preview-operational-hardening.md) retains a 705,390-byte
+AES-256-GCM logical archive outside the checkout with a separate protected local key. It restored
+all 11 stored reports onto a separate local PostgreSQL 18 server, matching all seven table
+fingerprints and passing strict report reads. Its restore window expires October 4 at 20:44:31
+Jakarta. This supplies a free local fallback while the workstation/key/archive survive; it does not
+recover from workstation loss or establish an automatic refresh schedule.
+
+Operator tools authenticate the archive and its maximum 24-hour retention before any target
+mutation, restore into a fresh UUID-owned loopback database, keep the queue stopped and finish
+expired terminal cleanup in batches. A separate synthetic rehearsal proves copied active/queued/
+outbox recovery after actual original-executor death, including API readback and historical report
+preservation. No live source queue was unlocked. Follow the hardening runbook for commands and
+source-bound evidence. Refresh before expiry or use authenticated archive deletion afterward;
+expiry rejection alone does not delete files. Remove the dedicated obsolete key separately.
 
 ## Expiry and recovery boundaries
 
@@ -49,6 +66,7 @@ expiry cleanup before opening the restored API publicly, preserving queued/runni
 required by SEC-003. Confirm the original executor is dead before any targeted queue recovery.
 
 Release evidence records counts, hashes, timestamps and safe failure codes. The current policy
-documents the observed managed schedule and repeatable logical restore. Confirmed Free retention,
-a no-card recovery destination, a retained recoverable archive and full disaster queue replay
-remain explicit acceptance gaps.
+documents the observed managed schedule, retained encrypted archive and independent local recovery.
+Confirmed Free retention, automatic archive refresh/deletion, replacement public API/Worker hosting
+and routing cutover remain explicit acceptance gaps. Synthetic copied-queue replay closes only its
+local recovery scope, not provider-managed or public disaster recovery.

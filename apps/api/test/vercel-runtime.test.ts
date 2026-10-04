@@ -1,5 +1,5 @@
 import type { attachDatabasePool } from "@vercel/functions";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 
 import type { createStackLensApiRuntime } from "../src/runtime.js";
 
@@ -14,8 +14,15 @@ vi.mock("@vercel/functions", () => ({ attachDatabasePool: mocks.attach }));
 
 import { createVercelApiRuntime } from "../src/vercel-runtime.js";
 
-beforeEach(() => vi.clearAllMocks());
-afterEach(() => vi.unstubAllEnvs());
+let outputSpy: MockInstance<typeof process.stdout.write>;
+beforeEach(() => {
+  vi.clearAllMocks();
+  outputSpy = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+});
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
+});
 
 describe("Vercel API composition [FR-003, FR-022, SEC-003, SEC-007, NFR-009]", () => {
   it("attaches a small shared pool and leaves continuous delivery to the Worker", async () => {
@@ -71,5 +78,37 @@ describe("Vercel API composition [FR-003, FR-022, SEC-003, SEC-007, NFR-009]", (
   it("never falls back to a local database in an unconfigured deployment", async () => {
     await expect(createVercelApiRuntime({})).rejects.toThrow("Vercel API requires DATABASE_URL.");
     expect(mocks.create).not.toHaveBeenCalled();
+  });
+
+  it("records only successful initialization duration and a validated public revision", async () => {
+    const revision = "a".repeat(40);
+    await createVercelApiRuntime({
+      DATABASE_URL: "postgresql://private-user:private-password@localhost/fixture",
+      VERCEL_GIT_COMMIT_SHA: revision,
+      STACKLENS_GITHUB_TOKEN: "private-token",
+    });
+    const output = outputSpy.mock.calls[0]?.[0];
+    expect(typeof output).toBe("string");
+    const observation: unknown = JSON.parse(String(output));
+    expect(observation).toEqual({
+      event: "stacklens_api_runtime_ready",
+      revision,
+      startupDurationMs: expect.any(Number),
+    });
+    expect(String(output)).not.toContain("private-");
+  });
+
+  it("does not echo arbitrary revision values or announce failed initialization", async () => {
+    await createVercelApiRuntime({
+      DATABASE_URL: "fixture",
+      VERCEL_GIT_COMMIT_SHA: "private-value",
+    });
+    expect(String(outputSpy.mock.calls[0]?.[0])).toContain('"revision":null');
+    outputSpy.mockClear();
+    mocks.create.mockRejectedValueOnce(new Error("private-database-error"));
+    await expect(createVercelApiRuntime({ DATABASE_URL: "fixture" })).rejects.toThrow(
+      "private-database-error",
+    );
+    expect(outputSpy).not.toHaveBeenCalled();
   });
 });

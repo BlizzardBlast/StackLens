@@ -60,6 +60,20 @@ NFR-006/007/008). It creates no live repository jobs. Local runs use one browser
 Browser traces and results stay in ignored `.cache/playwright/`. WebKit emulation does not establish
 physical Safari/iOS or spoken screen-reader acceptance.
 
+## Operational verification
+
+After `pnpm build`, `pnpm test:operations` checks private configuration diagnostics, authenticated
+archive retention/tampering/deletion and,
+with a loopback `TEST_DATABASE_URL`, connection saturation across independent pools. The database
+test creates and removes a disposable non-superuser role; it requires local role-management rights.
+`pnpm test` includes these checks, so CI's PostgreSQL service supplies the database coverage.
+
+Live-provider soak, hosted connections, process freeze and recovery rehearsals are explicit operator
+commands outside normal correctness tests. Follow the [runbook](docs/implementation/preview-operational-hardening.md)
+for limits, private configuration, source identity and teardown. Local rehearsals use uniquely named
+owned databases; archive restore leaves its new database quarantined for readback and operator cleanup.
+Never commit an archive, key, private configuration, raw provider log or report body as evidence.
+
 ## Product behavior vs implementation choices
 
 Requirements define **what** StackLens must do. Architecture and technology choices define **how** it does it.

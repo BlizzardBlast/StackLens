@@ -8,6 +8,7 @@ import { createStackLensApiRuntime, type StackLensApiRuntime } from "./runtime.j
 export async function createVercelApiRuntime(
   environment: Readonly<Record<string, string | undefined>> = process.env,
 ): Promise<StackLensApiRuntime> {
+  const startedAt = performance.now();
   if (!environment.DATABASE_URL) {
     throw new Error("Vercel API requires DATABASE_URL.");
   }
@@ -17,7 +18,7 @@ export async function createVercelApiRuntime(
   }
   const poolOptions = readStackLensPoolOptions(environment);
 
-  return createStackLensApiRuntime({
+  const runtime = await createStackLensApiRuntime({
     connectionString: environment.DATABASE_URL,
     databasePoolOptions: {
       ...poolOptions,
@@ -34,4 +35,15 @@ export async function createVercelApiRuntime(
       process.stderr.write(`StackLens API database pool error (${error.name}).\n`);
     },
   });
+
+  // NFR-009/SEC-007: correlate fresh initialization without request data or credentials.
+  const revision = environment.VERCEL_GIT_COMMIT_SHA;
+  process.stdout.write(
+    `${JSON.stringify({
+      event: "stacklens_api_runtime_ready",
+      revision: revision !== undefined && /^[a-f0-9]{40}$/iu.test(revision) ? revision : null,
+      startupDurationMs: Math.round(performance.now() - startedAt),
+    })}\n`,
+  );
+  return runtime;
 }

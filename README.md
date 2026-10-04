@@ -34,7 +34,8 @@ auto-assigned addresses remain compatibility aliases; see the
 The API native entrypoint exports a ready, unbound HTTP server; Vercel owns binding. Earlier failed
 configuration and startup attempts remain in the dated evidence. Runtime commit `75bf5a2` passed
 CI and the 539-test database-backed gate, including the native-entry and compiled API/Worker smokes.
-The reviewed branch remains in draft [PR #41](https://github.com/BlizzardBlast/StackLens/pull/41).
+[PR #41](https://github.com/BlizzardBlast/StackLens/pull/41) merged as `33de1db`; its previous
+deployed head has identical tracked files. Both Vercel projects still track the release branch.
 
 Repository acceptance waits for the atomic analysis/outbox commit; immediate dispatch is best
 effort and recovery belongs to the continuous Worker. A completed analysis whose report is missing
@@ -52,7 +53,7 @@ finished in 3m 13s. The final constrained Linux run completed both repositories 
 peak and no memory-limit/OOM events. Remote expiry cleanup and isolated restoration of eight stored
 reports pass. See the [Worker recovery record](docs/implementation/worker-recovery.md) for exact
 scope and source hashes. The recovery observations were captured on a dirty base `405b420`; the
-follow-up is published through draft PR #41. Resolve its current HEAD and deployments for review.
+follow-up was published through PR #41. Preserve those captures' source hashes when reviewing later revisions.
 Headroom remains small. General capacity, Function suspension/global connection ceilings, full
 disaster recovery and real screen-reader/device acceptance remain open. This personal preview is not
 a production-readiness claim.
@@ -67,6 +68,17 @@ submission passed. Connection/TLS overhead and the exact runtime revision are re
 the Free-plan recovery limitation. Cold-start/suspension, general capacity, disaster recovery and
 manual device/screen-reader gates remain open. `pnpm check` now includes browser acceptance; install
 the engines once with `pnpm exec playwright install chromium firefox webkit`.
+
+The later [operational hardening](docs/implementation/preview-operational-hardening.md) verifies
+three fresh local API instances with process freeze/resume, a bounded hosted connection burst,
+eight live-provider Worker jobs at 256 MiB/0.25 CPU, and encrypted restoration of 11 preview reports
+on a separate local PostgreSQL server. Synthetic copied-queue replay and expiry cleanup also pass.
+Worker peak memory is 249.68 MiB, leaving little headroom. Aiven rejected the proposed shared-role
+connection limit with insufficient privileges; it remains inactive. The retained archive's restore
+window originally ends October 4 at 20:44 Jakarta. [PR #42](https://github.com/BlizzardBlast/StackLens/pull/42)
+adds a verified refresh of the eight currently retained reports, expiring October 5 at 07:24 Jakarta. The startup
+diagnostic is prepared locally. Actual Function suspension, aggregate overload, replacement public
+routing and user-deferred device/spoken acceptance remain open.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 
