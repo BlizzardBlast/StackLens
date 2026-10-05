@@ -62,3 +62,8 @@ before the native child finishes cleanup; that is an abrupt-exit path, even when
 the signal. Use the panel's normal SIGINT Stop and verify completion plus offline. Native launches
 without that outer shell can verify SIGTERM independently. This finding does not establish the
 cause of the October 4 stalled Stop. See the [lifecycle record](../implementation/worker-lifecycle.md).
+
+The October 5 hosted follow-through verifies normal panel SIGINT with every stage completed,
+confirmed offline, same-ID public-job replay and unchanged retained report hashes. It preserves
+the preceding platform failure separately. The successful controlled restarts do not establish
+abrupt host-loss recovery or explain the earlier stalled Stop.

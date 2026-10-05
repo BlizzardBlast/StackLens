@@ -71,16 +71,25 @@ that the October 4 hosted Stop stall has been fixed. That stall's cause remains 
 SIGTERM on a native Worker and termination of the panel's outer shell have different outcomes.
 An offline panel badge alone cannot establish that final queue writes completed.
 
-Record platform-start failures separately from application cleanup failures. The October 5 panel
+Record platform-start failures separately from application cleanup failures. The initial October 5 panel
 rejected starting the unchanged Worker before Node launched and returned 504 from its file service.
-The initial normal Stop reached offline; no deployment file was changed. Hosted installation and
-new-diagnostics acceptance must wait for the service to recover. The preview remains offline at
-the final October 5 observation; restore the unchanged service before proceeding with activation.
+The initial normal Stop reached offline; no deployment file was changed during that failed attempt.
+After recovery, the original Worker starts unchanged and drains. PR #48's six compiled modules/maps
+are installed only after confirmed offline and independently byte-compared after reload. Neither
+startup nor private configuration changes. Active and idle normal panel Stops both deliver SIGINT,
+complete all five cleanup stages and reach offline. Active runner cleanup takes 1,702 ms and idle
+runner cleanup 198 ms; these are application stage durations, not exact process exit latency.
+The interrupted frey-ui job returns queued with one unlocked delivery and no report, then completes
+under the same analysis ID on restart. Both retained older reports preserve their hashes and the
+new report survives the following idle Stop. Direct and proxied strict report reads, OpenAPI 3.1,
+safe missing-analysis errors and an empty queue pass. The final Worker is restarted for preview use.
 
 The [Linux lifecycle capture](release-evidence/2026-10-05-worker-lifecycle.json) records the final
 source/archive hashes, five successful cases, separate abrupt-exit control and owned cleanup.
 The [hosted attempt record](release-evidence/2026-10-05-worker-lifecycle-hosted.json) preserves
 the platform block, failed earlier probes, engine recovery, retained-report hashes and full local
-quality gate: 569 Vitest tests, 31 Node tests and 18 browser cases pass. These results cover the
-bounded rehearsal; they do not establish the pending hosted acceptance or broader release gates.
-See the [handover](../handover.md) for the unpublished working state and next action.
+quality gate: 569 Vitest tests, 31 Node tests and 18 browser cases pass. The separate
+[hosted rollout record](release-evidence/2026-10-05-worker-shutdown-rollout.json) binds the installed
+modules to implementation commit `784b44a`, records hosted acceptance and retains the initial
+failure. These checks do not establish abrupt host-loss recovery, arbitrary capacity or the cause
+of the October 4 stall. See the [handover](../handover.md) for publication and remaining release gates.

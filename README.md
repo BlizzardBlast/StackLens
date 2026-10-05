@@ -118,9 +118,13 @@ The [Worker lifecycle extension](docs/implementation/worker-lifecycle.md) adds s
 and cleanup-stage diagnostics plus a packaged Linux restart rehearsal. Normal panel SIGINT and
 native SIGTERM interruption return the same analysis for retry and preserve its completed report.
 Terminating the panel's outer shell with SIGTERM remains an abrupt-exit path. The October 4 stalled
-Stop is not reproduced or attributed to a confirmed cause. Hosted diagnostic activation is pending:
-the panel rejects starting the unchanged Worker before Node launches and its file service returns
-504. The local implementation and dated evidence remain separate from hosted acceptance.
+Stop is not reproduced or attributed to a confirmed cause. After the platform recovers,
+[PR #48](https://github.com/BlizzardBlast/StackLens/pull/48) publishes the diagnostics and six
+compiled modules/maps are installed with matching readback hashes. Hosted active and idle panel
+Stops complete every cleanup stage and reach offline; the interrupted frey-ui analysis completes
+under the same ID after restart. Both older reports retain their hashes. The
+[rollout record](docs/implementation/release-evidence/2026-10-05-worker-shutdown-rollout.json)
+keeps the initial platform failures separate from this successful acceptance.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 

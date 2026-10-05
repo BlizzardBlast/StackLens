@@ -89,6 +89,13 @@ KerjaLog analysis finished in 192,798 ms from submission, with five limitations 
 failures. No administrative unlock was needed. This validates the panel Stop/offline/Start sequence;
 it does not prove abrupt host-loss or automatic failover. Prefer draining for routine maintenance.
 
+The separate October 5 [diagnostic rollout](release-evidence/2026-10-05-worker-shutdown-rollout.json)
+verifies current normal panel SIGINT at concurrency one. Active runner cleanup takes 1,702 ms;
+the same frey-ui ID returns queued without a report or lock and finishes on restart. Idle runner
+cleanup takes 198 ms. Both stops complete utilities/pool cleanup and reach offline, all three
+report hashes survive and the final queue is empty. These application stage durations do not
+establish exact OS exit latency. The historical October 4 stalled Stop remains unconfirmed.
+
 Remote retention fixtures establish scheduled deletion and cascade of an expired terminal report
 and delivery, public lookup 404, and preservation of expired queued/running and null-expiry legacy
 records. Fixtures were owned synthetic rows and were removed afterward. Fresh public submissions

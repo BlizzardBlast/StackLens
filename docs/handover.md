@@ -2,8 +2,8 @@
 
 > **Prepared:** 2026-10-05\
 > **Architecture:** v0.1.23; requirements v0.1.3\
-> **Milestone:** Worker lifecycle diagnostics and local replay; hosted activation awaits platform recovery\
-> **Branch:** `codex/worker-shutdown`, existing checkout; implementation remains local and uncommitted\
+> **Milestone:** Worker lifecycle diagnostics; packaged and hosted same-ID replay verified\
+> **Branch:** `codex/worker-shutdown`, existing checkout; published in [PR #48](https://github.com/BlizzardBlast/StackLens/pull/48); resolve its final head, CI and merge state\
 > **Source main at capture:** `5adcee87f39d5046190f560de90fc1c321567d55`, including merged [PR #47](https://github.com/BlizzardBlast/StackLens/pull/47); independently resolve current source and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009, SEC-001/002/003/007, GOV-002/006/007
 
@@ -32,23 +32,34 @@ The full database-backed `pnpm check` passes build, compiled API/Worker smoke, t
 formatting. The Worker has 32 focused/integration tests. Unchanged package results may be reused
 by Turbo. This local gate does not replace hosted acceptance or exact-head CI after publication.
 
-The hosted Worker initially reaches offline after normal Stop, restarts, and later drains again
-before installation. Chrome upload is unavailable without file-URL permission; no file reaches
-the server. The file-editor fallback receives a platform 504, and attempts to start the unchanged
-Worker fail before Node launches. No Worker module, startup variable, private setting or provider
-configuration is changed. Two retained reports have identical hashes and the queue is empty at
-the platform-failure capture. The preview remains **offline** at the final October 5 observation.
+The initial hosted attempt reaches offline after normal Stop, but subsequent file-editor requests
+receive a platform 504 and starting the unchanged Worker fails before Node launches. No module or
+setting is changed during that attempt. Two retained report hashes match and the queue is empty;
+the preview is offline at that historical observation.
 The [hosted attempt record](implementation/release-evidence/2026-10-05-worker-lifecycle-hosted.json)
-preserves the blocked attempt and quality-gate evidence. Hosted diagnostic activation and active-job acceptance remain pending;
-do not present the local results as a deployed fix or treat offline alone as graceful cleanup.
+preserves this failure and the local quality gate without rewriting its original state.
 
-Next session: resolve current main, this working diff and actual hosting state. Restore the existing
-service first when its platform is available, retain the PR #46 Linux artifact for rollback, then
-install the reviewed diagnostics and verify Stop/completion/offline, same-ID replay and historical
-report hashes at concurrency one. Never mount the synthetic preload into a hosted Worker. Current
-changes are not published, and this handover needs no placeholder merge SHA. Broader recovery,
-managed Free restore/retention, Function suspension and user-deferred manual acceptance remain
-separate gates. The backup heartbeat and its archive expiry policy are unchanged.
+The platform subsequently recovers. The unchanged Worker starts and drains, its original compiled
+files match the rollback artifact, and normal Stop reaches offline before activation. PR #48
+publishes implementation commit `784b44a470c0a4470c6bd2781cb581f3fcf5643b`; exact-head quality CI
+`37311623977` passes. The six changed compiled modules/maps are saved through the file editor,
+reloaded and byte-compared. Startup and private configuration receive no writes; concurrency stays
+one and no synthetic transport is installed. An active public frey-ui job stops with SIGINT,
+all five stages complete and the panel reaches offline. The same ID returns queued with
+`repository_analysis_interrupted`, one unlocked job and no report, then completes on restart with
+schema 2.0.0, 24 limitations and three bounded npm-size failures. Both older hashes remain unchanged.
+An idle Stop also completes every stage and reaches offline. All three strict reports have
+identical direct/proxy readback while the Worker is stopped; both OpenAPI and safe missing-analysis
+checks pass. The final queue has zero jobs/locks and the Worker is restarted for normal preview use.
+See the [rollout record](implementation/release-evidence/2026-10-05-worker-shutdown-rollout.json).
+
+Next session: resolve PR #48's final head/CI/review/merge state, current main and actual hosting
+revisions independently. The deployed runtime code is bound to implementation commit `784b44a`;
+later documentation-only commits do not require replacing the matching modules. Keep the PR #46
+Linux artifact for rollback. Never mount the synthetic preload into a hosted Worker. This complete
+handover needs no placeholder merge SHA or second documentation PR. Broader workstation/replacement
+compute recovery, managed Free restore/retention, Function suspension and user-deferred manual
+acceptance remain separate gates. The backup heartbeat and archive expiry policy are unchanged.
 
 ### October 4 hosted capacity rollout and recovery follow-through
 
