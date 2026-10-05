@@ -1,13 +1,45 @@
 # StackLens Session Handover
 
 > **Prepared:** 2026-10-05\
-> **Architecture:** v0.1.23; requirements v0.1.3\
-> **Milestone:** Worker lifecycle diagnostics; packaged and hosted same-ID replay verified\
-> **Branch:** `codex/worker-shutdown`, existing checkout; published in [PR #48](https://github.com/BlizzardBlast/StackLens/pull/48); resolve its final head, CI and merge state\
+> **Architecture:** v0.1.24; requirements v0.1.3\
+> **Milestone:** Portable encrypted recovery on replacement compute; live activation pending\
+> **Branch:** `codex/portable-preview-recovery`, existing checkout; depends on [PR #48](https://github.com/BlizzardBlast/StackLens/pull/48); resolve milestone publication, final head, CI and merge state\
 > **Source main at capture:** `5adcee87f39d5046190f560de90fc1c321567d55`, including merged [PR #47](https://github.com/BlizzardBlast/StackLens/pull/47); independently resolve current source and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
+
+### October 5 portable replacement-compute recovery
+
+[ADR-0021](adr/0021-portable-preview-recovery.md) separates encrypted capture from recovery on fresh
+GitHub runners. Only the database ciphertext and encrypted authenticated manifest cross the job
+boundary. The manifest binds source run/commit, scope, fingerprints, expiry and executor receipt.
+Normal PR fixtures confirm actual source child exit before a copied active claim is unlocked.
+Capture removes its source database before the replacement job begins. Restore validates all
+seven fingerprints, strict historical readers and terminal expiry before starting compiled
+API/Worker runtimes. It replays synthetic active/queued/outbox work, serves loopback HTTP readbacks,
+completes a new durable submission and preserves historical hashes. Both phases remove their own
+database and temporary private files. Linux Docker explicitly receives its missing host alias.
+
+The local split-phase acceptance passes on separate PostgreSQL 18 containers. Six new normal
+tests cover authentication/expiry/run/scope/receipt rejection and private cleanup/diagnostics.
+The full database-backed quality gate and final published cloud fixture evidence are recorded in
+the [portable recovery record](implementation/release-evidence/2026-10-05-portable-recovery.json).
+Resolve their exact source heads independently; early local captures retain their dirty PR #48 base.
+
+The separate manual preview workflow is restricted to this repository's `main` and a protected
+`preview-recovery` environment. It requires new secret-custody approval and original API/Worker
+offline confirmation, checks drained state and never unlocks live copied claims. No environment
+secret, hosting route or original database setting is changed by preparation. Recovery needs only
+the separately stored key and encrypted artifact, and uses synthetic providers for new work.
+Live preview-data recovery, persistent public replacement/cutover and continuous offsite refresh/
+physical deletion policy remain gates. Existing local backup scheduling and finite expiry are unchanged.
+
+Next session: resolve this milestone PR and dependency PR #48 before merging, then verify current
+`main` and actual hosting revisions. Follow the [runbook](implementation/portable-preview-recovery.md)
+for the concrete activation scope; do not treat fixture CI as live archive acceptance. No future
+squash SHA or post-merge documentation PR is required. Managed Free restore/retention, Function
+suspension, general capacity and user-deferred device/spoken acceptance remain separate.
 
 ### October 5 Worker lifecycle extension
 

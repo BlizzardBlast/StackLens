@@ -2805,3 +2805,29 @@ No post-merge SHA placeholder is required. Workstation/replacement-compute recov
 remaining release gates stay explicit.
 
 **Traceability:** FR-003/021, NFR-008/009, SEC-001/002/007, GOV-002/006/007.
+
+## 2026-10-05 — Prepare portable encrypted recovery on replacement compute
+
+ADR-0021 adds split capture/recovery tooling and two fresh GitHub jobs. The handoff consists only
+of an encrypted database archive and encrypted authenticated manifest binding source run/commit,
+scope, fingerprints, expiry and executor receipt. Capture confirms actual original child exit and
+removes its source database. Replacement compiled API/Worker runtimes restore matching fingerprints,
+remove expired terminal data, replay copied synthetic active/queued/outbox work, preserve historical
+reports and complete a new durable submission over loopback HTTP. Linux supplies Docker's explicit
+host alias; Windows keeps its existing Docker Desktop behavior.
+
+Local split-phase verification passes on separate PostgreSQL 18 clusters. Authentication tests
+reject altered/substituted artifacts, wrong keys, wrong runs/scopes, expired archives and forged
+receipts before database creation. CLI tests verify failed-capture cleanup, preservation of unknown
+files and private diagnostics. The full database-backed quality gate passes; published exact-head
+cloud fixture acceptance is captured in the dated record before declaring that gate complete.
+
+A separate manual preview workflow is prepared for protected `main` execution with approved secret
+custody. It checks stopped/drained original compute and never unlocks live claims. Preparation does
+not copy credentials or change hosting. Live data recovery and persistent public replacement remain
+separate acceptance gates; artifact storage requests one day but does not promise exact deletion
+timing. The existing local backup schedule is unchanged. README, architecture/ADR, contributor
+guidance, implementation runbook and complete handover reflect these boundaries. Requirements,
+analyzer/scoring policy, report schemas, product UI and tokens are unchanged.
+
+**Traceability:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007.

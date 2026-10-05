@@ -114,6 +114,13 @@ evidence. Aiven's backend rejects the displayed Free fork, confirming that resto
 unavailable; guaranteed Free retention remains unestablished. Actual Function suspension, general
 capacity and workstation/compute-loss recovery remain open alongside deferred manual acceptance.
 
+The [portable recovery path](docs/implementation/portable-preview-recovery.md) now prepares encrypted
+handoff between fresh GitHub runners. Local split-phase acceptance restores matching fingerprints,
+replays synthetic active/queued/outbox work, preserves historical reports, removes expired data and
+completes a new HTTP submission on replacement compiled API/Worker runtimes. The manual preview
+workflow requires approved protected secret custody before activation. Live offsite data recovery,
+stable public replacement hosting and continuous offsite refresh/deletion remain explicit gates.
+
 The [Worker lifecycle extension](docs/implementation/worker-lifecycle.md) adds source-free signal
 and cleanup-stage diagnostics plus a packaged Linux restart rehearsal. Normal panel SIGINT and
 native SIGTERM interruption return the same analysis for retry and preserve its completed report.

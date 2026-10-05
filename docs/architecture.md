@@ -1,8 +1,8 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.23
-> **Date:** 2026-10-04
+> **Architecture version:** 0.1.24
+> **Date:** 2026-10-05
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
@@ -864,6 +864,14 @@ repository or connection details. Unreferenced waiting timers do not force termi
 shutdown from termination of its outer shell and verifies interrupted-job replay on owned inputs.
 Portable continuous API containers remain supported. See the
 [managed hosting runbook](implementation/managed-hosting.md) for current resources and limits.
+ADR-0021 separates encrypted capture from replacement-compute verification on fresh GitHub runners.
+The authenticated encrypted manifest binds source run, scope, fingerprints and executor receipt;
+only ciphertext crosses the job boundary. PR fixtures confirm source-process exit before copied
+queue replay. A separately protected manual preview path requires approved secret custody and
+offline drained original compute; it never unlocks live copied claims. Recovery rebuilds compiled
+API/Worker, uses an owned loopback database and synthetic providers, and removes its private target.
+See [portable recovery](implementation/portable-preview-recovery.md) for acceptance and limits.
+Live activation, persistent public replacement and offsite refresh/deletion policy remain gates.
 Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker
 maintenance purges expired terminal analysis/report/delivery records in bounded sweeps while
 preserving in-flight ownership. API responses prohibit browser/CDN caching. These are deployment
@@ -934,6 +942,7 @@ portable/bootstrap behavior remains the default, and mode/login rollback must be
 - [ADR-0018: Bounded preview operations and encrypted recovery archives](adr/0018-preview-operational-recovery.md)
 - [ADR-0019: Restricted database login for request-bound APIs](adr/0019-restricted-request-bound-database-role.md)
 - [ADR-0020: Explicit independent preview database recovery](adr/0020-independent-preview-recovery.md)
+- [ADR-0021: Encrypted recovery handoff to replacement compute](adr/0021-portable-preview-recovery.md)
 
 ADR-0020 adds a separate operator-only Neon restore path requiring an exact approved direct
 endpoint, verified TLS and a fresh UUID-owned PostgreSQL 18 database. The default restore stays

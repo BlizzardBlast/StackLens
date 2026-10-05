@@ -1,0 +1,117 @@
+{
+  "status": "local_verified_cloud_pending_live_activation_pending",
+  "requirementIds": [
+    "FR-003",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "NFR-008",
+    "NFR-009",
+    "SEC-003",
+    "SEC-007",
+    "GOV-007"
+  ],
+  "baseCommit": "de6b992606afa5aee9707293bd5f62e547277de9",
+  "uncommittedSource": true,
+  "operatorHashes": {
+    "scripts/operations/portable-recovery.mjs": "3129b45e83e345a1f010640db333b9649de0dade9c100c1cd1275867e9ea4e16",
+    "scripts/operations/portable-recovery-bundle.mjs": "5194db120c0345f62b803f1b3b45fe4b83c27d53609c98a654eaddeae657c1b0",
+    "scripts/operations/backup.mjs": "cbe027a9cea8584c1ba242211049f82ea7b8391d91d24db746c8f502d02ed50f",
+    ".github/workflows/portable-recovery.yml": "08386bd665b4cab553758d63e8fd695e2ebd5a3c37351248b37ce63091fb20c2",
+    ".github/workflows/preview-recovery.yml": "50ac73822c248042c37171fecca83bfb2819ea3a434b353204c30f46fb1a597b"
+  },
+  "local": {
+    "capture": {
+      "requirementIds": [
+        "FR-003",
+        "FR-017",
+        "FR-021",
+        "FR-022",
+        "NFR-008",
+        "NFR-009",
+        "SEC-003",
+        "SEC-007"
+      ],
+      "startedAt": "2026-10-05T14:02:13.926Z",
+      "status": "verified",
+      "scope": "fixture",
+      "providers": "synthetic replacement-runtime verification; historical reports are never rescored",
+      "baseCommit": "de6b992606afa5aee9707293bd5f62e547277de9",
+      "sourceHashes": {
+        "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+        "apps/worker/src/runtime.ts": "ebdbddf163b6258a4f52f3ee9f1dcb0b660b223e77b6cec176e3565d5e3a1014",
+        "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+      },
+      "backup": {
+        "createdAt": "2026-10-05T14:02:18.571Z",
+        "expiresAt": "2026-10-06T14:02:18.571Z",
+        "archiveSha256": "5fa4c54127d3287d52836f3680c700144eda830f31820e35390ff02c350d4f51"
+      },
+      "originalExecutor": "confirmed_child_exit",
+      "cleanupFailures": [],
+      "cleanedUp": true,
+      "finishedAt": "2026-10-05T14:02:19.042Z"
+    },
+    "recovery": {
+      "requirementIds": [
+        "FR-003",
+        "FR-017",
+        "FR-021",
+        "FR-022",
+        "NFR-008",
+        "NFR-009",
+        "SEC-003",
+        "SEC-007"
+      ],
+      "startedAt": "2026-10-05T14:02:54.695Z",
+      "status": "verified",
+      "scope": "fixture",
+      "providers": "synthetic replacement-runtime verification; historical reports are never rescored",
+      "baseCommit": "de6b992606afa5aee9707293bd5f62e547277de9",
+      "sourceHashes": {
+        "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+        "apps/worker/src/runtime.ts": "ebdbddf163b6258a4f52f3ee9f1dcb0b660b223e77b6cec176e3565d5e3a1014",
+        "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+      },
+      "replayed": {
+        "activeQueueJob": 1,
+        "queuedJob": 1,
+        "pendingOutbox": 1
+      },
+      "backup": {
+        "createdAt": "2026-10-05T14:02:18.571Z",
+        "expiresAt": "2026-10-06T14:02:18.571Z",
+        "sourceCommit": "de6b992606afa5aee9707293bd5f62e547277de9",
+        "sourceRunId": "1",
+        "archiveSha256": "5fa4c54127d3287d52836f3680c700144eda830f31820e35390ff02c350d4f51"
+      },
+      "snapshotHashesMatched": true,
+      "expiredTerminalRowsRemoved": 1,
+      "historicalReportsUnchanged": 1,
+      "httpReadbacks": 5,
+      "newDurableSubmissionCompleted": true,
+      "originalResourcesContactedDuringRecovery": false,
+      "cleanupFailures": [],
+      "cleanedUp": true,
+      "finishedAt": "2026-10-05T14:02:57.042Z"
+    }
+  },
+  "quality": {
+    "databaseBacked": true,
+    "command": "pnpm check",
+    "passed": true,
+    "vitestTests": 569,
+    "nodeTests": 37,
+    "browserCases": 18,
+    "turboTestTasksCached": 22,
+    "finalSourceCheckPending": false,
+    "completedAt": "2026-10-05T14:05:58.062Z"
+  },
+  "limits": [
+    "synthetic providers and owned loopback HTTP target",
+    "cloud runner acceptance pending",
+    "live protected secret custody and preview-data recovery pending",
+    "persistent public replacement and cutover pending",
+    "no continuously refreshed offsite policy or exact platform deletion guarantee"
+  ]
+}
