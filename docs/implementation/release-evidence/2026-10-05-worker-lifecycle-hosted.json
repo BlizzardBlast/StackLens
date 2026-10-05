@@ -1,0 +1,332 @@
+{
+  "requirementIds": [
+    "FR-003",
+    "FR-021",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "status": "blocked_hosted_activation_no_deployment",
+  "scope": "Local implementation and packaged Linux rehearsal; existing hosted preview platform failure remains unresolved",
+  "baseCommit": "5adcee87f39d5046190f560de90fc1c321567d55",
+  "branch": "codex/worker-shutdown",
+  "publication": {
+    "committed": false,
+    "pushed": false,
+    "pullRequestCreated": false
+  },
+  "localEvidence": {
+    "capture": "2026-10-05-worker-lifecycle.json",
+    "sha256": "f3b11f476964307aaa63fd2b8248c6e2d63b34f9167ef521f7075479a427625c"
+  },
+  "candidateArtifact": {
+    "archiveSha256": "c648c3f0537dcccb69a085a32703d9f64c54d6940393c4473039f24a55ad5439",
+    "bytes": 16826528,
+    "image": "stacklens-worker:shutdown-20261005",
+    "imageId": "sha256:8a444380d2b7a2d6db91dd620bf0891493758c9a0d96c70028c0d1ac267fcc60",
+    "compiledModules": {
+      "apps/worker/dist/main.js": "e3ad759b65c4961be142e060768f629bda0609cc1afe7ebbbb72f02149738880",
+      "apps/worker/dist/runtime.js": "6ce342cbf77b63f83c5c30a0d510c8b0d2a2a93b72aba39cacd3c61736d0d80d",
+      "apps/worker/dist/shutdown.js": "0332572d494d110bed86210fd60fdc0ed611e896ea276e26ed892a86e1b1ebc6"
+    },
+    "deployed": false
+  },
+  "rollbackArtifact": {
+    "sourceCommit": "7b5482038dd30f1a10982aa4ee15cfb53a272bef",
+    "archiveSha256": "747d7f2a1ca2ca5042f9b91e32304bc4ef36ed970a899178a044eb9462722454",
+    "availableLocally": true
+  },
+  "qualityGate": {
+    "command": "pnpm check",
+    "testDatabase": "loopback PostgreSQL, configured",
+    "exitCode": 0,
+    "logSha256": "52bd412fd1f66b5b498c6d9b551323e10c82a2dcb261262031f7218fae78879f",
+    "build": "passed",
+    "compiledApiWorkerSmoke": "passed",
+    "typecheck": "passed",
+    "vitestTests": 569,
+    "nodeTests": 31,
+    "workerTests": 32,
+    "browserTests": 18,
+    "browserCoverage": [
+      "Chromium",
+      "Firefox",
+      "WebKit",
+      "desktop",
+      "narrow"
+    ],
+    "lint": "passed",
+    "formatting": "passed",
+    "cacheNote": "Turbo reuses unchanged package results; changed Worker and browser acceptance pass in this gate"
+  },
+  "earlierFailedProbes": [
+    {
+      "capture": "worker-lifecycle.json",
+      "sha256": "3373ef51c779b19a1301da244182d2752012b1438e1dc6f9caca2be8a9a9506c",
+      "startedAt": "2026-10-05T11:48:09.005Z",
+      "finishedAt": "2026-10-05T11:50:38.857Z",
+      "status": "failed",
+      "cases": [
+        {
+          "scenario": "idle",
+          "signal": "SIGINT",
+          "status": "failed",
+          "cleanedUp": true
+        },
+        {
+          "scenario": "idle",
+          "signal": "SIGTERM",
+          "status": "failed",
+          "cleanedUp": true
+        },
+        {
+          "scenario": "disconnected",
+          "signal": "SIGINT",
+          "status": "verified",
+          "cleanedUp": true
+        },
+        {
+          "scenario": "interrupted",
+          "signal": "SIGTERM",
+          "status": "failed",
+          "cleanedUp": true
+        }
+      ]
+    },
+    {
+      "capture": "worker-lifecycle-second.json",
+      "sha256": "1ea136fc3986c9621fad5936ce184019fb6467f1b91f5f280140db169fe98a26",
+      "startedAt": "2026-10-05T11:52:54.706Z",
+      "finishedAt": "2026-10-05T11:53:57.409Z",
+      "status": "failed",
+      "cases": [
+        {
+          "scenario": "idle",
+          "signal": "SIGINT",
+          "status": "verified",
+          "cleanedUp": true
+        },
+        {
+          "scenario": "idle",
+          "signal": "SIGTERM",
+          "status": "failed",
+          "cleanedUp": true
+        },
+        {
+          "scenario": "disconnected",
+          "signal": "SIGINT",
+          "status": "verified",
+          "cleanedUp": true
+        },
+        {
+          "scenario": "interrupted",
+          "signal": "SIGTERM",
+          "status": "failed",
+          "cleanedUp": true
+        }
+      ]
+    },
+    {
+      "capture": "worker-lifecycle-final.json",
+      "sha256": "1c3437b5fb714485a5f5aa6dd249a1915b99e7bf136bf5b89ea9dc1aff889bd0",
+      "startedAt": "2026-10-05T11:54:59.339Z",
+      "finishedAt": "2026-10-05T11:57:45.848Z",
+      "status": "failed",
+      "cases": [
+        {
+          "scenario": "idle",
+          "signal": "SIGINT",
+          "launch": "panel",
+          "status": "verified",
+          "cleanedUp": true
+        },
+        {
+          "scenario": "idle",
+          "signal": "SIGTERM",
+          "launch": "native",
+          "status": "verified",
+          "cleanedUp": true
+        },
+        {
+          "scenario": "disconnected",
+          "signal": "SIGINT",
+          "launch": "panel",
+          "status": "verified",
+          "cleanedUp": true
+        },
+        {
+          "scenario": "interrupted",
+          "signal": "SIGINT",
+          "launch": "panel",
+          "status": "verified",
+          "cleanedUp": true
+        },
+        {
+          "scenario": "interrupted",
+          "signal": "SIGTERM",
+          "launch": "native",
+          "status": "verified",
+          "cleanedUp": true
+        },
+        {
+          "scenario": "ancestor_termination",
+          "signal": "SIGTERM",
+          "launch": "panel",
+          "status": "failed",
+          "cleanedUp": true
+        }
+      ]
+    },
+    {
+      "capture": "worker-lifecycle-verified.json",
+      "sha256": "96667b5995a5d7ef260076bef16f5780b6672f88de8e4944b79cd09708b4a7f1",
+      "startedAt": "2026-10-05T11:58:54.106Z",
+      "finishedAt": "2026-10-05T11:59:08.383Z",
+      "status": "failed",
+      "cases": [
+        {
+          "scenario": "idle",
+          "signal": "SIGINT",
+          "launch": "panel",
+          "status": "failed",
+          "cleanedUp": false
+        }
+      ]
+    }
+  ],
+  "dockerInterruption": {
+    "status": "local_engine_restarted_without_reset",
+    "residualCleanup": {
+      "at": "2026-10-05T12:04:54.427Z",
+      "status": "cleaned_owned_crash_residuals",
+      "removedContainers": 1,
+      "removedDatabases": 1
+    },
+    "subsequentFreshRehearsal": "all five positive cases and abrupt-exit negative control verified"
+  },
+  "hosted": {
+    "serverName": "stacklens-worker-preview",
+    "serverId": "60761d98",
+    "panelUrl": "https://sillydev.co.uk/panel/server/60761d98",
+    "observedAt": "2026-10-05T12:24:04.763Z",
+    "state": "Offline",
+    "initialBaseline": "Existing Worker running; drained normal Stop reached Offline and restart initially succeeded",
+    "installationAttempt": "Drained normal Stop reached Offline before file actions",
+    "moduleWrites": 0,
+    "privateConfigurationWrites": 0,
+    "startupConfigurationWrites": 0,
+    "concurrency": 1,
+    "protectedSettingsChanged": false,
+    "upload": "Rejected locally because Chrome extension file-URL permission is disabled; no file transmitted",
+    "fileEditor": "Read original main.js only; no save. File service subsequently returned HTTP 504",
+    "startAttempts": {
+      "status": "failed_before_Node_launch",
+      "retryObservedAt": "2026-10-05T12:10:03.869Z",
+      "diagnostic": "Platform preparation starts then stops with daemon error before Node version/entrypoint output",
+      "applicationShutdownFailureEstablished": false
+    },
+    "priorModuleHashes": {
+      "dist/main.js": "4c9c2ddb96c7d6ed1439abce3493806cdcadd8af131c0583ac53451e2dffe0ab",
+      "dist/runtime.js": "5d34d3f4794c0358bfb1fbd613cd5e8662bb421ca5a9092792a0b3237520436f"
+    },
+    "databaseObservations": {
+      "before": {
+        "at": "2026-10-05T11:36:57.504Z",
+        "state": {
+          "queued": 0,
+          "running": 0,
+          "terminal": 2
+        },
+        "queue": {
+          "jobs": 0,
+          "locked_jobs": 0
+        },
+        "clients": {
+          "clients": 4,
+          "idle_transactions": 1
+        },
+        "reports": [
+          {
+            "analysisId": "45493416-4118-493a-9c46-e7ec0ca2c07c",
+            "sha256": "ade024152296b41fc463fd3f34e28a6ef856d028f34a6b7b6e352e6f1b86fbeb"
+          },
+          {
+            "analysisId": "66236ad2-a324-4ddc-8426-47c43b458dc1",
+            "sha256": "19f2676ba172d0ff71fd17bfa9250b871d6829714d6c85388f031f4889db3a96"
+          }
+        ],
+        "status": "verified_drain"
+      },
+      "beforeInstall": {
+        "at": "2026-10-05T11:57:27.743Z",
+        "state": {
+          "queued": 0,
+          "running": 0,
+          "terminal": 2
+        },
+        "queue": {
+          "jobs": 0,
+          "locked_jobs": 0
+        },
+        "clients": {
+          "clients": 5,
+          "idle_transactions": 0
+        },
+        "reports": [
+          {
+            "analysisId": "45493416-4118-493a-9c46-e7ec0ca2c07c",
+            "sha256": "ade024152296b41fc463fd3f34e28a6ef856d028f34a6b7b6e352e6f1b86fbeb"
+          },
+          {
+            "analysisId": "66236ad2-a324-4ddc-8426-47c43b458dc1",
+            "sha256": "19f2676ba172d0ff71fd17bfa9250b871d6829714d6c85388f031f4889db3a96"
+          }
+        ],
+        "status": "verified_drain"
+      },
+      "afterPlatformFailure": {
+        "at": "2026-10-05T12:09:09.046Z",
+        "state": {
+          "queued": 0,
+          "running": 0,
+          "terminal": 2
+        },
+        "queue": {
+          "jobs": 0,
+          "locked_jobs": 0
+        },
+        "clients": {
+          "clients": 2,
+          "idle_transactions": 0
+        },
+        "reports": [
+          {
+            "analysisId": "45493416-4118-493a-9c46-e7ec0ca2c07c",
+            "sha256": "ade024152296b41fc463fd3f34e28a6ef856d028f34a6b7b6e352e6f1b86fbeb"
+          },
+          {
+            "analysisId": "66236ad2-a324-4ddc-8426-47c43b458dc1",
+            "sha256": "19f2676ba172d0ff71fd17bfa9250b871d6829714d6c85388f031f4889db3a96"
+          }
+        ],
+        "status": "verified_drain"
+      }
+    },
+    "retainedReportHashesUnchanged": true,
+    "historicalOctober4StopStall": "not reproduced; cause unconfirmed",
+    "newDiagnosticsAcceptedOnHost": false,
+    "activeJobReplayAcceptedOnHost": false
+  },
+  "privacy": "Metadata, counts, fixed status names and hashes only; no raw provider/report/manifest bodies or private settings",
+  "remaining": [
+    "Restore the existing unchanged Worker when its hosting platform can start services",
+    "Install reviewed diagnostics and verify panel signal/stages/completion/offline at concurrency one",
+    "Verify hosted same-ID interrupted replay and unchanged retained reports",
+    "Do not infer the historical Stop-stall cause or universal graceful-stop behavior from bounded local cases"
+  ]
+}

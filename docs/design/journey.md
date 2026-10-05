@@ -2745,3 +2745,33 @@ complete handover; subsequent sessions resolve its merge state and current main 
 
 **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009,
 SEC-001/002/003/007, GOV-002/006/007.
+
+## 2026-10-05 — Diagnose Worker cleanup and verify packaged restart behavior
+
+The Worker records signal receipt and startup state, then emits source-free cleanup stages with
+elapsed time. Pending stages produce unreferenced waiting observations every five seconds;
+diagnostics do not force process exit or bypass durable queue writes. Focused tests cover startup
+and repeated-signal handling, observer failure isolation and cleanup ordering during real retry.
+The opt-in Linux rehearsal uses the observed panel startup and native launch, constrained resources
+and synthetic provider transport to verify idle/disconnected shutdown, same-ID replay and retained
+report hashes. The outer shell's SIGTERM termination is recorded as an abrupt-exit limitation.
+The October 4 stalled Stop remains unconfirmed; successful repeated stops do not erase that failure.
+
+Initial rehearsal failures and a Docker Desktop interruption are preserved separately. The engine
+is restarted, its owned residual resources are removed, and the complete bounded rehearsal is
+repeated. Browser acceptance covers Chromium, Firefox and WebKit at desktop/narrow widths.
+The implementation remains local and uncommitted. Hosted normal Stop reaches offline, but later
+platform errors prevent starting the unchanged Worker or editing its files. No module/configuration
+update is deployed; the retained reports remain unchanged and the queue is empty at capture.
+Hosted diagnostics and active-job acceptance await service recovery.
+
+Documentation impact updates Worker/recovery/lifecycle guidance, contributor instructions, README,
+architecture/ADR verification limits and the complete handover. Accepted requirements, analyzer
+policy, contracts, report schema, UI and tokens are unchanged. The full database-backed `pnpm check`
+passes build/smoke/type checks, 569 Vitest tests, 31 Node tests, 18 browser cases, lint and formatting.
+The [Linux capture](../implementation/release-evidence/2026-10-05-worker-lifecycle.json) and
+[hosted attempt record](../implementation/release-evidence/2026-10-05-worker-lifecycle-hosted.json)
+preserve the bounded success and platform block separately. Publication and hosted acceptance remain
+pending; the preview is offline at the final observation.
+
+**Traceability:** FR-003/021, NFR-008/009, SEC-001/002/007, GOV-002/006/007.

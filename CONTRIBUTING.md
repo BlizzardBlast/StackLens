@@ -80,6 +80,12 @@ five normal checks use small synthetic fixtures and verify independent observati
 The 256 MiB/0.25 CPU measurements are explicit operator runs, with archive/harness hashes and no
 assumption that sampled capacity is an SLA.
 
+The opt-in [Worker lifecycle rehearsal](docs/implementation/worker-lifecycle.md) runs the packaged
+Linux Worker through the observed panel launch and a native launch. It verifies cleanup stages,
+interrupted-job replay and retained-report hashes in owned local databases. It also records the
+outer shell's SIGTERM limitation separately; offline alone is insufficient proof of cleanup.
+Synthetic transport is mounted only into rehearsal containers, never a hosted deployment.
+
 The separate `restore-neon` action requires an exact approved direct endpoint, verified TLS,
 PostgreSQL 18 and a new UUID-owned database. It does not relax local rehearsal guards or start a
 copied queue. Its normal tests exercise endpoint/expiry/privacy/output safety without contacting

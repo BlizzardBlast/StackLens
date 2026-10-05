@@ -54,3 +54,11 @@ strictly read reports after restart, and preservation of a different live owner'
 activation still requires explicit resource and active-job restart evidence. A signal-aware stop
 does not prove recovery from OOM, SIGKILL, host loss or a database outage. Those cases retain the
 confirmed-exit operator procedure and need a running replacement Worker.
+
+The October 5 lifecycle extension adds source-free signal and cleanup-stage observations under
+NFR-009. Waiting events are diagnostic only: their unreferenced timers never impose an exit deadline
+or bypass pending queue writes. The Linux panel's outer Bash process can terminate on SIGTERM
+before the native child finishes cleanup; that is an abrupt-exit path, even when the child received
+the signal. Use the panel's normal SIGINT Stop and verify completion plus offline. Native launches
+without that outer shell can verify SIGTERM independently. This finding does not establish the
+cause of the October 4 stalled Stop. See the [lifecycle record](../implementation/worker-lifecycle.md).

@@ -43,6 +43,38 @@ afterEach(() => {
 
 // FR-003, FR-022, NFR-009: default local startup and explicit overrides.
 describe("Worker executable configuration", () => {
+  it("records the actual signal and completes only after cleanup settles [NFR-008, NFR-009]", async () => {
+    const output = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    let completed!: () => void;
+    mocks.stop.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          completed = resolve;
+        }),
+    );
+    try {
+      await import("../src/main.js");
+      await vi.waitFor(() => expect(mocks.start).toHaveBeenCalledOnce());
+      const handler = registration.mock.calls.findLast(([signal]) => signal === "SIGINT")?.[1];
+      handler?.();
+      handler?.();
+      expect(mocks.stop).toHaveBeenCalledOnce();
+      const text = (): string => output.mock.calls.map(([value]) => String(value)).join("");
+      expect(text()).toContain('"signal":"SIGINT","startupPending":false');
+      expect(text()).not.toContain("shutdown completed");
+      const options = mocks.start.mock.calls[0]?.[0];
+      options?.onShutdownProgress?.({ stage: "database_pool", state: "completed", elapsedMs: 13 });
+      expect(text()).toContain(
+        '"event":"stacklens_worker_shutdown","stage":"database_pool","state":"completed","elapsedMs":13',
+      );
+      completed();
+      await vi.waitFor(() => expect(text()).toContain("shutdown completed"));
+      expect(process.rawListeners("SIGINT")).toEqual(previousListeners.get("SIGINT"));
+    } finally {
+      completed?.();
+      output.mockRestore();
+    }
+  });
   it("handles repeated signals during startup and waits for one shutdown [NFR-008]", async () => {
     let started: ((value: unknown) => void) | undefined;
     mocks.start.mockImplementation(

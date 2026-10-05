@@ -40,12 +40,13 @@ async function main(): Promise<void> {
   let stopPromise: Promise<void> | undefined;
   const signals = ["SIGINT", "SIGTERM"] as const;
   const removeSignals = (): void => {
-    for (const signal of signals) process.removeListener(signal, requestStop);
+    for (const [signal, listener] of signalListeners) process.removeListener(signal, listener);
   };
   const stop = (): Promise<void> => {
     stopPromise ??= (async () => {
       try {
         await runtime?.stop();
+        process.stdout.write("StackLens Worker shutdown completed.\n");
       } catch (error) {
         process.exitCode = 1;
         process.stderr.write(`StackLens Worker shutdown failed (${errorName(error)}).\n`);
@@ -55,14 +56,17 @@ async function main(): Promise<void> {
     })();
     return stopPromise;
   };
-  const requestStop = (): void => {
+  const requestStop = (signal: (typeof signals)[number]): void => {
     if (stopping) return;
     stopping = true;
-    process.stdout.write("StackLens Worker shutdown requested.\n");
+    process.stdout.write(
+      `${JSON.stringify({ event: "stacklens_worker_shutdown_requested", signal, startupPending: runtime === undefined })}\n`,
+    );
     // A signal during migrations must also stop the runner as soon as startup completes.
     if (runtime !== undefined) void stop();
   };
-  for (const signal of signals) process.on(signal, requestStop);
+  const signalListeners = signals.map((signal) => [signal, () => requestStop(signal)] as const);
+  for (const [signal, listener] of signalListeners) process.on(signal, listener);
   try {
     runtime = await startStackLensWorker({
       connectionString: process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
@@ -71,6 +75,11 @@ async function main(): Promise<void> {
       ...(githubToken === undefined ? {} : { githubToken }),
       onQueueOwnerId(ownerId) {
         process.stdout.write(`StackLens queue owner started (${ownerId}).\n`);
+      },
+      onShutdownProgress(progress) {
+        process.stdout.write(
+          `${JSON.stringify({ event: "stacklens_worker_shutdown", ...progress })}\n`,
+        );
       },
       onDatabasePoolError(error) {
         process.stderr.write(`StackLens Worker database pool error (${errorName(error)}).\n`);

@@ -26,6 +26,7 @@ import {
 
 import { createWorkerAnalysisDependencies } from "./providers.js";
 import { startAnalysisRetentionPump } from "./retention.js";
+import { observeShutdownStage, type WorkerShutdownProgress } from "./shutdown.js";
 import { createRepositoryAnalysisTaskList } from "./task.js";
 
 export interface WorkerRuntimeOptions {
@@ -36,6 +37,7 @@ export interface WorkerRuntimeOptions {
   readonly onDatabasePoolError?: (error: Error) => void;
   readonly onRetentionError?: (error: unknown) => void;
   readonly onQueueOwnerId?: (ownerId: string) => void;
+  readonly onShutdownProgress?: (progress: WorkerShutdownProgress) => void;
   readonly retentionCleanup?: boolean;
   /**
    * Internal composition seam for runtime verification. Production leaves this unset so the
@@ -123,9 +125,17 @@ export async function startStackLensWorker(
             try {
               // Stop claiming jobs immediately, even if a maintenance query is still running.
               const results = await Promise.allSettled([
-                runner.stop(),
-                deliveryPump?.stop(),
-                retentionPump?.stop(),
+                observeShutdownStage("runner", () => runner.stop(), options.onShutdownProgress),
+                observeShutdownStage(
+                  "delivery",
+                  () => deliveryPump?.stop(),
+                  options.onShutdownProgress,
+                ),
+                observeShutdownStage(
+                  "retention",
+                  () => retentionPump?.stop(),
+                  options.onShutdownProgress,
+                ),
               ]);
               const failures = results.filter((result) => result.status === "rejected");
               if (failures.length > 0) {
@@ -136,9 +146,17 @@ export async function startStackLensWorker(
               }
             } finally {
               try {
-                await workerUtils.release();
+                await observeShutdownStage(
+                  "worker_utils",
+                  () => workerUtils.release(),
+                  options.onShutdownProgress,
+                );
               } finally {
-                await pool.end();
+                await observeShutdownStage(
+                  "database_pool",
+                  () => pool.end(),
+                  options.onShutdownProgress,
+                );
               }
             }
           })();

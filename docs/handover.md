@@ -1,13 +1,54 @@
 # StackLens Session Handover
 
-> **Prepared:** 2026-10-04\
+> **Prepared:** 2026-10-05\
 > **Architecture:** v0.1.23; requirements v0.1.3\
-> **Milestone:** PR #46 merged/deployed; bounded hosted burst and operator natural-expiry cleanup verified\
-> **Branch:** `codex/worker-capacity-rollout`, existing checkout; resolve [PR #47](https://github.com/BlizzardBlast/StackLens/pull/47) and current main before continuing\
-> **Verified runtime main at capture:** `7b5482038dd30f1a10982aa4ee15cfb53a272bef`; independently resolve current source and hosting revisions\
+> **Milestone:** Worker lifecycle diagnostics and local replay; hosted activation awaits platform recovery\
+> **Branch:** `codex/worker-shutdown`, existing checkout; implementation remains local and uncommitted\
+> **Source main at capture:** `5adcee87f39d5046190f560de90fc1c321567d55`, including merged [PR #47](https://github.com/BlizzardBlast/StackLens/pull/47); independently resolve current source and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
+
+### October 5 Worker lifecycle extension
+
+The local change implements source-free signal receipt, startup-pending state and five cleanup
+stages with per-stage elapsed time. Five-second waiting observations use unreferenced timers;
+no deadline forces exit, skips queue writes or unlocks a live owner. Tests cover repeated signals,
+startup interruption, diagnostics failure isolation and database-backed cleanup ordering.
+The new [Linux rehearsal](implementation/worker-lifecycle.md) uses the packaged artifact under
+the observed panel startup and a native launch, with synthetic provider transport only.
+Idle stops, database disconnection, same-ID interrupted replay and retained report hashes are
+verified. Terminating the outer shell with SIGTERM is captured as a separate abrupt-exit limitation.
+It does not explain the October 4 stalled Stop, which remains unconfirmed.
+
+An initial rehearsal failure and a Docker Desktop interruption remain separate failed captures.
+After restarting the existing local engine, the owned residual container and database are removed;
+the complete rehearsal is repeated against fresh owned databases. The final
+[lifecycle capture](implementation/release-evidence/2026-10-05-worker-lifecycle.json) records the
+source/archive hashes, cases and cleanup. No existing report is rescored or rewritten.
+
+The full database-backed `pnpm check` passes build, compiled API/Worker smoke, type checking,
+569 Vitest tests, 31 Node tests, 18 Chromium/Firefox/WebKit desktop/narrow browser cases, lint and
+formatting. The Worker has 32 focused/integration tests. Unchanged package results may be reused
+by Turbo. This local gate does not replace hosted acceptance or exact-head CI after publication.
+
+The hosted Worker initially reaches offline after normal Stop, restarts, and later drains again
+before installation. Chrome upload is unavailable without file-URL permission; no file reaches
+the server. The file-editor fallback receives a platform 504, and attempts to start the unchanged
+Worker fail before Node launches. No Worker module, startup variable, private setting or provider
+configuration is changed. Two retained reports have identical hashes and the queue is empty at
+the platform-failure capture. The preview remains **offline** at the final October 5 observation.
+The [hosted attempt record](implementation/release-evidence/2026-10-05-worker-lifecycle-hosted.json)
+preserves the blocked attempt and quality-gate evidence. Hosted diagnostic activation and active-job acceptance remain pending;
+do not present the local results as a deployed fix or treat offline alone as graceful cleanup.
+
+Next session: resolve current main, this working diff and actual hosting state. Restore the existing
+service first when its platform is available, retain the PR #46 Linux artifact for rollback, then
+install the reviewed diagnostics and verify Stop/completion/offline, same-ID replay and historical
+report hashes at concurrency one. Never mount the synthetic preload into a hosted Worker. Current
+changes are not published, and this handover needs no placeholder merge SHA. Broader recovery,
+managed Free restore/retention, Function suspension and user-deferred manual acceptance remain
+separate gates. The backup heartbeat and its archive expiry policy are unchanged.
 
 ### October 4 hosted capacity rollout and recovery follow-through
 

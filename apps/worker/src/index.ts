@@ -1,5 +1,6 @@
 export { startStackLensWorker } from "./runtime.js";
 export type { StackLensWorkerRuntime, WorkerRuntimeOptions } from "./runtime.js";
+export type { WorkerShutdownProgress } from "./shutdown.js";
 
 export {
   createRepositoryAnalysisTask,

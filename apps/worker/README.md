@@ -59,6 +59,13 @@ a time per job. Startup logs the pool owner ID needed for confirmed-exit operato
 See [Worker recovery](../../docs/implementation/worker-recovery.md) and ADR-0017; never unlock a
 live owner or infer ownership from a slow public stage.
 
+The executable records the received signal and whether startup is still pending. Cleanup emits
+`stacklens_worker_shutdown` events containing only stage, state and elapsed milliseconds. Runner,
+delivery and retention stop together; Worker utilities and the database pool follow. A pending
+stage emits `waiting` every five seconds using an unreferenced timer. Diagnostics never force exit
+or release ownership early. See the [lifecycle rehearsal](../../docs/implementation/worker-lifecycle.md)
+for the distinction between the panel's normal SIGINT Stop and termination of its outer shell.
+
 Worker runtime starts bounded expired-terminal cleanup on startup and every sixty seconds after
 the prior sweep. It preserves queued/running claims and cascades reports/delivery rows through the
 persistence boundary. Shutdown waits for active maintenance before closing the pool. Retention

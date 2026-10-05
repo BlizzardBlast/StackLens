@@ -857,6 +857,11 @@ seam for opt-in serial/burst/sustained measurements, with synthetic HTTP or live
 source-free phase/resource observations. The shared bounded response reader iterates and releases
 failed streams without changing provider byte limits, analyzer contracts or policy. Its measured
 workloads do not establish general capacity or change the preview's concurrency one setting.
+Worker lifecycle observations remain in runtime composition and the process entrypoint. Signal
+receipt records startup state; cleanup reports fixed stage/state names and elapsed time without
+repository or connection details. Unreferenced waiting timers do not force termination. The opt-in
+[Linux lifecycle rehearsal](implementation/worker-lifecycle.md) distinguishes normal panel SIGINT
+shutdown from termination of its outer shell and verifies interrupted-job replay on owned inputs.
 Portable continuous API containers remain supported. See the
 [managed hosting runbook](implementation/managed-hosting.md) for current resources and limits.
 Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker
