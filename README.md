@@ -131,6 +131,13 @@ is resumed and completes a fresh normal-provider frey-ui analysis with explicit 
 matching direct/proxied reports and an empty final queue. Stable public replacement hosting and
 continuous offsite refresh/deletion remain explicit gates.
 
+The [persistent staging preparation](docs/implementation/persistent-preview-recovery.md) now
+authenticates the portable bundle before restoring a new quarantined database, then gates private
+connection-file publication on seven fingerprints, strict retained reports, expiry cleanup and a
+drained queue. Normal tests verify local restore and rejected-copy cleanup. Silly rejects the
+second free Worker creation because capacity is unavailable; the original preview stays active.
+Persistent public replacement and normal-provider cutover/rollback are still unverified.
+
 The [Worker lifecycle extension](docs/implementation/worker-lifecycle.md) adds source-free signal
 and cleanup-stage diagnostics plus a packaged Linux restart rehearsal. Normal panel SIGINT and
 native SIGTERM interruption return the same analysis for retry and preserve its completed report.

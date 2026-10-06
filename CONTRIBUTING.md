@@ -62,7 +62,9 @@ physical Safari/iOS or spoken screen-reader acceptance.
 
 ## Operational verification
 
-After `pnpm build`, `pnpm test:operations` checks private configuration diagnostics, authenticated
+After `pnpm build`, prepare the official PostgreSQL client once with `docker pull postgres:18-alpine`
+before running database-backed operation tests. CI prepares it before the test step so image-pull
+diagnostics cannot contaminate binary backup capture. `pnpm test:operations` checks private configuration diagnostics, authenticated
 archive retention/tampering/deletion and,
 with a loopback `TEST_DATABASE_URL`, connection saturation across independent pools. The database
 test creates and removes a disposable non-superuser role; it requires local role-management rights.
@@ -99,6 +101,14 @@ outbox replay, terminal expiry, historical hashes and a fresh HTTP submission, t
 owned target. Normal authentication tests are part of `pnpm test:operations`. The separate manual
 preview workflow requires approved protected-environment secret custody and stopped, drained
 original compute; its activation and live-data acceptance are not implied by fixture CI.
+
+The separate [persistent staging helper](docs/implementation/persistent-preview-recovery.md) binds
+the portable manifest to an owned restore and publishes an exclusive private connection file
+outside Git only after fingerprint, strict-reader, expiry and drained-state checks. Eleven normal
+checks include real local PostgreSQL staging and rollback of rejected copies; they never contact
+Neon or start replacement compute. Operations test files run serially because restore cleanup
+assertions observe the shared local database catalog; this also bounds simultaneous operator
+test connection/client-container load. Persistent hosting and public cutover remain operator gates.
 
 The restricted-login integration check uses an owned database and non-superuser role. It verifies
 denied DDL/Graphile access, missing-schema failure, Worker-only durable delivery, sanitized 503 at

@@ -171,5 +171,9 @@ The archive is eligible until **October 7, 2026 at 11:41:06 UTC (18:41:06 Jakart
 one-day artifact retention; that storage policy is separate from the authenticated restore deadline.
 The [source-free record](release-evidence/2026-10-06-live-recovery.json) preserves source hashes,
 job/artifact identities, custody protections, the temporary pause and original-preview restoration.
+The separate [persistent staging preparation](persistent-preview-recovery.md) authenticates this
+same bundle into a quarantined owned database. Its local verification does not establish hosted
+public replacement; a second free Worker creation is currently rejected by provider capacity.
+
 Stable public replacement routing, continuous offsite refresh/deletion, managed Free restore/
 retention and the remaining release gates are still unestablished.

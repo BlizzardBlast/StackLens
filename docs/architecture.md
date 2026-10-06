@@ -1,8 +1,8 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.24
-> **Date:** 2026-10-05
+> **Architecture version:** 0.1.25
+> **Date:** 2026-10-06
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
 
@@ -872,7 +872,12 @@ offline drained original compute; it never unlocks live copied claims. Recovery 
 API/Worker, uses an owned loopback database and synthetic providers, and removes its private target.
 See [portable recovery](implementation/portable-preview-recovery.md) for acceptance and limits.
 Operator-approved live capture and isolated fresh-runner recovery pass on October 6. Persistent
-public replacement and offsite refresh/deletion policy remain gates; the architecture is unchanged.
+public replacement and offsite refresh/deletion policy remain gates.
+ADR-0021 now also defines explicit [persistent staging](implementation/persistent-preview-recovery.md)
+into a new quarantined Neon/local database. Authentication precedes target I/O; seven matching
+fingerprints, strict retained readers, expiry cleanup and drained state precede exclusive private
+configuration publication. The helper starts no compute and changes no public route. Hosted
+capacity, new credential custody, public activation and usage-budget acceptance remain gates.
 Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker
 maintenance purges expired terminal analysis/report/delivery records in bounded sweeps while
 preserving in-flight ownership. API responses prohibit browser/CDN caching. These are deployment

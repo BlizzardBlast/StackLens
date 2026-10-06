@@ -79,6 +79,9 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Prepare PostgreSQL client image before backup tests
+        run: docker pull postgres:18-alpine
+
       - name: Test
         run: pnpm test
 
