@@ -2,6 +2,8 @@
 
 **Prepared:** October 6, 2026. **Scope:** FR-003/017/021/022, NFR-008/009, SEC-003/007;
 extends [ADR-0021](../adr/0021-portable-preview-recovery.md).
+Published through [PR #51](https://github.com/BlizzardBlast/StackLens/pull/51); resolve its current
+head, review and checks before using the helper against an approved hosted target.
 
 The protected live capture and fresh-runner recovery pass through merged
 [PR #50](https://github.com/BlizzardBlast/StackLens/pull/50). That workflow deliberately deletes

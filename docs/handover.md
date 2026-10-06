@@ -3,7 +3,7 @@
 > **Prepared:** 2026-10-06\
 > **Architecture:** v0.1.25; requirements v0.1.3\
 > **Milestone:** Authenticated persistent staging prepared; hosted activation blocked by free Worker capacity\
-> **Branch:** `codex/persistent-preview-recovery`, existing checkout; PR #48, #49 and [#50](https://github.com/BlizzardBlast/StackLens/pull/50) are merged; resolve this milestone and current main\
+> **Branch:** `codex/persistent-preview-recovery`, existing checkout; [PR #51](https://github.com/BlizzardBlast/StackLens/pull/51) prepares persistent staging; PR #48–#50 are merged; resolve this milestone and current main\
 > **Source main at live capture:** `e619ed47a97bd6c656f5a9b2432fc5050188b4d2`; independently resolve current source and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009, SEC-001/002/003/007, GOV-002/006/007
 
@@ -33,7 +33,7 @@ independent Vercel API project and separate Silly Worker, subject to actual capa
 Neon database can idle; an always-connected Worker needs explicit usage validation because the
 Free 100 CU-hour allowance is below a full month at 0.25 CU.
 
-Next session: resolve this milestone PR and current main, then verify zero-cost replacement
+Next session: resolve [PR #51](https://github.com/BlizzardBlast/StackLens/pull/51) and current main, then verify zero-cost replacement
 compute availability. Follow the concrete activation sequence in the runbook; identify the exact
 database/API/Worker destinations before seeking new credential-custody and public-cutover approval.
 Freshly fence original compute and verify drained state; the archived receipt proves only capture

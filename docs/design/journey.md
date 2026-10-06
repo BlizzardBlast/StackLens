@@ -2914,6 +2914,7 @@ offsite refresh/deletion and the remaining managed/device/capacity gates stay ex
 
 ## 2026-10-06 — Prepare authenticated persistent recovery staging
 
+This preparation is published through [PR #51](https://github.com/BlizzardBlast/StackLens/pull/51).
 PR #50 passes exact-head quality and portable fixture CI before merging as `3356493`. The next
 recovery step needs a persistent independent API/Worker/database and a public cutover/rollback
 exercise. Two attempts to create an empty second Silly Free Node.js Worker receive a backend
