@@ -871,7 +871,8 @@ queue replay. A separately protected manual preview path requires approved secre
 offline drained original compute; it never unlocks live copied claims. Recovery rebuilds compiled
 API/Worker, uses an owned loopback database and synthetic providers, and removes its private target.
 See [portable recovery](implementation/portable-preview-recovery.md) for acceptance and limits.
-Live activation, persistent public replacement and offsite refresh/deletion policy remain gates.
+Operator-approved live capture and isolated fresh-runner recovery pass on October 6. Persistent
+public replacement and offsite refresh/deletion policy remain gates; the architecture is unchanged.
 Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker
 maintenance purges expired terminal analysis/report/delivery records in bounded sweeps while
 preserving in-flight ownership. API responses prohibit browser/CDN caching. These are deployment

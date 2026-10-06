@@ -2,7 +2,7 @@
 
 > **Requirements:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007  
 > **Decision:** [ADR-0021](../adr/0021-portable-preview-recovery.md)  
-> **Status:** Local and fresh-runner cloud fixture recovery verified; live activation pending
+> **Status:** Protected live capture and fresh-runner recovery verified on October 6
 
 ## What this verifies
 
@@ -76,6 +76,11 @@ public routing replacement. The existing local 12-hour backup heartbeat is uncha
 1. Verify source revision, reader compatibility and exact-head CI. Drain the public preview,
    pause submissions and independently confirm both original API and Worker compute are offline.
    A disconnected database session alone is insufficient proof of executor death.
+   Vercel's project pause covers Production, while Preview Deployments remain available. For the
+   current restricted API, record its original `rolcanlogin` flag and temporarily apply `NOLOGIN`
+   with the authorized owner. Existing sessions are unaffected: verify the role has zero clients
+   and all analyses, queue rows and outbox delivery are drained. Stop the original Worker through
+   its panel and observe **Offline**. Do not terminate sessions or unlock claims to obtain a drain.
 2. On GitHub's **preview recovery** Actions page, run from `main`, choose `capture` and confirm
    `original_compute_offline` only after that observation. Approve the protected capture job.
    It checks drained state, uses verified TLS and exports a consistent read-only snapshot.
@@ -86,8 +91,9 @@ public routing replacement. The existing local 12-hour backup heartbeat is uncha
    strict historical readbacks, unchanged hashes, new durable completion and `cleanedUp: true`.
    Runner failure/cancellation is not successful cleanup evidence; service teardown still ends
    ephemeral resources, and the next attempt must use a fresh runner.
-5. Restart original compute, restore submission availability and verify fresh normal public
-   delivery. Capture hashes/counts/timestamps only. No report bodies or keys enter the PR.
+5. Restore the recorded API login state, restart the original Worker, resume Vercel production,
+   restore submission availability and verify fresh normal public delivery. Capture hashes/counts/
+   timestamps only. No report bodies or keys enter the PR.
 6. To simulate workstation and original-compute loss later, choose `recover`, supply the earlier
    **preview recovery** run ID, and confirm original compute remains offline. No source login or
    workstation file is read in that recovery phase. A fixture artifact, wrong run, corrupt data,
@@ -103,9 +109,9 @@ limits when reporting workstation-loss readiness.
 
 Resolve this milestone's PR, dependency PR #48, current `main`, exact-head checks and deployed
 revisions independently. No merge SHA placeholder is needed. Live environment secrets and
-activation remain pending approval; do not infer that a prepared workflow has run against preview
-data. Before public replacement acceptance, choose an approved zero-cost persistent compute
-target and separately verify public routing, production providers and rollback. Keep managed Free
+activation were approved and completed on October 6, as recorded below. Before public replacement
+acceptance, choose an approved zero-cost persistent compute target and separately verify public
+routing, production providers and rollback. Keep managed Free
 restore/retention, Function suspension, general capacity and device/spoken acceptance separate.
 
 [PR #49](https://github.com/BlizzardBlast/StackLens/pull/49) publishes implementation commit
@@ -130,3 +136,40 @@ Both jobs clean up their owned resources; recovery does not contact the original
 Quality passes 569 Vitest tests, 37 Node tests and all 18 browser cases plus runtime smoke, types,
 lint and formatting. Local timeout attempts and successful isolated reruns remain separately recorded.
 Resolve the final documentation follow-through head and checks in PR #49 before merging.
+
+## October 6 approved live acceptance
+
+PR #48 merges as `085049d`; PR #49 merges as `e619ed4` after its retargeted quality and portable
+fixture checks pass. The user approves protected secret custody and the bounded live rehearsal.
+Environment `preview-recovery` restricts deployment to branch `main`, requires reviewer
+`BlizzardBlast`, and disables administrator bypass. Self-review remains available for this
+single-user personal environment; approvals in this run execute the user's explicit authorization.
+The existing verified-TLS snapshot login is stored without new grants; it remains the existing
+owner login, not a newly provisioned backup-only reader. The dedicated random key is separate from
+the archive and local backup keys, with a user-only local custody copy retained outside Git.
+
+[Live run 37457845053](https://github.com/BlizzardBlast/StackLens/actions/runs/37457845053)
+checks out merged `e619ed4` in two fresh runners. Original production API traffic is paused, the
+restricted API login is disabled with zero connections, and the original Worker is observed offline.
+Capture verifies drained state and a consistent TLS snapshot; recovery receives no source login.
+Downloaded artifacts have verified ZIP digests and matching archive hashes. Recovery confirms all
+seven table fingerprints, strictly reads the one retained historical report without changing its
+hash, completes a new synthetic durable submission, and performs two HTTP readbacks. No expired
+terminal row is present in this live snapshot. Both jobs remove their owned private resources;
+recovery never contacts the original database. No live copied claim is unlocked.
+
+The restricted login fence lasts 339 seconds; public API/proxy availability returns around six
+minutes after the pause begins. The original Worker is observed **Running** and Vercel shows the
+normal **Pause Project** control again. An initial login-restoration attempt fails without changing
+the disabled flag; a read-only observation confirms that state before retry restores the recorded
+login setting. Both public origins return OpenAPI 3.1 and the historical report's original hash.
+A fresh real-provider frey-ui verification sequence finishes in 2m 43s with schema 2.0.0, 24 limitations and three
+`npm_response_too_large` partial failures. Direct/proxied report hashes match; final queue, locks,
+undelivered outbox and API clients are zero. Missing-analysis errors remain private `404`/`no-store`.
+
+The archive is eligible until **October 7, 2026 at 11:41:06 UTC (18:41:06 Jakarta)**. GitHub requests
+one-day artifact retention; that storage policy is separate from the authenticated restore deadline.
+The [source-free record](release-evidence/2026-10-06-live-recovery.json) preserves source hashes,
+job/artifact identities, custody protections, the temporary pause and original-preview restoration.
+Stable public replacement routing, continuous offsite refresh/deletion, managed Free restore/
+retention and the remaining release gates are still unestablished.

@@ -1,6 +1,6 @@
 # ADR-0021: Encrypted recovery handoff to replacement compute
 
-- **Status:** Accepted preparation; live secret activation requires operator approval
+- **Status:** Accepted; operator-approved protected live activation verified October 6
 - **Date:** 2026-10-05
 - **Requirements:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-006/007
 - **Extends:** ADR-0017/0018/0020
@@ -53,9 +53,11 @@ survive. Artifacts request one-day storage retention; platform deletion timing i
 24-hour guarantee. Restore eligibility ends at the authenticated deadline regardless of download
 availability. This manual workflow is not a scheduled offsite-backup policy.
 
-Fresh-runner fixture acceptance proves portable runtime recovery. Live archive activation,
-recovery of preview data, stable public replacement hosting and a cutover/rollback exercise remain
-separate operator gates. Managed Aiven Free restoration, Function suspension, general capacity
+Fresh-runner fixture acceptance proves portable runtime recovery. Live archive activation and
+isolated recovery of preview data pass on October 6 under explicit operator approval, recorded in
+the [live evidence](../implementation/release-evidence/2026-10-06-live-recovery.json).
+Stable public replacement hosting and a cutover/rollback exercise remain separate operator gates.
+Managed Aiven Free restoration, Function suspension, general capacity
 and user-deferred device/spoken acceptance are unaffected.
 
 See the [portable recovery runbook](../implementation/portable-preview-recovery.md).

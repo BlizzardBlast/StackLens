@@ -2,14 +2,55 @@
 
 > **Prepared:** 2026-10-06\
 > **Architecture:** v0.1.24; requirements v0.1.3\
-> **Milestone:** Portable encrypted recovery on replacement compute; live activation pending\
-> **Branch:** `codex/portable-preview-recovery`, existing checkout; [PR #49](https://github.com/BlizzardBlast/StackLens/pull/49) depends on [PR #48](https://github.com/BlizzardBlast/StackLens/pull/48); resolve final head, CI and merge state\
-> **Source main at capture:** `5adcee87f39d5046190f560de90fc1c321567d55`, including merged [PR #47](https://github.com/BlizzardBlast/StackLens/pull/47); independently resolve current source and hosting revisions\
+> **Milestone:** Protected live offsite capture and isolated replacement-compute recovery verified\
+> **Branch:** `codex/live-preview-recovery`, existing checkout; [PR #50](https://github.com/BlizzardBlast/StackLens/pull/50) records live acceptance; PR #48 and PR #49 are merged; resolve current main and final checks\
+> **Source main at live capture:** `e619ed47a97bd6c656f5a9b2432fc5050188b4d2`; independently resolve current source and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
 
-### October 5 portable replacement-compute recovery
+### October 6 approved live recovery
+
+PR #48 merges as `085049d`. PR #49 retargets to `main`, resolves only squash-ancestry documentation
+conflicts with an unchanged reviewed tree, and passes quality `37455506419` plus portable fixture
+run `37455506484` before merging as `e619ed4`. The user explicitly approves protected environment
+custody and the bounded live rehearsal. The `preview-recovery` environment allows only branch
+`main`, requires reviewer `BlizzardBlast` and disables administrator bypass. The single-user
+environment permits self-review; both protected jobs are approved under that user authorization.
+Capture uses the existing verified-TLS owner/snapshot login without additional grants. Recovery
+receives only the dedicated random key and ciphertext; its key custody copy stays outside Git.
+
+[Live run 37457845053](https://github.com/BlizzardBlast/StackLens/actions/runs/37457845053) captures
+the drained source while production API traffic is paused and the original Worker is observed
+offline. Since Vercel pause leaves Preview Deployments available, the restricted API database
+login is also temporarily disabled after recording its original state; it has zero clients.
+No queued/running analysis, queue row or undelivered outbox record is present. Capture and recovery
+both check out merged `e619ed4`. The second runner restores all seven matching fingerprints,
+strictly reads one retained historical report without changing its hash, completes synthetic new
+durable work and performs two HTTP readbacks. No live copied claim is unlocked. Both jobs confirm
+complete owned cleanup; recovery contacts neither source database nor workstation files.
+
+The archive is eligible until October 7 at 11:41:06 UTC (18:41:06 Jakarta). Preserve its dedicated
+key until the authenticated window ends. The source-free
+[live record](implementation/release-evidence/2026-10-06-live-recovery.json) retains source/job/
+artifact identities, ZIP and archive digests, pause/restoration observations and public delivery
+verification. The original API login, Worker and Vercel traffic are restored after cloud success.
+The login fence lasts 339 seconds. A fresh normal-provider frey-ui analysis completes with schema
+2.0.0, 24 limitations and three `npm_response_too_large` partial failures; its direct/proxied hashes
+match. The historical report retains its hash. Final queue, locks, pending outbox and API clients
+are zero. Both public origins expose OpenAPI 3.1 and private `404`/`no-store` missing-analysis errors.
+
+Next session: verify PR #50, current `main`, hosting revisions and archive freshness.
+Choose an approved zero-cost persistent replacement host and rehearse public routing plus normal
+provider delivery/rollback before claiming full compute-loss recovery. A continuously refreshed
+offsite archive and provider physical deletion policy are still needed. Managed Free restore/
+retention, actual Function suspension, broader capacity and user-deferred device/spoken acceptance
+remain separate. Existing local 12-hour backup scheduling and finite expiry are unchanged.
+
+### October 5 portable replacement-compute preparation (historical capture)
+
+The preparation state below precedes the October 6 approved live acceptance above. Its pending
+activation instructions describe that earlier capture, rather than the current operational state.
 
 [ADR-0021](adr/0021-portable-preview-recovery.md) separates encrypted capture from recovery on fresh
 GitHub runners. Only the database ciphertext and encrypted authenticated manifest cross the job

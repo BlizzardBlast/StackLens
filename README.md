@@ -92,8 +92,9 @@ through the public API/web proxy, and completes fresh `frey-ui` and `KerjaLog` W
 The preview returns to Aiven with verified fresh delivery before the Neon project and temporary
 credentials are removed. Canonical backup fingerprints now fix collation and UTC across providers;
 a refreshed three-report archive passes separate-server restore and expires October 5 at 13:03 Jakarta.
-Actual Function suspension, general workload capacity, managed-backup/workstation-loss recovery
-and user-deferred device/spoken acceptance remain open.
+Actual Function suspension, general workload capacity, managed-backup restoration and persistent
+public replacement after workstation/compute loss and user-deferred device/spoken acceptance remain
+open.
 
 The [Worker capacity milestone](docs/implementation/worker-capacity.md) adds bounded burst and
 sustained-queue measurements with real provider adapters and synthetic streaming responses. An
@@ -114,15 +115,21 @@ expired archives and two keys. Its dated evidence confirms scheduler-fired expir
 the latest refresh and deadline before using an archive. Aiven's backend rejects the displayed
 Free fork, confirming that restore path is
 unavailable; guaranteed Free retention remains unestablished. Actual Function suspension, general
-capacity and workstation/compute-loss recovery remain open alongside deferred manual acceptance.
+capacity and persistent public replacement after workstation/compute loss remain open alongside
+deferred manual acceptance.
 
 The [portable recovery path](docs/implementation/portable-preview-recovery.md) verifies encrypted
 handoff between two fresh GitHub runners. Local and cloud fixture rehearsals restore matching
 fingerprints,
 replay synthetic active/queued/outbox work, preserve historical reports, remove expired data and
 complete a new HTTP submission on replacement compiled API/Worker runtimes. The manual preview
-workflow requires approved protected secret custody before activation. Live offsite data recovery,
-stable public replacement hosting and continuous offsite refresh/deletion remain explicit gates.
+workflow is active in a protected GitHub environment. The [October 6 live rehearsal](docs/implementation/release-evidence/2026-10-06-live-recovery.json)
+captures the drained preview while its production API is paused and original Worker is stopped,
+then restores one historical report and completes new synthetic work on a separate runner without the original
+database login or workstation files. Both jobs clean up their owned resources. The original preview
+is resumed and completes a fresh normal-provider frey-ui analysis with explicit limitations,
+matching direct/proxied reports and an empty final queue. Stable public replacement hosting and
+continuous offsite refresh/deletion remain explicit gates.
 
 The [Worker lifecycle extension](docs/implementation/worker-lifecycle.md) adds source-free signal
 and cleanup-stage diagnostics plus a packaged Linux restart rehearsal. Normal panel SIGINT and

@@ -78,8 +78,10 @@ required by SEC-003. Confirm the original executor is dead before any targeted q
 
 Release evidence records counts, hashes, timestamps and safe failure codes. The current policy
 documents the observed managed schedule, retained encrypted archive and independent local recovery.
-Guaranteed Free managed retention/an eligible restore destination, live preview-data recovery,
-persistent public replacement and continuous offsite refresh/deletion remain acceptance gaps.
+Guaranteed Free managed retention/an eligible restore destination, persistent public replacement
+and continuous offsite refresh/deletion remain acceptance gaps. The October 6 protected live
+capture and fresh-runner preview-data recovery are verified in the
+[portable recovery runbook](portable-preview-recovery.md#october-6-approved-live-acceptance).
 Scheduler-fired expiry cleanup is verified below. Synthetic copied-queue replay and recovery across
 fresh cloud runners are verified in the [portable recovery runbook](portable-preview-recovery.md).
 
@@ -175,5 +177,22 @@ the verified fallback while its operator archive/key and existing compute surviv
 
 The [rollout evidence](release-evidence/2026-10-04-capacity-rollout.json) preserves safe capture
 hashes, backup/restore counts, authenticated expiry metadata and the backend rejection separately
-from the earlier unsubmitted-form observation. Replacement compute and workstation-loss recovery,
-actual Function suspension and user-deferred manual acceptance remain open.
+from the earlier unsubmitted-form observation. That earlier capture leaves replacement compute and
+workstation-loss recovery unverified; the October 6 acceptance below narrows that gap. Actual
+Function suspension and user-deferred manual acceptance remain open.
+
+## October 6 live offsite capture and isolated compute recovery
+
+The user-approved protected workflow captures the drained live preview and restores it on a second
+GitHub runner with only the authenticated ciphertext and separately stored key. One retained live
+report preserves its hash, all seven table fingerprints match, and compiled replacement API/Worker
+runtimes complete synthetic new work. The original production API remains paused and Worker
+remains stopped during recovery; the restricted API database login has zero sessions and is disabled.
+Both cloud jobs clean up their owned resources; the original preview is then resumed.
+
+The current archive's authenticated deadline is October 7 at 11:41:06 UTC (18:41:06 Jakarta).
+Keep the dedicated key while this archive remains eligible. This establishes live isolated recovery
+without workstation files or source database access during restore. It does not establish an
+automatic offsite schedule, guaranteed physical cloud deletion or stable public replacement routing.
+See the [dated evidence](release-evidence/2026-10-06-live-recovery.json) and
+[operator sequence](portable-preview-recovery.md#operator-sequence).
