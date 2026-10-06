@@ -3,7 +3,7 @@
 > **Prepared:** 2026-10-06\
 > **Architecture:** v0.1.24; requirements v0.1.3\
 > **Milestone:** Protected live offsite capture and isolated replacement-compute recovery verified\
-> **Branch:** `codex/live-preview-recovery`, existing checkout; PR #48 and PR #49 are merged; resolve this operational follow-through's final head and CI\
+> **Branch:** `codex/live-preview-recovery`, existing checkout; [PR #50](https://github.com/BlizzardBlast/StackLens/pull/50) records live acceptance; PR #48 and PR #49 are merged; resolve current main and final checks\
 > **Source main at live capture:** `e619ed47a97bd6c656f5a9b2432fc5050188b4d2`; independently resolve current source and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009, SEC-001/002/003/007, GOV-002/006/007
 
@@ -40,7 +40,7 @@ The login fence lasts 339 seconds. A fresh normal-provider frey-ui analysis comp
 match. The historical report retains its hash. Final queue, locks, pending outbox and API clients
 are zero. Both public origins expose OpenAPI 3.1 and private `404`/`no-store` missing-analysis errors.
 
-Next session: verify this follow-through PR, current `main`, hosting revisions and archive freshness.
+Next session: verify PR #50, current `main`, hosting revisions and archive freshness.
 Choose an approved zero-cost persistent replacement host and rehearse public routing plus normal
 provider delivery/rollback before claiming full compute-loss recovery. A continuously refreshed
 offsite archive and provider physical deletion policy are still needed. Managed Free restore/

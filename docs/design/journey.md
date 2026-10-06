@@ -2883,7 +2883,8 @@ offsite physical deletion separate.
 
 ## 2026-10-06 — Activate protected live capture and replacement-compute recovery
 
-After the user approves credential custody and the bounded preview pause, PR #48 merges first;
+PR #50 records the live operational acceptance. After the user approves credential custody and
+the bounded preview pause, PR #48 merges first;
 PR #49 retargets with an unchanged reviewed tree, passes exact-head quality and portable checks,
 then merges as `e619ed4`. A protected `preview-recovery` environment restricts deployment to
 branch `main`, requires the available reviewer and disables administrator bypass. Self-review
