@@ -2,7 +2,7 @@
 
 > **Requirements:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007  
 > **Decision:** [ADR-0021](../adr/0021-portable-preview-recovery.md)  
-> **Status:** Local split-phase recovery verified; cloud fixture verification and live activation tracked below
+> **Status:** Local and fresh-runner cloud fixture recovery verified; live activation pending
 
 ## What this verifies
 
@@ -119,3 +119,14 @@ parent and pulls `postgres:18-alpine` explicitly before binary dump capture. Doc
 messages must not be confused with PostgreSQL diagnostics; strict dump stderr checks remain.
 Evidence now records fixed phase names and allowlisted failure codes. Keep failed runs separate
 from the new acceptance result rather than rewriting them as successful rehearsals.
+
+On October 6, implementation head `6e0aa90` passes [quality run 37453297502](https://github.com/BlizzardBlast/StackLens/actions/runs/37453297502)
+and [portable recovery run 37453297494](https://github.com/BlizzardBlast/StackLens/actions/runs/37453297494).
+Both fresh runners check out PR merge commit `53ebeb7`; the dated record binds that checkout to
+the branch head and dependency base. Downloaded capture/restore evidence authenticates the same
+archive and confirms matching seven-table fingerprints, one expired record removed, one historical
+report unchanged, active/queued/outbox fixture replay, five HTTP readbacks and new durable work.
+Both jobs clean up their owned resources; recovery does not contact the original database.
+Quality passes 569 Vitest tests, 37 Node tests and all 18 browser cases plus runtime smoke, types,
+lint and formatting. Local timeout attempts and successful isolated reruns remain separately recorded.
+Resolve the final documentation follow-through head and checks in PR #49 before merging.

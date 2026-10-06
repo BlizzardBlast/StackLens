@@ -2855,3 +2855,28 @@ Local follow-through on October 6 passes build, compiled runtime smoke, typechec
 Node/Vitest tests. Two browser cases time out during the full run and pass when rerun separately;
 all six focused recovery tests pass separately after one concurrent CLI timeout. Lint and formatting
 pass. The failed attempts remain recorded; fresh-runner cloud acceptance is still pending.
+
+## 2026-10-06 — Verify recovery across independent cloud runners
+
+PR #49 implementation head `6e0aa90` passes quality run `37453297502` and portable recovery run
+`37453297494`. The two fresh Ubuntu jobs check out PR merge commit `53ebeb7`; downloaded source-free
+evidence binds both phases to the same authenticated archive. Recovery matches all seven table
+fingerprints, removes one expired record, preserves one historical report, completes copied
+active/queued/outbox fixture work, serves five HTTP readbacks and completes a new durable submission.
+Both jobs clean up owned resources. Recovery never contacts the original database.
+
+Cloud quality passes 569 Vitest, 37 Node and 18 browser tests, compiled runtime smoke, types, lint
+and formatting. A second local full check hits a PostgreSQL connection timeout during concurrent
+operations; its isolated rerun passes in 304 ms without changing the test timeout. All earlier
+failures and local reruns remain in the dated record. README, recovery runbook and complete handover
+now distinguish verified fixture recovery from pending live secret activation, preview-data recovery,
+persistent public replacement and continuous offsite refresh/deletion. Requirements, architecture
+policy, product UI and tokens are unchanged; final documentation-head CI must be checked before merge.
+
+The documentation pass also verifies the October 5 scheduler record and retains its hash plus safe
+observations: two report readbacks, seven matching fingerprints, three authenticated expired
+archives and two keys removed, and complete owned cleanup. README, backup runbook and handover
+close the older scheduler-fired expiry-cleanup evidence gap while keeping current refresh and
+offsite physical deletion separate.
+
+**Traceability:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007.
