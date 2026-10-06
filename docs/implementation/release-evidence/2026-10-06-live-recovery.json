@@ -1,0 +1,275 @@
+{
+  "status": "verified_live_capture_isolated_recovery_and_original_preview_restoration",
+  "observedAt": "2026-10-06T11:48:04.414Z",
+  "requirementIds": [
+    "FR-003",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "NFR-008",
+    "NFR-009",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "sourceCommit": "e619ed47a97bd6c656f5a9b2432fc5050188b4d2",
+  "operatorHashes": {
+    "scripts/operations/portable-recovery.mjs": "deb160f60da44c7c5c1c1eda7d9b7b7486ac311e3d487e62d1bd74b5a994c11f",
+    "scripts/operations/portable-recovery-bundle.mjs": "5194db120c0345f62b803f1b3b45fe4b83c27d53609c98a654eaddeae657c1b0",
+    "scripts/operations/backup.mjs": "cbe027a9cea8584c1ba242211049f82ea7b8391d91d24db746c8f502d02ed50f",
+    ".github/workflows/preview-recovery.yml": "decffe3278d78010774c0a4739a7390cbaebf06472a44a678abece7f1177ed69"
+  },
+  "mergedMilestones": [
+    {
+      "pr": 48,
+      "mergeCommit": "085049df97da49ad71f5b19677d71c642b502b35"
+    },
+    {
+      "pr": 49,
+      "mergeCommit": "e619ed47a97bd6c656f5a9b2432fc5050188b4d2",
+      "retargetedQualityRunId": 37455506419,
+      "retargetedFixtureRunId": 37455506484,
+      "quality": {
+        "vitest": 569,
+        "node": 37,
+        "browser": 18,
+        "compiledSmoke": true
+      }
+    }
+  ],
+  "protectedCustody": {
+    "environment": "preview-recovery",
+    "branch": "main",
+    "tagsAllowed": false,
+    "requiredReviewer": "BlizzardBlast",
+    "administratorBypass": false,
+    "selfReviewAllowed": true,
+    "approvals": "explicit user authorization carried out through protected deployment review",
+    "secrets": [
+      "STACKLENS_RECOVERY_DATABASE",
+      "STACKLENS_RECOVERY_KEY"
+    ],
+    "sourceLogin": "existing verified-TLS owner/snapshot login; no additional grants",
+    "dedicatedBackupOnlyReader": false,
+    "key": {
+      "randomBytes": 32,
+      "separateFromArtifact": true,
+      "separateFromLocalBackupKeys": true,
+      "localCustody": "outside repository; user-only ACL; retained while archive eligible"
+    },
+    "newPaidServices": false
+  },
+  "originalPause": {
+    "productionApi": "Vercel Pause Project; public API and same-origin proxy observed 503 DEPLOYMENT_PAUSED",
+    "previewDeploymentLimit": "Vercel pause leaves Preview Deployments available; restricted database login blocked and zero sessions verified",
+    "worker": "panel Stop; authoritative Offline observed",
+    "apiAdmissionFenceStartedAt": "2026-10-06T11:38:33.476Z",
+    "apiLoginRestoredAt": "2026-10-06T11:44:12.850Z",
+    "apiAdmissionFenceSeconds": 339,
+    "drained": {
+      "at": "2026-10-06T11:38:33.757Z",
+      "mode": "disable-api",
+      "role": "stacklens_api_preview",
+      "canLogin": false,
+      "api": {
+        "clients": 0,
+        "active": 0
+      },
+      "state": {
+        "queued": 0,
+        "running": 0,
+        "terminal": 1
+      },
+      "queue": {
+        "jobs": 0,
+        "locked": 0
+      },
+      "pendingOutbox": 0
+    },
+    "originalReports": 1,
+    "historicalReportHashes": [
+      "2d8b0514f8bc412f52b367e043286560cbe21041b3d527b571eebbc2a20e82d8"
+    ],
+    "liveClaimUnlock": false
+  },
+  "cloud": {
+    "workflow": "preview recovery",
+    "runId": 37457845053,
+    "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/37457845053",
+    "sourceCommit": "e619ed47a97bd6c656f5a9b2432fc5050188b4d2",
+    "captureJob": {
+      "id": 112249740370,
+      "conclusion": "success"
+    },
+    "recoveryJob": {
+      "id": 112250403209,
+      "conclusion": "success"
+    },
+    "separateFreshRunners": true,
+    "sourceLoginAvailableToRecovery": false,
+    "workstationFilesReadByRecovery": false,
+    "tableFingerprintCount": 7,
+    "capture": {
+      "requirementIds": [
+        "FR-003",
+        "FR-017",
+        "FR-021",
+        "FR-022",
+        "NFR-008",
+        "NFR-009",
+        "SEC-003",
+        "SEC-007"
+      ],
+      "startedAt": "2026-10-06T11:40:22.681Z",
+      "status": "verified",
+      "phase": "verified",
+      "scope": "preview",
+      "providers": "synthetic replacement-runtime verification; historical reports are never rescored",
+      "baseCommit": "e619ed47a97bd6c656f5a9b2432fc5050188b4d2",
+      "sourceHashes": {
+        "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+        "apps/worker/src/runtime.ts": "ebdbddf163b6258a4f52f3ee9f1dcb0b660b223e77b6cec176e3565d5e3a1014",
+        "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+      },
+      "backup": {
+        "createdAt": "2026-10-06T11:41:06.425Z",
+        "expiresAt": "2026-10-07T11:41:06.425Z",
+        "archiveSha256": "68ba436754b015fa148058730a4a7108f422a47bd3ff99f2f65045547f62090f"
+      },
+      "originalExecutor": "operator_confirmed_offline_drained",
+      "cleanupFailures": [],
+      "cleanedUp": true,
+      "finishedAt": "2026-10-06T11:41:09.108Z"
+    },
+    "recovery": {
+      "requirementIds": [
+        "FR-003",
+        "FR-017",
+        "FR-021",
+        "FR-022",
+        "NFR-008",
+        "NFR-009",
+        "SEC-003",
+        "SEC-007"
+      ],
+      "startedAt": "2026-10-06T11:42:40.721Z",
+      "status": "verified",
+      "phase": "verified",
+      "scope": "preview",
+      "providers": "synthetic replacement-runtime verification; historical reports are never rescored",
+      "baseCommit": "e619ed47a97bd6c656f5a9b2432fc5050188b4d2",
+      "sourceHashes": {
+        "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+        "apps/worker/src/runtime.ts": "ebdbddf163b6258a4f52f3ee9f1dcb0b660b223e77b6cec176e3565d5e3a1014",
+        "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+      },
+      "backup": {
+        "createdAt": "2026-10-06T11:41:06.425Z",
+        "expiresAt": "2026-10-07T11:41:06.425Z",
+        "sourceCommit": "e619ed47a97bd6c656f5a9b2432fc5050188b4d2",
+        "sourceRunId": "37457845053",
+        "archiveSha256": "68ba436754b015fa148058730a4a7108f422a47bd3ff99f2f65045547f62090f"
+      },
+      "snapshotHashesMatched": true,
+      "expiredTerminalRowsRemoved": 0,
+      "historicalReportsUnchanged": 1,
+      "httpReadbacks": 2,
+      "newDurableSubmissionCompleted": true,
+      "originalResourcesContactedDuringRecovery": false,
+      "cleanupFailures": [],
+      "cleanedUp": true,
+      "finishedAt": "2026-10-06T11:42:42.525Z"
+    },
+    "artifacts": [
+      {
+        "id": 11410226358,
+        "name": "preview-capture-evidence",
+        "zipSha256": "8566114ed23b1937a5eed1a30df6a35b11cd8d606d1596f7d9b6ac5c86fa9a20",
+        "downloadDigestVerified": true
+      },
+      {
+        "id": 11410781720,
+        "name": "preview-restore-evidence",
+        "zipSha256": "e6212c180c2baccdd4d97701db90a60013fc44ded70130bd90d5e23ee47fb05e",
+        "downloadDigestVerified": true
+      },
+      {
+        "id": 11409956513,
+        "name": "preview-recovery-encrypted",
+        "zipSha256": "454531743d8a647dc0bd42cf60ffcac10fbb6af6065f0d9225dca7785de99fb7",
+        "bytes": 103359,
+        "retentionDays": 1,
+        "reportedExpiresAt": "2026-10-07T11:41:09Z",
+        "downloadedToWorkstation": false
+      }
+    ]
+  },
+  "originalRestoration": {
+    "initialLoginRestoreAttempt": "failed without role mutation; read-only observation confirmed still disabled; retry restored recorded original flag",
+    "apiLoginRestored": true,
+    "worker": "Running observed after Start",
+    "vercelProduction": "resumed; Pause Project control visible again",
+    "firstPublicAvailabilityAt": "2026-10-06T11:44:33.070Z",
+    "directAndProxyOpenApiStatus": 200,
+    "freshDelivery": {
+      "startedAt": "2026-10-06T11:44:42.510Z",
+      "finishedAt": "2026-10-06T11:47:25.195Z",
+      "providerMode": "normal hosted GitHub/npm/OSV adapters",
+      "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+      "status": "completed_with_limitations",
+      "schemaVersion": "2.0.0",
+      "analyzedCommit": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+      "reportSha256": "e84cb9eaf1e84b800856807bafe6552d91d85c8cfbc854a57bffd70c8ba12214",
+      "limitationCount": 24,
+      "providerFailureCodes": [
+        "npm_response_too_large",
+        "npm_response_too_large",
+        "npm_response_too_large"
+      ],
+      "pairedPublicReadback": true,
+      "queue": {
+        "jobs": 0,
+        "locked": 0
+      },
+      "pendingOutbox": 0
+    },
+    "historicalReportsPreserved": true,
+    "missingAnalysis": {
+      "status": 404,
+      "code": "analysis_not_found",
+      "cacheControl": "no-store",
+      "bothOrigins": true
+    },
+    "final": {
+      "at": "2026-10-06T11:48:04.414Z",
+      "mode": "observe",
+      "role": "stacklens_api_preview",
+      "canLogin": true,
+      "api": {
+        "clients": 0,
+        "active": 0
+      },
+      "state": {
+        "queued": 0,
+        "running": 0,
+        "terminal": 2
+      },
+      "queue": {
+        "jobs": 0,
+        "locked": 0
+      },
+      "pendingOutbox": 0
+    }
+  },
+  "limits": [
+    "Isolated loopback replacement runtimes; stable public replacement routing and persistent target not established.",
+    "New replacement-runtime work uses synthetic providers; resumed original-preview delivery uses normal hosted providers.",
+    "The source Aiven service survives this rehearsal; recovery receives no source login and makes no original-resource contact.",
+    "The capture is drained; no live copied-claim recovery is demonstrated.",
+    "GitHub access and protected key must survive; ciphertext is usable only before its authenticated deadline.",
+    "Manual offsite capture; no continuous cloud refresh or exact provider physical-deletion guarantee.",
+    "Managed Free restore/retention, actual Function suspension, general capacity and user-deferred device/spoken acceptance remain open."
+  ]
+}

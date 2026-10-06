@@ -2880,3 +2880,33 @@ close the older scheduler-fired expiry-cleanup evidence gap while keeping curren
 offsite physical deletion separate.
 
 **Traceability:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007.
+
+## 2026-10-06 — Activate protected live capture and replacement-compute recovery
+
+After the user approves credential custody and the bounded preview pause, PR #48 merges first;
+PR #49 retargets with an unchanged reviewed tree, passes exact-head quality and portable checks,
+then merges as `e619ed4`. A protected `preview-recovery` environment restricts deployment to
+branch `main`, requires the available reviewer and disables administrator bypass. Self-review
+remains available in this single-user environment; both job approvals carry the user's explicit
+authorization. The existing verified-TLS snapshot login receives no additional grants. A dedicated
+random key stays separate from archive artifacts, with private custody outside the repository.
+
+The original production API is paused and Worker is observed offline. Vercel leaves Preview
+Deployments available, so the restricted API login is temporarily disabled with its original flag
+recorded and zero sessions verified. Live run `37457845053` captures the drained source, then a
+second fresh runner restores seven matching fingerprints, preserves one historical report hash,
+serves two strict HTTP readbacks and completes new synthetic durable work without contacting the
+original database or workstation files. Both jobs confirm complete owned cleanup. No live copied
+claim is unlocked. The source-free dated record binds source, jobs and downloaded artifact digests.
+
+The original login, Worker and public API are restored after cloud success. This documentation
+records a 339-second restricted-login fence and a 2m 43s fresh normal-provider frey-ui verification
+sequence, with 24 limitations and three bounded npm-response partial failures. Direct/proxied report
+hashes match, the historical hash survives, and the final queue/outbox/API-client counts are zero.
+OpenAPI 3.1 and private missing-analysis responses pass on both public origins. The documentation
+pass updates public status, runbook, backup policy, ADR activation status, architecture acceptance
+and the complete handover. Product requirements, analyzer rules, scoring, serialized contracts,
+UI/design decisions and runtime code are unchanged. Stable public replacement routing, continuous
+offsite refresh/deletion and the remaining managed/device/capacity gates stay explicit.
+
+**Traceability:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0021.
