@@ -1,0 +1,420 @@
+{
+  "requirementIds": [
+    "FR-003",
+    "FR-021",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-007"
+  ],
+  "baseCommit": "5adcee87f39d5046190f560de90fc1c321567d55",
+  "sourceHashes": {
+    "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+    "apps/worker/src/runtime.ts": "ebdbddf163b6258a4f52f3ee9f1dcb0b660b223e77b6cec176e3565d5e3a1014",
+    "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+  },
+  "lifecycleHashes": {
+    "apps/worker/src/main.ts": "39d16c09dc7a49496165369c57448a4dc755d2aae4a87939008256b608634e73",
+    "apps/worker/src/shutdown.ts": "c593626c7debbbd0cc85185bafbc1ff79f3429a4c82002e1e273a9dfbde8b19b",
+    "scripts/operations/worker-lifecycle.mjs": "15cf8516c30fa0c2435fc792c63c4497f95ea0b6097c8c0e8c98f62eb3abad63",
+    "scripts/operations/worker-lifecycle-fetch.mjs": "f2678409272e9402d95680123dcb63e610c2e432b0e8feb0bca76662b85fe9a2",
+    "scripts/operations/worker-capacity-fixtures.mjs": "1de176a3985d24a443cf3d9a4febda5efdc51e9d1c40a684c870dbe52ad2f739"
+  },
+  "archiveSha256": "c648c3f0537dcccb69a085a32703d9f64c54d6940393c4473039f24a55ad5439",
+  "startupSha256": "7694ba5483ec3417c982b096ae0ee4d2f246e180fa21d3f1a87875e9be10d11a",
+  "scope": "Owned local Linux panel launch with synthetic providers, 256 MiB/no swap/0.25 CPU; not hosted outage evidence",
+  "startedAt": "2026-10-05T12:13:50.950Z",
+  "cases": [
+    {
+      "scenario": "idle",
+      "signal": "SIGINT",
+      "launch": "panel",
+      "status": "verified",
+      "stopMs": 573,
+      "exitCode": 0,
+      "oomKilled": false,
+      "shutdown": [
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "runner",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "delivery",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "retention",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "delivery",
+          "state": "completed",
+          "elapsedMs": 1
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "retention",
+          "state": "completed",
+          "elapsedMs": 1
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "runner",
+          "state": "completed",
+          "elapsedMs": 11
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "worker_utils",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "worker_utils",
+          "state": "completed",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "database_pool",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "database_pool",
+          "state": "completed",
+          "elapsedMs": 3
+        }
+      ],
+      "observationFailures": [],
+      "cleanupFailures": [],
+      "cleanedUp": true
+    },
+    {
+      "scenario": "idle",
+      "signal": "SIGTERM",
+      "launch": "native",
+      "status": "verified",
+      "stopMs": 519,
+      "exitCode": 0,
+      "oomKilled": false,
+      "shutdown": [
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "runner",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "delivery",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "retention",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "delivery",
+          "state": "completed",
+          "elapsedMs": 2
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "retention",
+          "state": "completed",
+          "elapsedMs": 2
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "runner",
+          "state": "completed",
+          "elapsedMs": 12
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "worker_utils",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "worker_utils",
+          "state": "completed",
+          "elapsedMs": 1
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "database_pool",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "database_pool",
+          "state": "completed",
+          "elapsedMs": 3
+        }
+      ],
+      "observationFailures": [],
+      "cleanupFailures": [],
+      "cleanedUp": true
+    },
+    {
+      "scenario": "disconnected",
+      "signal": "SIGINT",
+      "launch": "panel",
+      "status": "verified",
+      "stopMs": 871,
+      "exitCode": 0,
+      "oomKilled": false,
+      "shutdown": [
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "runner",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "delivery",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "retention",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "delivery",
+          "state": "completed",
+          "elapsedMs": 3
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "retention",
+          "state": "completed",
+          "elapsedMs": 1
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "runner",
+          "state": "completed",
+          "elapsedMs": 6
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "worker_utils",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "worker_utils",
+          "state": "completed",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "database_pool",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "database_pool",
+          "state": "completed",
+          "elapsedMs": 11
+        }
+      ],
+      "observationFailures": [],
+      "cleanupFailures": [],
+      "cleanedUp": true
+    },
+    {
+      "scenario": "interrupted",
+      "signal": "SIGINT",
+      "launch": "panel",
+      "status": "verified",
+      "stopMs": 1823,
+      "exitCode": 0,
+      "oomKilled": false,
+      "shutdown": [
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "runner",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "delivery",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "retention",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "delivery",
+          "state": "completed",
+          "elapsedMs": 1
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "retention",
+          "state": "completed",
+          "elapsedMs": 1
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "runner",
+          "state": "completed",
+          "elapsedMs": 1017
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "worker_utils",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "worker_utils",
+          "state": "completed",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "database_pool",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "database_pool",
+          "state": "completed",
+          "elapsedMs": 2
+        }
+      ],
+      "reportSha256": "4a29f3df689ef0939b3cdfd77d027b7e83f41f7bac5316e56c1e1cfbd089a978",
+      "restartExitCode": 0,
+      "sameAnalysisRecovered": true,
+      "observationFailures": [],
+      "cleanupFailures": [],
+      "cleanedUp": true
+    },
+    {
+      "scenario": "interrupted",
+      "signal": "SIGTERM",
+      "launch": "native",
+      "status": "verified",
+      "stopMs": 1421,
+      "exitCode": 0,
+      "oomKilled": false,
+      "shutdown": [
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "runner",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "delivery",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "retention",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "delivery",
+          "state": "completed",
+          "elapsedMs": 2
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "retention",
+          "state": "completed",
+          "elapsedMs": 1
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "runner",
+          "state": "completed",
+          "elapsedMs": 1021
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "worker_utils",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "worker_utils",
+          "state": "completed",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "database_pool",
+          "state": "started",
+          "elapsedMs": 0
+        },
+        {
+          "event": "stacklens_worker_shutdown",
+          "stage": "database_pool",
+          "state": "completed",
+          "elapsedMs": 1
+        }
+      ],
+      "reportSha256": "83a9f6b77635179917164c0708b2c80915aac6125abc8076ddcd616ecd779cfa",
+      "restartExitCode": 0,
+      "sameAnalysisRecovered": true,
+      "observationFailures": [],
+      "cleanupFailures": [],
+      "cleanedUp": true
+    },
+    {
+      "scenario": "ancestor_termination",
+      "signal": "SIGTERM",
+      "launch": "panel",
+      "status": "verified_ancestor_termination_limitation",
+      "stopMs": 432,
+      "exitCode": 143,
+      "oomKilled": false,
+      "observationFailures": [],
+      "cleanupFailures": [],
+      "cleanedUp": true
+    }
+  ],
+  "status": "verified_bounded_linux_lifecycle",
+  "finishedAt": "2026-10-05T12:16:09.822Z"
+}

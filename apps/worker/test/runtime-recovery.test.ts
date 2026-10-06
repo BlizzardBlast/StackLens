@@ -14,6 +14,7 @@ import { REPOSITORY_ANALYSIS_TASK_IDENTIFIER } from "@stacklens/repository-jobs"
 
 import { recoverConfirmedDeadOwner } from "../src/recovery.js";
 import { startStackLensWorker, type StackLensWorkerRuntime } from "../src/runtime.js";
+import type { WorkerShutdownProgress } from "../src/shutdown.js";
 import { createRepositoryAnalysisTaskList } from "../src/task.js";
 import { recoveryProviders } from "./recovery-fixtures.js";
 
@@ -30,6 +31,7 @@ withDatabase("Worker interruption and restart [FR-003, FR-021, NFR-008, NFR-009]
   const pool = createStackLensPool(connectionString);
   const repository = new DrizzleAnalysisRepository(createStackLensDatabase(pool));
   let runtime: StackLensWorkerRuntime | undefined;
+  let shutdownProgress: WorkerShutdownProgress[];
 
   beforeAll(async () => {
     await admin.query(`CREATE DATABASE "${databaseName}"`);
@@ -49,10 +51,12 @@ withDatabase("Worker interruption and restart [FR-003, FR-021, NFR-008, NFR-009]
   });
 
   function start(interrupt: boolean): Promise<StackLensWorkerRuntime> {
+    shutdownProgress = [];
     return startStackLensWorker({
       connectionString,
       concurrency: 1,
       retentionCleanup: false,
+      onShutdownProgress: (progress) => shutdownProgress.push(progress),
       taskList: createRepositoryAnalysisTaskList({
         repository,
         analysisDependencies: recoveryProviders(),
@@ -104,6 +108,26 @@ withDatabase("Worker interruption and restart [FR-003, FR-021, NFR-008, NFR-009]
     const stop = runtime.stop();
     expect(runtime.stop()).toBe(stop);
     await stop;
+    const states = shutdownProgress.filter((progress) => progress.state !== "waiting");
+    for (const stage of [
+      "runner",
+      "delivery",
+      "retention",
+      "worker_utils",
+      "database_pool",
+    ] as const) {
+      expect(
+        states.filter((progress) => progress.stage === stage).map((progress) => progress.state),
+      ).toEqual(["started", "completed"]);
+    }
+    const index = (
+      stage: WorkerShutdownProgress["stage"],
+      state: WorkerShutdownProgress["state"],
+    ): number =>
+      states.findIndex((progress) => progress.stage === stage && progress.state === state);
+    expect(index("worker_utils", "started")).toBeGreaterThan(index("runner", "completed"));
+    expect(index("worker_utils", "started")).toBeGreaterThan(index("delivery", "completed"));
+    expect(index("database_pool", "started")).toBeGreaterThan(index("worker_utils", "completed"));
     const pending = await repository.findAnalysis("graceful-recovery");
     expect(pending?.status).toBe("queued");
     expect(pending?.failureSummary?.code).toBe("repository_analysis_interrupted");
@@ -145,12 +169,15 @@ withDatabase("Worker interruption and restart [FR-003, FR-021, NFR-008, NFR-009]
       );
       // The parent is already busy, so the child alone picks up the second fixture.
       await submit("killed-worker-recovery");
-      await vi.waitFor(async () => {
-        const active = await pool.query(
-          "SELECT locked_by FROM graphile_worker._private_jobs WHERE payload->>'analysisId' = 'killed-worker-recovery'",
-        );
-        expect(active.rows[0]?.locked_by).toBe(ownerId);
-      });
+      await vi.waitFor(
+        async () => {
+          const active = await pool.query(
+            "SELECT locked_by FROM graphile_worker._private_jobs WHERE payload->>'analysisId' = 'killed-worker-recovery'",
+          );
+          expect(active.rows[0]?.locked_by).toBe(ownerId);
+        },
+        { timeout: 10_000 },
+      );
       const exited = once(child, "exit");
       child.kill("SIGKILL");
       await exited; // Actual OS exit proof, before the administrative unlock.

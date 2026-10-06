@@ -1,12 +1,18 @@
 # Worker interruption and recovery
 
 > **Status:** Implemented; local recovery, hosted active-job retry, expiry and restore verified\
-> **Date:** 2026-10-02\
+> **Date:** 2026-10-05\
 > **Requirements:** FR-003, FR-021, NFR-008/009, SEC-001/002/003/007, GOV-002/006/007
 
 ## Runtime behavior
 
 `apps/worker` registers SIGINT/SIGTERM before startup and ignores repeated requests while stopping.
+The executable logs the received signal and whether startup remains pending. Runtime cleanup emits
+fixed `runner`, `delivery`, `retention`, `worker_utils` and `database_pool` stages with
+`started`, `waiting`, `completed` or `failed` states and monotonic elapsed milliseconds. A pending
+stage emits a waiting observation every five seconds; its timer is unreferenced and never forces
+exit. Observer failures cannot prevent cleanup. No error bodies, credentials or analyzed source
+enter these events. Completion is logged only after the runtime's cleanup promise settles successfully.
 The runtime stops queue acquisition alongside delivery/retention maintenance. After Graphile's
 one-second grace, its executing job abort signal cancels provider fetches, including their response
 body reads, while retaining each provider's existing request timeout. Queued npm metadata requests
@@ -32,6 +38,10 @@ Drain active work before routine maintenance. A signal-aware stop can also inter
 provider work and return it for retry; verify the host actually reaches offline before updating
 executable files. After restart, poll the same public analysis ID to terminal state and verify no
 locks remain for that delivery. A platform's Restart button alone does not establish graceful stop.
+The observed panel egg uses SIGINT for normal Stop. SIGTERM directed at its entire process group
+can terminate the outer Bash process before Worker cleanup, so treat that path as abrupt exit.
+Native launches verify SIGTERM separately. The [lifecycle rehearsal](worker-lifecycle.md) retains
+that distinction and the unconfirmed October 4 stalled-Stop cause.
 
 ## Abrupt exit
 
@@ -78,6 +88,13 @@ no report existed for that interrupted attempt. A different pool claimed attempt
 KerjaLog analysis finished in 192,798 ms from submission, with five limitations and no provider
 failures. No administrative unlock was needed. This validates the panel Stop/offline/Start sequence;
 it does not prove abrupt host-loss or automatic failover. Prefer draining for routine maintenance.
+
+The separate October 5 [diagnostic rollout](release-evidence/2026-10-05-worker-shutdown-rollout.json)
+verifies current normal panel SIGINT at concurrency one. Active runner cleanup takes 1,702 ms;
+the same frey-ui ID returns queued without a report or lock and finishes on restart. Idle runner
+cleanup takes 198 ms. Both stops complete utilities/pool cleanup and reach offline, all three
+report hashes survive and the final queue is empty. These application stage durations do not
+establish exact OS exit latency. The historical October 4 stalled Stop remains unconfirmed.
 
 Remote retention fixtures establish scheduled deletion and cascade of an expired terminal report
 and delivery, public lookup 404, and preservation of expired queued/running and null-expiry legacy

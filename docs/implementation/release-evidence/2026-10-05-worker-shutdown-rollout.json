@@ -1,0 +1,329 @@
+{
+  "observedAt": "2026-10-05T13:22:42.765Z",
+  "status": "verified_hosted_shutdown_replay_and_preservation",
+  "requirementIds": [
+    "FR-003",
+    "FR-021",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "publication": {
+    "pullRequest": "https://github.com/BlizzardBlast/StackLens/pull/48",
+    "baseMainAtCapture": "5adcee87f39d5046190f560de90fc1c321567d55",
+    "implementationCommit": "784b44a470c0a4470c6bd2781cb581f3fcf5643b",
+    "implementationQualityRun": {
+      "id": 37311623977,
+      "conclusion": "success"
+    },
+    "finalHeadInstruction": "Resolve PR #48 final head, exact-head CI, review and merge state independently; later documentation commits do not change deployed runtime module hashes"
+  },
+  "artifact": {
+    "bytes": 16826528,
+    "sha256": "c648c3f0537dcccb69a085a32703d9f64c54d6940393c4473039f24a55ad5439"
+  },
+  "rollback": {
+    "sourceCommit": "7b5482038dd30f1a10982aa4ee15cfb53a272bef",
+    "sha256": "747d7f2a1ca2ca5042f9b91e32304bc4ef36ed970a899178a044eb9462722454",
+    "retained": true
+  },
+  "initialPlatformFailure": {
+    "historicalRecord": "2026-10-05-worker-lifecycle-hosted.json",
+    "retainedUnchanged": true
+  },
+  "restoredUnchangedService": {
+    "at": "2026-10-05T12:46:14.459Z",
+    "state": {
+      "queued": 0,
+      "running": 0,
+      "terminal": 2
+    },
+    "queue": {
+      "jobs": 0,
+      "locked_jobs": 0
+    },
+    "clients": {
+      "clients": 5,
+      "idle_transactions": 0
+    },
+    "reports": [
+      {
+        "analysisId": "45493416-4118-493a-9c46-e7ec0ca2c07c",
+        "sha256": "ade024152296b41fc463fd3f34e28a6ef856d028f34a6b7b6e352e6f1b86fbeb"
+      },
+      {
+        "analysisId": "66236ad2-a324-4ddc-8426-47c43b458dc1",
+        "sha256": "19f2676ba172d0ff71fd17bfa9250b871d6829714d6c85388f031f4889db3a96"
+      }
+    ],
+    "status": "verified_drain"
+  },
+  "activation": {
+    "at": "2026-10-05T13:01:17.765Z",
+    "sourceCommit": "784b44a470c0a4470c6bd2781cb581f3fcf5643b",
+    "server": "60761d98",
+    "state": "offline",
+    "moduleHashes": {
+      "shutdown.js": "0332572d494d110bed86210fd60fdc0ed611e896ea276e26ed892a86e1b1ebc6",
+      "shutdown.js.map": "26ce2d33da95fff7e582f2dce8a3c76932a12cdace2e368cb79d16e560169469",
+      "runtime.js": "6ce342cbf77b63f83c5c30a0d510c8b0d2a2a93b72aba39cacd3c61736d0d80d",
+      "runtime.js.map": "7dd9f80df3fa599a7a0e01634a84b3639218b5394daa592b4f97a22ff1259aef",
+      "main.js": "e3ad759b65c4961be142e060768f629bda0609cc1afe7ebbbb72f02149738880",
+      "main.js.map": "9e054e46391e1b91e4f625c21cb6d705e1b0826dde9f22d8fefd8f016703b348"
+    },
+    "method": "file editor; each saved module reloaded and byte-compared",
+    "privateConfigurationWrites": 0,
+    "startupConfigurationWrites": 0
+  },
+  "activeStop": {
+    "requirementIds": [
+      "FR-003",
+      "FR-021",
+      "NFR-008",
+      "NFR-009",
+      "SEC-001",
+      "SEC-002",
+      "SEC-007"
+    ],
+    "sourceCommit": "784b44a470c0a4470c6bd2781cb581f3fcf5643b",
+    "server": "60761d98",
+    "signal": "SIGINT",
+    "startupPending": false,
+    "stopRequestedAt": "2026-10-05T13:06:25.226Z",
+    "observedState": "Offline",
+    "shutdownCompleted": true,
+    "events": [
+      {
+        "stage": "runner",
+        "state": "started",
+        "elapsedMs": 0
+      },
+      {
+        "stage": "delivery",
+        "state": "started",
+        "elapsedMs": 0
+      },
+      {
+        "stage": "retention",
+        "state": "started",
+        "elapsedMs": 0
+      },
+      {
+        "stage": "delivery",
+        "state": "completed",
+        "elapsedMs": 1
+      },
+      {
+        "stage": "retention",
+        "state": "completed",
+        "elapsedMs": 1
+      },
+      {
+        "stage": "runner",
+        "state": "completed",
+        "elapsedMs": 1702
+      },
+      {
+        "stage": "worker_utils",
+        "state": "started",
+        "elapsedMs": 0
+      },
+      {
+        "stage": "worker_utils",
+        "state": "completed",
+        "elapsedMs": 0
+      },
+      {
+        "stage": "database_pool",
+        "state": "started",
+        "elapsedMs": 0
+      },
+      {
+        "stage": "database_pool",
+        "state": "completed",
+        "elapsedMs": 1
+      }
+    ],
+    "evidenceMethod": "Native console screenshot visually reviewed; terminal output is canvas-rendered, not available in DOM text",
+    "screenshot": "shutdown-active-stop-full.png",
+    "limit": "Per-stage elapsed times are application observations; panel transition polling does not establish exact process exit latency or an OS exit code",
+    "offlineObservedAt": "2026-10-05T13:08:16.023Z",
+    "screenshotSha256": "dd7e3fde58dd850bb338f83a6626f973fff51801a55e70ecbbed596d87c6931a"
+  },
+  "interruptedReplay": {
+    "analysisId": "e206f789-4b24-4402-8e86-b7e7a57bdb4f",
+    "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+    "submittedAt": "2026-10-05T13:06:09.756Z",
+    "submissionStatus": 202,
+    "activeBeforeStop": {
+      "at": "2026-10-05T13:06:11.704Z",
+      "status": "running",
+      "jobs": 1,
+      "locks": 1,
+      "attempts": 1
+    },
+    "interruption": {
+      "at": "2026-10-05T13:06:48.611Z",
+      "status": "queued",
+      "failureCode": "repository_analysis_interrupted",
+      "jobs": 1,
+      "locks": 0,
+      "attempts": 1
+    },
+    "completed": {
+      "analysisId": "e206f789-4b24-4402-8e86-b7e7a57bdb4f",
+      "status": "completed_with_limitations",
+      "schemaVersion": "2.0.0",
+      "commitSha": "6dbd184ace64d28c6a7ca7c2c75263215f4ac9bf",
+      "reportSha256": "2d8b0514f8bc412f52b367e043286560cbe21041b3d527b571eebbc2a20e82d8",
+      "limitationCount": 24,
+      "providerFailureCodes": [
+        "npm_response_too_large",
+        "npm_response_too_large",
+        "npm_response_too_large"
+      ],
+      "pairedPublicReadback": true,
+      "queue": {
+        "at": "2026-10-05T13:12:45.476Z",
+        "status": "completed_with_limitations",
+        "jobs": 0,
+        "locks": 0,
+        "attempts": null
+      }
+    },
+    "originalReports": [
+      {
+        "analysisId": "45493416-4118-493a-9c46-e7ec0ca2c07c",
+        "sha256": "ade024152296b41fc463fd3f34e28a6ef856d028f34a6b7b6e352e6f1b86fbeb"
+      },
+      {
+        "analysisId": "66236ad2-a324-4ddc-8426-47c43b458dc1",
+        "sha256": "19f2676ba172d0ff71fd17bfa9250b871d6829714d6c85388f031f4889db3a96"
+      }
+    ],
+    "finalPublicReadback": {
+      "observedAt": "2026-10-05T13:16:23.033Z",
+      "reports": [
+        {
+          "analysisId": "45493416-4118-493a-9c46-e7ec0ca2c07c",
+          "sha256": "ade024152296b41fc463fd3f34e28a6ef856d028f34a6b7b6e352e6f1b86fbeb"
+        },
+        {
+          "analysisId": "66236ad2-a324-4ddc-8426-47c43b458dc1",
+          "sha256": "19f2676ba172d0ff71fd17bfa9250b871d6829714d6c85388f031f4889db3a96"
+        },
+        {
+          "analysisId": "e206f789-4b24-4402-8e86-b7e7a57bdb4f",
+          "sha256": "2d8b0514f8bc412f52b367e043286560cbe21041b3d527b571eebbc2a20e82d8"
+        }
+      ],
+      "queue": {
+        "jobs": 0,
+        "locks": 0
+      },
+      "origins": [
+        "https://stacklens-api.vercel.app",
+        "https://stacklens-web.vercel.app"
+      ],
+      "strictReportReads": 6,
+      "matchingHashes": true,
+      "openApi31Reads": 2,
+      "missingAnalysisChecks": 2,
+      "missingStatus": 404,
+      "missingCode": "analysis_not_found",
+      "missingNoStore": true,
+      "workerState": "Offline"
+    }
+  },
+  "idleStop": {
+    "requestedAt": "2026-10-05T13:15:45.695Z",
+    "observedOfflineAt": "2026-10-05T13:16:10.037Z",
+    "signal": "SIGINT",
+    "startupPending": false,
+    "completed": true,
+    "stageElapsedMs": {
+      "runner": 198,
+      "delivery": 1,
+      "retention": 1,
+      "worker_utils": 0,
+      "database_pool": 1
+    },
+    "exitCode": null,
+    "method": "Visually reviewed native console screenshot and Offline badge; stage durations are application monotonic measurements, not panel latency",
+    "screenshotSha256": "5f1fffcaad11c4bf9102b9e0894c6ef5747fb69ac9690ddd18cd106b963db66f"
+  },
+  "finalRestart": {
+    "requestedAt": "2026-10-05T13:16:51.558Z",
+    "observedReadyAt": "2026-10-05T13:20:03.476Z",
+    "state": "Running",
+    "nodeVersion": "24.17.0",
+    "queueConnected": true,
+    "queueOwner": "pool-c11739b57fe5e99a7",
+    "screenshotSha256": "8b3a246eefa8685f2390ad0deb1436bcdc61a89d571494225cd031335c8c2c62",
+    "method": "Visually reviewed native screenshot with Running badge and current queue-owner/Worker connected log"
+  },
+  "finalDatabaseState": {
+    "at": "2026-10-05T13:21:58.793Z",
+    "state": {
+      "queued": 0,
+      "running": 0,
+      "terminal": 3
+    },
+    "queue": {
+      "jobs": 0,
+      "locked_jobs": 0
+    },
+    "clients": {
+      "clients": 5,
+      "idle_transactions": 0
+    },
+    "reports": [
+      {
+        "analysisId": "45493416-4118-493a-9c46-e7ec0ca2c07c",
+        "sha256": "ade024152296b41fc463fd3f34e28a6ef856d028f34a6b7b6e352e6f1b86fbeb"
+      },
+      {
+        "analysisId": "66236ad2-a324-4ddc-8426-47c43b458dc1",
+        "sha256": "19f2676ba172d0ff71fd17bfa9250b871d6829714d6c85388f031f4889db3a96"
+      },
+      {
+        "analysisId": "e206f789-4b24-4402-8e86-b7e7a57bdb4f",
+        "sha256": "2d8b0514f8bc412f52b367e043286560cbe21041b3d527b571eebbc2a20e82d8"
+      }
+    ],
+    "status": "verified_drain"
+  },
+  "protectedSettings": {
+    "privateConfigurationWrites": 0,
+    "startupConfigurationWrites": 0,
+    "workerConcurrency": 1,
+    "workerPoolMax": 5,
+    "nativeHeapMiB": 96,
+    "syntheticHostedPreload": false,
+    "newAccessKeys": 0,
+    "administrativeUnlocks": 0,
+    "historicalReportRewrites": 0,
+    "paidPlanChanges": 0
+  },
+  "validation": {
+    "localDatabaseBackedPnpmCheck": "passed",
+    "vitestTests": 569,
+    "nodeTests": 31,
+    "browserCases": 18,
+    "workerTests": 32,
+    "sourceUnchangedSinceImplementationQualityRun": true,
+    "linuxRehearsal": "2026-10-05-worker-lifecycle.json"
+  },
+  "limits": [
+    "Historical October 4 stalled Stop cause remains unconfirmed; successful controlled stops do not erase it",
+    "Stage elapsed time is an application monotonic measurement, not exact OS exit latency; hosted OS exit code is not observed",
+    "Panel outer-shell process-group SIGTERM remains an abrupt-exit limitation in the local negative control",
+    "This verifies planned interruption on existing compute, not workstation loss, replacement compute, abrupt host loss or automatic failover",
+    "Capacity, managed Free restore/retention, actual Function suspension and deferred manual acceptance remain separate gates"
+  ]
+}

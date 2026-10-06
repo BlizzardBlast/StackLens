@@ -1,7 +1,7 @@
 # Managed hosting setup
 
 > **Status:** Public stack and Worker planned recovery verified; constrained capacity/manual gates remain\
-> **Updated:** 2026-10-04\
+> **Updated:** 2026-10-05\
 > **Requirements:** PRD-006, FR-001/003/004/022, NFR-004/008/009, SEC-001/002/003/007, GOV-002/006/007\
 > **Decision:** [ADR-0015](../adr/0015-vercel-static-web-target.md)
 
@@ -31,6 +31,15 @@ Two public jobs finish with strict limited reports; sampled Worker memory reache
 database clients seven, ending with zero API clients and an empty queue. Three older report hashes
 remain unchanged. A successful 1,181 ms initialization event is startup evidence; actual platform
 suspension/resume remains unobserved.
+
+The October 5 [Worker lifecycle rollout](release-evidence/2026-10-05-worker-shutdown-rollout.json)
+publishes PR #48 after the initial platform-start/file-service failure clears. The original service
+is restored and drained before six diagnostic modules/maps are saved and byte-compared through
+the file editor. No startup/private configuration is changed. Hosted active and idle normal SIGINT
+Stops complete every cleanup stage and reach offline; the interrupted public analysis finishes
+under the same ID after restart. Two older report hashes match, all three direct/proxy report
+reads pass and the queue is empty. The Worker is restarted for normal preview use. The PR #46
+artifact remains the rollback package; the historical stalled Stop cause remains unconfirmed.
 
 The first scheduled encrypted refresh remains independently verified. A later operator invocation
 of the same maintenance procedure restores four reports with seven matching fingerprints and
