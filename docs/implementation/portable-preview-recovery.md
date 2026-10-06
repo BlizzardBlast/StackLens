@@ -34,6 +34,7 @@ already exist; restore creates a new UUID-owned database and never overwrites an
 
 ```sh
 pnpm build
+docker pull postgres:18-alpine
 node scripts/operations/portable-recovery.mjs capture-fixture .cache/portable-bundle .cache/operations/portable-capture.json
 # Stop/remove the owned source cluster if it is disposable; use the target cluster's URL next.
 node scripts/operations/portable-recovery.mjs recover-fixture .cache/portable-bundle .cache/operations/portable-restore.json
@@ -106,3 +107,15 @@ activation remain pending approval; do not infer that a prepared workflow has ru
 data. Before public replacement acceptance, choose an approved zero-cost persistent compute
 target and separately verify public routing, production providers and rollback. Keep managed Free
 restore/retention, Function suspension, general capacity and device/spoken acceptance separate.
+
+[PR #49](https://github.com/BlizzardBlast/StackLens/pull/49) publishes implementation commit
+`a0bc39a` against dependency PR #48. Its initial quality and portable-recovery runs are
+`37322070077` and `37322070076`; resolve final conclusions and the final branch head from the
+[dated record](release-evidence/2026-10-05-portable-recovery.json).
+
+The first cloud runs fail: guard tests assume `.cache` exists on checkout, and fixture capture
+ends before handoff with successful owned cleanup. The October 6 correction creates the owned
+parent and pulls `postgres:18-alpine` explicitly before binary dump capture. Docker download
+messages must not be confused with PostgreSQL diagnostics; strict dump stderr checks remain.
+Evidence now records fixed phase names and allowlisted failure codes. Keep failed runs separate
+from the new acceptance result rather than rewriting them as successful rehearsals.

@@ -46,6 +46,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Prepare PostgreSQL client image before capturing binary output
+        run: docker pull postgres:18-alpine
       - name: Capture verified TLS snapshot while original compute is stopped
         env:
           STACKLENS_RECOVERY_DATABASE: ${{ secrets.STACKLENS_RECOVERY_DATABASE }}
@@ -103,6 +105,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Prepare PostgreSQL client image
+        run: docker pull postgres:18-alpine
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: preview-recovery-encrypted

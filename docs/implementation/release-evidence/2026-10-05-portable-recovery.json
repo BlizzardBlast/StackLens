@@ -1,5 +1,5 @@
 {
-  "status": "local_verified_cloud_pending_live_activation_pending",
+  "status": "cloud_retry_pending_live_activation_pending",
   "requirementIds": [
     "FR-003",
     "FR-017",
@@ -113,5 +113,75 @@
     "live protected secret custody and preview-data recovery pending",
     "persistent public replacement and cutover pending",
     "no continuously refreshed offsite policy or exact platform deletion guarantee"
-  ]
+  ],
+  "publication": {
+    "pullRequest": 49,
+    "url": "https://github.com/BlizzardBlast/StackLens/pull/49",
+    "implementationCommit": "a0bc39a11b3c196aa3b616979d68ec83835f011b",
+    "basePullRequest": 48,
+    "baseBranch": "codex/worker-shutdown",
+    "qualityRunId": 37322070077,
+    "portableRunId": 37322070076,
+    "cloudAcceptance": "pending",
+    "liveActivation": "not_started_no_secret_or_hosting_changes"
+  },
+  "cloudFailures": [
+    {
+      "headCommit": "a0bc39a11b3c196aa3b616979d68ec83835f011b",
+      "qualityRunId": 37322070077,
+      "qualityFailure": "three CLI guard tests assume .cache parent exists",
+      "portableRunId": 37322070076,
+      "captureJobId": 111803381679,
+      "recoverySkipped": true,
+      "artifactId": 11351011339,
+      "artifactSha256": "4cf821f0fca5da047db080e39a5d8c9842cf555582815622d8d5c166b11be8f0",
+      "capture": {
+        "requirementIds": [
+          "FR-003",
+          "FR-017",
+          "FR-021",
+          "FR-022",
+          "NFR-008",
+          "NFR-009",
+          "SEC-003",
+          "SEC-007"
+        ],
+        "startedAt": "2026-10-05T14:07:32.556Z",
+        "status": "failed",
+        "scope": "fixture",
+        "providers": "synthetic replacement-runtime verification; historical reports are never rescored",
+        "baseCommit": "7eaca2b22e1823ef21d8bf04b8e559d448961d68",
+        "sourceHashes": {
+          "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+          "apps/worker/src/runtime.ts": "ebdbddf163b6258a4f52f3ee9f1dcb0b660b223e77b6cec176e3565d5e3a1014",
+          "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+        },
+        "cleanupFailures": [],
+        "cleanedUp": true,
+        "finishedAt": "2026-10-05T14:07:40.458Z"
+      },
+      "coldImageDiagnosticInference": "Separate docker --pull=always probe returns exit 0, pg_dump version on stdout, and pull messages on stderr; workflow now prepares image before strict dump capture"
+    }
+  ],
+  "retryPreparation": {
+    "operatorHashes": {
+      "scripts/operations/portable-recovery.mjs": "deb160f60da44c7c5c1c1eda7d9b7b7486ac311e3d487e62d1bd74b5a994c11f",
+      "scripts/operations/portable-recovery-bundle.mjs": "5194db120c0345f62b803f1b3b45fe4b83c27d53609c98a654eaddeae657c1b0",
+      "scripts/operations/backup.mjs": "cbe027a9cea8584c1ba242211049f82ea7b8391d91d24db746c8f502d02ed50f",
+      ".github/workflows/portable-recovery.yml": "79f3a6d635ad18acff81129a62c29a3372341f2bc144e8af2eeea13de5dd83b5",
+      ".github/workflows/preview-recovery.yml": "decffe3278d78010774c0a4739a7390cbaebf06472a44a678abece7f1177ed69"
+    },
+    "localFocusedTests": "six passed on October 6",
+    "localVerification": {
+      "completedAt": "2026-10-06T10:57:00Z",
+      "fullCheckAttempt": "build, compiled runtime smoke, typecheck and all 606 Node/Vitest tests passed; 16 browser cases passed, two hit 30-second timeouts",
+      "browserRerun": "both failed cases passed separately with unchanged test timeouts",
+      "focusedRerun": "six recovery tests passed separately; an earlier concurrent run timed out one CLI child at 15 seconds",
+      "lint": "passed",
+      "formatCheck": "passed"
+    },
+    "cloudAcceptance": "pending",
+    "liveActivation": "not_started",
+    "localInitialGateFailure": "Docker source PostgreSQL container was already exited for 12 hours; runtime smoke failed before tests; existing dev:infra restarted without data reset"
+  }
 }

@@ -43,6 +43,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Prepare PostgreSQL client image before capturing binary output
+        run: docker pull postgres:18-alpine
       - name: Capture interrupted fixture and confirm original process exit
         run: node scripts/operations/portable-recovery.mjs capture-fixture "$RUNNER_TEMP/stacklens-recovery" "$RUNNER_TEMP/portable-capture.json"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -93,6 +95,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Prepare PostgreSQL client image
+        run: docker pull postgres:18-alpine
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: portable-recovery-fixture

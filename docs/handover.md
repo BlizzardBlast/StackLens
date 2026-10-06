@@ -1,9 +1,9 @@
 # StackLens Session Handover
 
-> **Prepared:** 2026-10-05\
+> **Prepared:** 2026-10-06\
 > **Architecture:** v0.1.24; requirements v0.1.3\
 > **Milestone:** Portable encrypted recovery on replacement compute; live activation pending\
-> **Branch:** `codex/portable-preview-recovery`, existing checkout; depends on [PR #48](https://github.com/BlizzardBlast/StackLens/pull/48); resolve milestone publication, final head, CI and merge state\
+> **Branch:** `codex/portable-preview-recovery`, existing checkout; [PR #49](https://github.com/BlizzardBlast/StackLens/pull/49) depends on [PR #48](https://github.com/BlizzardBlast/StackLens/pull/48); resolve final head, CI and merge state\
 > **Source main at capture:** `5adcee87f39d5046190f560de90fc1c321567d55`, including merged [PR #47](https://github.com/BlizzardBlast/StackLens/pull/47); independently resolve current source and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009, SEC-001/002/003/007, GOV-002/006/007
 
@@ -27,6 +27,12 @@ The full database-backed quality gate and final published cloud fixture evidence
 the [portable recovery record](implementation/release-evidence/2026-10-05-portable-recovery.json).
 Resolve their exact source heads independently; early local captures retain their dirty PR #48 base.
 
+The first published cloud runs fail. CLI tests assume the ignored `.cache` parent exists; fixture
+capture fails before handoff but confirms complete owned cleanup. The October 6 correction creates
+the parent, prepares the PostgreSQL client image before capturing dump output, and records fixed
+failure-stage names/allowlisted codes. Initial failures remain in the dated record. Resolve the new
+exact-head quality and fresh-runner conclusions before marking this milestone ready.
+
 The separate manual preview workflow is restricted to this repository's `main` and a protected
 `preview-recovery` environment. It requires new secret-custody approval and original API/Worker
 offline confirmation, checks drained state and never unlocks live copied claims. No environment
@@ -35,7 +41,7 @@ the separately stored key and encrypted artifact, and uses synthetic providers f
 Live preview-data recovery, persistent public replacement/cutover and continuous offsite refresh/
 physical deletion policy remain gates. Existing local backup scheduling and finite expiry are unchanged.
 
-Next session: resolve this milestone PR and dependency PR #48 before merging, then verify current
+Next session: resolve milestone PR #49 and dependency PR #48 before merging, then verify current
 `main` and actual hosting revisions. Follow the [runbook](implementation/portable-preview-recovery.md)
 for the concrete activation scope; do not treat fixture CI as live archive acceptance. No future
 squash SHA or post-merge documentation PR is required. Managed Free restore/retention, Function

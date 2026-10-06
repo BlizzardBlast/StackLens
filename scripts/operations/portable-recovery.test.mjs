@@ -9,8 +9,10 @@ import test from "node:test";
 import { root } from "./common.mjs";
 
 async function failure(action, environment = {}, existing = false) {
-  const directory = resolve(root, ".cache", `portable-guard-${randomUUID()}`);
-  await mkdir(directory);
+  const ownedRoot = resolve(root, ".cache", `portable-guard-${randomUUID()}`);
+  // The intermediate parent is absent on every run, even in a warm workstation checkout.
+  const directory = resolve(ownedRoot, "fresh-parent", "case");
+  await mkdir(directory, { recursive: true });
   const bundle = resolve(directory, "bundle");
   if (existing) {
     await mkdir(bundle);
@@ -53,8 +55,8 @@ async function failure(action, environment = {}, existing = false) {
       assert.equal(await readFile(resolve(bundle, "unknown.txt"), "utf8"), "preserve-me");
     else await assert.rejects(readFile(resolve(bundle, "database.slbackup")), { code: "ENOENT" });
   } finally {
-    assert.match(relative(resolve(root, ".cache"), directory), /^portable-guard-[0-9a-f-]{36}$/u);
-    await rm(directory, { recursive: true, force: true });
+    assert.match(relative(resolve(root, ".cache"), ownedRoot), /^portable-guard-[0-9a-f-]{36}$/u);
+    await rm(ownedRoot, { recursive: true, force: true });
   }
 }
 

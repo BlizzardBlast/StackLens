@@ -58,6 +58,7 @@ const evidence = {
   ],
   startedAt: new Date().toISOString(),
   status: "pending",
+  phase: "validate_inputs",
   scope,
   providers: "synthetic replacement-runtime verification; historical reports are never rescored",
 };
@@ -106,6 +107,7 @@ async function stopChild() {
   await until(() => child.exitCode !== null || child.signalCode !== null);
 }
 async function fixtureCapture() {
+  evidence.phase = "create_fixture";
   const url = requireLocalDatabase(localEnvironment.DATABASE_URL);
   const databaseName = `stacklens_portable_${randomUUID().replaceAll("-", "")}`;
   admin = createStackLensPool(url.toString(), undefined, { max: 1 });
@@ -172,6 +174,7 @@ async function fixtureCapture() {
     repositoryUrl: "https://github.com/acme/demo",
     createdAt: new Date(Date.now() + 3_600_000).toISOString(),
   });
+  evidence.phase = "capture_snapshot";
   const snapshot = await createBackup(
     { DATABASE_URL: connectionString },
     resolve(directory, bundleFiles[0]),
@@ -179,6 +182,7 @@ async function fixtureCapture() {
     privateDirectory,
   );
   assert.equal(snapshot.source["graphile_worker._private_jobs"].count, 2);
+  evidence.phase = "confirm_original_exit";
   await api.stop();
   api = undefined;
   await stopChild();
@@ -199,6 +203,7 @@ async function fixtureCapture() {
 }
 
 async function previewCapture() {
+  evidence.phase = "verify_drained_source";
   assert.equal(
     process.env.STACKLENS_ORIGINAL_COMPUTE_OFFLINE,
     "true",
@@ -216,6 +221,7 @@ async function previewCapture() {
       : {}),
   });
   await assertDrained(pool);
+  evidence.phase = "capture_snapshot";
   const snapshot = await createBackup(
     environment,
     resolve(directory, bundleFiles[0]),
@@ -236,9 +242,11 @@ async function assertDrained(connection) {
 }
 
 async function recover() {
+  evidence.phase = "authenticate_bundle";
   // Authenticate both ciphertexts, scope and source-run binding before creating any database.
   const { value, header } = await readRecoveryBundle(directory, key, scope, sourceRunId);
   const targetUrl = requireLocalDatabase(localEnvironment.DATABASE_URL);
+  evidence.phase = "restore_snapshot";
   const restored = await restoreBackup(
     localEnvironment,
     resolve(directory, bundleFiles[0]),
@@ -247,6 +255,7 @@ async function recover() {
   );
   ownedDatabase = restored.databaseName;
   admin = createStackLensPool(targetUrl.toString(), undefined, { max: 1 });
+  evidence.phase = "verify_restored_state";
   assert.deepEqual(restored.restoredSnapshot, value.source);
   assert.equal(restored.queueStarted, false);
   pool = createStackLensPool(restored.connectionString, undefined, { max: 1 });
@@ -271,6 +280,7 @@ async function recover() {
       value.fixture.outboxId,
     ]);
   } else await assertDrained(pool); // Live copied claims are never unlocked or replayed automatically.
+  evidence.phase = "start_replacement_runtime";
   worker = await startWorker(restored.connectionString, repository);
   if (scope === "fixture") {
     for (const id of [value.fixture.activeId, value.fixture.queuedId, value.fixture.outboxId])
@@ -284,6 +294,7 @@ async function recover() {
     databaseMode: "worker-managed",
     databasePoolOptions: { max: 2 },
   });
+  evidence.phase = "verify_http";
   const origin = await api.app.listen({ host: "127.0.0.1", port: 0 });
   const request = async (path, options) =>
     fetch(`${origin}${path}`, { ...options, signal: AbortSignal.timeout(10_000) });
@@ -359,6 +370,7 @@ try {
     const { snapshot, executor, fixture } = await (scope === "fixture"
       ? fixtureCapture()
       : previewCapture());
+    evidence.phase = "seal_metadata";
     await sealRecoveryMetadata(
       directory,
       key,
@@ -383,7 +395,18 @@ try {
     evidence.originalExecutor = executor.kind;
   } else await recover();
   evidence.status = "verified";
-} catch {
+  evidence.phase = "verified";
+} catch (error) {
+  evidence.failureStage = evidence.phase;
+  evidence.failureCode = [
+    "postgresql_backup_diagnostics",
+    "operational_subprocess_failed",
+    "operational_subprocess_timeout",
+    "backup_unreadable_or_expired",
+    "recovery_bundle_unreadable_or_expired",
+  ].includes(error?.message)
+    ? error.message
+    : "recovery_verification_failed";
   evidence.status = "failed";
   process.exitCode = 1;
 } finally {

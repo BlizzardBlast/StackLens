@@ -2831,3 +2831,27 @@ guidance, implementation runbook and complete handover reflect these boundaries.
 analyzer/scoring policy, report schemas, product UI and tokens are unchanged.
 
 **Traceability:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007.
+
+## 2026-10-06 — Correct fresh-runner recovery setup
+
+PR #49's first cloud quality run exposes a fresh-checkout assumption: CLI guard tests create a
+directory beneath `.cache` before that parent exists. The fixture capture also fails after its
+completed jobs and removes all owned resources; the replacement job correctly stays skipped.
+A separate Docker probe confirms image-pull messages can appear on stderr alongside successful
+`pg_dump` output. Workflows now prepare the PostgreSQL client image before binary capture, keeping
+the backup tool's strict diagnostic rejection intact. Tests create their owned cache parent.
+Fixed phase names and allowlisted failure codes make operational failures diagnosable without
+logging private configuration, dumps or exception text.
+
+The initial failed runs and successful cleanup remain in the dated evidence. Local focused tests,
+the full quality gate and new fresh-runner acceptance are checked before declaring this correction
+complete. Live secret activation remains pending. The recovery runbook and complete handover
+retain PR dependency order, isolated/synthetic scope and remaining public replacement limits.
+Accepted requirements, analyzer/scoring policy, report readers, UI and tokens are unchanged.
+
+**Traceability:** NFR-008/009, SEC-003/007, GOV-002/006/007.
+
+Local follow-through on October 6 passes build, compiled runtime smoke, typecheck and all 606
+Node/Vitest tests. Two browser cases time out during the full run and pass when rerun separately;
+all six focused recovery tests pass separately after one concurrent CLI timeout. Lint and formatting
+pass. The failed attempts remain recorded; fresh-runner cloud acceptance is still pending.
