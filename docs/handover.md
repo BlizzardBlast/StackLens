@@ -25,6 +25,11 @@ one retained report, one expired removal and rollback of mismatched/undrained ta
 test databases and temporary private files are removed. The
 [preparation evidence](implementation/release-evidence/2026-10-06-persistent-recovery.json) preserves
 earlier test attempts and source hashes; resolve final quality and publication checks independently.
+Implementation head `298b96b` passes fresh quality `37466900165` and portable run `37466900182`.
+Quality verifies the client-image prerequisite and all new staging checks on Linux; the full local
+database-backed gate also passes 48 Node, 569 Vitest and 18 browser checks. Complete read-only
+agent self-review approves preparation after the focused CI prerequisite correction. Resolve the
+final documentation head and its checks from PR #51 before merging; no independent review is implied.
 
 Two attempts to create `stacklens-worker-recovery` with the no-card Free Node.js plan receive
 Silly's backend capacity rejection. Both forms are cancelled; no replacement service, paid plan,

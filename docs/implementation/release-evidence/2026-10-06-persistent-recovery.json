@@ -60,6 +60,17 @@
     "browserCasesPassed": 18,
     "unchangedTurboPackageTasksReused": true,
     "reviewRemediation": "CR-P1-001: quality CI prepares the official PostgreSQL alpine client before binary backup tests; fresh-runner CI verifies this prerequisite",
+    "publishedAcceptance": {
+      "pr": "https://github.com/BlizzardBlast/StackLens/pull/51",
+      "checkedHead": "298b96bfb68a6e0488148a27e8d27bff71082d42",
+      "qualityRun": "37466900165",
+      "qualityJob": "112280126974",
+      "portableRun": "37466900182",
+      "bothRunsSucceeded": true,
+      "freshRunnerPersistentStagingChecksPassed": true,
+      "agentSelfReview": "COMPLETE / APPROVE after CR-P1-001 remediation",
+      "resolveFinalDocumentationHeadAndChecksFromPr": true
+    },
     "earlierAttempts": [
       "First focused invocation omitted TEST_DATABASE_URL because of shell quoting; database case skipped. Corrected invocation ran the database case.",
       "First database success assertion compared parsed and raw JSON hashes; corrected evidence hashes stored JSON consistently after strict validation. Rejected-copy cleanup already passed.",

@@ -2939,6 +2939,9 @@ the dated preparation evidence. Earlier failures remain separate from the succes
 Final read-only review identifies that quality CI must prepare the PostgreSQL alpine client before
 binary backup tests; the existing portable workflow supplies that pattern. Quality CI and local
 operator prerequisites now include this preparation. Fresh-runner CI verifies the correction.
+Head `298b96b` passes quality `37466900165` and portable run `37466900182`; quality confirms all
+eleven new staging checks without skips. The complete scoped agent self-review approves preparation
+after that correction. Resolve the final documentation-head checks independently before merge.
 
 Documentation-impact review updates ADR-0021, architecture v0.1.25, contributor test guidance,
 README, a concrete staging/activation runbook and complete handover. Requirements, serialized
