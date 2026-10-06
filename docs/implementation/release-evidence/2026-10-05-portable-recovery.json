@@ -1,0 +1,343 @@
+{
+  "status": "fixture_verified_live_activation_pending",
+  "requirementIds": [
+    "FR-003",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "NFR-008",
+    "NFR-009",
+    "SEC-003",
+    "SEC-007",
+    "GOV-007"
+  ],
+  "baseCommit": "de6b992606afa5aee9707293bd5f62e547277de9",
+  "uncommittedSource": true,
+  "operatorHashes": {
+    "scripts/operations/portable-recovery.mjs": "3129b45e83e345a1f010640db333b9649de0dade9c100c1cd1275867e9ea4e16",
+    "scripts/operations/portable-recovery-bundle.mjs": "5194db120c0345f62b803f1b3b45fe4b83c27d53609c98a654eaddeae657c1b0",
+    "scripts/operations/backup.mjs": "cbe027a9cea8584c1ba242211049f82ea7b8391d91d24db746c8f502d02ed50f",
+    ".github/workflows/portable-recovery.yml": "08386bd665b4cab553758d63e8fd695e2ebd5a3c37351248b37ce63091fb20c2",
+    ".github/workflows/preview-recovery.yml": "50ac73822c248042c37171fecca83bfb2819ea3a434b353204c30f46fb1a597b"
+  },
+  "local": {
+    "capture": {
+      "requirementIds": [
+        "FR-003",
+        "FR-017",
+        "FR-021",
+        "FR-022",
+        "NFR-008",
+        "NFR-009",
+        "SEC-003",
+        "SEC-007"
+      ],
+      "startedAt": "2026-10-05T14:02:13.926Z",
+      "status": "verified",
+      "scope": "fixture",
+      "providers": "synthetic replacement-runtime verification; historical reports are never rescored",
+      "baseCommit": "de6b992606afa5aee9707293bd5f62e547277de9",
+      "sourceHashes": {
+        "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+        "apps/worker/src/runtime.ts": "ebdbddf163b6258a4f52f3ee9f1dcb0b660b223e77b6cec176e3565d5e3a1014",
+        "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+      },
+      "backup": {
+        "createdAt": "2026-10-05T14:02:18.571Z",
+        "expiresAt": "2026-10-06T14:02:18.571Z",
+        "archiveSha256": "5fa4c54127d3287d52836f3680c700144eda830f31820e35390ff02c350d4f51"
+      },
+      "originalExecutor": "confirmed_child_exit",
+      "cleanupFailures": [],
+      "cleanedUp": true,
+      "finishedAt": "2026-10-05T14:02:19.042Z"
+    },
+    "recovery": {
+      "requirementIds": [
+        "FR-003",
+        "FR-017",
+        "FR-021",
+        "FR-022",
+        "NFR-008",
+        "NFR-009",
+        "SEC-003",
+        "SEC-007"
+      ],
+      "startedAt": "2026-10-05T14:02:54.695Z",
+      "status": "verified",
+      "scope": "fixture",
+      "providers": "synthetic replacement-runtime verification; historical reports are never rescored",
+      "baseCommit": "de6b992606afa5aee9707293bd5f62e547277de9",
+      "sourceHashes": {
+        "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+        "apps/worker/src/runtime.ts": "ebdbddf163b6258a4f52f3ee9f1dcb0b660b223e77b6cec176e3565d5e3a1014",
+        "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+      },
+      "replayed": {
+        "activeQueueJob": 1,
+        "queuedJob": 1,
+        "pendingOutbox": 1
+      },
+      "backup": {
+        "createdAt": "2026-10-05T14:02:18.571Z",
+        "expiresAt": "2026-10-06T14:02:18.571Z",
+        "sourceCommit": "de6b992606afa5aee9707293bd5f62e547277de9",
+        "sourceRunId": "1",
+        "archiveSha256": "5fa4c54127d3287d52836f3680c700144eda830f31820e35390ff02c350d4f51"
+      },
+      "snapshotHashesMatched": true,
+      "expiredTerminalRowsRemoved": 1,
+      "historicalReportsUnchanged": 1,
+      "httpReadbacks": 5,
+      "newDurableSubmissionCompleted": true,
+      "originalResourcesContactedDuringRecovery": false,
+      "cleanupFailures": [],
+      "cleanedUp": true,
+      "finishedAt": "2026-10-05T14:02:57.042Z"
+    }
+  },
+  "quality": {
+    "databaseBacked": true,
+    "command": "pnpm check",
+    "passed": true,
+    "vitestTests": 569,
+    "nodeTests": 37,
+    "browserCases": 18,
+    "turboTestTasksCached": 22,
+    "finalSourceCheckPending": false,
+    "completedAt": "2026-10-05T14:05:58.062Z"
+  },
+  "limits": [
+    "synthetic providers and owned loopback HTTP target",
+    "cloud runner acceptance pending",
+    "live protected secret custody and preview-data recovery pending",
+    "persistent public replacement and cutover pending",
+    "no continuously refreshed offsite policy or exact platform deletion guarantee"
+  ],
+  "publication": {
+    "pullRequest": 49,
+    "url": "https://github.com/BlizzardBlast/StackLens/pull/49",
+    "implementationCommit": "a0bc39a11b3c196aa3b616979d68ec83835f011b",
+    "basePullRequest": 48,
+    "baseBranch": "codex/worker-shutdown",
+    "qualityRunId": 37453297502,
+    "portableRunId": 37453297494,
+    "cloudAcceptance": "verified_fixture_only",
+    "liveActivation": "not_started_no_secret_or_hosting_changes",
+    "verifiedImplementationCommit": "6e0aa9020ada0b8785c0094be9c41616811ff91f"
+  },
+  "cloudFailures": [
+    {
+      "headCommit": "a0bc39a11b3c196aa3b616979d68ec83835f011b",
+      "qualityRunId": 37322070077,
+      "qualityFailure": "three CLI guard tests assume .cache parent exists",
+      "portableRunId": 37322070076,
+      "captureJobId": 111803381679,
+      "recoverySkipped": true,
+      "artifactId": 11351011339,
+      "artifactSha256": "4cf821f0fca5da047db080e39a5d8c9842cf555582815622d8d5c166b11be8f0",
+      "capture": {
+        "requirementIds": [
+          "FR-003",
+          "FR-017",
+          "FR-021",
+          "FR-022",
+          "NFR-008",
+          "NFR-009",
+          "SEC-003",
+          "SEC-007"
+        ],
+        "startedAt": "2026-10-05T14:07:32.556Z",
+        "status": "failed",
+        "scope": "fixture",
+        "providers": "synthetic replacement-runtime verification; historical reports are never rescored",
+        "baseCommit": "7eaca2b22e1823ef21d8bf04b8e559d448961d68",
+        "sourceHashes": {
+          "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+          "apps/worker/src/runtime.ts": "ebdbddf163b6258a4f52f3ee9f1dcb0b660b223e77b6cec176e3565d5e3a1014",
+          "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+        },
+        "cleanupFailures": [],
+        "cleanedUp": true,
+        "finishedAt": "2026-10-05T14:07:40.458Z"
+      },
+      "coldImageDiagnosticInference": "Separate docker --pull=always probe returns exit 0, pg_dump version on stdout, and pull messages on stderr; workflow now prepares image before strict dump capture"
+    }
+  ],
+  "retryPreparation": {
+    "operatorHashes": {
+      "scripts/operations/portable-recovery.mjs": "deb160f60da44c7c5c1c1eda7d9b7b7486ac311e3d487e62d1bd74b5a994c11f",
+      "scripts/operations/portable-recovery-bundle.mjs": "5194db120c0345f62b803f1b3b45fe4b83c27d53609c98a654eaddeae657c1b0",
+      "scripts/operations/backup.mjs": "cbe027a9cea8584c1ba242211049f82ea7b8391d91d24db746c8f502d02ed50f",
+      ".github/workflows/portable-recovery.yml": "79f3a6d635ad18acff81129a62c29a3372341f2bc144e8af2eeea13de5dd83b5",
+      ".github/workflows/preview-recovery.yml": "decffe3278d78010774c0a4739a7390cbaebf06472a44a678abece7f1177ed69"
+    },
+    "localFocusedTests": "six passed on October 6",
+    "localVerification": {
+      "completedAt": "2026-10-06T10:57:00Z",
+      "fullCheckAttempt": "build, compiled runtime smoke, typecheck and all 606 Node/Vitest tests passed; 16 browser cases passed, two hit 30-second timeouts",
+      "browserRerun": "both failed cases passed separately with unchanged test timeouts",
+      "focusedRerun": "six recovery tests passed separately; an earlier concurrent run timed out one CLI child at 15 seconds",
+      "lint": "passed",
+      "formatCheck": "passed",
+      "secondFullCheckAttempt": "PostgreSQL connection-budget test timed out connecting while operations ran concurrently; the isolated rerun passed in 304 ms; no test timeout or production behavior changed"
+    },
+    "cloudAcceptance": "verified_fixture_only",
+    "liveActivation": "not_started",
+    "localInitialGateFailure": "Docker source PostgreSQL container was already exited for 12 hours; runtime smoke failed before tests; existing dev:infra restarted without data reset"
+  },
+  "cloudAcceptance": {
+    "headCommit": "6e0aa9020ada0b8785c0094be9c41616811ff91f",
+    "checkoutMergeCommit": "53ebeb7ecbdf59eaf62c9a55b62755cdc2d27491",
+    "baseCommit": "de6b992606afa5aee9707293bd5f62e547277de9",
+    "scope": "synthetic fixture across two independent GitHub Ubuntu jobs",
+    "quality": {
+      "runId": 37453297502,
+      "jobId": 112234742111,
+      "conclusion": "success",
+      "vitestTests": 569,
+      "nodeTests": 37,
+      "browserCases": 18,
+      "completedAt": "2026-10-06T11:01:39.143Z",
+      "compiledRuntimeSmoke": true,
+      "typecheck": true,
+      "lint": true,
+      "formatCheck": true
+    },
+    "portable": {
+      "runId": 37453297494,
+      "captureJobId": 112234742082,
+      "recoverJobId": 112235090714,
+      "conclusion": "success"
+    },
+    "artifacts": [
+      {
+        "id": 11407696513,
+        "name": "portable-capture-evidence",
+        "sha256": "22b7840b8bce8c112f4bc0ad36f6cb1a77142b178e425f9930802eae993442cc"
+      },
+      {
+        "id": 11408865138,
+        "name": "portable-restore-evidence",
+        "sha256": "90d9f824fc919d7809eb2fe026c91cca61559608aee58fbd4d2dbc4dbcf1b9e0"
+      },
+      {
+        "id": 11407981292,
+        "name": "portable-recovery-fixture",
+        "sha256": "36231c4c83031bfbbc4ea4c7fb4948da1edf392a143772732125a988e7dad6bd"
+      }
+    ],
+    "capture": {
+      "requirementIds": [
+        "FR-003",
+        "FR-017",
+        "FR-021",
+        "FR-022",
+        "NFR-008",
+        "NFR-009",
+        "SEC-003",
+        "SEC-007"
+      ],
+      "startedAt": "2026-10-06T10:59:10.128Z",
+      "status": "verified",
+      "phase": "verified",
+      "scope": "fixture",
+      "providers": "synthetic replacement-runtime verification; historical reports are never rescored",
+      "baseCommit": "53ebeb7ecbdf59eaf62c9a55b62755cdc2d27491",
+      "sourceHashes": {
+        "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+        "apps/worker/src/runtime.ts": "ebdbddf163b6258a4f52f3ee9f1dcb0b660b223e77b6cec176e3565d5e3a1014",
+        "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+      },
+      "backup": {
+        "createdAt": "2026-10-06T10:59:13.299Z",
+        "expiresAt": "2026-10-07T10:59:13.299Z",
+        "archiveSha256": "2fa66106f45aaa420db2a0e023c3b88234d14f422aa7dc0b4b1653ceb1f4d51c"
+      },
+      "originalExecutor": "confirmed_child_exit",
+      "cleanupFailures": [],
+      "cleanedUp": true,
+      "finishedAt": "2026-10-06T10:59:13.604Z"
+    },
+    "recovery": {
+      "requirementIds": [
+        "FR-003",
+        "FR-017",
+        "FR-021",
+        "FR-022",
+        "NFR-008",
+        "NFR-009",
+        "SEC-003",
+        "SEC-007"
+      ],
+      "startedAt": "2026-10-06T11:00:21.957Z",
+      "status": "verified",
+      "phase": "verified",
+      "scope": "fixture",
+      "providers": "synthetic replacement-runtime verification; historical reports are never rescored",
+      "baseCommit": "53ebeb7ecbdf59eaf62c9a55b62755cdc2d27491",
+      "sourceHashes": {
+        "apps/api/src/vercel-runtime.ts": "25c62c1f6aca5c4809ac2c2a33dc205df5c02bf5f55aa1823ead4fea80020f70",
+        "apps/worker/src/runtime.ts": "ebdbddf163b6258a4f52f3ee9f1dcb0b660b223e77b6cec176e3565d5e3a1014",
+        "deploy/silly/start-worker.js": "b3ec5da23e7b88c175459a6cf21009eeb56be89457bccb40cc8c28798835e1c1"
+      },
+      "replayed": {
+        "activeQueueJob": 1,
+        "queuedJob": 1,
+        "pendingOutbox": 1
+      },
+      "backup": {
+        "createdAt": "2026-10-06T10:59:13.299Z",
+        "expiresAt": "2026-10-07T10:59:13.299Z",
+        "sourceCommit": "53ebeb7ecbdf59eaf62c9a55b62755cdc2d27491",
+        "sourceRunId": "37453297494",
+        "archiveSha256": "2fa66106f45aaa420db2a0e023c3b88234d14f422aa7dc0b4b1653ceb1f4d51c"
+      },
+      "snapshotHashesMatched": true,
+      "expiredTerminalRowsRemoved": 1,
+      "historicalReportsUnchanged": 1,
+      "httpReadbacks": 5,
+      "newDurableSubmissionCompleted": true,
+      "originalResourcesContactedDuringRecovery": false,
+      "cleanupFailures": [],
+      "cleanedUp": true,
+      "finishedAt": "2026-10-06T11:00:24.035Z"
+    },
+    "limits": [
+      "live preview secrets/environment not configured",
+      "live preview-data recovery not executed",
+      "persistent public replacement/cutover not verified",
+      "continuous offsite refresh/physical deletion policy remains pending"
+    ],
+    "finalDocumentationFollowThrough": "Resolve final PR head and its CI independently; acceptance above binds verified implementation and PR merge checkout without an unknowable future merge SHA"
+  },
+  "scheduledMaintenanceFollowThrough": {
+    "status": "verified",
+    "scheduled": true,
+    "startedAt": "2026-10-05T11:29:00.552Z",
+    "finishedAt": "2026-10-05T11:29:24.551Z",
+    "baseCommit": "5adcee87f39d5046190f560de90fc1c321567d55",
+    "sourceRecordSha256": "872c7fc07f4904967ed6f0e7f739e2efa5b372ef1a81cd5356e09fd14d15894b",
+    "verifiedSourceTls": true,
+    "userOnlyPermissionsVerified": true,
+    "restore": {
+      "fingerprintsMatched": true,
+      "matchingTables": 7,
+      "strictReportReads": 2,
+      "apiReadbacks": 2,
+      "queueStarted": false
+    },
+    "expiryCleanup": {
+      "authenticatedArchives": 6,
+      "archivesRemoved": 3,
+      "keysRemoved": 2
+    },
+    "cleanup": {
+      "apiStopped": true,
+      "readPoolStopped": true,
+      "ownedDatabaseRemoved": true,
+      "ownedContainerAndVolumesRemoved": true,
+      "transientPrivateFilesRemoved": true
+    }
+  }
+}

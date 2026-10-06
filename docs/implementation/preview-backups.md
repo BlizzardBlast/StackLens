@@ -1,6 +1,6 @@
 # Preview backup and recovery policy
 
-> **Status:** Independent recovery, scheduled refresh and operator expiry cleanup verified; Free managed fork rejected\
+> **Status:** Independent recovery, scheduled refresh and scheduler-fired expiry cleanup verified; Free managed fork rejected\
 > **Date:** 2026-10-04\
 > **Requirements:** FR-003/004, SEC-003/007, NFR-008/009, GOV-002/007
 
@@ -78,9 +78,10 @@ required by SEC-003. Confirm the original executor is dead before any targeted q
 
 Release evidence records counts, hashes, timestamps and safe failure codes. The current policy
 documents the observed managed schedule, retained encrypted archive and independent local recovery.
-Guaranteed Free managed retention/an eligible restore destination, scheduled expired-archive
-deletion, replacement compute and workstation-loss recovery remain explicit acceptance gaps. Synthetic copied-queue
-replay closes only its local scope.
+Guaranteed Free managed retention/an eligible restore destination, live preview-data recovery,
+persistent public replacement and continuous offsite refresh/deletion remain acceptance gaps.
+Scheduler-fired expiry cleanup is verified below. Synthetic copied-queue replay and recovery across
+fresh cloud runners are verified in the [portable recovery runbook](portable-preview-recovery.md).
 
 ## October 4 independent public replacement and refresh
 
@@ -150,6 +151,18 @@ and its dedicated key. Five unexpired archives remain; the October 4 shared key 
 neither associated archive survives. No expiry is extended and no unexpired archive is deleted.
 This verifies deletion by an operator run of the scheduled procedure. Scheduler-fired expired
 deletion remains unobserved and should be checked from the next applicable heartbeat record.
+
+## October 5 scheduled expiry cleanup follow-through
+
+The existing heartbeat's `scheduled: true` record from 11:29:00–11:29:24 UTC verifies two strict
+report/API readbacks, all seven table fingerprints, verified source TLS and user-only files.
+Its expiry sweep authenticates six archives, removes three expired archives and two keys, and
+preserves remaining archive/key references. The copied queue stays stopped; all owned databases,
+containers and temporary private files are removed. Safe observations and the original record
+hash are retained in the [portable recovery evidence](release-evidence/2026-10-05-portable-recovery.json).
+This closes the earlier scheduler-fired expired-deletion evidence gap. Check the latest archive's
+refresh and authenticated deadline independently; this run does not establish continuous offsite
+backup or guaranteed cloud-provider physical deletion.
 
 The Aiven fork form still selects `Free-1-1gb` and shows a Free monthly price. Submission of an
 owned temporary restore-check name with that selection returns the backend message

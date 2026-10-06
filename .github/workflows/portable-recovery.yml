@@ -1,0 +1,113 @@
+name: portable recovery
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portable-recovery-${{ github.ref }}
+  cancel-in-progress: true
+
+# FR-003/017/021/022, NFR-008/009, SEC-003/007. No deployment secrets or live providers.
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: stacklens_test
+          POSTGRES_PASSWORD: stacklens
+          POSTGRES_USER: stacklens
+        options: >-
+          --health-cmd "pg_isready -U stacklens -d stacklens_test"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+        ports: [55432:5432]
+    env:
+      TEST_DATABASE_URL: postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Prepare PostgreSQL client image before capturing binary output
+        run: docker pull postgres:18-alpine
+      - name: Capture interrupted fixture and confirm original process exit
+        run: node scripts/operations/portable-recovery.mjs capture-fixture "$RUNNER_TEMP/stacklens-recovery" "$RUNNER_TEMP/portable-capture.json"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: portable-recovery-fixture
+          path: |
+            ${{ runner.temp }}/stacklens-recovery/database.slbackup
+            ${{ runner.temp }}/stacklens-recovery/recovery.slmetadata
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Upload source-free capture evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: portable-capture-evidence
+          path: ${{ runner.temp }}/portable-capture.json
+          retention-days: 1
+          if-no-files-found: error
+
+  recover:
+    needs: capture
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: stacklens_test
+          POSTGRES_PASSWORD: stacklens
+          POSTGRES_USER: stacklens
+        options: >-
+          --health-cmd "pg_isready -U stacklens -d stacklens_test"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+        ports: [55432:5432]
+    env:
+      TEST_DATABASE_URL: postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Prepare PostgreSQL client image
+        run: docker pull postgres:18-alpine
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: portable-recovery-fixture
+          path: ${{ runner.temp }}/stacklens-recovery
+      - name: Restore and verify replacement API and Worker on this fresh runner
+        run: node scripts/operations/portable-recovery.mjs recover-fixture "$RUNNER_TEMP/stacklens-recovery" "$RUNNER_TEMP/portable-restore.json"
+      - name: Upload source-free restore evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: portable-restore-evidence
+          path: ${{ runner.temp }}/portable-restore.json
+          retention-days: 1
+          if-no-files-found: error

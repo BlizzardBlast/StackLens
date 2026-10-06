@@ -1,0 +1,128 @@
+name: preview recovery
+
+# Manual only. Configure the protected preview-recovery environment before activation.
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Capture a drained preview and rehearse, or recover an earlier capture
+        required: true
+        type: choice
+        options: [capture, recover]
+      backup_run_id:
+        description: Source preview recovery run ID (required for recover)
+        type: string
+      original_compute_offline:
+        description: I verified the original API and Worker are offline and submissions are paused
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: preview-recovery
+  cancel-in-progress: false
+
+# NFR-008/009, SEC-003/007. No PR-triggered secrets, hosted cutover or copied live-claim unlock.
+jobs:
+  capture:
+    if: github.repository == 'BlizzardBlast/StackLens' && github.ref == 'refs/heads/main' && inputs.operation == 'capture' && inputs.original_compute_offline
+    environment: preview-recovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Prepare PostgreSQL client image before capturing binary output
+        run: docker pull postgres:18-alpine
+      - name: Capture verified TLS snapshot while original compute is stopped
+        env:
+          STACKLENS_RECOVERY_DATABASE: ${{ secrets.STACKLENS_RECOVERY_DATABASE }}
+          STACKLENS_RECOVERY_KEY: ${{ secrets.STACKLENS_RECOVERY_KEY }}
+          STACKLENS_ORIGINAL_COMPUTE_OFFLINE: ${{ inputs.original_compute_offline }}
+        run: node scripts/operations/portable-recovery.mjs capture-preview "$RUNNER_TEMP/stacklens-recovery" "$RUNNER_TEMP/preview-capture.json"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: preview-recovery-encrypted
+          path: |
+            ${{ runner.temp }}/stacklens-recovery/database.slbackup
+            ${{ runner.temp }}/stacklens-recovery/recovery.slmetadata
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Upload source-free capture evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: preview-capture-evidence
+          path: ${{ runner.temp }}/preview-capture.json
+          retention-days: 1
+          if-no-files-found: error
+
+  recover:
+    needs: capture
+    if: always() && github.repository == 'BlizzardBlast/StackLens' && github.ref == 'refs/heads/main' && inputs.original_compute_offline && (needs.capture.result == 'success' || (inputs.operation == 'recover' && needs.capture.result == 'skipped'))
+    environment: preview-recovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: stacklens_test
+          POSTGRES_PASSWORD: stacklens
+          POSTGRES_USER: stacklens
+        options: >-
+          --health-cmd "pg_isready -U stacklens -d stacklens_test"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+        ports: [55432:5432]
+    env:
+      TEST_DATABASE_URL: postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens_test
+      STACKLENS_RECOVERY_SOURCE_RUN_ID: ${{ inputs.operation == 'capture' && github.run_id || inputs.backup_run_id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Prepare PostgreSQL client image
+        run: docker pull postgres:18-alpine
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: preview-recovery-encrypted
+          path: ${{ runner.temp }}/stacklens-recovery
+          github-token: ${{ github.token }}
+          repository: BlizzardBlast/StackLens
+          run-id: ${{ env.STACKLENS_RECOVERY_SOURCE_RUN_ID }}
+      - name: Verify isolated replacement compute without contacting the original database
+        env:
+          STACKLENS_RECOVERY_KEY: ${{ secrets.STACKLENS_RECOVERY_KEY }}
+        run: node scripts/operations/portable-recovery.mjs recover-preview "$RUNNER_TEMP/stacklens-recovery" "$RUNNER_TEMP/preview-restore.json"
+      - name: Upload source-free restore evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: preview-restore-evidence
+          path: ${{ runner.temp }}/preview-restore.json
+          retention-days: 1
+          if-no-files-found: error

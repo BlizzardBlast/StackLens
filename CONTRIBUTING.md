@@ -92,6 +92,14 @@ copied queue. Its normal tests exercise endpoint/expiry/privacy/output safety wi
 Neon. Follow the [independent recovery runbook](docs/implementation/independent-preview-recovery.md)
 for explicit hosting cutover, original-executor fencing and paired URL/CA rollback.
 
+The [portable recovery workflow](docs/implementation/portable-preview-recovery.md) adds two fresh
+GitHub jobs with synthetic data only. Capture confirms original child exit and deletes its owned
+database before encrypted handoff. Recovery verifies canonical fingerprints, copied active/queued/
+outbox replay, terminal expiry, historical hashes and a fresh HTTP submission, then removes its
+owned target. Normal authentication tests are part of `pnpm test:operations`. The separate manual
+preview workflow requires approved protected-environment secret custody and stopped, drained
+original compute; its activation and live-data acceptance are not implied by fixture CI.
+
 The restricted-login integration check uses an owned database and non-superuser role. It verifies
 denied DDL/Graphile access, missing-schema failure, Worker-only durable delivery, sanitized 503 at
 role saturation and recovery after release. It uses synthetic providers; no hosted login is created

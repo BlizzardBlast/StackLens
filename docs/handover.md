@@ -1,13 +1,65 @@
 # StackLens Session Handover
 
-> **Prepared:** 2026-10-05\
-> **Architecture:** v0.1.23; requirements v0.1.3\
-> **Milestone:** Worker lifecycle diagnostics; packaged and hosted same-ID replay verified\
-> **Branch:** `codex/worker-shutdown`, existing checkout; published in [PR #48](https://github.com/BlizzardBlast/StackLens/pull/48); resolve its final head, CI and merge state\
+> **Prepared:** 2026-10-06\
+> **Architecture:** v0.1.24; requirements v0.1.3\
+> **Milestone:** Portable encrypted recovery on replacement compute; live activation pending\
+> **Branch:** `codex/portable-preview-recovery`, existing checkout; [PR #49](https://github.com/BlizzardBlast/StackLens/pull/49) depends on [PR #48](https://github.com/BlizzardBlast/StackLens/pull/48); resolve final head, CI and merge state\
 > **Source main at capture:** `5adcee87f39d5046190f560de90fc1c321567d55`, including merged [PR #47](https://github.com/BlizzardBlast/StackLens/pull/47); independently resolve current source and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
+
+### October 5 portable replacement-compute recovery
+
+[ADR-0021](adr/0021-portable-preview-recovery.md) separates encrypted capture from recovery on fresh
+GitHub runners. Only the database ciphertext and encrypted authenticated manifest cross the job
+boundary. The manifest binds source run/commit, scope, fingerprints, expiry and executor receipt.
+Normal PR fixtures confirm actual source child exit before a copied active claim is unlocked.
+Capture removes its source database before the replacement job begins. Restore validates all
+seven fingerprints, strict historical readers and terminal expiry before starting compiled
+API/Worker runtimes. It replays synthetic active/queued/outbox work, serves loopback HTTP readbacks,
+completes a new durable submission and preserves historical hashes. Both phases remove their own
+database and temporary private files. Linux Docker explicitly receives its missing host alias.
+
+The local split-phase acceptance passes on separate PostgreSQL 18 containers. Six new normal
+tests cover authentication/expiry/run/scope/receipt rejection and private cleanup/diagnostics.
+The full database-backed quality gate and final published cloud fixture evidence are recorded in
+the [portable recovery record](implementation/release-evidence/2026-10-05-portable-recovery.json).
+Resolve their exact source heads independently; early local captures retain their dirty PR #48 base.
+
+The first published cloud runs fail. CLI tests assume the ignored `.cache` parent exists; fixture
+capture fails before handoff but confirms complete owned cleanup. The October 6 correction creates
+the parent, prepares the PostgreSQL client image before capturing dump output, and records fixed
+failure-stage names/allowlisted codes. Initial failures remain in the dated record. Resolve the new
+exact-head quality and fresh-runner conclusions before marking this milestone ready.
+
+October 6 follow-through verifies implementation head `6e0aa90` and PR merge checkout `53ebeb7`:
+quality run `37453297502` and two-job portable run `37453297494` both succeed. Downloaded evidence
+confirms the same authenticated archive, all seven fingerprints, expiry, historical preservation,
+fixture replay, five HTTP readbacks and new durable work; owned cleanup succeeds on both runners.
+All 569 Vitest, 37 Node and 18 browser tests pass in cloud CI. Local timeout attempts and isolated
+reruns remain recorded. Resolve the final documentation head and its checks from PR #49 before
+merging; this acceptance covers synthetic fixtures and leaves live activation pending.
+
+The same documentation pass verifies the October 5 scheduler record: two strict/API report
+readbacks, seven matching fingerprints, three authenticated expired archives and two keys removed,
+with all owned verification resources cleaned up. The dated portable record retains the original
+record hash and safe observations. This closes the older scheduler-fired expiry-cleanup gap;
+check current archive freshness separately rather than relying on historical deadlines below.
+
+The separate manual preview workflow is restricted to this repository's `main` and a protected
+`preview-recovery` environment. It requires new secret-custody approval and original API/Worker
+offline confirmation, checks drained state and never unlocks live copied claims. No environment
+secret, hosting route or original database setting is changed by preparation. Recovery needs only
+the separately stored key and encrypted artifact, and uses synthetic providers for new work.
+Live preview-data recovery, persistent public replacement/cutover and continuous offsite refresh/
+physical deletion policy remain gates. Existing local backup scheduling and finite expiry are unchanged.
+
+Next session: resolve milestone PR #49 and dependency PR #48 before merging, then verify current
+`main` and actual hosting revisions. Follow the [runbook](implementation/portable-preview-recovery.md)
+for the concrete activation scope; do not treat fixture CI as live archive acceptance. No future
+squash SHA or post-merge documentation PR is required. Managed Free restore/retention, Function
+suspension, general capacity and user-deferred device/spoken acceptance remain separate.
 
 ### October 5 Worker lifecycle extension
 
@@ -91,7 +143,8 @@ but never starts the copied queue. The user-only encrypted archive expires Octob
 Jakarta; all owned verification resources and plaintext are removed. One naturally expired archive
 and its dedicated key are deleted, while shared keys/unexpired archives are preserved. This manual
 execution is marked `scheduled: false`. The existing 12-hour heartbeat and independently verified
-first scheduled refresh remain unchanged; scheduler-fired expired deletion is still unobserved.
+first scheduled refresh remain unchanged. Scheduler-fired expired deletion was still unobserved
+at that capture; the October 5 scheduler record verified above closes that evidence gap.
 
 Aiven rejects the submitted Free-price fork with “Forking to a free plan is not allowed.” The form
 is cancelled and the project still contains only its original running Free PostgreSQL service.
@@ -192,7 +245,7 @@ cgroup peaks or arbitrary capacity. Resolve current PR #46/main state and actual
 in the next session; this complete handover intentionally needs no post-merge SHA edit.
 
 Continue the remaining release gates independently: actual Function suspension/resume, guaranteed
-Free managed-backup retention/restore eligibility, naturally expired scheduled-archive deletion,
+Free managed-backup retention/restore eligibility, continuing offsite refresh/deletion policy,
 workstation/compute-loss recovery and the user-deferred device/spoken acceptance. Do not extend
 archive expiry, delete unexpired archives, change runtime policy or activate a paid plan to make
 an operational check pass.

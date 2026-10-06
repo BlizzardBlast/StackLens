@@ -114,6 +114,10 @@ async function privateClientFiles(environment, directory, databaseName) {
       "--name",
       containerName,
       "--read-only",
+      // Linux hosted runners do not provide Docker Desktop's built-in host alias.
+      ...(host === "host.docker.internal" && process.platform === "linux"
+        ? ["--add-host", "host.docker.internal:host-gateway"]
+        : []),
       "--tmpfs",
       "/tmp",
       "--env-file",

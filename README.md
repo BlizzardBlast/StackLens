@@ -108,11 +108,21 @@ Worker memory peaks at 169.20 MiB, total database clients at seven; final API cl
 the queue is empty. A stalled panel Stop requires a verified-drained stop before installation;
 deployed module hashes match and temporary deployment access is revoked.
 Operator backup maintenance restores four reports with seven matching fingerprints and removes
-one naturally expired archive and its dedicated key. The fresh archive expires October 5 at
-21:44 Jakarta; the 12-hour heartbeat remains active. Scheduler-fired expired deletion still needs
-evidence. Aiven's backend rejects the displayed Free fork, confirming that restore path is
+one naturally expired archive and its dedicated key. The October 5 scheduled maintenance run
+independently restores two reports with seven matching fingerprints and removes three authenticated
+expired archives and two keys. Its dated evidence confirms scheduler-fired expiry cleanup; verify
+the latest refresh and deadline before using an archive. Aiven's backend rejects the displayed
+Free fork, confirming that restore path is
 unavailable; guaranteed Free retention remains unestablished. Actual Function suspension, general
 capacity and workstation/compute-loss recovery remain open alongside deferred manual acceptance.
+
+The [portable recovery path](docs/implementation/portable-preview-recovery.md) verifies encrypted
+handoff between two fresh GitHub runners. Local and cloud fixture rehearsals restore matching
+fingerprints,
+replay synthetic active/queued/outbox work, preserve historical reports, remove expired data and
+complete a new HTTP submission on replacement compiled API/Worker runtimes. The manual preview
+workflow requires approved protected secret custody before activation. Live offsite data recovery,
+stable public replacement hosting and continuous offsite refresh/deletion remain explicit gates.
 
 The [Worker lifecycle extension](docs/implementation/worker-lifecycle.md) adds source-free signal
 and cleanup-stage diagnostics plus a packaged Linux restart rehearsal. Normal panel SIGINT and
