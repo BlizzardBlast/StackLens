@@ -39,12 +39,29 @@ Never expose these secrets to PR events or load code from the encrypted artifact
 Preview capture requires explicit confirmation that original API and Worker compute are offline
 and submissions paused. Check the database is drained before and after snapshot acquisition.
 Reject any in-flight analysis, queue row or undelivered submission. Never unlock copied live claims.
-Recovery may read a previous same-repository run within its authenticated window and does not
+The fresh-runner workflow may read a previous same-repository run within its authenticated window and does not
 contact the original database or hosting resources. Always restore into a UUID-owned loopback
 PostgreSQL 18 database; no public route, live target, paid plan or automatic failover is created.
 Replacement runtimes use synthetic providers for new-work verification; they do not execute
 analyzed repository code. Owned databases, processes and private client files are removed on
 success and failure. Docker's loopback host alias is supplied explicitly on Linux runners.
+
+### October 6 persistent staging extension
+
+Add a separate explicit operator staging helper for a persistent quarantined target, using the
+exact approved direct Neon endpoint and verified TLS from ADR-0020, or owned loopback PostgreSQL
+for normal tests. The existing runner workflows continue deleting their targets. Authenticate
+the preview manifest before target I/O and bind the restore's second archive read to its digest.
+Require an exclusive private connection output outside the actual Git root. Match all seven
+fingerprints, purge expired terminal rows, strictly validate retained reports, confirm a drained
+copy and recheck eligibility before publishing that output. Failure rolls back the newly owned
+database and unsaved connection file. Success retains the database with compute stopped and
+routing unchanged; cleanup failures remain failures with operator custody retained for inspection.
+
+No copied claim is unlocked and no analyzer/report policy changes. New hosted credential custody,
+restricted API-role creation and public activation require their own approved concrete operator
+scope. Provider capacity and usage budgets are acceptance gates: unavailable free Worker slots
+and a free database allowance do not establish continuously available replacement compute.
 
 ## Limits
 
@@ -60,4 +77,5 @@ Stable public replacement hosting and a cutover/rollback exercise remain separat
 Managed Aiven Free restoration, Function suspension, general capacity
 and user-deferred device/spoken acceptance are unaffected.
 
-See the [portable recovery runbook](../implementation/portable-preview-recovery.md).
+See the [portable recovery runbook](../implementation/portable-preview-recovery.md) and
+[persistent staging runbook](../implementation/persistent-preview-recovery.md).

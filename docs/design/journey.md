@@ -2911,3 +2911,43 @@ UI/design decisions and runtime code are unchanged. Stable public replacement ro
 offsite refresh/deletion and the remaining managed/device/capacity gates stay explicit.
 
 **Traceability:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0021.
+
+## 2026-10-06 — Prepare authenticated persistent recovery staging
+
+This preparation is published through [PR #51](https://github.com/BlizzardBlast/StackLens/pull/51).
+PR #50 passes exact-head quality and portable fixture CI before merging as `3356493`. The next
+recovery step needs a persistent independent API/Worker/database and a public cutover/rollback
+exercise. Two attempts to create an empty second Silly Free Node.js Worker receive a backend
+capacity rejection. Both forms are cancelled, the original Worker remains Running, and no paid
+plan, extra account, target credential transfer or routing change occurs.
+
+A separate staging helper authenticates the portable preview manifest before target I/O, binds
+the restore's second archive read to the authenticated digest, and creates a UUID-owned database.
+Seven matching fingerprints, expiry cleanup, strict retained readers and drained state gate an
+exclusive private connection file outside the real Git root. Rejected targets and unsaved files
+are removed; successful targets remain quarantined with compute stopped. Eleven new tests cover
+preflight privacy/output guards, digest substitution and real local PostgreSQL success/rollback.
+Operations test files run serially to avoid shared-catalog cleanup assertions observing another
+test's temporary database and to bound simultaneous client/container load.
+
+The first focused shell invocation skips the database case because of quoting; the corrected
+invocation runs it. Its first success assertion exposes a parsed/raw JSON hash mismatch, corrected
+to hash stored JSON consistently after strict validation. All eleven focused checks then pass.
+The first full check passes runtime, types, tests, 18 browser cases and lint, but catches a final
+source edit's formatting. Its clean complete rerun and subsequent exact-head CI are recorded in
+the dated preparation evidence. Earlier failures remain separate from the successful checks.
+Final read-only review identifies that quality CI must prepare the PostgreSQL alpine client before
+binary backup tests; the existing portable workflow supplies that pattern. Quality CI and local
+operator prerequisites now include this preparation. Fresh-runner CI verifies the correction.
+Head `298b96b` passes quality `37466900165` and portable run `37466900182`; quality confirms all
+eleven new staging checks without skips. The complete scoped agent self-review approves preparation
+after that correction. Resolve the final documentation-head checks independently before merge.
+
+Documentation-impact review updates ADR-0021, architecture v0.1.25, contributor test guidance,
+README, a concrete staging/activation runbook and complete handover. Requirements, serialized
+contracts, analyzer/scoring policy, UI and tokens are unchanged. Persistent hosted staging/public
+replacement remains unverified while free capacity is unavailable; Neon Free usage requires a
+bounded operating budget before claiming an always-connected replacement. Offsite refresh/deletion
+and the existing managed/device/capacity gates remain open.
+
+**Traceability:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0021.

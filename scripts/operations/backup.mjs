@@ -193,9 +193,24 @@ export async function createBackup(environment, archivePath, keyPath, privateDir
     }
   }
 }
-export async function restoreBackup(environment, archivePath, keyPath, privateDirectory) {
+export async function restoreBackup(
+  environment,
+  archivePath,
+  keyPath,
+  privateDirectory,
+  onRestored,
+  expectedArchiveSha256,
+) {
   const original = requireLocalDatabase(environment.DATABASE_URL);
-  return restoreFreshDatabase(environment, original, archivePath, keyPath, privateDirectory);
+  return restoreFreshDatabase(
+    environment,
+    original,
+    archivePath,
+    keyPath,
+    privateDirectory,
+    onRestored,
+    expectedArchiveSha256,
+  );
 }
 
 // Remote restoration is an explicit, separately guarded operator action. Local tools stay local.
@@ -231,10 +246,20 @@ export async function restoreNeonBackup(
   privateDirectory,
   expectedHostname,
   privateOutput,
+  onRestored,
+  expectedArchiveSha256,
 ) {
   const original = requireNeonRestoreTarget(environment, expectedHostname);
   if (privateOutput === undefined)
-    return restoreFreshDatabase(environment, original, archivePath, keyPath, privateDirectory);
+    return restoreFreshDatabase(
+      environment,
+      original,
+      archivePath,
+      keyPath,
+      privateDirectory,
+      onRestored,
+      expectedArchiveSha256,
+    );
   // Reserve the output exclusively before creating a database; never overwrite an existing login.
   const destination = await open(privateOutput, "wx", 0o600);
   let saved = false;
@@ -246,11 +271,13 @@ export async function restoreNeonBackup(
       keyPath,
       privateDirectory,
       async (result) => {
+        await onRestored?.(result);
         await destination.writeFile(
           JSON.stringify({ ...environment, DATABASE_URL: result.connectionString }),
         );
         saved = true;
       },
+      expectedArchiveSha256,
     );
   } finally {
     try {
@@ -268,12 +295,13 @@ async function restoreFreshDatabase(
   keyPath,
   privateDirectory,
   onRestored,
+  expectedArchiveSha256,
 ) {
   // Authenticate and check expiry before any target mutation.
-  const { archive, metadata } = decryptArchive(
-    await readBoundedFile(archivePath, maximumArchiveBytes + 1_024),
-    await readBoundedFile(keyPath, 32),
-  );
+  const encrypted = await readBoundedFile(archivePath, maximumArchiveBytes + 1_024);
+  if (expectedArchiveSha256 !== undefined && sha256(encrypted) !== expectedArchiveSha256)
+    throw new Error("backup_identity_mismatch");
+  const { archive, metadata } = decryptArchive(encrypted, await readBoundedFile(keyPath, 32));
   const databaseName = `stacklens_restore_${randomUUID().replaceAll("-", "")}`;
   const restoredUrl = new URL(original);
   restoredUrl.pathname = `/${databaseName}`;

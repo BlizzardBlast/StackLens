@@ -1,0 +1,89 @@
+{
+  "capturedAt": "2026-10-06T12:51:26Z",
+  "requirementIds": ["FR-003", "FR-017", "FR-021", "FR-022", "NFR-008", "NFR-009", "SEC-003", "SEC-007", "GOV-002", "GOV-006", "GOV-007"],
+  "scope": "persistent staging preparation and zero-cost hosting availability",
+  "source": {
+    "baseMain": "3356493d33338d38a67f8bf49d12c99dfc21ac52",
+    "dirtyAtLocalVerification": true,
+    "filesSha256": {
+      "scripts/operations/backup.mjs": "c2783f5298e67fd21af681c2c1a573e878a4a47fefb841008843bd596df7565d",
+      "scripts/operations/persistent-recovery.mjs": "c4abe3fddf243dc16a5a598142f709c2631c9abebe54cb833eb809fcc8ecf8b0",
+      "scripts/operations/persistent-recovery.test.mjs": "2714c8f312f958c863690b2d8a6d6f54ffd815d55500153ebf4736b046c08a1a"
+    }
+  },
+  "previousMilestone": {
+    "pr": 50,
+    "head": "5cfd05fb8c4c82fd01247bafc3f62e877fd0eb2f",
+    "qualityRun": "37459367556",
+    "portableRun": "37459367519",
+    "bothRunsSucceeded": true,
+    "reviewsAndThreadsEmpty": true,
+    "mergedMain": "3356493d33338d38a67f8bf49d12c99dfc21ac52"
+  },
+  "hosting": {
+    "provider": "Silly Development",
+    "candidate": "stacklens-worker-recovery",
+    "runtime": "Node.js",
+    "plan": "Free, no card required",
+    "creationAttempts": 2,
+    "result": "rejected_by_backend_capacity",
+    "message": "There is no capacity available to create a server right now. Please try again later.",
+    "proofScreenshotSha256": "43baf906ef155f57365810954f5d7e55e38a66cb41b8cdb88a434d1edb1d924b",
+    "screenshotKeptLocallyIgnored": true,
+    "formCancelled": true,
+    "newServiceCreated": false,
+    "paidPlanOrNewAccountActivated": false,
+    "replacementCredentialsTransferred": false,
+    "originalWorkerObservedRunning": true,
+    "originalPublicOpenApiDirectAndProxy": 200,
+    "publicRoutingChanged": false
+  },
+  "verification": {
+    "providers": "synthetic only; normal tests contact no hosted database",
+    "newChecks": 11,
+    "focusedChecksPassed": 11,
+    "skipped": 0,
+    "realPostgresql18Restore": true,
+    "sevenFingerprintMatch": true,
+    "historicalReportsRetained": 1,
+    "expiredTerminalRowsRemoved": 1,
+    "sourceDatabaseUnchanged": true,
+    "fingerprintMismatchOwnedRollback": true,
+    "undrainedSnapshotOwnedRollback": true,
+    "exclusiveOutsideRepositoryPrivateOutput": true,
+    "archiveDigestRecheckedBeforeTargetIo": true,
+    "failureDiagnosticsSourceFree": true,
+    "testOwnedDatabaseAndPrivateFilesCleanedUp": true,
+    "localGate": "pnpm check passed with loopback TEST_DATABASE_URL",
+    "nodeChecksPassed": 48,
+    "vitestChecksPassed": 569,
+    "browserCasesPassed": 18,
+    "unchangedTurboPackageTasksReused": true,
+    "reviewRemediation": "CR-P1-001: quality CI prepares the official PostgreSQL alpine client before binary backup tests; fresh-runner CI verifies this prerequisite",
+    "publishedAcceptance": {
+      "pr": "https://github.com/BlizzardBlast/StackLens/pull/51",
+      "checkedHead": "298b96bfb68a6e0488148a27e8d27bff71082d42",
+      "qualityRun": "37466900165",
+      "qualityJob": "112280126974",
+      "portableRun": "37466900182",
+      "bothRunsSucceeded": true,
+      "freshRunnerPersistentStagingChecksPassed": true,
+      "agentSelfReview": "COMPLETE / APPROVE after CR-P1-001 remediation",
+      "resolveFinalDocumentationHeadAndChecksFromPr": true
+    },
+    "earlierAttempts": [
+      "First focused invocation omitted TEST_DATABASE_URL because of shell quoting; database case skipped. Corrected invocation ran the database case.",
+      "First database success assertion compared parsed and raw JSON hashes; corrected evidence hashes stored JSON consistently after strict validation. Rejected-copy cleanup already passed.",
+      "First full check passed runtime, types, tests, all 18 browser cases and lint; a concurrent final source edit left one formatting diagnostic. Formatted and reran the complete gate."
+    ]
+  },
+  "limits": [
+    "persistent hosted database staging unverified",
+    "free replacement Worker capacity unavailable",
+    "replacement public routing and normal-provider delivery/rollback unverified",
+    "new hosted credential custody requires concrete destination approval",
+    "Neon Free 100 CU-hour allowance does not cover a continuously connected 0.25 CU Worker for a full 30-day month",
+    "continuous offsite refresh and provider physical deletion policy remain open",
+    "managed Free restore, actual Function suspension, general capacity and deferred device/spoken acceptance remain separate"
+  ]
+}
