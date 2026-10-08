@@ -69,7 +69,7 @@ export function RepositoryAnalysisPage({
 
   if (query.isPending) {
     return (
-      <div className="mx-auto grid w-full max-w-6xl gap-5 px-4 py-8 sm:px-6 sm:py-10">
+      <div className="analysis-workspace mx-auto grid w-full max-w-6xl gap-5 px-4 py-8 sm:px-6 sm:py-10">
         <AnalysisNavigation />
         <section
           aria-live="polite"
@@ -106,7 +106,7 @@ export function RepositoryAnalysisPage({
 
   if (query.isError) {
     return (
-      <div className="mx-auto grid w-full max-w-4xl gap-5 px-4 py-8 sm:px-6 sm:py-10">
+      <div className="analysis-workspace mx-auto grid w-full max-w-4xl gap-5 px-4 py-8 sm:px-6 sm:py-10">
         <AnalysisNavigation />
         <section className="grid gap-5 rounded-2xl border bg-card p-5 sm:p-7" role="alert">
           <div className="grid gap-2">
@@ -141,7 +141,7 @@ export function RepositoryAnalysisPage({
   }
 
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-5 px-4 py-8 sm:px-6 sm:py-10">
+    <div className="analysis-workspace mx-auto grid w-full max-w-6xl gap-5 px-4 py-8 sm:px-6 sm:py-10">
       <AnalysisNavigation />
       <AnalysisStatusView snapshot={query.data} />
     </div>

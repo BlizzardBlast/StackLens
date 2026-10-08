@@ -87,3 +87,60 @@ opaque during its entrance. The palette and font pairing remain unchanged.
 
 This refines Design v1 within ADR-0006/ADR-0007; analyzer behavior and accepted requirements do
 not change. The disposable original prototype remains a historical Design v1 artifact.
+
+## 2026-10-07 — Evidence workspace implementation
+
+The production entry routes now apply the accepted diagnostic composition more deliberately. The
+product header is quieter, the input-mode control reads as a two-state choice instead of two
+interchangeable cards, and the active mode has a persistent text, checkmark, and underline cue.
+The repository and manifest starts use a small mono eyebrow, a left-aligned explanation, one clear
+input surface, and a single deep-teal evidence or boundary panel. The supporting principles use a
+shared divider and restrained markers rather than a repeated card treatment.
+
+The report keeps its existing contract-owned facts, limitations, scores, findings, and
+recommendations, while strengthening reading order: repository identity receives a primary rule,
+the score summary has a quiet semantic-token tint, and major report sections use dividers that do
+not create a new meaning or status system. No controls, content states, requirements, analyzer
+policy, report schema, or design tokens change. All new color and typography references consume
+existing semantic tokens; keyboard-visible focus, labels, current-page semantics, and
+reduced-motion handling remain intact.
+
+Rendered review covers the repository start at desktop and 390 px widths and the 390 px quick
+start. The production web build, web typecheck, and 53 web tests pass; the repository-wide
+`pnpm check` also passes, including 18 cross-browser acceptance cases. Database-backed checks are
+skipped where `TEST_DATABASE_URL` is not configured.
+
+**Traceability:** PRD-004, FR-001–FR-003, FR-017, FR-021, FR-022, NFR-006–NFR-008,
+GOV-002/003/007.
+
+## 2026-10-08 — Prototype v2 input-workspace alignment
+
+The accepted input-workspace direction now uses one shared presentation frame in `apps/web` for
+both repository and manifest starts. It separates evidence-source selection from the mode-specific
+form heading, makes the static-inspection boundary visible before a user submits input, and keeps
+the existing route links and `aria-current` state rather than misrepresenting navigation as local
+tabs. Repository and manifest forms retain their separate state, validation, mutation, and
+accessibility responsibilities.
+
+The repository `From input to action` panel now follows the reviewed prototype's text-first
+summary: Evidence, Findings, and Next steps are readable rows rather than a decorative connector.
+Its border and dividers derive from the opaque brand muted token mixed with the brand surface,
+which raises the visual separation without turning teal into a health or status signal. On narrow
+screens, the existing DOM order keeps the form before this supporting panel. No analyzer-owned
+score, priority, limitation, finding, recommendation, token value, or API behavior changes.
+
+The full `pnpm check` passes build, runtime smoke, type checks, all tests, 18 cross-browser
+acceptance cases, lint, and formatting. The expected database-backed runtime and test cases remain
+skipped while `TEST_DATABASE_URL` is unset.
+
+**Traceability:** PRD-004, FR-001–FR-003, FR-017, FR-021, FR-022, NFR-006–NFR-008,
+GOV-002/003/007; ADR-0006/0007.
+
+## 2026-10-08 — Native file-picker affordance
+
+The quick-analysis chooser remains a native, labelled `input[type=file]` so its keyboard and
+assistive-technology behavior stay with the platform control. Its input surface and
+`::file-selector-button` explicitly use a pointer cursor while available; the disabled submission
+state explicitly uses `not-allowed` for both. The existing visible focus ring, stable help/error
+description, and reading-status announcement are retained. This is an affordance correction only:
+no token, interaction model, or product behavior changes.

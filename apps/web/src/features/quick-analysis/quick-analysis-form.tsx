@@ -254,7 +254,7 @@ export function QuickAnalysisForm({
               aria-invalid={error === undefined ? undefined : true}
               aria-describedby={`manifest-file-help${errorId === undefined ? "" : ` ${errorId}`}`}
               disabled={isPending}
-              className="block w-full max-w-64 text-sm text-muted-foreground file:mr-3 file:min-h-10 file:rounded-md file:border file:bg-background file:px-3 file:font-semibold file:text-foreground file:transition-colors hover:file:bg-accent focus-visible:rounded-md focus-visible:ring-3 focus-visible:ring-ring/35 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+              className="block w-full max-w-64 cursor-pointer text-sm text-muted-foreground file:mr-3 file:min-h-10 file:cursor-pointer file:rounded-md file:border file:bg-background file:px-3 file:font-semibold file:text-foreground file:transition-colors hover:file:bg-accent focus-visible:rounded-md focus-visible:ring-3 focus-visible:ring-ring/35 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60 disabled:file:cursor-not-allowed"
             />
           </div>
           <p id="manifest-file-help" className="text-xs leading-5 text-muted-foreground">

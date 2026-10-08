@@ -80,6 +80,22 @@ describe("MVP production-router acceptance [FR-001, FR-002, FR-003, FR-017, FR-0
         await router.navigate({ to: "/" });
       });
 
+      expect(
+        screen.getByRole("heading", { name: "Choose your evidence source" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Static inspection only. Project code never runs."),
+      ).toBeInTheDocument();
+      const evidencePath = screen.getByRole("complementary", { name: "From input to action" });
+      expect(evidencePath).toHaveTextContent("Evidence");
+      expect(evidencePath).toHaveTextContent("Manifest, lockfiles, source");
+      expect(evidencePath).toHaveTextContent("Findings");
+      expect(evidencePath).toHaveTextContent("Next steps");
+      expect(screen.getByRole("link", { name: /GitHub repository/i })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
+
       fireEvent.click(await screen.findByRole("link", { name: /package\.json/i }));
 
       expect(screen.getAllByRole("main")).toHaveLength(1);
@@ -94,6 +110,10 @@ describe("MVP production-router acceptance [FR-001, FR-002, FR-003, FR-017, FR-0
         }),
       ).toBeInTheDocument();
       expect(router.state.location.pathname).toBe("/quick");
+      expect(screen.getByRole("link", { name: /package\.json/i })).toHaveAttribute(
+        "aria-current",
+        "page",
+      );
 
       const manifestContent = JSON.stringify({
         name: "acceptance-quick",

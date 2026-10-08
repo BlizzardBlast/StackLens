@@ -2912,6 +2912,26 @@ offsite refresh/deletion and the remaining managed/device/capacity gates stay ex
 
 **Traceability:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0021.
 
+## 2026-10-07 — Implement the evidence-workspace visual refinement
+
+The production input routes now follow the accepted evidence-first composition more closely: a
+quiet product frame, explicit input-mode selection, an asymmetric explanatory/action layout, and
+one dark evidence-boundary surface replace the repeated-card feel. The report view reinforces its
+identity, score summary, and section boundaries without changing any analyzer-owned classification,
+score, limitation, finding, or recommendation content. Existing semantic tokens and locally
+bundled IBM Plex fonts remain the source of visual meaning; no new palette, token, behavior,
+requirements, schema, or architecture decision is introduced.
+
+Desktop and 390 px local browser reviews confirm that the entry forms remain reachable and that
+the narrow layouts preserve labels, current-mode state, and useful hierarchy. The production web
+build, TypeScript check, and all 53 web tests pass. The final `pnpm check` passes its build,
+runtime smoke, type, unit, lint, and formatting gates plus all 18 desktop/narrow Chromium,
+Firefox, and WebKit acceptance cases. Database-backed checks stay skipped without
+`TEST_DATABASE_URL`.
+
+**Traceability:** PRD-004, FR-001–FR-003, FR-017, FR-021, FR-022, NFR-006–NFR-008,
+GOV-002/003/007; ADR-0006/0007.
+
 ## 2026-10-06 — Prepare authenticated persistent recovery staging
 
 This preparation is published through [PR #51](https://github.com/BlizzardBlast/StackLens/pull/51).
@@ -2951,3 +2971,43 @@ bounded operating budget before claiming an always-connected replacement. Offsit
 and the existing managed/device/capacity gates remain open.
 
 **Traceability:** FR-003/017/021/022, NFR-008/009, SEC-003/007, GOV-002/006/007; ADR-0021.
+
+## 2026-10-08 — Adopt the reviewed input-workspace design in the web application
+
+The production repository and quick-manifest starts now share the reviewed evidence-source frame
+while retaining their separate form state, validation, API mutation, and route behavior. The frame
+introduces the static-inspection boundary and uses the route-based current-mode cue rather than
+pretending navigation is an in-place tab interaction. The repository explanation is now a labelled
+text-first `From input to action` complementary region, with stronger semantic-token-derived
+dividers and no decorative status meaning. Its source order preserves title, form, then supporting
+evidence explanation on narrow screens.
+
+This is a visual and accessibility refinement only. Analyzer behavior, report contracts, score
+policy, priorities, findings, limitations, recommendations, token values, and the public API are
+unchanged. The production-router acceptance flow now verifies the shared source heading,
+static-inspection disclosure, evidence-path landmark, and active route cue in both modes.
+`pnpm check` passes build, runtime smoke, types, all tests, 18 cross-browser acceptance cases,
+lint, and formatting. Database-backed runtime and test cases remain skipped because
+`TEST_DATABASE_URL` is unset.
+
+**Traceability:** PRD-004, FR-001–FR-003, FR-017, FR-021, FR-022, NFR-006–NFR-008,
+GOV-002/003/007; ADR-0006/0007.
+
+## 2026-10-08 — Verify native file-picker affordance and production UI states
+
+The local `package.json` control now sets `cursor: pointer` on both the native file input and its
+`::file-selector-button`, making the clickable affordance explicit rather than relying on a browser
+default. When a submission disables the control, both surfaces instead use `not-allowed`. The
+existing native label, keyboard activation, accepted type hint, stable help/error descriptions,
+and asynchronous file-reading feedback remain unchanged.
+
+The accompanying production UI review covers both input routes, the hosted-analysis loading,
+progress, failure and terminal-report states, report filtering and evidence disclosure, responsive
+ordering, semantic-token use, visible focus, and reduced motion. No other visual, layout, or
+accessibility correction is required by the current implementation. Browser acceptance now checks
+the native chooser's computed input and button cursors in addition to its replacement-file flow.
+No requirements, analyzer behavior, public API, report contract, score policy, or token values
+change.
+
+**Traceability:** PRD-004, FR-001–FR-003, FR-017, FR-021, FR-022, NFR-006–NFR-008,
+GOV-002/003/007; ADR-0006/0007.

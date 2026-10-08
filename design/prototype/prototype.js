@@ -34,6 +34,8 @@ function setInputMode(mode) {
   packageTab?.classList.toggle("is-selected", !githubActive);
   githubTab?.setAttribute("aria-selected", String(githubActive));
   packageTab?.setAttribute("aria-selected", String(!githubActive));
+  githubTab?.setAttribute("tabindex", githubActive ? "0" : "-1");
+  packageTab?.setAttribute("tabindex", githubActive ? "-1" : "0");
   if (githubPanel) githubPanel.hidden = !githubActive;
   if (packagePanel) packagePanel.hidden = githubActive;
   if (analyzeButton)
@@ -46,12 +48,22 @@ function setInputMode(mode) {
 githubTab?.addEventListener("click", () => setInputMode("github"));
 packageTab?.addEventListener("click", () => setInputMode("package"));
 
+function inputModeForKey(key) {
+  if (key === "Home") return "github";
+  if (key === "End") return "package";
+  if (["ArrowLeft", "ArrowRight"].includes(key)) {
+    return inputMode === "github" ? "package" : "github";
+  }
+  return null;
+}
+
 document.querySelector(".segmented")?.addEventListener("keydown", (event) => {
-  if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+  const nextMode = inputModeForKey(event.key);
+  if (!nextMode) return;
   event.preventDefault();
-  const next = inputMode === "github" ? packageTab : githubTab;
+  const next = nextMode === "github" ? githubTab : packageTab;
   next?.focus();
-  setInputMode(inputMode === "github" ? "package" : "github");
+  setInputMode(nextMode);
 });
 
 analyzeButton?.addEventListener("click", () => {
@@ -90,21 +102,39 @@ themeToggle?.addEventListener("click", () => {
   themeToggle.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
 });
 
-const drawer = document.getElementById("evidence-drawer");
+const evidenceDisclosure = document.getElementById("evidence-disclosure");
 const closeEvidence = document.getElementById("close-evidence");
 let lastEvidenceTrigger = null;
 
 document.querySelectorAll(".evidence-button").forEach((button) => {
   button.addEventListener("click", () => {
     lastEvidenceTrigger = button;
-    drawer?.showModal();
+    if (!evidenceDisclosure) return;
+    button.closest(".finding-card")?.after(evidenceDisclosure);
+    evidenceDisclosure.hidden = false;
+    document.getElementById("evidence-title")?.focus();
   });
 });
-closeEvidence?.addEventListener("click", () => drawer?.close());
-drawer?.addEventListener("close", () => lastEvidenceTrigger?.focus());
+closeEvidence?.addEventListener("click", () => {
+  if (evidenceDisclosure) evidenceDisclosure.hidden = true;
+  lastEvidenceTrigger?.focus();
+});
 
-const scoreDialog = document.getElementById("score-dialog");
-document.getElementById("score-details")?.addEventListener("click", () => scoreDialog?.showModal());
+const scoreDisclosure = document.getElementById("score-explanation");
+const scoreDetails = document.getElementById("score-details");
+scoreDetails?.addEventListener("click", () => {
+  if (!(scoreDisclosure instanceof HTMLDetailsElement)) return;
+  scoreDisclosure.open = true;
+  scoreDisclosure.scrollIntoView({
+    behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    block: "start",
+  });
+});
+scoreDisclosure?.addEventListener("toggle", () => {
+  if (scoreDisclosure instanceof HTMLDetailsElement) {
+    scoreDetails?.setAttribute("aria-expanded", String(scoreDisclosure.open));
+  }
+});
 
 document.getElementById("compact-category")?.addEventListener("change", (event) => {
   const target = document.getElementById(event.target.value);

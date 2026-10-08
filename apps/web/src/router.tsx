@@ -7,18 +7,18 @@ import { RepositoryAnalysisPage } from "./features/repository-analysis/repositor
 
 function RootLayout() {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
+    <div className="app-shell bg-background text-foreground">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:rounded-md focus:bg-card focus:p-4 focus:text-primary"
       >
         Skip to content
       </a>
-      <header className="border-b bg-card">
+      <header className="app-header border-b">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <Link
             to="/"
-            className="inline-flex items-center gap-3 rounded-md text-xl font-semibold tracking-tight outline-none focus-visible:ring-3 focus-visible:ring-ring/35"
+            className="app-wordmark inline-flex items-center gap-3 rounded-md text-xl font-semibold tracking-tight outline-none focus-visible:ring-3 focus-visible:ring-ring/35"
           >
             <StackMark />
             StackLens

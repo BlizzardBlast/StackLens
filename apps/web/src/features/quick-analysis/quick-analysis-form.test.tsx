@@ -22,7 +22,13 @@ describe("QuickAnalysisForm [FR-001, FR-002, FR-004, FR-022, NFR-006, NFR-007]",
     expect(paste).toBeChecked();
     fireEvent.click(upload);
     expect(upload).toBeChecked();
-    expect(screen.getByLabelText("Local package.json")).toBeInTheDocument();
+    const fileInput = screen.getByLabelText("Local package.json");
+    expect(fileInput).toHaveClass(
+      "cursor-pointer",
+      "file:cursor-pointer",
+      "disabled:cursor-not-allowed",
+      "disabled:file:cursor-not-allowed",
+    );
   });
 
   it("keeps explicit spacing between the input legend and mode choices", () => {

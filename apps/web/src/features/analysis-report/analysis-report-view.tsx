@@ -446,7 +446,7 @@ export function AnalysisReportView({
       : "package.json · quick analysis";
 
   return (
-    <article className="grid min-w-0 gap-8 wrap-anywhere">
+    <article className="report-layout grid min-w-0 gap-8 wrap-anywhere">
       <header className="grid gap-3 border-b pb-6">
         <p className="font-mono text-sm text-muted-foreground">{repository}</p>
         <div className="flex flex-wrap items-end justify-between gap-4">
@@ -473,7 +473,7 @@ export function AnalysisReportView({
 
       {isManifestAnalysis ? (
         <section
-          className="grid gap-2 rounded-xl border border-primary/20 bg-primary/5 p-5"
+          className="report-boundary grid gap-2 rounded-xl border border-primary/20 bg-primary/5 p-5"
           aria-labelledby="manifest-boundary-title"
         >
           <p className="text-xs font-semibold tracking-wide text-primary uppercase">
@@ -511,7 +511,7 @@ export function AnalysisReportView({
       {isManifestAnalysis ? <ManifestInsights report={report} /> : null}
 
       <section className="grid gap-4" aria-labelledby="score-summary-title">
-        <div className="grid gap-3 rounded-xl border bg-muted/50 p-5">
+        <div className="report-score-summary grid gap-3 rounded-xl border p-5">
           <div className="flex flex-wrap items-baseline justify-between gap-4">
             <h2 id="score-summary-title" className="text-lg font-semibold">
               Stack health
@@ -563,7 +563,10 @@ export function AnalysisReportView({
 
       {report.limitations.length === 0 && report.partialFailures.length === 0 ? null : (
         <section className="grid gap-3" aria-labelledby="limitations-title">
-          <h2 id="limitations-title" className="text-xl font-semibold tracking-tight">
+          <h2
+            id="limitations-title"
+            className="report-section-heading text-xl font-semibold tracking-tight"
+          >
             Limitations and next steps
           </h2>
           <p className="text-sm text-muted-foreground">
@@ -687,7 +690,7 @@ export function AnalysisReportView({
             ref={findingsHeadingRef}
             tabIndex={-1}
             id="findings-title"
-            className="rounded-sm text-xl font-semibold tracking-tight outline-none focus-visible:ring-3 focus-visible:ring-ring"
+            className="report-section-heading rounded-sm text-xl font-semibold tracking-tight outline-none focus-visible:ring-3 focus-visible:ring-ring"
           >
             Findings
           </h2>
@@ -806,7 +809,10 @@ export function AnalysisReportView({
       {visibleRecommendations.length === 0 ? null : (
         <section className="grid gap-4" aria-labelledby="recommendations-title">
           <div>
-            <h2 id="recommendations-title" className="text-xl font-semibold tracking-tight">
+            <h2
+              id="recommendations-title"
+              className="report-section-heading text-xl font-semibold tracking-tight"
+            >
               Recommendations
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
