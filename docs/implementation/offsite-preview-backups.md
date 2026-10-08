@@ -22,8 +22,8 @@ Only `database.slbackup` and `online.slmetadata` are uploaded as database data.
 The capture environment receives the paired verified-TLS source configuration and dedicated random
 32-byte master key. The readback environment receives only the master. HKDF-SHA256 derives a
 distinct AES key for each scope/repository/run/commit, and a separate HMAC key authenticates artifact
-retention labels. AES-256-GCM nonces remain random. Keys, logins, dumps, IDs and raw report bodies
-never enter artifacts or public evidence. Root rotation requires preserving the key for every
+retention labels. AES-256-GCM nonces remain random. Plaintext keys, logins, dumps, analysis IDs and
+report bodies never enter artifacts or public evidence. Root rotation requires preserving the key for every
 still-eligible archive and a documented mapping; deleting ciphertext is not cryptographic erasure
 while its master survives. Keep a separately protected recovery copy of the master outside this PC.
 
@@ -80,9 +80,32 @@ The restore does not receive the source login and never starts its queue. Ordina
 also cover real local restoration, mismatched-copy rollback and zero retained-report coverage.
 Fixture CI and local tests do not establish scheduled live capture or secret-custody activation.
 
+Local preparation in [PR #53](https://github.com/BlizzardBlast/StackLens/pull/53) passes the full
+database-backed `pnpm check`, including compiled runtime smoke, eight new focused cases and eighteen
+browser cases. Both workflows pass `actionlint` v1.7.12; shellcheck/pyflakes are not installed for
+that validation. The focused PostgreSQL gate also passes separately. Both owned gate databases and
+temporary private files are removed, and the temporary local PostgreSQL service is stopped while
+preserving the development volume. See the
+[source-hashed preparation evidence](release-evidence/2026-10-09-offsite-backup-preparation.json).
+Resolve the exact PR head and cloud quality/fixture results before publication or activation.
+
+Implementation head `1d098ca` passes quality run `37861337919`, portable recovery `37861337909`
+and offsite fixture `37861337974`. The independent restore receipt records seven matching tables,
+two archived strict reads, one retained strict/API read, one copied queue row left locked and
+complete owned cleanup. Subsequent self-review corrects whole-second GitHub upload timestamps
+against millisecond capture time; all eight focused checks pass again with deterministic regression
+coverage. Verify the final documentation/correction head independently before merging.
+
+The October 9 read-only verified-TLS source-scope review finds that the existing private source
+login owns the backup tables and can create roles/databases. A read-only snapshot transaction does
+not reduce that credential's authority. Review this concrete scope before unattended custody;
+prefer a dedicated restricted backup login, and never transfer the current privileged source
+configuration by assuming that manual recovery approval covers unattended access.
+
 ## Concrete activation and Codex scheduler handover
 
-1. Review and publish this milestone from `codex/offsite-preview-backups`. Resolve the current main
+1. Review and merge [PR #53](https://github.com/BlizzardBlast/StackLens/pull/53) from
+   `codex/offsite-preview-backups`. Resolve the current main
    SHA, exact-head quality and two-job offsite fixture CI before live use. Do not enable the variable
    on a branch or change the old recovery environment's required reviewers.
 2. Obtain approval for unattended access in two new environments restricted to `main`, without a

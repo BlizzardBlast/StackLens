@@ -205,7 +205,7 @@ function fakeGithub(master, now, specifications) {
 }
 await test("NFR-010/SEC-003: maintenance deletes only authenticated expired workflow-owned artifacts and accepts verified fresh custody", async () => {
   const master = randomBytes(32),
-    now = Date.now();
+    now = Math.floor(Date.now() / 1000) * 1000 + 456;
   const fake = fakeGithub(master, now, [
     { ageHours: 1 },
     { ageHours: 25 },
@@ -214,6 +214,8 @@ await test("NFR-010/SEC-003: maintenance deletes only authenticated expired work
     { ageHours: 25, run: { head_branch: "untrusted-branch" } },
     { ageHours: 25, run: { head_repository: { full_name: "other/repository" } } },
   ]);
+  // A real artifact API timestamp may round an upload in the capture second down to whole seconds.
+  fake.artifacts[0].created_at = new Date(Math.floor((now - 3600_000) / 1000) * 1000).toISOString();
   const result = await maintainOffsiteBackups({ master, api: fake.api, now });
   assert.equal(result.status, "verified");
   assert.equal(result.latestVerifiedBackup.runId, "100");

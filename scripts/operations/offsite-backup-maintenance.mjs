@@ -83,7 +83,12 @@ export async function maintainOffsiteBackups({ master, api, now = Date.now() }) 
       continue;
     }
     const uploaded = Date.parse(artifact.created_at);
-    assert(Number.isFinite(uploaded) && uploaded >= label.createdAt && uploaded < label.expiresAt);
+    // GitHub timestamps have second precision; same-second upload must not appear before capture.
+    assert(
+      Number.isFinite(uploaded) &&
+        uploaded >= Math.floor(label.createdAt / 1000) * 1000 &&
+        uploaded < label.expiresAt,
+    );
     assert(label.createdAt <= now, "future_backup_capture");
     result.authenticatedArtifacts++;
     const deadline = new Date(label.expiresAt).toISOString();

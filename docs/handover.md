@@ -3,7 +3,7 @@
 > **Prepared:** 2026-10-09\
 > **Architecture:** v0.1.26; requirements v0.1.4\
 > **Milestone:** Scheduled offsite backup preparation; live custody and scheduler handover pending\
-> **Branch:** `codex/offsite-preview-backups`, existing checkout; resolve this milestone's publication state and current main\
+> **Branch:** `codex/offsite-preview-backups`, existing checkout; [PR #53](https://github.com/BlizzardBlast/StackLens/pull/53) prepares offsite backups; resolve this milestone's publication state and current main\
 > **Preparation base:** `1ac18f837aa65bb811ca5953730abddb93a0e50e`; independently resolve current main and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009/010, SEC-001/002/003/007, GOV-002/006/007
 
@@ -13,7 +13,8 @@
 
 The user selects workstation-independent scheduled backups using the existing GitHub infrastructure
 and asks whether the Codex scheduler should be removed. The new branch is
-`codex/offsite-preview-backups`, in the existing checkout. Resolve its publication state and current
+`codex/offsite-preview-backups`, in the existing checkout, with
+[PR #53](https://github.com/BlizzardBlast/StackLens/pull/53). Resolve its publication state and current
 main independently; local preparation is not live activation or scheduler-fired evidence.
 
 NFR-010 and ADR-0022 define online consistent capture, a purpose-separated authenticated bundle,
@@ -23,9 +24,19 @@ no Worker/pump and never unlocks copied claims. Report-count evidence distinguis
 coverage. New tests and a two-job public fixture workflow cover the same path with synthetic data.
 The full database-backed `pnpm check` passes, including compiled runtime smoke, all eight new
 focused cases and eighteen browser cases. Both workflows pass `actionlint` v1.7.12. The separate
-focused gate and full gate remove their owned test databases; local evidence does not establish
+focused gate and full gate remove their owned test databases; the temporary local PostgreSQL service
+is stopped with the development volume preserved. Local evidence does not establish
 fresh-runner cloud or scheduled live acceptance. See the
 [preparation evidence](implementation/release-evidence/2026-10-09-offsite-backup-preparation.json).
+
+Implementation head `1d098ca` passes quality `37861337919`, portable recovery `37861337909` and
+the two-runner offsite fixture `37861337974`. Its downloaded synthetic restore receipt confirms
+seven matching tables, two archived reads, one retained strict/API read, quarantined copied work
+and complete cleanup. The later whole-second artifact timestamp correction passes all eight
+focused cases again. Resolve final-head CI independently before merge. The read-only TLS scope
+review confirms the current source login owns backup tables and can create roles/databases;
+prefer restricted backup custody and obtain the explicit unattended policy choice before secrets
+or hosted-role writes.
 
 Follow the [concrete activation sequence](implementation/offsite-preview-backups.md#concrete-activation-and-codex-scheduler-handover).
 The live workflow is disabled behind `STACKLENS_OFFSITE_BACKUPS_ENABLED`, with proposed main-only

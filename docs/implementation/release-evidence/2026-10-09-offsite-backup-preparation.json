@@ -9,26 +9,27 @@
     "FR-022",
     "GOV-007"
   ],
-  "preparedAt": "2026-10-08T23:46:26.721Z",
+  "preparedAt": "2026-10-08T23:52:25.838Z",
   "preparationBaseCommit": "1ac18f837aa65bb811ca5953730abddb93a0e50e",
   "branch": "codex/offsite-preview-backups",
+  "pullRequest": "https://github.com/BlizzardBlast/StackLens/pull/53",
   "status": "local_implementation_verified_live_activation_pending",
   "sourceHashes": {
     ".github/workflows/offsite-preview-backups.yml": "e5177824297ddc845cdb9b5ac0ae592bb837ccdd5955551f7d88b52e08fa928f",
     ".github/workflows/offsite-backup-fixture.yml": "9f5c42fb6e1a18acb94314b7a67a368d6b992bf2d23b4ca771840ddca1524b7f",
     "scripts/operations/offsite-backup-bundle.mjs": "8ae3ce5019450ab7eb7ad46e4660d14c1042e3b299e6eb8d5b0a9514098788e6",
     "scripts/operations/offsite-backup.mjs": "148c5f18b7d9693db38a5a21c58846a558c0f70aac0c99128a7dc3977ed00970",
-    "scripts/operations/offsite-backup-maintenance.mjs": "5b5674fc79316e78d25e83945376de33e263a5ef0d3404099e2dd602c89cb2c4",
+    "scripts/operations/offsite-backup-maintenance.mjs": "9a5cc96061ef934616a31019088c97c3df726d51b65c60d2e6cbb8c6a8754389",
     "scripts/operations/offsite-backup-fixture.mjs": "83e30842a880838e698835b1137bffda395ccec1818cd8923691e5544680a303",
-    "scripts/operations/offsite-backup.test.mjs": "afccfc9f054709a1d79cbc68fbc2ebc563aa72545abfd429c3e4465ab5b98811"
+    "scripts/operations/offsite-backup.test.mjs": "6cbdb47482b4aced29fd73565a0643b117ceacd8d028ba402e327416c1492ecd"
   },
   "focusedGate": {
     "status": "verified",
     "mode": "focused",
-    "startedAt": "2026-10-08T23:39:03.562Z",
+    "startedAt": "2026-10-08T23:49:15.240Z",
     "exitCode": 0,
     "ownedDatabaseRemoved": true,
-    "finishedAt": "2026-10-08T23:39:13.530Z",
+    "finishedAt": "2026-10-08T23:49:24.557Z",
     "testsPassed": 8,
     "testsSkipped": 0
   },
@@ -39,6 +40,7 @@
     "exitCode": 0,
     "ownedDatabaseRemoved": true,
     "finishedAt": "2026-10-08T23:44:25.782Z",
+    "implementationCommit": "1d098ca4ca88e795c5f39dbf30e05c1557132513",
     "command": "pnpm check",
     "compiledDatabaseRuntimeSmoke": "passed",
     "browserCasesPassed": 18
@@ -67,8 +69,69 @@
     "mismatchedFingerprintRollbackPassed": true,
     "emptyRetainedReportCoverageExplicit": true
   },
-  "cloudFixtureAcceptance": "pending_publication",
+  "cloudFixtureAcceptance": {
+    "status": "verified_synthetic_data_only",
+    "headCommit": "1d098ca4ca88e795c5f39dbf30e05c1557132513",
+    "runId": 37861337974,
+    "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/37861337974",
+    "jobsPassed": [
+      "capture",
+      "verify"
+    ],
+    "receiptArtifactId": 11586083471,
+    "receipt": {
+      "requirementIds": [
+        "NFR-010",
+        "NFR-009",
+        "SEC-003",
+        "SEC-007",
+        "FR-003",
+        "FR-017",
+        "FR-022"
+      ],
+      "status": "verified",
+      "startedAt": "2026-10-08T23:49:09.673Z",
+      "repository": "BlizzardBlast/StackLens",
+      "runId": "37861337974",
+      "sourceCommit": "ed08da924ac0126fc281b46644da2e16bf5bb2fa",
+      "scope": "fixture",
+      "backup": {
+        "version": 1,
+        "createdAt": "2026-10-08T23:48:11.073Z",
+        "expiresAt": "2026-10-09T23:48:11.073Z",
+        "archiveSha256": "38a0fbbd9bfd762747cf7ee26dcf7a82a88a5d8742418cea69b6359d811f7346"
+      },
+      "matchingTables": 7,
+      "fingerprintsMatched": true,
+      "archivedStrictReportReads": 2,
+      "strictReportReads": 1,
+      "apiReportReads": 1,
+      "populatedReportReadbackCovered": true,
+      "retainedReportHashes": [
+        "e8af3cd2b48dddbb8cecc0ff71464a66f92069042a829ed6f1bfcf5785fff059"
+      ],
+      "missingAnalysisApiReadback": true,
+      "historicalRowsUnchanged": true,
+      "expiredTerminalRowsRemoved": 1,
+      "copiedQueueRows": 1,
+      "queueStarted": false,
+      "liveClaimsUnlocked": false,
+      "originalDatabaseContacted": false,
+      "ownedDatabaseRemoved": true,
+      "transientPrivateFilesRemoved": true,
+      "finishedAt": "2026-10-08T23:49:10.341Z"
+    }
+  },
+  "finalHeadQualityAndFixtureCi": "resolve_current_pr_head_before_merge",
   "unattendedSecretCustody": "pending_activation_review",
+  "sourceScopeReview": {
+    "reviewedDate": "2026-10-09",
+    "verifiedTls": true,
+    "hostedWrites": false,
+    "currentLoginOwnsBackupTables": true,
+    "currentLoginCanCreateRolesAndDatabases": true,
+    "approvalMustNotTreatReadOnlyCaptureAsRestrictedCredentialAuthority": true
+  },
   "scheduledLiveAcceptance": "pending",
   "codexBackupAutomation": {
     "id": "stacklens-encrypted-preview-backups",
@@ -76,5 +139,7 @@
     "retired": false
   },
   "hostedEnvironmentOrSecretWrites": false,
-  "publicRoutingChanged": false
+  "publicRoutingChanged": false,
+  "localTemporaryPostgresServiceStopped": true,
+  "localDevelopmentVolumePreserved": true
 }
