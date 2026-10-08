@@ -5,7 +5,7 @@ import type { AnalysisReport } from "@stacklens/contracts";
 import { Button } from "@stacklens/ui/components/button";
 
 import { AnalysisReportView } from "../analysis-report/analysis-report-view.js";
-import { AnalysisModeNav } from "../analyze/analysis-mode-nav.js";
+import { AnalysisInputPanel } from "../analyze/analysis-input-panel.js";
 import {
   QuickAnalysisApiError,
   quickAnalysisClient,
@@ -96,9 +96,9 @@ export function QuickAnalysisPage({
           />
         </div>
       ) : (
-        <div className="mx-auto grid w-full max-w-6xl items-start gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-x-14 lg:py-16">
+        <div className="analysis-workspace mx-auto grid w-full max-w-6xl items-start gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-x-14 lg:py-16">
           <section className="analysis-intro">
-            <p className="text-sm font-medium text-muted-foreground">A focused first pass</p>
+            <p className="analysis-eyebrow">A focused first pass</p>
             <h1
               ref={introductionHeadingRef}
               tabIndex={-1}
@@ -112,31 +112,19 @@ export function QuickAnalysisPage({
             </p>
           </section>
 
-          <section
-            className="analysis-panel lg:col-start-2 lg:row-span-2"
-            aria-labelledby="quick-form-title"
+          <AnalysisInputPanel
+            current="manifest"
+            formTitle="Provide package.json"
+            formDescription="Paste the contents or choose a local file. Its text is sent to StackLens when you run the analysis."
+            className="lg:col-start-2 lg:row-span-2"
           >
-            <div className="border-b bg-muted/45 p-3 sm:p-4">
-              <AnalysisModeNav current="manifest" />
-            </div>
-            <div className="grid gap-6 p-5 sm:p-7">
-              <div className="grid gap-2">
-                <h2 id="quick-form-title" className="text-2xl font-semibold tracking-tight">
-                  Provide package.json
-                </h2>
-                <p className="text-sm leading-6 text-muted-foreground">
-                  Paste the contents or choose a local file. Its text is sent to StackLens when you
-                  run the analysis.
-                </p>
-              </div>
-              <QuickAnalysisForm
-                onSubmit={handleSubmit}
-                isPending={mutation.isPending}
-                onInputChange={() => mutation.reset()}
-                {...(mutationError === undefined ? {} : { serverError: mutationError })}
-              />
-            </div>
-          </section>
+            <QuickAnalysisForm
+              onSubmit={handleSubmit}
+              isPending={mutation.isPending}
+              onInputChange={() => mutation.reset()}
+              {...(mutationError === undefined ? {} : { serverError: mutationError })}
+            />
+          </AnalysisInputPanel>
 
           <div className="grid gap-8 lg:col-start-1 lg:row-start-2">
             <section aria-label="Quick analysis steps">
@@ -145,7 +133,7 @@ export function QuickAnalysisPage({
                   <li key={step.title} className="grid grid-cols-[1.75rem_1fr] gap-3">
                     <span
                       aria-hidden="true"
-                      className="flex size-7 items-center justify-center rounded-full border text-sm text-muted-foreground"
+                      className="quick-step-marker flex size-7 items-center justify-center rounded-full border"
                     >
                       {index + 1}
                     </span>
@@ -159,7 +147,7 @@ export function QuickAnalysisPage({
                 ))}
               </ol>
             </section>
-            <aside className="grid gap-2 rounded-2xl bg-brand-surface p-5 text-brand-foreground sm:p-7">
+            <aside className="quick-boundary grid gap-2 bg-brand-surface p-5 text-brand-foreground sm:p-7">
               <h2 className="text-lg font-medium">One file. A useful starting point.</h2>
               <p className="text-sm leading-6 text-brand-muted">
                 A manifest tells part of the story. For supported source, lockfile, and provider

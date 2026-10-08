@@ -1,107 +1,126 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>StackLens — Product Design v1</title>
-    <link rel="stylesheet" href="../tokens/tokens.css" />
+    <title>StackLens - Product Design v2 Candidate</title>
+    <link rel="stylesheet" href="../../packages/design-tokens/dist/theme.css" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
 
   <body>
+    <a class="skip-link" href="#prototype-main">Skip to content</a>
     <header class="topbar">
       <a class="brand" href="#" data-view-link="analyzer" aria-label="StackLens home">
-        <span class="brand-mark" aria-hidden="true">◎</span>
+        <span class="brand-mark mono" aria-hidden="true">SL</span>
         <span>StackLens</span>
       </a>
       <div class="top-actions">
-        <span class="prototype-chip">Design prototype v1</span>
+        <span class="prototype-chip">Prototype v2 candidate</span>
         <button
           class="icon-button"
           id="theme-toggle"
           type="button"
-          aria-label="Switch to light theme"
-          aria-pressed="true"
+          aria-label="Switch to dark theme"
+          aria-pressed="false"
         >
           ◐
         </button>
       </div>
     </header>
 
-    <main>
+    <main id="prototype-main" tabindex="-1">
       <section class="view analyzer-view is-active" data-view="analyzer">
-        <div class="hero">
-          <div class="eyebrow">DETERMINISTIC STACK ANALYSIS</div>
-          <h1>Understand what your stack contains—and what deserves attention.</h1>
-          <p class="hero-copy">
-            Evidence-backed dependency, security, tooling, and maintainability analysis. StackLens
-            inspects repository content statically and does not execute project code.
-          </p>
-        </div>
+        <div class="analyzer-layout">
+          <div class="analyzer-brief">
+            <div class="eyebrow">FOR JAVASCRIPT &amp; TYPESCRIPT PROJECTS</div>
+            <h1>See your stack clearly.</h1>
+            <p class="hero-copy">
+              Understand dependencies, spot risks, and plan the next move with findings you can
+              trace back to evidence.
+            </p>
+          </div>
 
-        <div class="analyzer-shell">
-          <div class="segmented" role="tablist" aria-label="Analysis input">
-            <button
-              class="segment is-selected"
-              id="github-tab"
-              role="tab"
-              aria-selected="true"
-              aria-controls="github-panel"
-              type="button"
+          <div class="analyzer-shell">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">START AN ANALYSIS</p>
+                <h2>Choose your evidence source</h2>
+              </div>
+              <p>Static inspection only. No project code runs.</p>
+            </div>
+            <div class="segmented" role="tablist" aria-label="Analysis input">
+              <button
+                class="segment is-selected"
+                id="github-tab"
+                role="tab"
+                aria-selected="true"
+                aria-controls="github-panel"
+                tabindex="0"
+                type="button"
+              >
+                <span>GitHub repository</span><small>Repository evidence</small>
+              </button>
+              <button
+                class="segment"
+                id="package-tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="package-panel"
+                tabindex="-1"
+                type="button"
+              >
+                <span>package.json</span><small>Manifest-only pass</small>
+              </button>
+            </div>
+            <div id="github-panel" class="input-panel" role="tabpanel" aria-labelledby="github-tab">
+              <label class="field">
+                <span>Public GitHub repository</span>
+                <input
+                  id="repo-input"
+                  type="url"
+                  spellcheck="false"
+                  autocomplete="url"
+                  value="https://github.com/BlizzardBlast/StackLens"
+                />
+              </label>
+              <p class="field-hint">Use a public URL such as github.com/owner/repository.</p>
+            </div>
+            <div
+              id="package-panel"
+              class="input-panel"
+              role="tabpanel"
+              aria-labelledby="package-tab"
+              hidden
             >
-              GitHub repository
-            </button>
-            <button
-              class="segment"
-              id="package-tab"
-              role="tab"
-              aria-selected="false"
-              aria-controls="package-panel"
-              type="button"
-            >
-              package.json
-            </button>
-          </div>
-          <div id="github-panel" class="input-panel" role="tabpanel" aria-labelledby="github-tab">
-            <label class="field">
-              <span>Public repository URL</span>
-              <input
-                id="repo-input"
-                type="url"
-                spellcheck="false"
-                autocomplete="url"
-                value="https://github.com/BlizzardBlast/StackLens"
-              />
-            </label>
-          </div>
-          <div
-            id="package-panel"
-            class="input-panel"
-            role="tabpanel"
-            aria-labelledby="package-tab"
-            hidden
-          >
-            <label class="field">
-              <span>package.json</span>
-              <textarea id="package-input" rows="8" spellcheck="false">
+              <label class="field">
+                <span>package.json</span>
+                <textarea id="package-input" rows="8" spellcheck="false">
 {
   "name": "example-project",
   "dependencies": {
     "react": "^19.0.0"
   }
-}</textarea
-              >
-            </label>
-          </div>
-          <p class="field-error" id="input-error" role="alert" hidden></p>
-          <div class="analyzer-actions">
-            <div class="privacy-note">
-              <span aria-hidden="true">◇</span> Static inspection · no account required
+}</textarea>
+              </label>
+              <p class="field-hint">Paste content or choose a local package.json in product UI.</p>
             </div>
-            <button class="primary-button" id="analyze-button" type="button">
-              Analyze repository <span aria-hidden="true">→</span>
-            </button>
+            <p class="field-error" id="input-error" role="alert" hidden></p>
+            <div class="analyzer-actions">
+              <div class="privacy-note">No account required. Public repositories only.</div>
+              <button class="primary-button" id="analyze-button" type="button">
+                Analyze repository
+              </button>
+            </div>
           </div>
+          <aside class="evidence-path" aria-labelledby="evidence-path-title">
+            <p class="eyebrow" id="evidence-path-title">FROM INPUT TO ACTION</p>
+            <ol>
+              <li><strong>Evidence</strong><span>Manifest, lockfile, source</span></li>
+              <li><strong>Findings</strong><span>Facts and labeled heuristics</span></li>
+              <li><strong>Next steps</strong><span>Recommendations with reasons</span></li>
+            </ol>
+          </aside>
         </div>
 
         <div class="trust-grid" aria-label="StackLens principles">
@@ -111,7 +130,7 @@
           </article>
           <article>
             <strong>Honest uncertainty</strong
-            ><span>Missing evidence becomes N/A—not an invented conclusion.</span>
+            ><span>Missing evidence becomes N/A, not an invented conclusion.</span>
           </article>
           <article>
             <strong>No code execution</strong
@@ -244,21 +263,27 @@
 
             <section class="score-grid">
               <article class="overall-score">
-                <div class="score-ring" aria-label="Overall health score 82 out of 100">
+                <div class="score-value" aria-label="Overall health score 82 out of 100">
                   <span>82</span><small>/100</small>
                 </div>
                 <div>
                   <h2>Stack health</h2>
                   <p>Good evidence coverage with a few meaningful issues to address.</p>
-                  <button class="link-button" type="button" id="score-details">
-                    Explain this score →
+                  <button
+                    class="link-button"
+                    id="score-details"
+                    type="button"
+                    aria-controls="score-explanation"
+                    aria-expanded="false"
+                  >
+                    Explain this score
                   </button>
                 </div>
               </article>
               <article class="coverage-card">
-                <span class="label">Evidence coverage</span><strong>84%</strong>
-                <div class="coverage-bar"><i style="width: 84%"></i></div>
-                <small>Testing is excluded because evidence is insufficient.</small>
+                <span class="label">Score availability</span><strong>4 of 5</strong>
+                <p>Category scores available</p>
+                <small>Testing is N/A because evidence is insufficient.</small>
               </article>
             </section>
 
@@ -280,6 +305,29 @@
                 <span>Tooling</span><strong>91</strong><small>No urgent issues</small>
               </article>
             </section>
+
+            <details class="score-disclosure" id="score-explanation">
+              <summary>
+                <span class="score-disclosure-label">
+                  <span class="eyebrow">EXPLAINABLE SCORING</span>
+                  <strong>How to read this score</strong>
+                </span>
+                <span class="score-disclosure-action">Show details</span>
+              </summary>
+              <div class="score-disclosure-content">
+                <div class="score-ledger">
+                  <div><span>Scoring model</span><strong class="mono">stack-health-v3</strong></div>
+                  <div><span>Security risk band</span><strong>Known advisory</strong></div>
+                  <div><span>Available category checks</span><strong>4 of 5</strong></div>
+                  <div><span>Unavailable category</span><strong>Testing · N/A</strong></div>
+                  <div class="ledger-total"><span>Overall score</span><strong>82</strong></div>
+                </div>
+                <p class="muted">
+                  StackLens displays analyzer-supplied score explanations. It does not recalculate
+                  score policy in the interface. Testing is not treated as zero.
+                </p>
+              </div>
+            </details>
 
             <section class="section" id="attention">
               <div class="section-heading">
@@ -316,10 +364,10 @@
                   <span class="badge confidence">High confidence</span>
                   <span class="mono subject">legacy-tool</span>
                 </div>
-                <h3>This package appears unmaintained based on multiple maintenance signals.</h3>
+                <h3>This package may be unused within complete supported source coverage.</h3>
                 <p>
-                  The finding combines release recency and repository state. StackLens does not
-                  present the heuristic as an authoritative deprecation fact.
+                  No supported source reference was found for this declaration. Review evidence
+                  before removing it; absence does not prove removal is safe.
                 </p>
                 <div class="finding-footer">
                   <span>Maintainability · Rule <span class="mono">JS-MNT-004</span></span
@@ -413,15 +461,19 @@
       </section>
     </main>
 
-    <dialog class="evidence-drawer" id="evidence-drawer" aria-labelledby="evidence-title">
+    <section
+      class="evidence-disclosure"
+      id="evidence-disclosure"
+      aria-labelledby="evidence-title"
+      hidden
+      tabindex="-1"
+    >
       <div class="drawer-header">
         <div>
           <span class="eyebrow">EVIDENCE</span>
-          <h2 id="evidence-title">Why StackLens reported this</h2>
+          <h2 id="evidence-title" tabindex="-1">Why StackLens reported this</h2>
         </div>
-        <button class="icon-button" id="close-evidence" type="button" aria-label="Close evidence">
-          ×
-        </button>
+        <button class="secondary-button compact" id="close-evidence" type="button">Close evidence</button>
       </div>
       <div class="drawer-section">
         <span class="label">Classification</span>
@@ -444,29 +496,7 @@
         <span class="label">Limitations</span>
         <p>This sample evidence is illustrative prototype content, not a real advisory claim.</p>
       </div>
-    </dialog>
-
-    <dialog id="score-dialog" class="score-dialog">
-      <form method="dialog">
-        <header>
-          <div>
-            <span class="eyebrow">EXPLAINABLE SCORING</span>
-            <h2>Overall score contribution</h2>
-          </div>
-          <button class="icon-button" value="close" aria-label="Close score explanation">×</button>
-        </header>
-        <div class="score-ledger">
-          <div><span>Eligible category baseline</span><strong>100</strong></div>
-          <div><span>Security finding</span><strong>−12</strong></div>
-          <div><span>Maintainability findings</span><strong>−6</strong></div>
-          <div class="ledger-total"><span>Overall score</span><strong>82</strong></div>
-        </div>
-        <p class="muted">
-          Testing is not treated as zero. It is excluded because the prototype marks the category as
-          insufficient evidence.
-        </p>
-      </form>
-    </dialog>
+    </section>
 
     <script src="./prototype.js"></script>
   </body>

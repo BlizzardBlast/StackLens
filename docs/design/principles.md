@@ -47,7 +47,7 @@ Scores summarize evidence; they do not replace it.
 
 Implications:
 
-- score cards show evidence coverage;
+- score cards show score availability and the relevant evidence scope;
 - every score links to a contribution breakdown;
 - missing evidence is visible;
 - category scores can be N/A.

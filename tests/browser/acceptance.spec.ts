@@ -132,6 +132,10 @@ test("FR-002/021, NFR-006/007: invalid manifest correction and native file repla
   await page.keyboard.press("Space");
   await expect(page.getByRole("radio", { name: "Choose local file", exact: true })).toBeChecked();
   const file = page.getByLabel("Local package.json", { exact: true });
+  await expect(file).toHaveCSS("cursor", "pointer");
+  expect(
+    await file.evaluate((input) => getComputedStyle(input, "::file-selector-button").cursor),
+  ).toBe("pointer");
   await file.setInputFiles({
     name: "package.json",
     mimeType: "application/json",
