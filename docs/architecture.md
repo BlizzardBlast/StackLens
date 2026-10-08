@@ -1,10 +1,10 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.25
-> **Date:** 2026-10-06
+> **Architecture version:** 0.1.26
+> **Date:** 2026-10-09
 > **Requirements source:** [requirements.md](requirements.md)  
-> **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-009, GOV-006–GOV-007
+> **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-010, GOV-006–GOV-007
 
 ## 1. Architecture summary
 
@@ -878,6 +878,14 @@ into a new quarantined Neon/local database. Authentication precedes target I/O; 
 fingerprints, strict retained readers, expiry cleanup and drained state precede exclusive private
 configuration publication. The helper starts no compute and changes no public route. Hosted
 capacity, new credential custody, public activation and usage-budget acceptance remain gates.
+ADR-0022 adds a separately gated [scheduled offsite backup path](implementation/offsite-preview-backups.md)
+under NFR-010. Online snapshots can contain live claims, so their incompatible authenticated bundle
+never authorizes queue replay. Fresh-runner verification leaves the copy quarantined, compares seven
+fingerprints and strict/API reads, purges terminal expiry and removes its target. Separate environment
+custody, per-run derived keys, authenticated artifact labels, bounded expiry deletion and an hourly
+freshness detector support workstation-independent operation. The workflow defaults disabled; live
+scheduled acceptance precedes retirement of the local Codex heartbeat. This is backup continuity,
+not automatic public failover, and it leaves the manual protected recovery path unchanged.
 Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker
 maintenance purges expired terminal analysis/report/delivery records in bounded sweeps while
 preserving in-flight ownership. API responses prohibit browser/CDN caching. These are deployment
@@ -949,6 +957,7 @@ portable/bootstrap behavior remains the default, and mode/login rollback must be
 - [ADR-0019: Restricted database login for request-bound APIs](adr/0019-restricted-request-bound-database-role.md)
 - [ADR-0020: Explicit independent preview database recovery](adr/0020-independent-preview-recovery.md)
 - [ADR-0021: Encrypted recovery handoff to replacement compute](adr/0021-portable-preview-recovery.md)
+- [ADR-0022: Scheduled offsite preview backups](adr/0022-scheduled-offsite-preview-backups.md)
 
 ADR-0020 adds a separate operator-only Neon restore path requiring an exact approved direct
 endpoint, verified TLS and a fresh UUID-owned PostgreSQL 18 database. The default restore stays

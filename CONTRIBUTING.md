@@ -110,6 +110,14 @@ Neon or start replacement compute. Operations test files run serially because re
 assertions observe the shared local database catalog; this also bounds simultaneous operator
 test connection/client-container load. Persistent hosting and public cutover remain operator gates.
 
+The [offsite backup path](docs/implementation/offsite-preview-backups.md) adds NFR-010 online
+snapshot capture and fresh-runner verification with the copied queue stopped. Normal operations
+tests use synthetic providers and owned loopback targets to verify retained/expired reports,
+copied claims, mismatched rollback, zero retained-report coverage, authenticated artifact cleanup
+and stale/failed readback. The two-job fixture workflow uses no hosted secrets. The live scheduled
+workflow defaults disabled; unattended environment custody and scheduler-fired acceptance precede
+retirement of the existing Codex heartbeat. This does not relax the manual recovery fencing rules.
+
 The restricted-login integration check uses an owned database and non-superuser role. It verifies
 denied DDL/Graphile access, missing-schema failure, Worker-only durable delivery, sanitized 503 at
 role saturation and recovery after release. It uses synthetic providers; no hosted login is created

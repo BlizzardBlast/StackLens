@@ -1,8 +1,8 @@
 # StackLens Product & System Requirements
 
 > **Status:** Accepted baseline  
-> **Version:** 0.1.3\
-> **Last updated:** 2026-10-02\
+> **Version:** 0.1.4\
+> **Last updated:** 2026-10-09\
 > **Product:** StackLens  
 > **Repository:** BlizzardBlast/StackLens
 
@@ -903,6 +903,23 @@ Operational logging/telemetry must support diagnosing failures without logging f
 
 Delivery and provider redirect failures must be recorded or classified without preserving raw queue,
 network, redirect-target, or provider-body details in public responses or durable analysis state.
+
+### NFR-010 — Hosted backup continuity
+
+**Phase:** MVP\
+**Status:** Accepted
+
+Hosted backup capture and isolated restoration must be able to run without the operator workstation.
+The documented policy must specify capture cadence, finite authenticated restore eligibility,
+separate encryption-key custody, expiry cleanup and observable failed or stale verification.
+Verification must compare the captured snapshot and strictly read retained reports, reporting
+empty-report coverage explicitly. Online snapshots may contain live execution claims; verification
+must leave their copied queue stopped and must never infer original-executor death or unlock claims.
+A replacement backup scheduler must pass scheduled acceptance before the previous scheduler is retired.
+
+**Change rationale (October 9, 2026):** the local backup heartbeat and manual cloud recovery do not
+provide unattended backup continuity after workstation loss. This requirement adds operational
+continuity and validation; it does not introduce automatic public failover or change report semantics.
 
 ## 12. Requirements governance
 

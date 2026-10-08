@@ -1,0 +1,80 @@
+{
+  "requirementIds": [
+    "NFR-010",
+    "NFR-009",
+    "SEC-003",
+    "SEC-007",
+    "FR-003",
+    "FR-017",
+    "FR-022",
+    "GOV-007"
+  ],
+  "preparedAt": "2026-10-08T23:46:26.721Z",
+  "preparationBaseCommit": "1ac18f837aa65bb811ca5953730abddb93a0e50e",
+  "branch": "codex/offsite-preview-backups",
+  "status": "local_implementation_verified_live_activation_pending",
+  "sourceHashes": {
+    ".github/workflows/offsite-preview-backups.yml": "e5177824297ddc845cdb9b5ac0ae592bb837ccdd5955551f7d88b52e08fa928f",
+    ".github/workflows/offsite-backup-fixture.yml": "9f5c42fb6e1a18acb94314b7a67a368d6b992bf2d23b4ca771840ddca1524b7f",
+    "scripts/operations/offsite-backup-bundle.mjs": "8ae3ce5019450ab7eb7ad46e4660d14c1042e3b299e6eb8d5b0a9514098788e6",
+    "scripts/operations/offsite-backup.mjs": "148c5f18b7d9693db38a5a21c58846a558c0f70aac0c99128a7dc3977ed00970",
+    "scripts/operations/offsite-backup-maintenance.mjs": "5b5674fc79316e78d25e83945376de33e263a5ef0d3404099e2dd602c89cb2c4",
+    "scripts/operations/offsite-backup-fixture.mjs": "83e30842a880838e698835b1137bffda395ccec1818cd8923691e5544680a303",
+    "scripts/operations/offsite-backup.test.mjs": "afccfc9f054709a1d79cbc68fbc2ebc563aa72545abfd429c3e4465ab5b98811"
+  },
+  "focusedGate": {
+    "status": "verified",
+    "mode": "focused",
+    "startedAt": "2026-10-08T23:39:03.562Z",
+    "exitCode": 0,
+    "ownedDatabaseRemoved": true,
+    "finishedAt": "2026-10-08T23:39:13.530Z",
+    "testsPassed": 8,
+    "testsSkipped": 0
+  },
+  "fullGate": {
+    "status": "verified",
+    "mode": "full",
+    "startedAt": "2026-10-08T23:40:44.102Z",
+    "exitCode": 0,
+    "ownedDatabaseRemoved": true,
+    "finishedAt": "2026-10-08T23:44:25.782Z",
+    "command": "pnpm check",
+    "compiledDatabaseRuntimeSmoke": "passed",
+    "browserCasesPassed": 18
+  },
+  "workflowValidation": {
+    "tool": "actionlint",
+    "version": "1.7.12",
+    "workflowsPassed": [
+      ".github/workflows/offsite-preview-backups.yml",
+      ".github/workflows/offsite-backup-fixture.yml"
+    ],
+    "shellcheckCovered": false,
+    "pyflakesCovered": false
+  },
+  "databaseRehearsal": {
+    "matchingTables": 7,
+    "archivedStrictReportReads": 2,
+    "retainedStrictReportReads": 1,
+    "retainedApiReportReads": 1,
+    "expiredTerminalRowsRemoved": 1,
+    "copiedQueueRows": 1,
+    "sourceRuntimesAliveDuringCapture": true,
+    "queueStarted": false,
+    "liveClaimsUnlocked": false,
+    "ownedSourceAndRestoreDatabasesRemoved": true,
+    "mismatchedFingerprintRollbackPassed": true,
+    "emptyRetainedReportCoverageExplicit": true
+  },
+  "cloudFixtureAcceptance": "pending_publication",
+  "unattendedSecretCustody": "pending_activation_review",
+  "scheduledLiveAcceptance": "pending",
+  "codexBackupAutomation": {
+    "id": "stacklens-encrypted-preview-backups",
+    "status": "ACTIVE",
+    "retired": false
+  },
+  "hostedEnvironmentOrSecretWrites": false,
+  "publicRoutingChanged": false
+}
