@@ -883,8 +883,10 @@ under NFR-010. Online snapshots can contain live claims, so their incompatible a
 never authorizes queue replay. Fresh-runner verification leaves the copy quarantined, compares seven
 fingerprints and strict/API reads, purges terminal expiry and removes its target. Separate environment
 custody, per-run derived keys, authenticated artifact labels, bounded expiry deletion and an hourly
-freshness detector support workstation-independent operation. The workflow defaults disabled; live
-scheduled acceptance precedes retirement of the local Codex heartbeat. This is backup continuity,
+freshness detector support workstation-independent operation. The workflow defaults disabled and
+is now enabled under approved main-only custody with a dedicated SELECT-only source login that
+bypasses Graphile RLS for complete snapshots. Live scheduled acceptance and expiry cleanup precede
+retirement of the local Codex heartbeat. This is backup continuity,
 not automatic public failover, and it leaves the manual protected recovery path unchanged.
 Executable API startup assigns a configurable anonymous lifetime (24 hours by default). Worker
 maintenance purges expired terminal analysis/report/delivery records in bounded sweeps while

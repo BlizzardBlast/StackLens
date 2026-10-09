@@ -3055,3 +3055,40 @@ does not reduce that credential authority; unattended custody requires an explic
 before any live secret or role write. No independent reviewer or scheduled live acceptance is claimed.
 
 **Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022, GOV-002/003/006/007; ADR-0022.
+
+## 2026-10-09 — Activate approved offsite custody and verify live restoration
+
+After final-head quality, portable recovery and offsite fixture CI pass, PR #53 merges as `4917f53`.
+The operator approves two new unattended main-only environments, a restricted Aiven backup login
+and a dedicated master with a separate protected recovery copy. Existing recovery protections stay
+intact and the live enable variable is set. The backup login has explicit SELECT/schema usage,
+two connections and read-only defaults, with no ownership, memberships, persistent writes,
+database/role creation or replication.
+
+The first cloud capture fails because Graphile private tables use RLS without reader policies.
+The necessary BYPASSRLS scope enables complete snapshots while preserving all write restrictions;
+the restricted reader matches seven fingerprints in the owner's exported snapshot and two pinned
+write attempts remain denied with read-only mode off. No PUBLIC grants, source rows or queue policies
+change. Corrected cloud run `37926817042` passes capture, independent quarantined restore and
+freshness maintenance with complete owned cleanup. Its source contains zero reports, explicitly
+limiting populated readback coverage. The failure and correction remain in the activation evidence.
+
+A normal frey-ui analysis on the existing Worker supplies one real schema 2.0.0 report with
+explicit provider limitations. Second cloud run `37927662152` restores seven matching tables and
+passes archived, retained and API report readback with unchanged historical rows and owned cleanup.
+The first empty capture remains recorded, while the second establishes populated live coverage.
+The operator requests a midnight acceptance window. The cron and matching capture guard move
+to 00:17/12:17 WIB, preserving twelve-hour cadence and the offset from the hour boundary.
+
+The documentation-impact pass updates README, architecture, ADR-0022, the runbook and current
+handover. Requirement behavior, analyzer policy, report contracts, scoring, UI and tokens are
+unchanged. `actionlint` v1.7.12 validates both workflows with shellcheck/pyflakes excluded;
+`pnpm format:check` and `git diff --check` pass for the schedule adjustment and documentation.
+Scheduled/PC-off acceptance and real authenticated expired-artifact deletion remain
+pending, so the existing Codex backup heartbeat remains active. The final handover must verify
+those gates before retirement; cloud provider physical deletion timing remains unestablished.
+A temporary hourly handover follow-up checks those gates without creating backups and stays
+quiet for unchanged state. It pauses the old scheduler after acceptance, preserves its rollback
+window until another scheduled backup passes, then deletes the old configuration and retires itself.
+
+**Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022, GOV-002/006/007; ADR-0022.
