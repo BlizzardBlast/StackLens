@@ -1,6 +1,6 @@
 # ADR-0022: Scheduled offsite preview backups
 
-- **Status:** Accepted implementation; unattended secret custody and scheduled live acceptance pending
+- **Status:** Accepted and activated; scheduled live acceptance and scheduler handover pending
 - **Date:** 2026-10-09
 - **Requirements:** NFR-010, NFR-009, SEC-003/007, FR-003/017/022, GOV-006/007
 - **Extends:** ADR-0018/0021
@@ -42,6 +42,21 @@ has the verified-TLS source configuration and dedicated master; readback has onl
 Unattended access requires explicit operator approval of this custody and protection policy.
 The existing manually reviewed `preview-recovery` environment and workflow remain protected.
 Fixture CI needs no secrets and uses only synthetic data on owned loopback databases.
+
+The October 9 operator approval authorizes two unattended main-only environments and a new
+restricted source login. Capture uses `stacklens_backup_preview`, with verified TLS, two connections,
+schema usage and table/sequence SELECT. The role has no ownership, memberships, superuser,
+database/role creation, replication or persistent write privileges; read-only transactions are its
+default. Graphile's private queue tables enable RLS without reader policies, so complete `pg_dump`
+requires BYPASSRLS. That attribute permits complete reads only where SELECT is granted; it does not
+grant writes. An owner-exported snapshot confirms seven identical fingerprints, and pinned-client
+write attempts remain denied after disabling the read-only default. Future schema or grants changes
+require rechecking this scope. No PUBLIC grants or queue policies are changed.
+
+The dedicated master also has a separate operator recovery copy in the existing protected
+`preview-recovery` environment as `STACKLENS_OFFSITE_BACKUP_MASTER`. Its required reviewer and
+branch protections remain unchanged. The live enable variable is now true; activation evidence
+and scheduled acceptance are tracked separately in the runbook.
 
 Keep the existing Codex heartbeat active until a real scheduled cloud capture, independent restore,
 expiry cleanup and workstation-independent evidence pass. Then retire that heartbeat through the

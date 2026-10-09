@@ -2,14 +2,59 @@
 
 > **Prepared:** 2026-10-09\
 > **Architecture:** v0.1.26; requirements v0.1.4\
-> **Milestone:** Scheduled offsite backup preparation; live custody and scheduler handover pending\
-> **Branch:** `codex/offsite-preview-backups`, existing checkout; [PR #53](https://github.com/BlizzardBlast/StackLens/pull/53) prepares offsite backups; resolve this milestone's publication state and current main\
-> **Preparation base:** `1ac18f837aa65bb811ca5953730abddb93a0e50e`; independently resolve current main and hosting revisions\
+> **Milestone:** Approved offsite custody active; live manual backup verified; scheduled acceptance and scheduler handover pending\
+> **Branch:** `codex/offsite-backup-activation`, existing checkout; PR #53 is merged; [PR #54](https://github.com/BlizzardBlast/StackLens/pull/54) records activation and the midnight schedule; resolve its final checks and current main\
+> **Activation base:** `4917f53e2e0ef350dbf3b8c10653281130e987eb`; independently resolve current main and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009/010, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
 
-### October 9 scheduled offsite backup preparation
+### October 9 approved offsite activation
+
+PR #53 merges as `4917f53` after final-head quality `37861858309`, portable recovery
+`37861858405` and offsite fixture `37861858361` succeed. The operator approves two unattended
+main-only capture/readback environments, a new restricted backup login and dedicated master.
+`STACKLENS_OFFSITE_BACKUPS_ENABLED=true`; the existing manually protected recovery environment
+keeps its protections and receives a separate protected operator master copy. No new host or routing
+change is involved. The restricted login defaults read-only, has two connections and SELECT only
+on backup tables/sequences, and lacks ownership, memberships, persistent writes, creation and
+replication. Graphile RLS requires BYPASSRLS for complete reads; seven shared-snapshot fingerprints
+match the owner, and writes remain denied with read-only mode off. Role provisioning changes no
+source rows or PUBLIC grants; populated acceptance uses an ordinary public analysis.
+
+The first cloud capture `37924348193` fails under the original NOBYPASSRLS scope; its maintenance
+correctly rejects missing verified freshness. Corrected live run `37926817042` succeeds through
+capture, independent restore and maintenance. Seven fingerprints and missing-analysis readback
+pass; the queue remains stopped and owned cleanup completes. The snapshot has zero reports, so
+populated live readback remains unproven by this run. Its authenticated deadline is October 10
+11:57:25 UTC (18:57:25 WIB), with no expired cloud artifact removed yet. See the
+[activation record](implementation/release-evidence/2026-10-09-offsite-backup-activation.json).
+
+The ordinary frey-ui analysis then completes with schema 2.0.0, 24 limitations and three bounded
+npm-response partial failures. Second live run `37927662152` restores all seven matching tables,
+strictly reads its one archived/retained report and serves one API readback, with historical rows
+unchanged and complete owned cleanup. Its authenticated deadline is October 10 12:05:27 UTC
+(19:05:27 WIB). This closes populated live coverage; expired cloud deletion remains pending.
+
+The operator prefers a midnight PC-off check. The activation follow-through changes the cron and
+capture guard to 00:17/12:17 WIB while preserving twelve-hour cadence. The proposed October 10
+00:05–01:00 WIB PC-off interval is pending an actual user report.
+
+Next: observe scheduler-fired capture/restore at 00:17 or 12:17 WIB,
+record the actual operator-reported PC-off interval and authenticate later expired-artifact cleanup.
+Keep `stacklens-encrypted-preview-backups` ACTIVE until every handover gate passes; then retire it
+through the automation tool, preserving history and old archives' authenticated retention policy.
+The temporary hourly `stacklens-offsite-handover` follow-up checks acceptance without creating
+backups. Pause the old scheduler for rollback after acceptance; delete its configuration after the
+next successful cloud backup, then retire the temporary follow-up.
+Resolve current main and source receipts independently; manual activation does not prove scheduled
+acceptance. Stable public replacement, managed Free restore, general capacity and user-deferred
+device/spoken acceptance remain separate.
+
+### October 9 scheduled offsite backup preparation (historical)
+
+The preparation state below precedes the approved activation above; its pending-custody statements
+describe that earlier step.
 
 The user selects workstation-independent scheduled backups using the existing GitHub infrastructure
 and asks whether the Codex scheduler should be removed. The new branch is

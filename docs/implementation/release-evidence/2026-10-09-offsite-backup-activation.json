@@ -1,0 +1,681 @@
+{
+  "requirementIds": [
+    "NFR-010",
+    "NFR-009",
+    "SEC-003",
+    "SEC-007",
+    "FR-003",
+    "FR-017",
+    "FR-022",
+    "GOV-007"
+  ],
+  "status": "approved_custody_activated_live_manual_backup_verified_scheduled_handover_pending",
+  "observedAt": "2026-10-09T12:21:10.541Z",
+  "mergedMilestone": {
+    "pr": 53,
+    "commit": "4917f53e2e0ef350dbf3b8c10653281130e987eb",
+    "finalHead": "da88acb5b2f2d77166faa13ef0b0e0bc2f5b1fdf",
+    "qualityRun": 37861858309,
+    "portableRun": 37861858405,
+    "offsiteFixtureRun": 37861858361,
+    "allConclusions": "success"
+  },
+  "originalActivationSourceHashes": {
+    ".github/workflows/offsite-preview-backups.yml": "e5177824297ddc845cdb9b5ac0ae592bb837ccdd5955551f7d88b52e08fa928f",
+    ".github/workflows/offsite-backup-fixture.yml": "9f5c42fb6e1a18acb94314b7a67a368d6b992bf2d23b4ca771840ddca1524b7f",
+    "scripts/operations/backup.mjs": "c2783f5298e67fd21af681c2c1a573e878a4a47fefb841008843bd596df7565d",
+    "scripts/operations/offsite-backup-bundle.mjs": "8ae3ce5019450ab7eb7ad46e4660d14c1042e3b299e6eb8d5b0a9514098788e6",
+    "scripts/operations/offsite-backup.mjs": "148c5f18b7d9693db38a5a21c58846a558c0f70aac0c99128a7dc3977ed00970",
+    "scripts/operations/offsite-backup-maintenance.mjs": "9a5cc96061ef934616a31019088c97c3df726d51b65c60d2e6cbb8c6a8754389"
+  },
+  "scheduleFollowThrough": {
+    "operatorPreference": "midnight PC-off acceptance",
+    "captureCronUtc": "17 5,17 * * *",
+    "captureTimesWib": [
+      "00:17",
+      "12:17"
+    ],
+    "intervalHours": 12,
+    "preparedWorkflowSha256": "08d4da7419d83413d6780e03b8072a714a9bea54543a3705119d894714eb74dc",
+    "sourcePublication": "resolve_activation_evidence_pr_and_current_main"
+  },
+  "custody": {
+    "requirementIds": [
+      "NFR-010",
+      "NFR-009",
+      "SEC-003",
+      "SEC-007"
+    ],
+    "status": "scheduled_backup_custody_activated",
+    "startedAt": "2026-10-09T11:32:04.181Z",
+    "mergedPr": 53,
+    "mergedCommit": "4917f53e2e0ef350dbf3b8c10653281130e987eb",
+    "environments": [
+      {
+        "name": "preview-offsite-capture",
+        "mainBranchOnly": true,
+        "requiredReviewers": 0
+      },
+      {
+        "name": "preview-offsite-readback",
+        "mainBranchOnly": true,
+        "requiredReviewers": 0
+      }
+    ],
+    "secretCustody": [
+      {
+        "environment": "preview-offsite-capture",
+        "secret": "STACKLENS_BACKUP_DATABASE",
+        "sourceRole": "stacklens_backup_preview"
+      },
+      {
+        "environment": "preview-offsite-capture",
+        "secret": "STACKLENS_BACKUP_MASTER"
+      },
+      {
+        "environment": "preview-offsite-readback",
+        "secret": "STACKLENS_BACKUP_MASTER"
+      },
+      {
+        "environment": "preview-recovery",
+        "secret": "STACKLENS_OFFSITE_BACKUP_MASTER",
+        "purpose": "separate_protected_operator_copy_outside_workstation"
+      }
+    ],
+    "existingRecoveryProtectionPreserved": true,
+    "enabled": true,
+    "backupDispatchRequested": true,
+    "finishedAt": "2026-10-09T11:32:19.916Z"
+  },
+  "privateFileCustody": {
+    "configuration": "outside_repository",
+    "master": "outside_repository_separate_keys_directory",
+    "windowsAcl": "current_user_only_FullControl",
+    "protectedRecoveryCopyOutsideWorkstation": true,
+    "secretValuesInEvidence": false
+  },
+  "restrictedLogin": {
+    "verification": {
+      "status": "complete_read_only_backup_scope_verified",
+      "startedAt": "2026-10-09T11:56:01.132Z",
+      "sourceRowsChanged": false,
+      "otherRoleOrPublicGrantsChanged": false,
+      "role": "stacklens_backup_preview",
+      "privileges": {
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": true,
+        "inherit_roles": false,
+        "connection_limit": 2,
+        "role_membership": false,
+        "database_create": false,
+        "schema_create": false,
+        "owns_relations": false,
+        "forbidden_table_writes": false,
+        "forbidden_sequence_writes": false,
+        "security_definer_access": false,
+        "all_snapshot_reads": true
+      },
+      "sharedSnapshotFingerprintsMatched": true,
+      "tablesVerified": 7,
+      "privateTaskRowsVisible": 1,
+      "finishedAt": "2026-10-09T11:56:04.428Z"
+    },
+    "writeDenials": {
+      "status": "restricted_backup_login_verified",
+      "startedAt": "2026-10-09T11:56:06.444Z",
+      "sourceRowsChanged": false,
+      "defaultReadOnly": "on",
+      "testReadOnly": "off",
+      "writeAttempts": [
+        {
+          "statement": "DELETE FROM public.analysis WHERE false",
+          "code": "42501"
+        },
+        {
+          "statement": "DELETE FROM graphile_worker._private_jobs WHERE false",
+          "code": "42501"
+        }
+      ],
+      "snapshotExportVerified": true,
+      "verifiedTls": true,
+      "finishedAt": "2026-10-09T11:56:07.884Z"
+    },
+    "rlsReason": "Graphile private tables enable RLS without reader policies; full pg_dump requires row visibility.",
+    "publicGrantsChanged": false,
+    "queuePoliciesChanged": false,
+    "backupRoleHasPersistentWrites": false
+  },
+  "correctedLocalAttempts": [
+    {
+      "receipt": {
+        "requirementIds": [
+          "NFR-010",
+          "NFR-009",
+          "SEC-003",
+          "SEC-007"
+        ],
+        "startedAt": "2026-10-09T11:27:46.426Z",
+        "status": "failed",
+        "role": "stacklens_backup_preview",
+        "connectionLimit": 2,
+        "otherRoleOrPublicGrantsChanged": false,
+        "sourceRowsChanged": false,
+        "failureCode": "42809",
+        "roleCommitted": false,
+        "finishedAt": "2026-10-09T11:27:47.507Z"
+      },
+      "reason": "Catalog privilege query evaluated a sequence predicate against a nonsequence; CASE guards corrected; transaction rolled back."
+    },
+    {
+      "receipt": {
+        "requirementIds": [
+          "NFR-010",
+          "NFR-009",
+          "SEC-003",
+          "SEC-007"
+        ],
+        "startedAt": "2026-10-09T11:28:55.542Z",
+        "status": "failed",
+        "role": "stacklens_backup_preview",
+        "connectionLimit": 2,
+        "otherRoleOrPublicGrantsChanged": false,
+        "sourceRowsChanged": false,
+        "failureCode": "restricted_backup_login_validation_failed",
+        "roleCommitted": true,
+        "finishedAt": "2026-10-09T11:28:57.622Z"
+      },
+      "reason": "An expected permission error released the pool client before the second write denial; a pinned client corrected the verification. The committed role was preserved."
+    }
+  ],
+  "failedCloudAttempt": {
+    "id": 37924348193,
+    "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/37924348193",
+    "capture": {
+      "requirementIds": [
+        "NFR-010",
+        "NFR-009",
+        "SEC-003",
+        "SEC-007",
+        "FR-003",
+        "FR-017",
+        "FR-022"
+      ],
+      "status": "failed",
+      "startedAt": "2026-10-09T11:32:57.108Z",
+      "failureCode": "offsite_backup_failed",
+      "finishedAt": "2026-10-09T11:33:26.390Z"
+    },
+    "maintenance": {
+      "requirementIds": [
+        "NFR-010",
+        "NFR-009",
+        "SEC-003",
+        "SEC-007"
+      ],
+      "status": "failed",
+      "startedAt": "2026-10-09T11:33:42.583Z",
+      "authenticatedArtifacts": 0,
+      "preservedArtifacts": 32,
+      "expiredArtifactsRemoved": 0,
+      "latestVerifiedBackup": null,
+      "lastAuthenticatedDeadline": null,
+      "failureCode": "verified_offsite_backup_missing_or_stale",
+      "finishedAt": "2026-10-09T11:33:43.240Z"
+    },
+    "reason": "Restricted NOBYPASSRLS login cannot dump private Graphile tables; BYPASSRLS corrected complete-read scope without write privileges."
+  },
+  "cloudRuns": [
+    {
+      "id": 37926817042,
+      "event": "workflow_dispatch",
+      "sourceCommit": "4917f53e2e0ef350dbf3b8c10653281130e987eb",
+      "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/37926817042",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 113807645387,
+          "name": "capture",
+          "conclusion": "success"
+        },
+        {
+          "id": 113808029841,
+          "name": "verify offsite backup",
+          "conclusion": "success"
+        },
+        {
+          "id": 113808342833,
+          "name": "maintain",
+          "conclusion": "success"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": 11614765486,
+          "name": "offsite-maintenance-evidence-37926817042",
+          "bytes": 469,
+          "createdAt": "2026-10-09T11:58:33Z",
+          "providerExpiresAt": "2026-10-10T11:58:32Z",
+          "zipDigest": "sha256:dee28e0451979a8e44cccbaf445861cfbd769824b1afb0630131bf18d370984e",
+          "expired": false
+        },
+        {
+          "id": 11614710633,
+          "name": "offsite-verify-evidence-37926817042",
+          "bytes": 716,
+          "createdAt": "2026-10-09T11:58:22Z",
+          "providerExpiresAt": "2026-10-10T11:58:22Z",
+          "zipDigest": "sha256:8a832ceb79371ea844aa74700109211b1b4afad54fe8ee54bb395063a094a455",
+          "expired": false
+        },
+        {
+          "id": 11614292415,
+          "name": "offsite-capture-evidence-37926817042",
+          "bytes": 874,
+          "createdAt": "2026-10-09T11:57:27Z",
+          "providerExpiresAt": "2026-10-10T11:57:27Z",
+          "zipDigest": "sha256:81e0e9254fa71b69e1ed728c361eecf016bc72ff1b7a4a03e2bb063734b3d2ec",
+          "expired": false
+        },
+        {
+          "id": 11614282414,
+          "name": "preview-offsite-v1-37926817042-4917f53e2e0ef350dbf3b8c10653281130e987eb-1791547045514-1791633445514-b2e029cf7c3001adbc0519f14885501c583f2af92ed87b79f370177e19f280fa-80c096908ff10d2a11c5644d1c6ab4b27efabb9de5aef40458d34dd8cf808c11",
+          "bytes": 34706,
+          "createdAt": "2026-10-09T11:57:27Z",
+          "providerExpiresAt": "2026-10-10T11:57:26Z",
+          "zipDigest": "sha256:b4c2ecdfc458c1216d01ad5667a5f0fc897f19894670e789097649ee1dbadda2",
+          "expired": false
+        }
+      ],
+      "ciphertextDownloadedToWorkstation": false,
+      "separateFreshRunners": true,
+      "sourceLoginAvailableToVerification": false,
+      "receipts": {
+        "capture": {
+          "requirementIds": [
+            "NFR-010",
+            "NFR-009",
+            "SEC-003",
+            "SEC-007",
+            "FR-003",
+            "FR-017",
+            "FR-022"
+          ],
+          "status": "verified_capture",
+          "startedAt": "2026-10-09T11:56:47.926Z",
+          "repository": "BlizzardBlast/StackLens",
+          "runId": "37926817042",
+          "sourceCommit": "4917f53e2e0ef350dbf3b8c10653281130e987eb",
+          "scope": "preview",
+          "artifactName": "preview-offsite-v1-37926817042-4917f53e2e0ef350dbf3b8c10653281130e987eb-1791547045514-1791633445514-b2e029cf7c3001adbc0519f14885501c583f2af92ed87b79f370177e19f280fa-80c096908ff10d2a11c5644d1c6ab4b27efabb9de5aef40458d34dd8cf808c11",
+          "backup": {
+            "createdAt": "2026-10-09T11:57:25.514Z",
+            "expiresAt": "2026-10-10T11:57:25.514Z",
+            "archiveSha256": "b2e029cf7c3001adbc0519f14885501c583f2af92ed87b79f370177e19f280fa"
+          },
+          "source": {
+            "public.analysis": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            "public.analysis_report": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            "public.analysis_delivery": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            "graphile_worker._private_jobs": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            "graphile_worker._private_job_queues": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            "graphile_worker._private_tasks": {
+              "count": 1,
+              "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+            },
+            "graphile_worker.migrations": {
+              "count": 20,
+              "sha256": "8dbfd248477c0b1786982d64171449581cdc065a76904262b99a5e172ec09002"
+            }
+          },
+          "originalComputePaused": false,
+          "queueStarted": false,
+          "transientPrivateFilesRemoved": true,
+          "finishedAt": "2026-10-09T11:57:26.105Z"
+        },
+        "verify": {
+          "requirementIds": [
+            "NFR-010",
+            "NFR-009",
+            "SEC-003",
+            "SEC-007",
+            "FR-003",
+            "FR-017",
+            "FR-022"
+          ],
+          "status": "verified",
+          "startedAt": "2026-10-09T11:58:20.907Z",
+          "repository": "BlizzardBlast/StackLens",
+          "runId": "37926817042",
+          "sourceCommit": "4917f53e2e0ef350dbf3b8c10653281130e987eb",
+          "scope": "preview",
+          "backup": {
+            "version": 1,
+            "createdAt": "2026-10-09T11:57:25.514Z",
+            "expiresAt": "2026-10-10T11:57:25.514Z",
+            "archiveSha256": "b2e029cf7c3001adbc0519f14885501c583f2af92ed87b79f370177e19f280fa"
+          },
+          "matchingTables": 7,
+          "fingerprintsMatched": true,
+          "archivedStrictReportReads": 0,
+          "strictReportReads": 0,
+          "apiReportReads": 0,
+          "populatedReportReadbackCovered": false,
+          "retainedReportHashes": [],
+          "missingAnalysisApiReadback": true,
+          "historicalRowsUnchanged": true,
+          "expiredTerminalRowsRemoved": 0,
+          "copiedQueueRows": 0,
+          "queueStarted": false,
+          "liveClaimsUnlocked": false,
+          "originalDatabaseContacted": false,
+          "ownedDatabaseRemoved": true,
+          "transientPrivateFilesRemoved": true,
+          "finishedAt": "2026-10-09T11:58:21.839Z"
+        },
+        "maintenance": {
+          "requirementIds": [
+            "NFR-010",
+            "NFR-009",
+            "SEC-003",
+            "SEC-007"
+          ],
+          "status": "verified",
+          "startedAt": "2026-10-09T11:58:31.653Z",
+          "authenticatedArtifacts": 1,
+          "preservedArtifacts": 35,
+          "expiredArtifactsRemoved": 0,
+          "latestVerifiedBackup": {
+            "runId": "37926817042",
+            "sourceCommit": "4917f53e2e0ef350dbf3b8c10653281130e987eb",
+            "capturedAt": "2026-10-09T11:57:25.514Z",
+            "expiresAt": "2026-10-10T11:57:25.514Z",
+            "ageSeconds": 66
+          },
+          "lastAuthenticatedDeadline": "2026-10-10T11:57:25.514Z",
+          "finishedAt": "2026-10-09T11:58:32.485Z"
+        }
+      }
+    },
+    {
+      "id": 37927662152,
+      "event": "workflow_dispatch",
+      "sourceCommit": "4917f53e2e0ef350dbf3b8c10653281130e987eb",
+      "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/37927662152",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 113810410434,
+          "name": "capture",
+          "conclusion": "success"
+        },
+        {
+          "id": 113810815480,
+          "name": "verify offsite backup",
+          "conclusion": "success"
+        },
+        {
+          "id": 113811208784,
+          "name": "maintain",
+          "conclusion": "success"
+        }
+      ],
+      "artifacts": [
+        {
+          "id": 11614891003,
+          "name": "offsite-verify-evidence-37927662152",
+          "bytes": 761,
+          "createdAt": "2026-10-09T12:06:37Z",
+          "providerExpiresAt": "2026-10-10T12:06:36Z",
+          "zipDigest": "sha256:ff67d5191cb8b05700bfa0c9c00a45c592e6e2ca142b0446096ceff148c9f55a",
+          "expired": false
+        },
+        {
+          "id": 11614826704,
+          "name": "offsite-capture-evidence-37927662152",
+          "bytes": 989,
+          "createdAt": "2026-10-09T12:05:30Z",
+          "providerExpiresAt": "2026-10-10T12:05:29Z",
+          "zipDigest": "sha256:30f20d09226c2759b954257a82a7a348f77b3982d83056f979d586f725544e2f",
+          "expired": false
+        },
+        {
+          "id": 11614653585,
+          "name": "offsite-maintenance-evidence-37927662152",
+          "bytes": 467,
+          "createdAt": "2026-10-09T12:06:51Z",
+          "providerExpiresAt": "2026-10-10T12:06:50Z",
+          "zipDigest": "sha256:affd34c9651c6ac6a2dd104fa46914c90fe233d3b65ea5e468519888a4759749",
+          "expired": false
+        },
+        {
+          "id": 11614164815,
+          "name": "preview-offsite-v1-37927662152-4917f53e2e0ef350dbf3b8c10653281130e987eb-1791547527091-1791633927091-27605e2c3358fc0b489bf93217ea75dc495ef6bc12f6c19c0c5ff26a9fbf79ea-b6aabbbd59a86a0f250ddfebe047fe9e24a7d07c6d679d9bd15d56b8d69232c0",
+          "bytes": 103340,
+          "createdAt": "2026-10-09T12:05:29Z",
+          "providerExpiresAt": "2026-10-10T12:05:27Z",
+          "zipDigest": "sha256:95ef9ac78fa4bea90f5a7fc0181b1248207751e4c8cdcccc1504a7d4f925b913",
+          "expired": false
+        }
+      ],
+      "ciphertextDownloadedToWorkstation": false,
+      "separateFreshRunners": true,
+      "sourceLoginAvailableToVerification": false,
+      "receipts": {
+        "capture": {
+          "requirementIds": [
+            "NFR-010",
+            "NFR-009",
+            "SEC-003",
+            "SEC-007",
+            "FR-003",
+            "FR-017",
+            "FR-022"
+          ],
+          "status": "verified_capture",
+          "startedAt": "2026-10-09T12:04:52.819Z",
+          "repository": "BlizzardBlast/StackLens",
+          "runId": "37927662152",
+          "sourceCommit": "4917f53e2e0ef350dbf3b8c10653281130e987eb",
+          "scope": "preview",
+          "artifactName": "preview-offsite-v1-37927662152-4917f53e2e0ef350dbf3b8c10653281130e987eb-1791547527091-1791633927091-27605e2c3358fc0b489bf93217ea75dc495ef6bc12f6c19c0c5ff26a9fbf79ea-b6aabbbd59a86a0f250ddfebe047fe9e24a7d07c6d679d9bd15d56b8d69232c0",
+          "backup": {
+            "createdAt": "2026-10-09T12:05:27.091Z",
+            "expiresAt": "2026-10-10T12:05:27.091Z",
+            "archiveSha256": "27605e2c3358fc0b489bf93217ea75dc495ef6bc12f6c19c0c5ff26a9fbf79ea"
+          },
+          "source": {
+            "public.analysis": {
+              "count": 1,
+              "sha256": "0186d363ec6c5629f8ef71bcac4c658d14d1fba886da18668086e0a0c822a568"
+            },
+            "public.analysis_report": {
+              "count": 1,
+              "sha256": "6fbb2577774d4bec503f5c25f7e90567a3687acb565aaef1590ced5a8b7c2be3"
+            },
+            "public.analysis_delivery": {
+              "count": 1,
+              "sha256": "5791eaed76b0e9404fe20d82eb6f26e5cd5c9680023ee9e7d7c67416e2a54a43"
+            },
+            "graphile_worker._private_jobs": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            "graphile_worker._private_job_queues": {
+              "count": 0,
+              "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            "graphile_worker._private_tasks": {
+              "count": 1,
+              "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+            },
+            "graphile_worker.migrations": {
+              "count": 20,
+              "sha256": "8dbfd248477c0b1786982d64171449581cdc065a76904262b99a5e172ec09002"
+            }
+          },
+          "originalComputePaused": false,
+          "queueStarted": false,
+          "transientPrivateFilesRemoved": true,
+          "finishedAt": "2026-10-09T12:05:27.583Z"
+        },
+        "verify": {
+          "requirementIds": [
+            "NFR-010",
+            "NFR-009",
+            "SEC-003",
+            "SEC-007",
+            "FR-003",
+            "FR-017",
+            "FR-022"
+          ],
+          "status": "verified",
+          "startedAt": "2026-10-09T12:06:35.458Z",
+          "repository": "BlizzardBlast/StackLens",
+          "runId": "37927662152",
+          "sourceCommit": "4917f53e2e0ef350dbf3b8c10653281130e987eb",
+          "scope": "preview",
+          "backup": {
+            "version": 1,
+            "createdAt": "2026-10-09T12:05:27.091Z",
+            "expiresAt": "2026-10-10T12:05:27.091Z",
+            "archiveSha256": "27605e2c3358fc0b489bf93217ea75dc495ef6bc12f6c19c0c5ff26a9fbf79ea"
+          },
+          "matchingTables": 7,
+          "fingerprintsMatched": true,
+          "archivedStrictReportReads": 1,
+          "strictReportReads": 1,
+          "apiReportReads": 1,
+          "populatedReportReadbackCovered": true,
+          "retainedReportHashes": [
+            "68936816acbbc4495fc1dbcd1e56d7724f865db686f06eefb519fdbf6c3652d9"
+          ],
+          "missingAnalysisApiReadback": true,
+          "historicalRowsUnchanged": true,
+          "expiredTerminalRowsRemoved": 0,
+          "copiedQueueRows": 0,
+          "queueStarted": false,
+          "liveClaimsUnlocked": false,
+          "originalDatabaseContacted": false,
+          "ownedDatabaseRemoved": true,
+          "transientPrivateFilesRemoved": true,
+          "finishedAt": "2026-10-09T12:06:36.690Z"
+        },
+        "maintenance": {
+          "requirementIds": [
+            "NFR-010",
+            "NFR-009",
+            "SEC-003",
+            "SEC-007"
+          ],
+          "status": "verified",
+          "startedAt": "2026-10-09T12:06:49.201Z",
+          "authenticatedArtifacts": 2,
+          "preservedArtifacts": 38,
+          "expiredArtifactsRemoved": 0,
+          "latestVerifiedBackup": {
+            "runId": "37927662152",
+            "sourceCommit": "4917f53e2e0ef350dbf3b8c10653281130e987eb",
+            "capturedAt": "2026-10-09T12:05:27.091Z",
+            "expiresAt": "2026-10-10T12:05:27.091Z",
+            "ageSeconds": 82
+          },
+          "lastAuthenticatedDeadline": "2026-10-10T12:05:27.091Z",
+          "finishedAt": "2026-10-09T12:06:50.640Z"
+        }
+      }
+    }
+  ],
+  "populatedSource": {
+    "status": "populated_source_report_verified",
+    "startedAt": "2026-10-09T12:00:56.570Z",
+    "repositoryUrl": "https://github.com/BlizzardBlast/frey-ui",
+    "providerMode": "normal_hosted_providers",
+    "submissionStatus": 202,
+    "analysisStatus": "completed_with_limitations",
+    "schemaVersion": "2.0.0",
+    "reportSha256": "9b372bfdde587d2050cb19562beb201da03ee39e81cdf00bdc95fba14dba6bd2",
+    "limitations": 24,
+    "partialFailureCodes": [
+      "npm_response_too_large",
+      "npm_response_too_large",
+      "npm_response_too_large"
+    ],
+    "finishedAt": "2026-10-09T12:03:49.137Z",
+    "persistedJsonbReportSha256": "68936816acbbc4495fc1dbcd1e56d7724f865db686f06eefb519fdbf6c3652d9",
+    "persistedReportMatchesIsolatedRestore": true
+  },
+  "activationChecks": {
+    "formatCheck": "passed",
+    "gitDiffCheck": "passed",
+    "actionlint": {
+      "version": "1.7.12",
+      "officialDownloadChecksumVerified": true,
+      "workflows": [
+        ".github/workflows/offsite-preview-backups.yml",
+        ".github/workflows/offsite-backup-fixture.yml"
+      ],
+      "status": "passed",
+      "shellcheckCovered": false,
+      "pyflakesCovered": false
+    },
+    "implementationAndScheduleCi": {
+      "pr": 54,
+      "head": "7eb427ef9ac27fb5712a44c8d5997107654b74ec",
+      "qualityRun": 37928806261,
+      "portableRun": 37928806273,
+      "offsiteFixtureRun": 37928806291,
+      "allConclusions": "success"
+    },
+    "readOnlySelfReview": "approved_activation_scope_no_independent_review_claimed",
+    "finalDocumentationHeadCi": "resolve_PR_54_exact_head_before_merge"
+  },
+  "handover": {
+    "scheduledCaptureAndRestore": "pending",
+    "pcOffInterval": {
+      "status": "pending_actual_operator_report",
+      "proposed": "2026-10-10 00:05–01:00 WIB",
+      "previousEveningDeclined": true
+    },
+    "authenticatedExpiredCloudArtifactDeletion": "pending",
+    "codexBackupAutomation": {
+      "id": "stacklens-encrypted-preview-backups",
+      "status": "ACTIVE",
+      "retired": false
+    },
+    "temporaryAcceptanceFollowup": {
+      "id": "stacklens-offsite-handover",
+      "status": "ACTIVE",
+      "intervalHours": 1,
+      "createsBackups": false,
+      "quietWhileUnchanged": true
+    }
+  },
+  "publicRoutingChanged": false,
+  "newHostingAccountCreated": false,
+  "originalComputePaused": false,
+  "limits": [
+    "First successful live snapshot has zero reports; populated live readback is not established by that run.",
+    "Manual cloud dispatch does not establish scheduler-fired acceptance or an actual PC-off interval.",
+    "Successful maintenance removed zero expired artifacts; real authenticated expired-artifact cleanup remains pending.",
+    "GitHub scheduling and provider physical deletion have no exact SLA.",
+    "No automatic failover, copied-claim unlock, managed Free restore or general capacity claim."
+  ]
+}

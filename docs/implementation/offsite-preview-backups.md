@@ -1,12 +1,12 @@
 # Scheduled offsite preview backups
 
-**Prepared:** October 9, 2026. **Status:** implementation preparation; live activation and scheduled
-acceptance pending. **Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022; ADR-0022.
+**Updated:** October 9, 2026. **Status:** approved custody activated; scheduled acceptance and
+Codex scheduler handover pending. **Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022; ADR-0022.
 
 ## Scope and boundaries
 
 The existing Codex heartbeat captures and verifies a backup every twelve hours on the workstation.
-The new `.github/workflows/offsite-preview-backups.yml` prepares a replacement using GitHub-hosted
+The new `.github/workflows/offsite-preview-backups.yml` runs the replacement using GitHub-hosted
 runners. It is disabled unless repository variable `STACKLENS_OFFSITE_BACKUPS_ENABLED` equals
 `true`, and all secret-bearing jobs are restricted to `BlizzardBlast/StackLens` on `main`.
 No PR event can reach live credentials. The existing `preview-recovery` workflow/environment keeps
@@ -29,7 +29,7 @@ while its master survives. Keep a separately protected recovery copy of the mast
 
 ## Capture, verification and maintenance
 
-Capture runs at `01:17` and `13:17` UTC (`08:17` and `20:17` WIB), requesting one-day artifact
+Capture runs at `05:17` and `17:17` UTC (`12:17` and `00:17` WIB), requesting one-day artifact
 retention. Each envelope still has an authenticated maximum 24-hour restore window. Verification
 runs on a fresh runner with only the named ciphertext artifact and master. Before target I/O it
 authenticates both envelopes, their equal deadlines, identity and digest. The restore rechecks the
@@ -102,6 +102,62 @@ not reduce that credential's authority. Review this concrete scope before unatte
 prefer a dedicated restricted backup login, and never transfer the current privileged source
 configuration by assuming that manual recovery approval covers unattended access.
 
+## October 9 approved activation
+
+PR #53 merges as `4917f53e2e0ef350dbf3b8c10653281130e987eb` after final-head quality
+`37861858309`, portable recovery `37861858405` and offsite fixture `37861858361` pass.
+The operator approves unattended custody in new main-only `preview-offsite-capture` and
+`preview-offsite-readback` environments. Capture holds a new restricted Aiven login plus a dedicated
+32-byte master; readback holds only that master. A separate recovery copy is saved as
+`STACKLENS_OFFSITE_BACKUP_MASTER` in the existing protected `preview-recovery` environment without
+changing its protections. Local custody files have user-only Windows ACLs. The enable variable is true.
+
+The new login has SELECT on public/Graphile tables and sequences, schema usage, database CONNECT
+and a two-connection limit. It owns no relations, has no memberships or persistent write privileges,
+and cannot create databases/roles or replicate. Read-only transactions are the default. The first
+[live run](https://github.com/BlizzardBlast/StackLens/actions/runs/37924348193) fails capture because
+Graphile's private tables enable RLS without reader policies; maintenance correctly fails freshness.
+The corrected scope adds BYPASSRLS for complete logical backups, without changing PUBLIC grants,
+source rows or queue policies. An exported owner snapshot and restricted reader match all seven
+fingerprints, including the private task row. With read-only mode explicitly off, both public and
+Graphile write attempts remain denied (`42501`). Recheck scope when schemas or privileges change.
+
+[Live run 37926817042](https://github.com/BlizzardBlast/StackLens/actions/runs/37926817042) then passes
+capture, fresh-runner restore and maintenance. Seven fingerprints match, missing-analysis API
+readback passes, the copied queue stays stopped, and owned target/private files are removed. The
+snapshot contains zero reports and explicitly records no populated readback coverage; this run
+does not establish real report restoration. Its authenticated deadline is October 10 at
+11:57:25 UTC (18:57:25 WIB). Maintenance preserves unrelated artifacts and removes zero expired
+artifacts, so real expired-artifact deletion is still pending.
+
+An ordinary frey-ui analysis completes on the existing Worker with schema 2.0.0, 24 limitations
+and three bounded `npm_response_too_large` partial failures. A second
+[live run 37927662152](https://github.com/BlizzardBlast/StackLens/actions/runs/37927662152) backs up
+that report and passes seven-table restoration, one archived strict read, one retained strict/API
+read, unchanged historical rows and complete owned cleanup. The latest authenticated deadline is
+October 10 at 12:05:27 UTC (19:05:27 WIB). The first empty capture remains recorded separately;
+the populated run closes its report-coverage limit. Neither run establishes scheduled acceptance
+or actual expired-artifact deletion.
+
+Scheduled capture/restore, an applicable reported PC-off interval and authenticated expired-artifact
+cleanup remain handover gates. Keep `stacklens-encrypted-preview-backups` active. The scheduled
+capture times are 00:17/12:17 WIB; scheduling may be delayed. The operator prefers a midnight
+PC-off check, so the activation follow-through moves both the cron and its capture guard from
+the original 08:17/20:17 WIB pair, preserving the twelve-hour cadence. A proposed October 10
+00:05–01:00 WIB interval remains unverified until the actual interval is reported. See the
+[activation evidence](release-evidence/2026-10-09-offsite-backup-activation.json) for receipts and limits.
+A temporary hourly `stacklens-offsite-handover` follow-up checks these gates and stays quiet while
+state is unchanged. It creates no backups. After acceptance, pause the old scheduler for rollback;
+after the next successful cloud backup, delete its configuration while preserving results and
+retire the temporary follow-up.
+
+Activation and schedule head `7eb427e` passes quality `37928806261`, portable recovery
+`37928806273` and offsite fixture `37928806291`. The read-only self-review confirms the matching
+cron/guard, restricted custody, quarantine, source-free receipts and explicit handover gates; no
+independent review is implied. Resolve the final documentation head and checks from
+[PR #54](https://github.com/BlizzardBlast/StackLens/pull/54) before publication, and current main
+independently in the next session. No future squash SHA is needed to finish this handover.
+
 ## Concrete activation and Codex scheduler handover
 
 1. Review and merge [PR #53](https://github.com/BlizzardBlast/StackLens/pull/53) from
@@ -110,7 +166,7 @@ configuration by assuming that manual recovery approval covers unattended access
    on a branch or change the old recovery environment's required reviewers.
 2. Obtain approval for unattended access in two new environments restricted to `main`, without a
    per-run human reviewer: `preview-offsite-capture` and `preview-offsite-readback`. Capture holds
-   `STACKLENS_BACKUP_DATABASE` (the existing paired verified-TLS source configuration) and
+   `STACKLENS_BACKUP_DATABASE` (the dedicated restricted login's paired verified-TLS configuration) and
    `STACKLENS_BACKUP_MASTER` (a new random 64-character hex secret). Readback holds only that same
    master. Preserve a protected operator recovery copy outside this workstation; never place it
    in an artifact or PR. This is a new unattended custody policy, not an inferred extension of the
@@ -129,6 +185,8 @@ configuration by assuming that manual recovery approval covers unattended access
    preserving unknown/unexpired archives and keys still referenced. Retiring the scheduler does
    not authorize immediate deletion of existing private backup files.
 
-Preparation leaves the Codex heartbeat active and changes no GitHub environment/secret/variable,
-Aiven data, Silly process or public routing. Stable public replacement, managed Free restore,
+Preparation originally left cloud custody disabled. Approved activation enables the workflow and
+creates a restricted Aiven backup role; the Codex heartbeat remains active during acceptance.
+Role provisioning changes no source rows; acceptance uses an ordinary public analysis to exercise
+populated restoration. Silly processes and public routing are unchanged. Stable public replacement, managed Free restore,
 general capacity, Function suspension and deferred device/spoken acceptance remain separate gates.
