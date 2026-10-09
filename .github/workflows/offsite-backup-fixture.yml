@@ -1,0 +1,111 @@
+name: offsite backup fixture
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: offsite-backup-fixture-${{ github.ref }}
+  cancel-in-progress: true
+
+# NFR-010/009, SEC-001/003/007. Public synthetic fixture key only; no hosted credentials.
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: stacklens_test
+          POSTGRES_PASSWORD: stacklens
+          POSTGRES_USER: stacklens
+        options: >-
+          --health-cmd "pg_isready -U stacklens -d stacklens_test"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+        ports: [55432:5432]
+    env:
+      TEST_DATABASE_URL: postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: docker pull postgres:18-alpine
+      - name: Capture online synthetic fixture with source runtimes still active
+        run: node scripts/operations/offsite-backup-fixture.mjs "$RUNNER_TEMP/offsite-backup" "$RUNNER_TEMP/offsite-capture.json"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: offsite-backup-fixture
+          path: |
+            ${{ runner.temp }}/offsite-backup/database.slbackup
+            ${{ runner.temp }}/offsite-backup/online.slmetadata
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+      - name: Upload source-free fixture capture evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: offsite-fixture-capture-evidence
+          path: ${{ runner.temp }}/offsite-capture.json
+          retention-days: 1
+          if-no-files-found: error
+
+  verify:
+    needs: capture
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: stacklens_test
+          POSTGRES_PASSWORD: stacklens
+          POSTGRES_USER: stacklens
+        options: >-
+          --health-cmd "pg_isready -U stacklens -d stacklens_test"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+        ports: [55432:5432]
+    env:
+      TEST_DATABASE_URL: postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: docker pull postgres:18-alpine
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: offsite-backup-fixture
+          path: ${{ runner.temp }}/offsite-backup
+      - name: Restore and verify quarantined snapshot on a fresh runner
+        run: node scripts/operations/offsite-backup.mjs verify-fixture "$RUNNER_TEMP/offsite-backup" "$RUNNER_TEMP/offsite-verify.json"
+      - name: Upload source-free fixture verification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: offsite-fixture-verify-evidence
+          path: ${{ runner.temp }}/offsite-verify.json
+          retention-days: 1
+          if-no-files-found: error

@@ -150,6 +150,13 @@ under the same ID after restart. Both older reports retain their hashes. The
 [rollout record](docs/implementation/release-evidence/2026-10-05-worker-shutdown-rollout.json)
 keeps the initial platform failures separate from this successful acceptance.
 
+The [scheduled offsite backup preparation](docs/implementation/offsite-preview-backups.md) adds
+online snapshot capture, per-run derived encryption keys, independent quarantined restore
+verification, authenticated artifact expiry cleanup and an hourly freshness detector. Public fixture
+CI uses synthetic data and separate runners; the live workflow defaults disabled. Unattended secret
+custody and scheduled live acceptance remain pending, so the existing Codex backup heartbeat stays
+active until verified handover. The new path never unlocks copied live claims or changes public routing.
+
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.
 
 ## Local development

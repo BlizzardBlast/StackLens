@@ -3011,3 +3011,47 @@ change.
 
 **Traceability:** PRD-004, FR-001–FR-003, FR-017, FR-021, FR-022, NFR-006–NFR-008,
 GOV-002/003/007; ADR-0006/0007.
+
+## 2026-10-09 — Prepare scheduled offsite backups and verified scheduler handover
+
+The selected next milestone moves backup capture and isolated verification beyond the operator
+workstation using existing GitHub infrastructure. NFR-010 adds hosted backup continuity and ADR-0022
+defines an online bundle separate from offline/drained recovery. Captures remain read-only and do
+not stop the original API/Worker. Per-run derived AES keys and a separate authenticated retention
+label bind run/repository/commit/digest/expiry; only ciphertext crosses the runner boundary.
+
+The verification helper authenticates before target I/O, checks seven fingerprints, strictly reads
+archived/retained reports, purges terminal expiry and performs API readbacks with its Worker/pump
+stopped. Copied live claims remain unchanged. Owned target and private files are removed on success
+and rejection, and empty retained-report coverage is explicit. Bounded maintenance authenticates
+artifact ownership/expiry before deletion and requires a successful readback job plus a present,
+eligible capture no older than eighteen hours. Unrelated or unauthenticated artifacts are preserved.
+
+Normal tests use synthetic data, with real local PostgreSQL restoration and rollback. A separate
+two-job fixture workflow prepares fresh-runner handoff without deployment secrets. The live workflow
+defaults disabled. Unattended credential custody, exact-head cloud checks, scheduled/PC-off acceptance
+and live expired-artifact cleanup remain activation gates. Keep the Codex heartbeat active until
+the replacement passes those gates, then retire it through the app tool without deleting eligible
+local archives early. The protected manual recovery workflow keeps its existing approvals.
+
+Documentation-impact review updates requirements v0.1.4, architecture v0.1.26, ADR-0022, the runbook,
+contributor guidance, README and complete handover. No analyzer, report/scoring, UI or token behavior
+changes. The database-backed `pnpm check` gate passes, including the eight new focused cases,
+compiled runtime smoke and all eighteen Chromium/Firefox/WebKit desktop/narrow browser cases.
+`actionlint` v1.7.12 validates both new workflows. The focused PostgreSQL gate also passes separately;
+both gates remove their owned test database. Preparation alone does not establish scheduled live
+acceptance. Source hashes and gate receipts are recorded in the preparation evidence. The temporary
+local PostgreSQL service is stopped with its development volume preserved. The milestone is
+[PR #53](https://github.com/BlizzardBlast/StackLens/pull/53); resolve its exact head and cloud
+quality/fixture results before merge and activation.
+
+Implementation head `1d098ca` passes quality `37861337919`, portable recovery `37861337909` and
+offsite fixture `37861337974`. The downloaded fixture receipt confirms independent seven-table
+restore, two archived strict reads, one retained strict/API read, copied-claim quarantine and owned
+cleanup. Later self-review corrects whole-second GitHub upload timestamps against millisecond
+capture time; all eight focused cases pass again. A read-only TLS credential-scope review finds
+the current source login owns backup tables and can create roles/databases. Read-only capture
+does not reduce that credential authority; unattended custody requires an explicit scoped choice
+before any live secret or role write. No independent reviewer or scheduled live acceptance is claimed.
+
+**Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022, GOV-002/003/006/007; ADR-0022.
