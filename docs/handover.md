@@ -3,7 +3,7 @@
 > **Prepared:** 2026-10-09\
 > **Architecture:** v0.1.26; requirements v0.1.4\
 > **Milestone:** Approved offsite custody active; live manual backup verified; scheduled acceptance and scheduler handover pending\
-> **Branch:** `codex/offsite-backup-activation`, existing checkout; PR #53 is merged; resolve the activation evidence PR and current main\
+> **Branch:** `codex/offsite-backup-activation`, existing checkout; PR #53 is merged; [PR #54](https://github.com/BlizzardBlast/StackLens/pull/54) records activation and the midnight schedule; resolve its final checks and current main\
 > **Activation base:** `4917f53e2e0ef350dbf3b8c10653281130e987eb`; independently resolve current main and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009/010, SEC-001/002/003/007, GOV-002/006/007
 

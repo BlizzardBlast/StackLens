@@ -151,6 +151,13 @@ state is unchanged. It creates no backups. After acceptance, pause the old sched
 after the next successful cloud backup, delete its configuration while preserving results and
 retire the temporary follow-up.
 
+Activation and schedule head `7eb427e` passes quality `37928806261`, portable recovery
+`37928806273` and offsite fixture `37928806291`. The read-only self-review confirms the matching
+cron/guard, restricted custody, quarantine, source-free receipts and explicit handover gates; no
+independent review is implied. Resolve the final documentation head and checks from
+[PR #54](https://github.com/BlizzardBlast/StackLens/pull/54) before publication, and current main
+independently in the next session. No future squash SHA is needed to finish this handover.
+
 ## Concrete activation and Codex scheduler handover
 
 1. Review and merge [PR #53](https://github.com/BlizzardBlast/StackLens/pull/53) from

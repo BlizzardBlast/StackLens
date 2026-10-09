@@ -10,7 +10,7 @@
     "GOV-007"
   ],
   "status": "approved_custody_activated_live_manual_backup_verified_scheduled_handover_pending",
-  "observedAt": "2026-10-09T12:13:52.467Z",
+  "observedAt": "2026-10-09T12:21:10.541Z",
   "mergedMilestone": {
     "pr": 53,
     "commit": "4917f53e2e0ef350dbf3b8c10653281130e987eb",
@@ -636,7 +636,16 @@
       "shellcheckCovered": false,
       "pyflakesCovered": false
     },
-    "finalPrCi": "resolve_exact_head_before_merge"
+    "implementationAndScheduleCi": {
+      "pr": 54,
+      "head": "7eb427ef9ac27fb5712a44c8d5997107654b74ec",
+      "qualityRun": 37928806261,
+      "portableRun": 37928806273,
+      "offsiteFixtureRun": 37928806291,
+      "allConclusions": "success"
+    },
+    "readOnlySelfReview": "approved_activation_scope_no_independent_review_claimed",
+    "finalDocumentationHeadCi": "resolve_PR_54_exact_head_before_merge"
   },
   "handover": {
     "scheduledCaptureAndRestore": "pending",
