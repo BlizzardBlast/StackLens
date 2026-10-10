@@ -3097,3 +3097,48 @@ activation-scope correction; an independent review is not claimed. The milestone
 pass fresh checks before merge, and the next session must independently resolve current main.
 
 **Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022, GOV-002/006/007; ADR-0022.
+
+## 2026-10-10 — Bound offsite startup retries and preserve failure evidence
+
+The first scheduled midnight capture starts late at 04:40 WIB and fails on a Docker image-pull
+network timeout before source capture. Its evidence upload also fails because the operation has
+not written a receipt. A fresh manual recovery at 06:46 WIB passes seven fingerprints, one actual
+strict/API report, unchanged historical rows and owned cleanup. The failed scheduled attempt stays
+recorded separately from that manual success; scheduled/PC-off and expired-artifact deletion gates
+remain open.
+
+The correction gives live and public fixture capture/readback three bounded image-pull attempts
+with short delays, suppressing raw Docker output. Failed source-free receipts are initialized before
+checkout; a dependency-free finalizer records safe setup outcomes and preserves actual report and
+cleanup evidence. Missing operation receipts and cancellation cannot become successful backups or
+establish cleanup. No source capture retry, privilege change, new schedule/account, queue unlock or
+routing change is introduced.
+
+Eight focused startup tests pass, including transient recovery, exhausted retries, a real hung
+subprocess, setup/download failures, preserving operation evidence and nonzero CLI failure. The
+documentation-impact pass updates README, the runbook, ADR-0022, current handover and dated safe
+evidence. Requirements, analyzer/report policy, UI, tokens and architectural custody boundaries are
+unchanged. Keep the old Codex backup active until scheduled capture, actual PC-off evidence and
+authenticated expired-artifact deletion pass; then pause for rollback and retire only after the
+next scheduled success.
+
+The same correction gives new live ciphertext artifacts two provider days while keeping their
+authenticated restore window at twenty-four hours. This leaves time for hourly maintenance to
+observe, authenticate, delete and confirm absence of expired ciphertext before provider expiration.
+One-day provider expiry could race that proof. Existing artifacts keep their provider policy;
+unexpired copies and referenced keys are preserved, and automatic expiration remains insufficient
+handover evidence. Source-free receipts and synthetic artifacts continue requesting one day.
+
+The database-backed `pnpm check` passes with `TURBO_CONCURRENCY=2`: all forty-nine operational cases,
+compiled runtime smoke, eighteen browser cases, type/lint/format gates pass. The initial parallel
+run's unchanged persistence timeouts and owned cleanup remain recorded; no production timeout or
+test configuration changes. Both workflows pass `actionlint` v1.7.12 with shellcheck/pyflakes excluded.
+Resolve the milestone PR's final-head cloud checks before merging, and current main independently
+in the next session; no unknown future squash SHA is needed to finish this handover.
+The milestone is [PR #55](https://github.com/BlizzardBlast/StackLens/pull/55).
+
+Subsequent self-review separates the small image diagnostic from a four-MiB operation receipt
+bound. The eight focused startup cases pass again, including preservation of a larger retained
+report-digest list. Final-head cloud quality and fixtures must verify this final correction.
+
+**Traceability:** NFR-010/009, SEC-003/007, GOV-002/006/007; ADR-0022.

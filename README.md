@@ -156,7 +156,10 @@ verification, authenticated artifact expiry cleanup and an hourly freshness dete
 CI uses synthetic data and separate runners. PR #53 is merged and the live workflow is enabled under
 the approved main-only capture/readback custody policy, using a dedicated restricted Aiven backup
 login and encryption master. Scheduled live acceptance and expiry cleanup remain pending, so the
-existing Codex backup heartbeat stays active until verified handover. The new path never unlocks
+existing Codex backup heartbeat stays active until verified handover. Image preparation now uses
+bounded retries and source-free receipts distinguish setup failures from operations that started.
+The October 10 scheduled image-pull timeout and successful manual recovery remain recorded in the
+runbook; the manual recovery does not establish scheduled or PC-off acceptance. The new path never unlocks
 copied live claims or changes public routing.
 
 Do not treat this README, an issue, implementation detail, or code behavior as a replacement for an accepted requirement.

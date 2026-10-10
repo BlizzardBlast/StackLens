@@ -1,0 +1,166 @@
+{
+  "version": 1,
+  "requirementIds": [
+    "NFR-010",
+    "NFR-009",
+    "SEC-007",
+    "GOV-002",
+    "GOV-007"
+  ],
+  "status": "startup_correction_locally_verified_handover_pending",
+  "recordedAt": "2026-10-10T00:13:11.949Z",
+  "sourceBase": "08c0e54696b73c858cf52a9f0564e2bef242c2d9",
+  "milestonePr": "https://github.com/BlizzardBlast/StackLens/pull/55",
+  "sourceHashes": {
+    ".github/workflows/offsite-preview-backups.yml": "047c52437deec554470c81b403641835f5c7b8adf98eac95952fca0d8672981a",
+    ".github/workflows/offsite-backup-fixture.yml": "608ba9068ba3cf11307aeeec5dd028a0980f83e7422cc6406870ef549ad340fa",
+    "scripts/operations/offsite-backup-startup.mjs": "0001bbe2343bf62e4cea9c22a4828c99b521abf472dd2bf17cdf12e6497ab37b",
+    "scripts/operations/offsite-backup-startup.test.mjs": "83579f2635230e1f93b297ca6161ba2d46637cfc6cbf453d9ad008580041d717"
+  },
+  "scheduledFailure": {
+    "runId": 37994848889,
+    "event": "schedule",
+    "createdAt": "2026-10-09T21:40:25Z",
+    "createdAtWib": "2026-10-10T04:40:25+07:00",
+    "category": "network_timeout",
+    "failedStage": "postgres_client_image_pull",
+    "captureStarted": false,
+    "verifyStarted": false,
+    "captureReceiptPublished": false,
+    "maintenance": "success",
+    "rawLogsPreserved": false
+  },
+  "manualRecovery": {
+    "runId": 38005927489,
+    "event": "workflow_dispatch",
+    "sourceCommit": "08c0e54696b73c858cf52a9f0564e2bef242c2d9",
+    "capturedAt": "2026-10-09T23:46:03.942Z",
+    "expiresAt": "2026-10-10T23:46:03.942Z",
+    "archiveSha256": "debab1ac34e7d0d30e2d2255b7d1ca1fe297dbe96ebd294743a5e486f51ea3db",
+    "fingerprints": {
+      "public.analysis": {
+        "count": 1,
+        "sha256": "0186d363ec6c5629f8ef71bcac4c658d14d1fba886da18668086e0a0c822a568"
+      },
+      "public.analysis_report": {
+        "count": 1,
+        "sha256": "6fbb2577774d4bec503f5c25f7e90567a3687acb565aaef1590ced5a8b7c2be3"
+      },
+      "public.analysis_delivery": {
+        "count": 1,
+        "sha256": "5791eaed76b0e9404fe20d82eb6f26e5cd5c9680023ee9e7d7c67416e2a54a43"
+      },
+      "graphile_worker._private_jobs": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_job_queues": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_tasks": {
+        "count": 1,
+        "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+      },
+      "graphile_worker.migrations": {
+        "count": 20,
+        "sha256": "8dbfd248477c0b1786982d64171449581cdc065a76904262b99a5e172ec09002"
+      }
+    },
+    "matchingTables": 7,
+    "archivedStrictReportReads": 1,
+    "strictReportReads": 1,
+    "apiReportReads": 1,
+    "populatedReportReadbackCovered": true,
+    "historicalRowsUnchanged": true,
+    "ownedDatabaseRemoved": true,
+    "transientPrivateFilesRemoved": true,
+    "queueStarted": false,
+    "liveClaimsUnlocked": false,
+    "originalDatabaseContacted": false,
+    "maintenance": {
+      "status": "verified",
+      "expiredArtifactsRemoved": 0
+    }
+  },
+  "correction": {
+    "image": "postgres:18-alpine",
+    "attemptLimit": 3,
+    "attemptTimeoutMs": 60000,
+    "retryDelaysMs": [
+      10000,
+      20000
+    ],
+    "newLiveCiphertextProviderRetentionDays": 2,
+    "authenticatedRestoreEligibilityHours": 24,
+    "existingArtifactsPolicyChanged": false,
+    "hourlyAuthenticatedDeletionPreserved": true,
+    "sourceCaptureRetried": false,
+    "rawPullOutputRetained": false,
+    "initializedBeforeCheckout": true,
+    "dependencyFreeFinalizer": true,
+    "stepOutputsExcluded": true,
+    "missingOperationEvidenceFails": true,
+    "cancelledOperationStartUnknown": true,
+    "receiptPublicationLimitations": [
+      "runner_loss",
+      "job_timeout",
+      "service_startup_before_steps"
+    ],
+    "imageDiagnosticReadLimitBytes": 65536,
+    "operationReceiptReadLimitBytes": 4194304,
+    "newSchedules": 0,
+    "newAccounts": 0,
+    "custodyChanges": 0
+  },
+  "verification": {
+    "focusedStartupTests": 8,
+    "focusedStartupTestsPassed": true,
+    "focusedStartupTestsPassedAfterReceiptBoundSelfReview": true,
+    "largeRetainedDigestListPreserved": true,
+    "localFullCheckPhase": "before_receipt_bound_self_review",
+    "actionlintVersion": "1.7.12",
+    "actionlintPassed": true,
+    "shellcheck": false,
+    "pyflakes": false,
+    "fullDatabaseBackedCheck": "verified",
+    "gateFinishedAt": "2026-10-10T00:09:04.999Z",
+    "ownedGateDatabaseRemoved": true,
+    "turboConcurrency": 2,
+    "priorFullCheck": {
+      "status": "failed",
+      "exitCode": 1,
+      "finishedAt": "2026-10-10T00:03:46.456Z",
+      "ownedGateDatabaseRemoved": true,
+      "failure": "unchanged_persistence_test_and_hook_timeouts",
+      "productionTimeoutsChanged": false,
+      "concurrencyDocumentation": "https://turborepo.dev/docs/reference/system-environment-variables"
+    },
+    "exactHeadCloudChecks": "resolve_from_milestone_pr",
+    "independentReviewClaimed": false
+  },
+  "handover": {
+    "scheduledCaptureAndRestore": "pending",
+    "actualOperatorReportedPcOffInterval": null,
+    "proposedIntervalWib": [
+      "2026-10-10T00:05:00+07:00",
+      "2026-10-10T01:00:00+07:00"
+    ],
+    "expiredArtifactDeletionAndConfirmedAbsence": "pending",
+    "providerAutomaticExpiryCountsAsDeletion": false,
+    "oldCodexBackup": "ACTIVE",
+    "temporaryFollowup": "ACTIVE",
+    "pauseBeforeDeletion": true,
+    "deleteOnlyAfterNextSuccessfulScheduledBackup": true,
+    "preserveHistoryAndReferencedKeys": true
+  },
+  "privacy": {
+    "sourceBodies": false,
+    "reportBodies": false,
+    "analysisIds": false,
+    "credentials": false,
+    "keys": false,
+    "dumps": false,
+    "rawErrors": false
+  }
+}
