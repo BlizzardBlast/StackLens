@@ -31,20 +31,32 @@ jobs:
     env:
       TEST_DATABASE_URL: postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens_test
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Initialize source-free startup evidence
+        run: >-
+          printf '%s\n' '{"status":"failed","phase":"startup","mode":"capture","failureCode":"offsite_backup_startup_incomplete","startup":{"operationStarted":false}}'
+          > "$RUNNER_TEMP/offsite-capture.json"
+      - id: checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
-      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+      - id: pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
         with:
           run_install: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+      - id: node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version-file: package.json
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - run: docker pull postgres:18-alpine
+      - id: install
+        run: pnpm install --frozen-lockfile
+      - id: build
+        run: pnpm build
+      - name: Prepare PostgreSQL image with bounded retries
+        id: image
+        run: node scripts/operations/offsite-backup-startup.mjs pull "$RUNNER_TEMP/offsite-image.json"
       - name: Capture online synthetic fixture with source runtimes still active
+        id: operation
         run: node scripts/operations/offsite-backup-fixture.mjs "$RUNNER_TEMP/offsite-backup" "$RUNNER_TEMP/offsite-capture.json"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
@@ -55,6 +67,13 @@ jobs:
           retention-days: 1
           compression-level: 0
           if-no-files-found: error
+      - name: Finalize source-free startup evidence
+        if: always() && steps.checkout.outcome == 'success'
+        env:
+          OFFSITE_STARTUP_STEPS: ${{ toJSON(steps) }}
+        run: >-
+          node scripts/operations/offsite-backup-startup.mjs finalize
+          "$RUNNER_TEMP/offsite-capture.json" "$RUNNER_TEMP/offsite-image.json" capture
       - name: Upload source-free fixture capture evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -82,25 +101,45 @@ jobs:
     env:
       TEST_DATABASE_URL: postgresql://stacklens:stacklens@127.0.0.1:55432/stacklens_test
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Initialize source-free startup evidence
+        run: >-
+          printf '%s\n' '{"status":"failed","phase":"startup","mode":"verify","failureCode":"offsite_backup_startup_incomplete","startup":{"operationStarted":false}}'
+          > "$RUNNER_TEMP/offsite-verify.json"
+      - id: checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
-      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+      - id: pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
         with:
           run_install: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+      - id: node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version-file: package.json
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - run: docker pull postgres:18-alpine
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+      - id: install
+        run: pnpm install --frozen-lockfile
+      - id: build
+        run: pnpm build
+      - name: Prepare PostgreSQL image with bounded retries
+        id: image
+        run: node scripts/operations/offsite-backup-startup.mjs pull "$RUNNER_TEMP/offsite-image.json"
+      - id: download
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: offsite-backup-fixture
           path: ${{ runner.temp }}/offsite-backup
       - name: Restore and verify quarantined snapshot on a fresh runner
+        id: operation
         run: node scripts/operations/offsite-backup.mjs verify-fixture "$RUNNER_TEMP/offsite-backup" "$RUNNER_TEMP/offsite-verify.json"
+      - name: Finalize source-free startup evidence
+        if: always() && steps.checkout.outcome == 'success'
+        env:
+          OFFSITE_STARTUP_STEPS: ${{ toJSON(steps) }}
+        run: >-
+          node scripts/operations/offsite-backup-startup.mjs finalize
+          "$RUNNER_TEMP/offsite-verify.json" "$RUNNER_TEMP/offsite-image.json" verify
       - name: Upload source-free fixture verification evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7

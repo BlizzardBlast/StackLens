@@ -1,15 +1,51 @@
 # StackLens Session Handover
 
-> **Prepared:** 2026-10-09\
+> **Prepared:** 2026-10-10\
 > **Architecture:** v0.1.26; requirements v0.1.4\
-> **Milestone:** Approved offsite custody active; live manual backup verified; scheduled acceptance and scheduler handover pending\
-> **Branch:** `codex/offsite-backup-activation`, existing checkout; PR #53 is merged; [PR #54](https://github.com/BlizzardBlast/StackLens/pull/54) records activation and the midnight schedule; resolve its final checks and current main\
-> **Activation base:** `4917f53e2e0ef350dbf3b8c10653281130e987eb`; independently resolve current main and hosting revisions\
+> **Milestone:** Offsite startup retries and failure receipts; fresh manual recovery verified; scheduled acceptance and scheduler handover pending\
+> **Branch:** `codex/offsite-startup-recovery`, existing checkout; PRs #53/#54 are merged; resolve this milestone's final checks and current main\
+> **Implementation base:** `08c0e54696b73c858cf52a9f0564e2bef242c2d9`; independently resolve current main and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009/010, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
 
-### October 9 approved offsite activation
+### October 10 offsite startup correction
+
+Midnight scheduled capture run `37994848889` starts at 04:40:25 WIB and fails on a Docker image-pull
+network timeout before capture; verification is skipped and the missing capture receipt causes an
+additional evidence-upload failure. Successful maintenance-only events with skipped capture and
+restore do not prove scheduled backup acceptance.
+
+Manual recovery run `38005927489` then passes seven matching fingerprints, one archived/retained
+strict report and one API read, unchanged historical rows and complete owned cleanup. Capture is
+October 10 06:46:03.942 WIB; authenticated eligibility ends October 11 06:46:03.942 WIB. Verify
+latest authenticated artifact presence and deadline before use. This manual success does not close
+scheduled or PC-off acceptance, and maintenance removes zero expired artifacts.
+
+Both live and synthetic fixture workflows now use bounded PostgreSQL client-image preparation
+(three sixty-second attempts; ten-/twenty-second retry delays). They initialize a failed receipt
+before checkout and finalize allowlisted setup outcomes without runtime dependencies. Actual
+operation report coverage and cleanup evidence survive finalization; missing/cancelled receipts
+cannot manufacture success or no-resource claims. Runner loss, service startup failure or job
+timeout can still prevent upload. The focused startup tests and independent fixture verify this
+change. The full database-backed `pnpm check` passes with `TURBO_CONCURRENCY=2`, including forty-nine
+operational cases and eighteen browser cases; the initial default-concurrency persistence timeouts
+remain recorded and no shared test/production timeouts change. Both workflows pass `actionlint`
+v1.7.12 with shellcheck/pyflakes excluded. See the [current runbook](implementation/offsite-preview-backups.md) and
+[dated record](implementation/release-evidence/2026-10-10-offsite-backup-startup.json).
+
+Next: observe an actual successful schedule-event capture/restore at 00:17/12:17 WIB, compare its
+actual run times with the operator's actual PC-off interval, and establish authenticated expired
+artifact deletion plus absence. The proposed October 10 00:05–01:00 interval remains unreported;
+the delayed failed run is outside it. Keep `stacklens-encrypted-preview-backups` ACTIVE and the
+existing handover follow-up active. Pause the old backup only after all gates pass; after another
+scheduled success delete its configuration while preserving history and retire the follow-up.
+New live ciphertext requests two provider days so hourly maintenance can delete and confirm an
+expired archive before provider expiration; authenticated restore eligibility remains twenty-four
+hours. Older archives keep their provider policy. Provider expiration alone is not deletion proof.
+No new schedule, hosting account, source privileges, key custody or public route is introduced.
+
+### October 9 approved offsite activation (historical)
 
 PR #53 merges as `4917f53` after final-head quality `37861858309`, portable recovery
 `37861858405` and offsite fixture `37861858361` succeed. The operator approves two unattended

@@ -63,3 +63,16 @@ expiry cleanup and workstation-independent evidence pass. Then retire that heart
 Codex automation tool, preserving its historical results. No dual active schedule is the final state.
 Publishing/activation, scheduled acceptance and retirement must be recorded separately from local
 implementation tests. This change creates no new hosting account and makes no public routing change.
+
+The October 10 startup correction bounds PostgreSQL client-image preparation to three sixty-second
+attempts with ten-/twenty-second delays. Raw pull output is suppressed. Initial and finalized
+source-free receipts keep pre-operation failures observable without fabricating capture, restore,
+report coverage or cleanup. Runner/service startup loss can still prevent receipt upload. This
+extends failure observability under NFR-009/010 without changing custody or quarantine boundaries.
+
+New live ciphertext artifacts request two provider days while authenticated restore eligibility
+stays at twenty-four hours. One-day provider retention raced the hourly maintenance observation,
+so this extra day permits authenticated expired-artifact deletion and its confirming absence check.
+Hourly deletion remains the policy; provider expiration is the fallback and never acceptance proof.
+Source-free receipts and synthetic fixture artifacts retain one-day provider requests. Key custody
+and unexpired-archive preservation remain unchanged.
