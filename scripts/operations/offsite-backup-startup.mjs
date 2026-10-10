@@ -64,9 +64,9 @@ export async function preparePostgresImage({ pull = pullAttempt, wait = pause } 
   return { ...evidence, failureCode: "offsite_postgres_image_pull_failed" };
 }
 
-async function readJson(path) {
+async function readJson(path, maximumBytes = 64 * 1024) {
   try {
-    return JSON.parse((await readBoundedFile(path, 64 * 1024)).toString());
+    return JSON.parse((await readBoundedFile(path, maximumBytes)).toString());
   } catch {
     return undefined;
   }
@@ -91,7 +91,8 @@ export async function finalizeStartup({ evidencePath, imagePath, mode, steps }) 
       : stepOutcomes.operation === "cancelled"
         ? null
         : true;
-  const receipt = await readJson(evidencePath);
+  // Operation receipts include one digest per retained report; do not apply the small image bound.
+  const receipt = await readJson(evidencePath, 4 * 1024 * 1024);
   const expectedStatus = mode === "capture" ? "verified_capture" : "verified";
   // Keep an actual operation's report coverage and cleanup evidence; never manufacture success.
   const operationReceipt =
@@ -116,7 +117,7 @@ export async function finalizeStartup({ evidencePath, imagePath, mode, steps }) 
       failureStage: failureStage ?? "operation",
       failureCode:
         operationStarted !== false
-          ? "offsite_backup_operation_receipt_missing"
+          ? "offsite_backup_operation_receipt_unreadable"
           : failureStage === "image"
             ? "offsite_postgres_image_pull_failed"
             : "offsite_backup_startup_failed",

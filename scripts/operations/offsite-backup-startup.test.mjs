@@ -146,6 +146,7 @@ await test("NFR-010: finalization preserves completed restore coverage and owned
       apiReportReads: 1,
       ownedDatabaseRemoved: true,
       transientPrivateFilesRemoved: true,
+      retainedReportHashes: Array.from({ length: 2000 }, () => "a".repeat(64)),
     };
     await writeFile(paths.evidencePath, JSON.stringify(receipt));
     const evidence = await finalizeStartup({ ...paths, mode: "verify", steps: steps() });
@@ -164,7 +165,7 @@ await test("NFR-010: missing operation evidence and cancellation cannot manufact
   await workspace(async (paths) => {
     const missing = await finalizeStartup({ ...paths, mode: "capture", steps: steps() });
     assert.equal(missing.status, "failed");
-    assert.equal(missing.failureCode, "offsite_backup_operation_receipt_missing");
+    assert.equal(missing.failureCode, "offsite_backup_operation_receipt_unreadable");
     const cancelledSteps = steps();
     cancelledSteps.operation.outcome = "cancelled";
     await writeFile(paths.evidencePath, "invalid receipt");

@@ -56,7 +56,10 @@ A failed startup receipt is initialized before checkout. After checkout, a depen
 records allowlisted setup step outcomes and image attempts, preserving the operation's actual report
 coverage and cleanup receipt. Skipped operations are explicitly not started; cancelled operations
 have unknown start state. Missing operation evidence cannot become success or establish cleanup.
-The always-run artifact step uploads this source-free receipt after setup failure. Runner loss,
+The always-run artifact step uploads this source-free receipt after setup failure.
+Operation receipts have a separate four-MiB read bound to preserve larger retained-report digest
+lists; image diagnostics are bounded to sixty-four KiB. Missing, malformed or excessive operation
+receipts fail as unreadable without claiming cleanup. Runner loss,
 job timeout, or service-image failure before steps begin can still prevent receipt publication;
 inspect the failed job itself and preserve the previous verified backup in those cases.
 
@@ -215,8 +218,10 @@ browser cases. The initial default-concurrency run hits timeouts in unchanged pe
 that failed attempt and owned database cleanup remain in the dated record. No production/test
 timeouts or shared test configuration are weakened. The reduced local concurrency uses the
 [documented system variable](https://turborepo.dev/docs/reference/system-environment-variables).
-Both workflows pass `actionlint` v1.7.12, excluding unavailable shellcheck/pyflakes. Fresh final-head
-cloud quality and independent fixtures remain publication gates; resolve them from
+Both workflows pass `actionlint` v1.7.12, excluding unavailable shellcheck/pyflakes.
+Self-review separates the small image-diagnostic bound from the larger operation-receipt bound;
+the same eight startup cases pass again, preserving a digest list exceeding sixty-four KiB.
+Fresh final-head cloud quality and independent fixtures remain publication gates; resolve them from
 [PR #55](https://github.com/BlizzardBlast/StackLens/pull/55) and resolve current main independently.
 
 The proposed October 10 00:05–01:00 WIB PC-off interval has no actual operator report. Even if that

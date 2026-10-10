@@ -8,14 +8,14 @@
     "GOV-007"
   ],
   "status": "startup_correction_locally_verified_handover_pending",
-  "recordedAt": "2026-10-10T00:09:33.623Z",
+  "recordedAt": "2026-10-10T00:13:11.949Z",
   "sourceBase": "08c0e54696b73c858cf52a9f0564e2bef242c2d9",
   "milestonePr": "https://github.com/BlizzardBlast/StackLens/pull/55",
   "sourceHashes": {
     ".github/workflows/offsite-preview-backups.yml": "047c52437deec554470c81b403641835f5c7b8adf98eac95952fca0d8672981a",
     ".github/workflows/offsite-backup-fixture.yml": "608ba9068ba3cf11307aeeec5dd028a0980f83e7422cc6406870ef549ad340fa",
-    "scripts/operations/offsite-backup-startup.mjs": "a1828c51d8186ae5f46215bbb7eab14313eacd51a1110b8da12f73ba45069c5e",
-    "scripts/operations/offsite-backup-startup.test.mjs": "012b167a8bade98e58a73ac9f78e6c7dbcb6b7fd7a2241c952015a433d10ec92"
+    "scripts/operations/offsite-backup-startup.mjs": "0001bbe2343bf62e4cea9c22a4828c99b521abf472dd2bf17cdf12e6497ab37b",
+    "scripts/operations/offsite-backup-startup.test.mjs": "83579f2635230e1f93b297ca6161ba2d46637cfc6cbf453d9ad008580041d717"
   },
   "scheduledFailure": {
     "runId": 37994848889,
@@ -107,6 +107,8 @@
       "job_timeout",
       "service_startup_before_steps"
     ],
+    "imageDiagnosticReadLimitBytes": 65536,
+    "operationReceiptReadLimitBytes": 4194304,
     "newSchedules": 0,
     "newAccounts": 0,
     "custodyChanges": 0
@@ -114,6 +116,9 @@
   "verification": {
     "focusedStartupTests": 8,
     "focusedStartupTestsPassed": true,
+    "focusedStartupTestsPassedAfterReceiptBoundSelfReview": true,
+    "largeRetainedDigestListPreserved": true,
+    "localFullCheckPhase": "before_receipt_bound_self_review",
     "actionlintVersion": "1.7.12",
     "actionlintPassed": true,
     "shellcheck": false,
