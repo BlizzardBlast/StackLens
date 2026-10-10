@@ -216,7 +216,8 @@ that failed attempt and owned database cleanup remain in the dated record. No pr
 timeouts or shared test configuration are weakened. The reduced local concurrency uses the
 [documented system variable](https://turborepo.dev/docs/reference/system-environment-variables).
 Both workflows pass `actionlint` v1.7.12, excluding unavailable shellcheck/pyflakes. Fresh final-head
-cloud quality and independent fixtures remain publication gates; resolve them from this milestone PR.
+cloud quality and independent fixtures remain publication gates; resolve them from
+[PR #55](https://github.com/BlizzardBlast/StackLens/pull/55) and resolve current main independently.
 
 The proposed October 10 00:05–01:00 WIB PC-off interval has no actual operator report. Even if that
 interval is later confirmed, the delayed failed capture falls outside it. Obtain an applicable

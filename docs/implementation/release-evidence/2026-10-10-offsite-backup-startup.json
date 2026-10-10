@@ -10,6 +10,7 @@
   "status": "startup_correction_locally_verified_handover_pending",
   "recordedAt": "2026-10-10T00:09:33.623Z",
   "sourceBase": "08c0e54696b73c858cf52a9f0564e2bef242c2d9",
+  "milestonePr": "https://github.com/BlizzardBlast/StackLens/pull/55",
   "sourceHashes": {
     ".github/workflows/offsite-preview-backups.yml": "047c52437deec554470c81b403641835f5c7b8adf98eac95952fca0d8672981a",
     ".github/workflows/offsite-backup-fixture.yml": "608ba9068ba3cf11307aeeec5dd028a0980f83e7422cc6406870ef549ad340fa",

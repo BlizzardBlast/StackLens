@@ -3135,5 +3135,6 @@ run's unchanged persistence timeouts and owned cleanup remain recorded; no produ
 test configuration changes. Both workflows pass `actionlint` v1.7.12 with shellcheck/pyflakes excluded.
 Resolve the milestone PR's final-head cloud checks before merging, and current main independently
 in the next session; no unknown future squash SHA is needed to finish this handover.
+The milestone is [PR #55](https://github.com/BlizzardBlast/StackLens/pull/55).
 
 **Traceability:** NFR-010/009, SEC-003/007, GOV-002/006/007; ADR-0022.

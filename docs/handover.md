@@ -3,7 +3,7 @@
 > **Prepared:** 2026-10-10\
 > **Architecture:** v0.1.26; requirements v0.1.4\
 > **Milestone:** Offsite startup retries and failure receipts; fresh manual recovery verified; scheduled acceptance and scheduler handover pending\
-> **Branch:** `codex/offsite-startup-recovery`, existing checkout; PRs #53/#54 are merged; resolve this milestone's final checks and current main\
+> **Branch:** `codex/offsite-startup-recovery`, existing checkout; PRs #53/#54 are merged; [PR #55](https://github.com/BlizzardBlast/StackLens/pull/55) records startup/cleanup correction; resolve its final checks and current main\
 > **Implementation base:** `08c0e54696b73c858cf52a9f0564e2bef242c2d9`; independently resolve current main and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009/010, SEC-001/002/003/007, GOV-002/006/007
 
