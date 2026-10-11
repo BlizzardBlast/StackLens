@@ -3190,3 +3190,37 @@ privacy boundaries, and resolves 135 local documentation links. Full cloud quali
 independent recovery fixtures remain final-head publication gates; no local runtime code changes.
 
 **Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022, GOV-002/006/007; ADR-0022.
+
+## 2026-10-11 — Retire the old backup configuration after scheduled continuity
+
+After PR #56 publishes acceptance and the rollback pause, schedule-event run `38135415372` on
+main `6e3d544` starts capture October 11 at 18:24:09 WIB and the actual operation at 18:24:36.406 WIB,
+after the 08:11:15.172 WIB pause. Independent restore and maintenance finish by 18:26:19 WIB.
+Seven fingerprints match, historical rows remain unchanged, copied work stays quarantined and
+owned cleanup completes. Archived/retained/API report counts are explicitly zero; the earlier
+populated scheduled and qualified operator-reported PC-off proof is preserved byte for byte.
+The delay from the nominal 12:17 event is recorded using actual job times.
+
+A complete authenticated inventory and direct readback confirm two unexpired archives before
+configuration retirement. New ciphertext is eligible until October 12 18:25:07.747 WIB; provider
+retention ends October 13 18:25:08 WIB. Availability is a dated observation and must be rechecked
+before recovery. The app tool deletes only the old `stacklens-encrypted-preview-backups`
+configuration at October 11 20:48:40 WIB. Absence is confirmed, historical results remain readable
+and private archive/key file inventories are unchanged. No private file is deleted or published.
+
+The documentation-impact pass updates README, ADR-0022, the runbook, current handover and separate
+[retirement evidence](../implementation/release-evidence/2026-10-11-offsite-backup-retirement.json).
+Requirements, custody/architecture, analyzer contracts, scoring, UI and tokens do not change.
+The enabled main-only cloud capture stays at 00:17/12:17 WIB with hourly maintenance. The temporary
+handover follow-up is removed through the app tool after retirement publication is verified,
+preserving its history. Persistent public replacement and normal-provider cutover/rollback remain
+separate; no new hosting account, schedule, source grant or public routing change is introduced.
+
+For this documentation/evidence milestone, validation passes for source-free receipts, post-pause timing,
+explicit empty report coverage, authenticated artifact presence/deadlines, configuration absence,
+preserved history/private inventory, source hashes, 141 local links and privacy boundaries.
+`pnpm format:check` and `git diff --check` pass; full cloud quality and both independent recovery fixtures
+must pass at the final PR head with review-thread and mergeability gates before publication.
+The next session must resolve current main independently rather than rely on a future squash SHA.
+
+**Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022, GOV-002/006/007; ADR-0022.

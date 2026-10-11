@@ -128,8 +128,8 @@ captures the drained preview while its production API is paused and original Wor
 then restores one historical report and completes new synthetic work on a separate runner without the original
 database login or workstation files. Both jobs clean up their owned resources. The original preview
 is resumed and completes a fresh normal-provider frey-ui analysis with explicit limitations,
-matching direct/proxied reports and an empty final queue. Stable public replacement hosting and
-continuous offsite refresh/deletion remain explicit gates.
+matching direct/proxied reports and an empty final queue. Stable public replacement hosting remains
+an explicit gate; the later scheduled offsite handover below closes backup refresh/deletion.
 
 The [persistent staging preparation](docs/implementation/persistent-preview-recovery.md) now
 authenticates the portable bundle before restoring a new quarantined database, then gates private
@@ -158,10 +158,13 @@ the approved main-only capture/readback custody policy, using a dedicated restri
 login and encryption master. October 10 scheduled capture and independent restore pass seven
 matching fingerprints and one real strict/API report while this PC is off, according to the
 operator's reported interval. October 11 maintenance deletes one authenticated expired archive
-and confirms absence before its provider deadline, preserving both unexpired archives. The old
-Codex backup heartbeat is paused for rollback; its configuration will be deleted after the next
-successful scheduled cloud backup following that pause. See the
-[dated handover evidence](docs/implementation/release-evidence/2026-10-11-offsite-backup-handover.json).
+and confirms absence before its provider deadline, preserving both unexpired archives. A further
+scheduled capture/restore after the rollback pause passes seven fingerprints with explicit zero
+report coverage and complete cleanup. The old Codex backup automation configuration is deleted;
+its historical results, private archives and referenced keys are preserved. Cloud capture continues
+at 00:17/12:17 WIB with hourly maintenance. See the
+[acceptance evidence](docs/implementation/release-evidence/2026-10-11-offsite-backup-handover.json) and
+[retirement evidence](docs/implementation/release-evidence/2026-10-11-offsite-backup-retirement.json).
 Image preparation uses
 bounded retries and source-free receipts distinguish setup failures from operations that started.
 The October 10 scheduled image-pull timeout and successful manual recovery remain recorded in the

@@ -1,6 +1,6 @@
 # ADR-0022: Scheduled offsite preview backups
 
-- **Status:** Accepted, activated and live acceptance verified; old scheduler paused pending the next scheduled success before configuration retirement
+- **Status:** Accepted, activated and live acceptance verified; old scheduler configuration retired after a successful scheduled backup following pause
 - **Date:** 2026-10-09
 - **Requirements:** NFR-010, NFR-009, SEC-003/007, FR-003/017/022, GOV-006/007
 - **Extends:** ADR-0018/0021
@@ -88,3 +88,13 @@ for rollback. Delete its configuration only after the next successful scheduled 
 starting after pause, preserving history, archives and referenced keys. The
 [dated handover record](../implementation/release-evidence/2026-10-11-offsite-backup-handover.json)
 separates acceptance, pause and pending retirement; custody and protected manual recovery stay intact.
+
+Scheduled run `38135415372` on merged PR #56 starts October 11 at 18:24:09 WIB, after the pause,
+and independently restores seven matching fingerprints with unchanged rows, quarantine and complete
+cleanup. Its archived/retained/API report counts are explicitly zero; the earlier populated PC-off
+proof stays preserved. Current authenticated artifact presence and eligibility are verified before
+the automation tool deletes the old configuration at 20:48:40 WIB. Historical results remain
+readable, and private archive/key file inventories are unchanged. The temporary handover follow-up
+is deleted through the app tool after publication of the retirement milestone. See the separate
+[retirement record](../implementation/release-evidence/2026-10-11-offsite-backup-retirement.json).
+The enabled 00:17/12:17 WIB cloud capture, hourly maintenance, source role and custody policy continue.
