@@ -3223,4 +3223,6 @@ preserved history/private inventory, source hashes, 141 local links and privacy 
 must pass at the final PR head with review-thread and mergeability gates before publication.
 The next session must resolve current main independently rather than rely on a future squash SHA.
 
+The milestone is [PR #57](https://github.com/BlizzardBlast/StackLens/pull/57).
+
 **Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022, GOV-002/006/007; ADR-0022.

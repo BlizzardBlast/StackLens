@@ -3,7 +3,7 @@
 > **Prepared:** 2026-10-11\
 > **Architecture:** v0.1.26; requirements v0.1.4\
 > **Milestone:** Offsite handover accepted; post-pause scheduled capture/restore verified and old backup automation configuration deleted\
-> **Branch:** `codex/offsite-backup-retirement`, existing checkout; PRs #53–#56 merged; retirement publication must pass final-head checks; independently resolve current main\
+> **Branch:** `codex/offsite-backup-retirement`, existing checkout; PRs #53–#56 merged; [PR #57](https://github.com/BlizzardBlast/StackLens/pull/57) records retirement; independently resolve its final checks and current main\
 > **Implementation base:** `6e3d544ff75e17b1a2f7d8981b536630444c0afb`; independently resolve current main and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009/010, SEC-001/002/003/007, GOV-002/006/007
 
