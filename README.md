@@ -84,7 +84,7 @@ and active on the public API: a six-connection login with application read/inser
 owner/Graphile privileges. The seventh connection was rejected while the owner remained usable;
 both requested repositories completed again through the restricted API and Worker, with explicit
 limitations and zero final API clients. Older sampled deployment URLs require Vercel sign-in.
-The 12-hour encrypted-backup heartbeat is active. Its first scheduled refresh passes seven matching
+The original 12-hour encrypted-backup heartbeat's first scheduled refresh passes seven matching
 table fingerprints and three strict/API readbacks; the new archive expires October 5 at 20:21 Jakarta.
 The [independent database recovery rehearsal](docs/implementation/independent-preview-recovery.md)
 restores the private archive into temporary Neon Free PostgreSQL, serves both retained reports
@@ -155,8 +155,14 @@ online snapshot capture, per-run derived encryption keys, independent quarantine
 verification, authenticated artifact expiry cleanup and an hourly freshness detector. Public fixture
 CI uses synthetic data and separate runners. PR #53 is merged and the live workflow is enabled under
 the approved main-only capture/readback custody policy, using a dedicated restricted Aiven backup
-login and encryption master. Scheduled live acceptance and expiry cleanup remain pending, so the
-existing Codex backup heartbeat stays active until verified handover. Image preparation now uses
+login and encryption master. October 10 scheduled capture and independent restore pass seven
+matching fingerprints and one real strict/API report while this PC is off, according to the
+operator's reported interval. October 11 maintenance deletes one authenticated expired archive
+and confirms absence before its provider deadline, preserving both unexpired archives. The old
+Codex backup heartbeat is paused for rollback; its configuration will be deleted after the next
+successful scheduled cloud backup following that pause. See the
+[dated handover evidence](docs/implementation/release-evidence/2026-10-11-offsite-backup-handover.json).
+Image preparation uses
 bounded retries and source-free receipts distinguish setup failures from operations that started.
 The October 10 scheduled image-pull timeout and successful manual recovery remain recorded in the
 runbook; the manual recovery does not establish scheduled or PC-off acceptance. The new path never unlocks

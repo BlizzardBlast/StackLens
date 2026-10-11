@@ -3142,3 +3142,50 @@ bound. The eight focused startup cases pass again, including preservation of a l
 report-digest list. Final-head cloud quality and fixtures must verify this final correction.
 
 **Traceability:** NFR-010/009, SEC-003/007, GOV-002/006/007; ADR-0022.
+
+## 2026-10-11 — Verify offsite acceptance and pause the old backup scheduler
+
+The offsite handover now has a real schedule-event capture and independent restore, actual
+operator-reported PC-off coverage and authenticated expired-artifact deletion. Scheduled run
+`38047478190` on published main `3d4f0b9` passes seven matching fingerprints, one archived/retained
+strict report, one API readback, unchanged historical rows, quarantine and complete owned cleanup.
+Its jobs span October 10 18:10:38–18:12:56 WIB. Direct operator replies report shutdown before
+15:00 WIB and power-on around 20:00 WIB that day; the exact shutdown is unknown and power-on
+approximate. This interval covers all jobs. The earlier proposed midnight interval and absent
+local activity are not accepted PC-off evidence. Earlier failed and manual runs remain separate.
+
+After natural authenticated expiry, one dispatch of the existing workflow with `operation=maintain`
+passes in run `38100726876` at October 11 08:07 WIB. Its source-free receipt reports one deletion,
+counted only after successful DELETE and confirming not-found. The complete pre-run inventory has
+exactly one expired owned archive, `11651951910`, whose authenticated deadline is 07:20:27.438 WIB.
+Complete post-run inventory confirms its absence before the October 12 07:20:28 WIB provider
+deadline and preserves both unexpired archives with their original digests/deadlines. This closes
+the cleanup gate without relying on provider expiration, shortening recovery eligibility or
+creating a new backup, schedule or hosting account.
+
+Latest pre-pause scheduled backup `38084229958` remains authenticated and available when rechecked:
+seven fingerprints, unchanged rows, quarantine and owned cleanup, with explicit zero report
+coverage. It does not replace the earlier populated proof. Its authenticated deadline is October 12
+03:34:50.472 WIB. After all gates pass, the automation tool pauses
+`stacklens-encrypted-preview-backups` at October 11 08:11:15.172 WIB, preserving configuration,
+history, archives and referenced keys for rollback. The existing cloud schedule stays enabled at
+00:17/12:17 WIB. The hourly handover follow-up now waits quietly for the next successful scheduled
+capture starting after pause before deleting the old configuration and retiring itself. Manual
+backups and maintenance-only events cannot satisfy this remaining retirement step.
+
+The documentation-impact pass updates README, ADR-0022, the current handover, the runbook and
+[dated safe evidence](../implementation/release-evidence/2026-10-11-offsite-backup-handover.json).
+Published main, workflow guards and source hashes are independently verified; capture/restore and
+maintenance receipts, authenticated before/after inventories and automation-tool readback support
+the record. Requirements and architecture/custody policy are unchanged, as are analyzer contracts,
+scoring, UI and tokens. Protected manual recovery, hosted data and public routing remain unchanged;
+persistent public cutover/rollback is still a separate release gate. Resolve this milestone's final
+checks and current main independently in the next session.
+
+For this documentation/evidence change, `pnpm format:check` and `git diff --check` pass. Evidence
+validation compares captured fingerprints and report counts with source-free receipts, checks the
+qualified user interval and authenticated/provider deletion deadlines, verifies source hashes and
+privacy boundaries, and resolves 135 local documentation links. Full cloud quality and both
+independent recovery fixtures remain final-head publication gates; no local runtime code changes.
+
+**Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022, GOV-002/006/007; ADR-0022.
