@@ -3,7 +3,7 @@
 > **Prepared:** 2026-10-11\
 > **Architecture:** v0.1.26; requirements v0.1.4\
 > **Milestone:** Offsite scheduled, PC-off and authenticated expiry acceptance verified; old scheduler paused for rollback; configuration retirement awaits the next scheduled success\
-> **Branch:** `codex/offsite-backup-handover`, existing checkout; PRs #53/#54/#55 are merged; resolve current main and this milestone's final checks\
+> **Branch:** `codex/offsite-backup-handover`, existing checkout; PRs #53/#54/#55 are merged; [PR #56](https://github.com/BlizzardBlast/StackLens/pull/56) records acceptance and pause; resolve its final checks and current main\
 > **Implementation base:** `3d4f0b9c1beda5fd4ef4fcbf916175945db15a68`; independently resolve current main and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009/010, SEC-001/002/003/007, GOV-002/006/007
 

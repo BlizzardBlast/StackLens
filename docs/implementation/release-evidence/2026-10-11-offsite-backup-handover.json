@@ -13,6 +13,7 @@
     "GOV-007"
   ],
   "status": "all_handover_acceptance_gates_verified_old_scheduler_paused",
+  "milestonePr": "https://github.com/BlizzardBlast/StackLens/pull/56",
   "recordedAt": "2026-10-11T01:13:13.919Z",
   "sourceCommit": "3d4f0b9c1beda5fd4ef4fcbf916175945db15a68",
   "sourceHashes": {

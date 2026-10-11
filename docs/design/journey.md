@@ -3182,6 +3182,7 @@ scoring, UI and tokens. Protected manual recovery, hosted data and public routin
 persistent public cutover/rollback is still a separate release gate. Resolve this milestone's final
 checks and current main independently in the next session.
 
+The milestone is [PR #56](https://github.com/BlizzardBlast/StackLens/pull/56).
 For this documentation/evidence change, `pnpm format:check` and `git diff --check` pass. Evidence
 validation compares captured fingerprints and report counts with source-free receipts, checks the
 qualified user interval and authenticated/provider deletion deadlines, verifies source hashes and
