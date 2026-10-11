@@ -1,6 +1,6 @@
 # ADR-0022: Scheduled offsite preview backups
 
-- **Status:** Accepted and activated; scheduled live acceptance and scheduler handover pending
+- **Status:** Accepted, activated and live acceptance verified; old scheduler paused pending the next scheduled success before configuration retirement
 - **Date:** 2026-10-09
 - **Requirements:** NFR-010, NFR-009, SEC-003/007, FR-003/017/022, GOV-006/007
 - **Extends:** ADR-0018/0021
@@ -31,7 +31,8 @@ also needs the owning workflow's verification job to have succeeded and its arti
 Reject a latest verified capture older than 18 hours, allowing six hours beyond the 12-hour cadence
 while leaving six hours before normal expiry. Failure is visible in Actions and source-free evidence.
 GitHub scheduling is best effort; this detector is not an independent guarantee if GitHub itself
-stops scheduling. Artifacts additionally request one-day retention. Neither API deletion nor the
+stops scheduling. Live ciphertext additionally requests two-day provider retention; source-free
+receipts and synthetic artifacts request one day. Neither API deletion nor the
 retention setting proves exact physical deletion timing at the provider.
 
 ## Activation and scheduler handover
@@ -76,3 +77,14 @@ so this extra day permits authenticated expired-artifact deletion and its confir
 Hourly deletion remains the policy; provider expiration is the fallback and never acceptance proof.
 Source-free receipts and synthetic fixture artifacts retain one-day provider requests. Key custody
 and unexpired-archive preservation remain unchanged.
+
+The October 11 operational acceptance records scheduled run `38047478190`: seven fingerprints,
+one retained strict/API report, quarantine and complete owned cleanup while the PC was off within
+the operator-reported October 10 interval (off before 15:00 WIB, on around 20:00 WIB; exact shutdown
+unknown and power-on approximate). Maintenance-only run `38100726876` authenticates and deletes one
+expired archive, confirms absence before provider expiry and preserves both unexpired archives.
+With the latest recovery window rechecked, the old Codex backup pauses at October 11 08:11:15.172 WIB
+for rollback. Delete its configuration only after the next successful scheduled capture/restore
+starting after pause, preserving history, archives and referenced keys. The
+[dated handover record](../implementation/release-evidence/2026-10-11-offsite-backup-handover.json)
+separates acceptance, pause and pending retirement; custody and protected manual recovery stay intact.

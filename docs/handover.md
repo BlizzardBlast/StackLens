@@ -1,15 +1,57 @@
 # StackLens Session Handover
 
-> **Prepared:** 2026-10-10\
+> **Prepared:** 2026-10-11\
 > **Architecture:** v0.1.26; requirements v0.1.4\
-> **Milestone:** Offsite startup retries and failure receipts; fresh manual recovery verified; scheduled acceptance and scheduler handover pending\
-> **Branch:** `codex/offsite-startup-recovery`, existing checkout; PRs #53/#54 are merged; [PR #55](https://github.com/BlizzardBlast/StackLens/pull/55) records startup/cleanup correction; resolve its final checks and current main\
-> **Implementation base:** `08c0e54696b73c858cf52a9f0564e2bef242c2d9`; independently resolve current main and hosting revisions\
+> **Milestone:** Offsite scheduled, PC-off and authenticated expiry acceptance verified; old scheduler paused for rollback; configuration retirement awaits the next scheduled success\
+> **Branch:** `codex/offsite-backup-handover`, existing checkout; PRs #53/#54/#55 are merged; [PR #56](https://github.com/BlizzardBlast/StackLens/pull/56) records acceptance and pause; resolve its final checks and current main\
+> **Implementation base:** `3d4f0b9c1beda5fd4ef4fcbf916175945db15a68`; independently resolve current main and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009/010, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
 
-### October 10 offsite startup correction
+### October 11 accepted offsite handover and rollback window
+
+Schedule-event [run `38047478190`](https://github.com/BlizzardBlast/StackLens/actions/runs/38047478190)
+on published main `3d4f0b9` passes capture and independent quarantined restore: seven matching
+fingerprints, one archived/retained strict report, one API readback, unchanged historical rows and
+complete owned cleanup. All jobs run October 10 at 18:10:38–18:12:56 WIB. The operator reports this
+PC was powered off before 15:00 WIB and powered back on around 20:00 WIB that day. Exact shutdown
+time is unknown; power-on is approximate. This reported interval covers all jobs. The earlier
+proposed midnight interval and absent local activity are not the accepted evidence.
+
+At October 11 08:07 WIB, the existing workflow is dispatched once with `operation=maintain` after
+authenticated expiry. [Run `38100726876`](https://github.com/BlizzardBlast/StackLens/actions/runs/38100726876)
+skips capture/restore and reports one verified expired-artifact deletion. The complete pre-run
+inventory has exactly one authenticated expired owned archive, `11651951910`, whose eligibility
+ended at 07:20:27.438 WIB. Its absence is confirmed by a complete post-run inventory before its
+October 12 07:20:28 WIB provider deadline; both unexpired owned archives remain present. This
+proves authenticated maintenance deletion, rather than automatic provider expiration. No restore
+window is shortened and no new backup or schedule is created.
+
+Latest pre-pause schedule-event backup `38084229958` passes seven fingerprints, quarantine,
+unchanged historical rows and owned cleanup. Its archived/retained/API report counts are all zero,
+explicitly empty coverage; the earlier populated scheduled receipt remains separate. Artifact
+presence and authenticated eligibility are rechecked before pause. Its restore deadline is
+October 12 03:34:50.472 WIB; verify current presence/deadline before use.
+
+All acceptance gates pass. The automation tool pauses `stacklens-encrypted-preview-backups` at
+October 11 08:11:15.172 WIB, preserving its configuration and historical results for rollback.
+The enabled cloud capture schedule stays at 00:17/12:17 WIB; the next nominal event is October 11
+12:17 WIB and may be delayed. `stacklens-offsite-handover` remains active to inspect receipts.
+See the [runbook](implementation/offsite-preview-backups.md) and
+[dated safe evidence](implementation/release-evidence/2026-10-11-offsite-backup-handover.json).
+
+Next: resolve current main and publication, then require a new successful **schedule-event** capture
+starting after the recorded pause, independent restore with seven matching fingerprints, explicit
+report coverage, quarantine, unchanged historical rows, complete cleanup and currently eligible
+ciphertext. Maintenance-only and manual successes do not satisfy this retirement step. Then delete
+only the old automation configuration through the app tool, preserve history, archives and
+referenced keys, record safe retirement evidence and retire the temporary follow-up. Do not resume
+or recreate the paused schedule during expected pending state. Hosted restore, claim unlocking,
+source privileges, protected manual recovery and public routing remain outside this handover.
+Persistent public replacement and cutover/rollback remain separate operational release gates.
+
+### October 10 offsite startup correction (historical)
 
 Midnight scheduled capture run `37994848889` starts at 04:40:25 WIB and fails on a Docker image-pull
 network timeout before capture; verification is skipped and the missing capture receipt causes an
