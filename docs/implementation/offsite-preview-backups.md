@@ -1,13 +1,14 @@
 # Scheduled offsite preview backups
 
 **Updated:** October 11, 2026. **Status:** scheduled/PC-off/authenticated expiry acceptance verified;
-old Codex scheduler paused for rollback; configuration retirement awaits the next scheduled success.
+old Codex scheduler configuration retired after a successful scheduled backup following pause.
 **Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022; ADR-0022.
 
 ## Scope and boundaries
 
-The original Codex heartbeat is paused after verified handover acceptance; its configuration remains
-available for rollback until another scheduled cloud backup passes after pause.
+The original Codex backup automation configuration is deleted after verified handover acceptance,
+a rollback pause and another successful scheduled cloud capture/restore. Its historical results,
+private archives and referenced keys remain preserved.
 `.github/workflows/offsite-preview-backups.yml` runs the replacement using GitHub-hosted
 runners. It is disabled unless repository variable `STACKLENS_OFFSITE_BACKUPS_ENABLED` equals
 `true`, and all secret-bearing jobs are restricted to `BlizzardBlast/StackLens` on `main`.
@@ -231,7 +232,7 @@ interval is later confirmed, the delayed failed capture falls outside it. Obtain
 actual interval around a successful scheduled run; never infer PC-off from absent local activity.
 Keep both backup and handover automations active until every acceptance gate passes.
 
-## October 11 acceptance and old scheduler pause
+## October 11 acceptance and old scheduler pause (historical)
 
 Published main `3d4f0b9` includes merged PRs #54/#55, the enabled 00:17/12:17 WIB schedule,
 bounded startup retries and finalized failure receipts. The workflow, enable variable, main-only
@@ -280,6 +281,44 @@ Requirement behavior, architecture/custody policy, analysis contracts, scoring, 
 unchanged. Earlier failed/manual runs stay recorded separately; protected manual recovery and
 persistent public cutover/rollback remain separate.
 
+## October 11 configuration retirement
+
+On published main `6e3d544` (merged PR #56), schedule-event
+[run `38135415372`](https://github.com/BlizzardBlast/StackLens/actions/runs/38135415372) starts capture
+at 18:24:09 WIB and the actual capture operation at 18:24:36.406 WIB. Both are after the old
+scheduler pause at 08:11:15.172 WIB. The nominal 12:17 event is delayed; actual job times establish
+this retirement gate. Independent restore finishes at 18:26:05.479 WIB and maintenance completes
+at 18:26:19 WIB. Seven fingerprints match, historical rows are unchanged, the queue stays stopped,
+copied live claims stay locked, restore contacts no source database and owned cleanup completes.
+Archived/retained/API report counts are all zero, explicitly empty coverage. This observation does
+not replace the earlier populated scheduled receipt or its operator-reported PC-off interval.
+
+Complete authenticated inventory at 20:44:08.582 WIB and direct artifact readback at 20:45:23.300 WIB
+confirm two unexpired owned archives. New ciphertext `11700343623` is eligible until October 12
+18:25:07.747 WIB; its provider deadline is October 13 18:25:08 WIB. The older eligible copy retains
+its October 12 03:34:50.472 WIB authenticated deadline. These are dated availability observations;
+recheck authenticated presence, deadline and successful verification before recovery. Two provider
+days do not extend the twenty-four-hour authenticated restore window.
+
+The app tool deletes only `stacklens-encrypted-preview-backups` configuration at October 11
+20:48:40 WIB. Configuration absence is confirmed, its historical completed results remain readable
+and the private archive/key file inventories have unchanged names, sizes and modification times.
+No private file content is published or deleted. The original populated/PC-off acceptance record
+is preserved byte for byte. The [retirement evidence](release-evidence/2026-10-11-offsite-backup-retirement.json)
+records the post-pause receipt and deletion separately from the earlier acceptance/pause evidence.
+
+Publish this retirement milestone only after final-head quality and both independent recovery
+fixtures pass, along with review-thread and mergeability gates. Verify current main, published
+source hashes and the latest recovery window, then delete the temporary `stacklens-offsite-handover`
+configuration through the app tool; retain its historical results and final app readback outside
+Git. This ends the handover follow-up. Existing cloud capture at 00:17/12:17 WIB and hourly
+maintenance remain enabled under main-only custody. Do not recreate the old backup schedule.
+
+The documentation-impact pass updates README, ADR-0022, handover and the chronological journey.
+Requirement behavior, architecture/custody, analyzer contracts, scoring, UI and tokens are unchanged.
+No new host, schedule, source grants, hosted restore or routing change is introduced. Persistent
+public replacement and normal-provider cutover/rollback remain the next separate operational gate.
+
 ## Concrete activation and Codex scheduler handover
 
 1. Review and merge [PR #53](https://github.com/BlizzardBlast/StackLens/pull/53) from
@@ -310,7 +349,7 @@ persistent public cutover/rollback remain separate.
 
 Preparation originally left cloud custody disabled. Approved activation enables the workflow and
 creates a restricted Aiven backup role; the Codex heartbeat stays active through acceptance, then
-pauses for rollback as recorded above.
+pauses for rollback and then retires after a further scheduled success as recorded above.
 Role provisioning changes no source rows; acceptance uses an ordinary public analysis to exercise
 populated restoration. Silly processes and public routing are unchanged. Stable public replacement, managed Free restore,
 general capacity, Function suspension and deferred device/spoken acceptance remain separate gates.

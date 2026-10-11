@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "requirementIds": [
+    "NFR-010",
+    "NFR-009",
+    "SEC-003",
+    "SEC-007",
+    "FR-003",
+    "FR-017",
+    "FR-022",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "status": "post_pause_scheduled_success_verified_old_scheduler_configuration_deleted",
+  "milestonePr": "https://github.com/BlizzardBlast/StackLens/pull/57",
+  "recordedAt": "2026-10-11T13:50:11.476Z",
+  "sourceCommit": "6e3d544ff75e17b1a2f7d8981b536630444c0afb",
+  "sourceHashes": {
+    ".github/workflows/offsite-preview-backups.yml": "047c52437deec554470c81b403641835f5c7b8adf98eac95952fca0d8672981a",
+    "scripts/operations/offsite-backup-maintenance.mjs": "9a5cc96061ef934616a31019088c97c3df726d51b65c60d2e6cbb8c6a8754389",
+    "scripts/operations/offsite-backup-bundle.mjs": "8ae3ce5019450ab7eb7ad46e4660d14c1042e3b299e6eb8d5b0a9514098788e6",
+    "scripts/operations/offsite-backup-startup.mjs": "0001bbe2343bf62e4cea9c22a4828c99b521abf472dd2bf17cdf12e6497ab37b"
+  },
+  "publication": {
+    "mergedActivationPr": 54,
+    "mergedStartupPr": 55,
+    "enabled": true,
+    "captureCronUtc": "17 5,17 * * *",
+    "captureTimesWib": [
+      "00:17",
+      "12:17"
+    ],
+    "maintenanceCronUtc": "47 * * * *",
+    "mainOnlyCustodyVerified": true,
+    "protectedManualRecoveryPreserved": true
+  },
+  "earlierAcceptance": {
+    "evidence": "2026-10-11-offsite-backup-handover.json",
+    "sha256": "aad5cbf096c743ff92f48bc621f44ec54edd0bc5712f8f034ee510cbef724c12",
+    "milestonePr": "https://github.com/BlizzardBlast/StackLens/pull/56",
+    "scheduledRunId": "38047478190",
+    "populatedReportReadbackCovered": true,
+    "operatorReportedPcOff": {
+      "date": "2026-10-10",
+      "timezone": "Asia/Jakarta",
+      "powerOff": "before 15:00 WIB",
+      "powerOn": "around 20:00 WIB",
+      "powerOffExactTimeKnown": false,
+      "powerOnApproximate": true,
+      "source": "direct_user_replies_in_this_chat",
+      "cloudJobsStartedAt": "2026-10-10T11:10:38.000Z",
+      "cloudJobsFinishedAt": "2026-10-10T11:12:56.000Z",
+      "captureRestoreAndMaintenanceCovered": true,
+      "inferredFromLocalActivity": false,
+      "earlierMidnightInterval": "proposal_only_not_acceptance_evidence"
+    },
+    "authenticatedExpiredArtifactDeletionRunId": 38100726876,
+    "positiveDeletionAndAbsenceBeforeProviderExpiryVerified": true,
+    "historicalEvidencePreserved": true
+  },
+  "postPauseScheduledBackup": {
+    "runId": "38135415372",
+    "url": "https://github.com/BlizzardBlast/StackLens/actions/runs/38135415372",
+    "event": "schedule",
+    "sourceCommit": "6e3d544ff75e17b1a2f7d8981b536630444c0afb",
+    "pausedAt": "2026-10-11T01:11:15.172Z",
+    "jobs": [
+      {
+        "name": "capture",
+        "startedAt": "2026-10-11T11:24:09Z",
+        "completedAt": "2026-10-11T11:25:14Z"
+      },
+      {
+        "name": "verify offsite backup",
+        "startedAt": "2026-10-11T11:25:17Z",
+        "completedAt": "2026-10-11T11:26:08Z"
+      },
+      {
+        "name": "maintain",
+        "startedAt": "2026-10-11T11:26:11Z",
+        "completedAt": "2026-10-11T11:26:19Z"
+      }
+    ],
+    "captureOperationStartedAt": "2026-10-11T11:24:36.406Z",
+    "capturedAt": "2026-10-11T11:25:07.747Z",
+    "restoreFinishedAt": "2026-10-11T11:26:05.479Z",
+    "fingerprints": {
+      "public.analysis": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "public.analysis_report": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "public.analysis_delivery": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_jobs": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_job_queues": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "graphile_worker._private_tasks": {
+        "count": 1,
+        "sha256": "eaddbf42b40731ae9da6d935e4ea97c25436343a66c7ca0c3fe0c4c79c704f8c"
+      },
+      "graphile_worker.migrations": {
+        "count": 20,
+        "sha256": "8dbfd248477c0b1786982d64171449581cdc065a76904262b99a5e172ec09002"
+      }
+    },
+    "matchingTables": 7,
+    "fingerprintsMatched": true,
+    "archivedStrictReportReads": 0,
+    "retainedStrictReportReads": 0,
+    "apiReportReads": 0,
+    "populatedReportReadbackCovered": false,
+    "emptyReportCoverageExplicit": true,
+    "historicalRowsUnchanged": true,
+    "queueStarted": false,
+    "liveClaimsUnlocked": false,
+    "originalDatabaseContactedByRestore": false,
+    "ownedDatabaseRemoved": true,
+    "transientPrivateFilesRemoved": true,
+    "archiveSha256": "00430060b63c0a122dcf07be9dd6baf14e625bfc16dca72e5c79027814b93023",
+    "ownedArtifact": {
+      "id": 11700343623,
+      "authenticatedExpiresAt": "2026-10-12T11:25:07.747Z",
+      "providerExpiresAt": "2026-10-13T11:25:08Z",
+      "present": true,
+      "restoreEligible": true
+    },
+    "availabilityObservedAt": "2026-10-11T13:45:23.300Z",
+    "preservedUnexpiredOwnedArtifacts": [
+      {
+        "artifactId": 11700343623,
+        "runId": 38135415372,
+        "sourceCommit": "6e3d544ff75e17b1a2f7d8981b536630444c0afb",
+        "archiveSha256": "00430060b63c0a122dcf07be9dd6baf14e625bfc16dca72e5c79027814b93023",
+        "capturedAt": "2026-10-11T11:25:07.747Z",
+        "authenticatedExpiresAt": "2026-10-12T11:25:07.747Z",
+        "providerExpiresAt": "2026-10-13T11:25:08Z",
+        "providerExpired": false,
+        "restoreEligible": true
+      },
+      {
+        "artifactId": 11681049314,
+        "runId": 38084229958,
+        "sourceCommit": "3d4f0b9c1beda5fd4ef4fcbf916175945db15a68",
+        "archiveSha256": "d8b4327e14c9176ef9b09d17e276da8bf0048a09b708dba4e937b70fa7b8161b",
+        "capturedAt": "2026-10-10T20:34:50.472Z",
+        "authenticatedExpiresAt": "2026-10-11T20:34:50.472Z",
+        "providerExpiresAt": "2026-10-12T20:34:51Z",
+        "providerExpired": false,
+        "restoreEligible": true
+      }
+    ],
+    "availabilityIsDatedObservation": true
+  },
+  "oldCodexBackupScheduler": {
+    "automationId": "stacklens-encrypted-preview-backups",
+    "status": "DELETED",
+    "pausedAt": "2026-10-11T01:11:15.172Z",
+    "deletionToolConfirmedAt": "2026-10-11T13:48:40Z",
+    "configurationAbsenceConfirmedAt": "2026-10-11T13:50:11.476Z",
+    "changedThroughAutomationTool": true,
+    "deleteStatus": "deleted",
+    "configurationAbsent": true,
+    "historicalResultsReadableAfterDeletion": true,
+    "privateArchiveAndReferencedKeyFileInventoryUnchanged": true,
+    "privateFileContentPublished": false
+  },
+  "temporaryFollowupRetirement": {
+    "automationId": "stacklens-offsite-handover",
+    "trigger": "verified_publication_of_this_milestone",
+    "action": "delete_configuration_through_automation_tool",
+    "preserveHistoricalResults": true,
+    "finalAppReadback": "record_outside_git_after_publication"
+  },
+  "remainingOperationalReleaseGate": "persistent_public_replacement_and_normal_provider_cutover_rollback",
+  "boundaries": {
+    "newBackupScheduleCreated": false,
+    "newHostingAccountCreated": false,
+    "sourcePrivilegesChanged": false,
+    "protectedManualRecoveryChanged": false,
+    "hostedRestorePerformed": false,
+    "publicRoutingChanged": false,
+    "credentialsOrRawReportsPublished": false
+  }
+}

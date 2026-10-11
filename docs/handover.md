@@ -2,14 +2,50 @@
 
 > **Prepared:** 2026-10-11\
 > **Architecture:** v0.1.26; requirements v0.1.4\
-> **Milestone:** Offsite scheduled, PC-off and authenticated expiry acceptance verified; old scheduler paused for rollback; configuration retirement awaits the next scheduled success\
-> **Branch:** `codex/offsite-backup-handover`, existing checkout; PRs #53/#54/#55 are merged; [PR #56](https://github.com/BlizzardBlast/StackLens/pull/56) records acceptance and pause; resolve its final checks and current main\
-> **Implementation base:** `3d4f0b9c1beda5fd4ef4fcbf916175945db15a68`; independently resolve current main and hosting revisions\
+> **Milestone:** Offsite handover accepted; post-pause scheduled capture/restore verified and old backup automation configuration deleted\
+> **Branch:** `codex/offsite-backup-retirement`, existing checkout; PRs #53–#56 merged; [PR #57](https://github.com/BlizzardBlast/StackLens/pull/57) records retirement; independently resolve its final checks and current main\
+> **Implementation base:** `6e3d544ff75e17b1a2f7d8981b536630444c0afb`; independently resolve current main and hosting revisions\
 > **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009/010, SEC-001/002/003/007, GOV-002/006/007
 
 ## Current handover
 
-### October 11 accepted offsite handover and rollback window
+### October 11 completed old backup configuration retirement
+
+Schedule-event [run `38135415372`](https://github.com/BlizzardBlast/StackLens/actions/runs/38135415372)
+on published main `6e3d544` starts capture at 18:24:09 WIB and actual capture at 18:24:36.406 WIB,
+after the old scheduler pause at 08:11:15.172 WIB. Capture, independent restore and maintenance
+finish by 18:26:19 WIB. Seven fingerprints match; historical rows remain unchanged, the queue
+stays stopped, copied claims stay locked, restore contacts no source database and owned cleanup
+completes. Archived/retained/API report coverage is explicitly zero. The earlier populated scheduled
+and qualified operator-reported PC-off evidence below stays preserved.
+
+At 20:44–20:45 WIB, a complete authenticated inventory and direct readback confirm two unexpired
+owned archives. New artifact `11700343623` is eligible until October 12 18:25:07.747 WIB, with provider
+retention until October 13 18:25:08 WIB. The older eligible archive keeps its original October 12
+03:34:50.472 WIB deadline. These dated observations do not replace current authenticated presence
+and verification checks before recovery.
+
+The app tool deletes `stacklens-encrypted-preview-backups` configuration at October 11 20:48:40 WIB.
+Absence is confirmed; historical results stay readable, private archive/key file inventories are
+unchanged and the original populated/PC-off record is preserved byte for byte. See the
+[retirement evidence](implementation/release-evidence/2026-10-11-offsite-backup-retirement.json).
+Do not resume or recreate the old schedule. The existing main-only cloud capture at 00:17/12:17 WIB
+and hourly maintenance continue with approved custody; protected manual recovery stays separate.
+
+Finish this milestone's final-head quality, portable/offsite fixture, review-thread and mergeability
+gates before publication. Resolve current main and source hashes independently, recheck latest
+backup eligibility, then delete the temporary `stacklens-offsite-handover` configuration through
+the app tool and retain historical results and final readback outside Git. The milestone contains
+the complete handover and requires no later documentation PR for an unknown squash SHA.
+
+Next operational work is persistent public replacement and normal-provider cutover/rollback using
+the existing resources and [persistent recovery runbook](implementation/persistent-preview-recovery.md).
+Fresh fencing/drained evidence, exact paired destinations, eligible recovery, normal delivery and
+rollback still need verification under the applicable approval scope. This retirement introduces
+no hosting account, source grant, hosted restore, claim unlock or public route change. Managed Free
+restore, general capacity, Function suspension and user-deferred device/spoken checks remain separate.
+
+### October 11 accepted offsite handover and rollback window (historical)
 
 Schedule-event [run `38047478190`](https://github.com/BlizzardBlast/StackLens/actions/runs/38047478190)
 on published main `3d4f0b9` passes capture and independent quarantined restore: seven matching
