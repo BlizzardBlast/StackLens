@@ -11,6 +11,33 @@ function packument(name: string): Response {
 }
 
 describe("Worker provider lifecycle [FR-003, NFR-008, NFR-009]", () => {
+  it("cancels a pending private credential lookup before transport [FR-100]", async () => {
+    const controller = new AbortController();
+    let lookupSignal: AbortSignal | undefined;
+    let finish: ((token: string) => void) | undefined;
+    const getToken = vi.fn<(signal: AbortSignal) => Promise<string>>((signal) => {
+      lookupSignal = signal;
+      return new Promise((resolve) => {
+        finish = resolve;
+      });
+    });
+    const fetchImpl = vi.fn<typeof fetch>();
+    const providers = createWorkerAnalysisDependencies(controller.signal, undefined, fetchImpl, {
+      repositoryUrl: "https://github.com/acme/demo",
+      getToken,
+    });
+    const result = providers.githubRepositoryProvider.fetch({
+      repositoryUrl: "https://github.com/acme/demo",
+    });
+    const settled = Promise.allSettled([result]);
+    await vi.waitFor(() => expect(getToken).toHaveBeenCalledOnce());
+    controller.abort();
+    expect((await settled)[0]?.status).toBe("rejected");
+    expect(lookupSignal?.aborted).toBe(true);
+    finish?.("late-synthetic-token");
+    await Promise.resolve();
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
   it("serializes full npm responses while preserving input order", async () => {
     let release: (() => void) | undefined;
     const first = new Promise<void>((resolve) => {

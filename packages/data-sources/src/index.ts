@@ -9,6 +9,7 @@ export {
   GITHUB_PROVIDER_ID,
   GITHUB_REST_API_VERSION,
   GITHUB_WEB_BASE_URL,
+  GitHubConfigurationError,
   GitHubRepositoryAdapter,
   githubBlobApiUrl,
   githubCommitApiUrl,

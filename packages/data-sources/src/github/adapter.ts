@@ -139,7 +139,9 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
   readonly id = GITHUB_PROVIDER_ID;
 
   readonly #fetchImpl: typeof fetch;
+  readonly #signal: AbortSignal | undefined;
   readonly #authToken: string | undefined;
+  readonly #authorizedAccess: GitHubAdapterOptions["authorizedAccess"];
   readonly #now: () => string;
   readonly #timeoutMs: number;
   readonly #maxResponseBytes: number;
@@ -150,7 +152,17 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
   constructor(options: GitHubAdapterOptions = {}) {
     this.#fetchImpl = options.fetchImpl ?? globalThis.fetch;
+    this.#signal = options.signal;
     this.#authToken = validateAuthToken(options.authToken);
+    this.#authorizedAccess = options.authorizedAccess;
+    if (
+      options.authorizedAccess !== undefined &&
+      (options.authToken !== undefined ||
+        parsePublicGitHubRepositoryUrl(options.authorizedAccess.repositoryUrl) === undefined)
+    )
+      throw new GitHubConfigurationError(
+        "Connected acquisition requires one valid repository and no shared token.",
+      );
     this.#now = options.now ?? (() => new Date().toISOString());
     this.#timeoutMs = validatePositiveInteger(
       options.timeoutMs ?? GITHUB_DEFAULT_TIMEOUT_MS,
@@ -198,6 +210,16 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
       );
     }
 
+    if (
+      this.#authorizedAccess !== undefined &&
+      parsePublicGitHubRepositoryUrl(
+        this.#authorizedAccess.repositoryUrl,
+      )?.canonicalUrl.toLowerCase() !== parsedRepository.canonicalUrl.toLowerCase()
+    )
+      throw new GitHubConfigurationError(
+        "Connected acquisition repository binding does not match.",
+      );
+
     const requestedRef = validateGitHubRef(request.ref);
 
     if (request.ref !== undefined && requestedRef === undefined) {
@@ -212,8 +234,12 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
     }
 
     const client = new GitHubRequestClient({
+      ...(this.#signal === undefined ? {} : { signal: this.#signal }),
       fetchImpl: this.#fetchImpl,
       authToken: this.#authToken,
+      ...(this.#authorizedAccess === undefined
+        ? {}
+        : { getToken: this.#authorizedAccess.getToken }),
       timeoutMs: this.#timeoutMs,
       maxResponseBytes: this.#maxResponseBytes,
       maxRequests: this.#maxRequests,
@@ -229,7 +255,11 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
       const payload = await client.getJson(repositoryEndpoint, "repository");
 
       try {
-        repository = parseRepositoryPayload(payload, parsedRepository);
+        repository = parseRepositoryPayload(
+          payload,
+          parsedRepository,
+          this.#authorizedAccess !== undefined,
+        );
       } catch (error) {
         if (error instanceof GitHubRequestError) {
           throw error;

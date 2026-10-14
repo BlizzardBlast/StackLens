@@ -10,10 +10,12 @@ import {
 } from "graphile-worker";
 import type { Pool } from "pg";
 
+import { connectedGitHubToken, connectionKey, GitHubConnectionError } from "@stacklens/github-auth";
 import {
   createStackLensDatabase,
   createStackLensPool,
   DrizzleAnalysisRepository,
+  DrizzleGitHubConnectionStore,
   migrateStackLensDatabase,
   type StackLensPoolOptions,
 } from "@stacklens/persistence";
@@ -30,6 +32,7 @@ import { observeShutdownStage, type WorkerShutdownProgress } from "./shutdown.js
 import { createRepositoryAnalysisTaskList } from "./task.js";
 
 export interface WorkerRuntimeOptions {
+  readonly githubSessionKey?: string;
   readonly connectionString: string;
   readonly concurrency?: number;
   readonly databasePoolOptions?: StackLensPoolOptions;
@@ -63,6 +66,7 @@ export async function startStackLensWorker(
 
   try {
     const database = createStackLensDatabase(pool);
+    if (options.githubSessionKey !== undefined) connectionKey(options.githubSessionKey);
     await migrateStackLensDatabase(database);
     await runMigrations({ pgPool: pool });
 
@@ -72,6 +76,7 @@ export async function startStackLensWorker(
 
     try {
       const repository = new DrizzleAnalysisRepository(database);
+      const connections = new DrizzleGitHubConnectionStore(database);
       const jobAdder: GraphileJobAdder = {
         async addJob(identifier, payload, jobOptions) {
           return workerUtils.addJob(identifier, payload, jobOptions);
@@ -93,6 +98,33 @@ export async function startStackLensWorker(
           ),
           createAnalysisDependencies: (signal) =>
             createWorkerAnalysisDependencies(signal, options.githubToken),
+          createConnectedAnalysisDependencies(analysis, signal) {
+            if (
+              options.githubSessionKey === undefined ||
+              analysis.ownerGithubId === undefined ||
+              analysis.githubConnectionId === undefined
+            )
+              throw new GitHubConnectionError();
+            const key = options.githubSessionKey,
+              owner = analysis.ownerGithubId,
+              connectionId = analysis.githubConnectionId;
+            return createWorkerAnalysisDependencies(signal, undefined, fetch, {
+              repositoryUrl: analysis.repositoryUrl,
+              async getToken(lookupSignal) {
+                signal.throwIfAborted();
+                const token = await connectedGitHubToken(
+                  connections,
+                  key,
+                  owner,
+                  connectionId,
+                  undefined,
+                  lookupSignal,
+                );
+                signal.throwIfAborted();
+                return token;
+              },
+            });
+          },
         });
 
       const events = new EventEmitter() as WorkerEvents;
@@ -111,6 +143,7 @@ export async function startStackLensWorker(
       if (options.retentionCleanup ?? true) {
         retentionPump = startAnalysisRetentionPump({
           repository,
+          purgeExpiredConnections: (now, signal) => connections.purgeExpired(now, signal),
           ...(options.onRetentionError === undefined ? {} : { onError: options.onRetentionError }),
         });
       }

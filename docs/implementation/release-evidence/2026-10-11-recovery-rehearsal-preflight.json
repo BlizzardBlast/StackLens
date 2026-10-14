@@ -1,0 +1,235 @@
+{
+  "status": "preflight_complete_live_execution_gated",
+  "preparedOn": "2026-10-11",
+  "timezone": "Asia/Jakarta",
+  "recordedAt": "2026-10-11T14:33:49.451Z",
+  "requirements": [
+    "FR-003",
+    "FR-004",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "NFR-008",
+    "NFR-009",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-007",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "source": {
+    "status": "readonly_source_preflight_verified",
+    "observedAt": "2026-10-11T14:22:11.893Z",
+    "tlsVerified": true,
+    "postgresMajor": 18,
+    "sourceOwnerCanCreateDatabase": true,
+    "sourceOwnerCanCreateRole": true,
+    "sourceOwnerSuperuser": false,
+    "endpointBindingSha256": "a123f89264d01ac3a589dfe72be3c6f077588b362a4f9aaaa8c782a899bf4f59",
+    "counts": {
+      "inflight": 0,
+      "reports": 0,
+      "queue_jobs": 0,
+      "locked_jobs": 0,
+      "pending_delivery": 0,
+      "api_clients": 0,
+      "source_owner_clients": 0
+    },
+    "originalComputeFenced": false,
+    "drainedSnapshotCaptured": false,
+    "sourceRowsChanged": false,
+    "privilegesChanged": false
+  },
+  "publicEndpoints": {
+    "observedAt": "2026-10-11T14:19:04.934Z",
+    "requests": [
+      {
+        "url": "https://stacklens-api.vercel.app/openapi.json",
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "openapi": "3.1.0"
+      },
+      {
+        "url": "https://project-q766o.vercel.app/openapi.json",
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "openapi": "3.1.0"
+      },
+      {
+        "url": "https://stacklens-web.vercel.app/openapi.json",
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "openapi": "3.1.0"
+      },
+      {
+        "url": "https://stacklens-web.vercel.app/",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8"
+      }
+    ],
+    "newAnalysesSubmitted": 0,
+    "settingsChanged": false
+  },
+  "protectedManualRecovery": {
+    "observedAt": "2026-10-11T14:30:19.643Z",
+    "mainSha": "e552076f47dd68a67347a4250c5f067287f00abd",
+    "workflowState": "active",
+    "requiredReviewerCount": 1,
+    "preventSelfReview": false,
+    "customBranchPolicies": true,
+    "deploymentBranchPatterns": [
+      "main"
+    ],
+    "sourceFiles": [
+      {
+        "path": ".github/workflows/preview-recovery.yml",
+        "sha256": "decffe3278d78010774c0a4739a7390cbaebf06472a44a678abece7f1177ed69",
+        "matchesPublishedMain": true
+      },
+      {
+        "path": "scripts/operations/persistent-recovery.mjs",
+        "sha256": "c4abe3fddf243dc16a5a598142f709c2631c9abebe54cb833eb809fcc8ecf8b0",
+        "matchesPublishedMain": true
+      }
+    ],
+    "settingsChanged": false,
+    "workflowsDispatched": 0,
+    "secretValuesRead": false
+  },
+  "browserObservations": {
+    "observedOn": "2026-10-11",
+    "method": "signed_in_visible_dashboard_and_unsubmitted_project_form",
+    "aiven": {
+      "serviceCount": 1,
+      "service": "stacklens-preview-pg",
+      "project": "stacklens-preview",
+      "status": "Running",
+      "plan": "Free-1-1gb",
+      "cpu": 1,
+      "ramGb": 1,
+      "storageGb": 1,
+      "cloud": "DigitalOcean",
+      "region": "Bangalore"
+    },
+    "vercelApi": {
+      "project": "stacklens-api",
+      "productionStatus": "Ready",
+      "mainCommitPrefix": "e552076",
+      "deployment": "FCbF31AGcTLr2XQwcuZ6uN5e3hit"
+    },
+    "vercelWeb": {
+      "project": "stacklens",
+      "productionStatus": "Ready",
+      "mainCommitPrefix": "e552076",
+      "deployment": "5e3wY2DadAzEamp9cdt6En5mq99Q"
+    },
+    "silly": {
+      "service": "stacklens-worker-preview",
+      "server": "60761d98",
+      "status": "Running",
+      "sampledMemoryMib": 132.11,
+      "memoryLimitMib": 256,
+      "sampledDiskMib": 65.07,
+      "diskLimitMib": 512,
+      "loadedModuleHashesVerifiedThisPreflight": false
+    },
+    "neon": {
+      "existingProjectCount": 0,
+      "targetEndpointAllocated": false,
+      "inspectedForm": {
+        "plan": "Free",
+        "postgresMajor": 18,
+        "availableSelectedRegion": "aws-ap-southeast-1",
+        "storageGbAdvertised": 1,
+        "autoscaleMaxCu": 2,
+        "branchesPerProject": 10,
+        "optionalServicesEnabled": false,
+        "submitted": false,
+        "closed": true
+      }
+    },
+    "wispbyte": {
+      "service": "stacklens-worker-recovery",
+      "server": "04101f5c",
+      "status": "Offline",
+      "plan": "Free",
+      "acceptedIndependentWorker": false,
+      "credentialsTransferred": false
+    }
+  },
+  "neonPlanDocumentation": {
+    "method": "Context7_primary_neondatabase_website_documentation",
+    "source": "https://github.com/neondatabase/website/blob/main/content/docs/introduction/plans.md",
+    "freeCuHoursPerProjectPerMonth": 100,
+    "idleSuspendMinutes": 5,
+    "storageGbDocumented": 0.5,
+    "storageDisagreesWithSignedInForm": true,
+    "allocatedLimitsMustBeVerified": true
+  },
+  "rollbackArtifacts": [
+    {
+      "name": "worker-shutdown.tar.gz",
+      "milestone": "PR #48",
+      "bytes": 16826528,
+      "sha256": "c648c3f0537dcccb69a085a32703d9f64c54d6940393c4473039f24a55ad5439"
+    },
+    {
+      "name": "worker-capacity-pr46.tar.gz",
+      "milestone": "PR #46",
+      "bytes": 16824765,
+      "sha256": "747d7f2a1ca2ca5042f9b91e32304bc4ef36ed970a899178a044eb9462722454"
+    }
+  ],
+  "protectedPortableKey": {
+    "present": true,
+    "expectedLengthVerified": true,
+    "keyBytesExposed": false
+  },
+  "executionGates": {
+    "independentPersistentWorkerAvailable": false,
+    "independentDatabaseProvisioned": false,
+    "currentWorkerModuleIdentityVerified": false,
+    "exactNewCredentialDestinationsApproved": false,
+    "fencedDrainedPortableCaptureAvailable": false,
+    "liveCutoverApprovedByThisPlanningTask": false,
+    "liveRehearsalExecuted": false,
+    "persistentComputeLossAcceptance": false
+  },
+  "decision": "defer_allocation_until_an_exercise_needs_it_do_not_repeat_temporary_database_proof_as_compute_loss_acceptance",
+  "changes": {
+    "sourceRows": false,
+    "privileges": false,
+    "secretCustody": false,
+    "publicRouting": false,
+    "hostedResourcesCreated": 0,
+    "newHostingAccounts": 0,
+    "newSchedules": 0,
+    "analysesSubmitted": 0
+  },
+  "coverageLimits": [
+    "online_read_only_counts_are_not_executor_fencing",
+    "dashboard_ready_is_not_fresh_job_delivery",
+    "rollback_file_hashes_are_not_current_worker_module_hashes",
+    "no_current_neon_target",
+    "no_accepted_independent_persistent_worker",
+    "no_live_cutover_or_rollback_performed"
+  ],
+  "historicalEvidencePreserved": [
+    "2026-10-04-independent-recovery.json",
+    "2026-10-11-offsite-backup-handover.json",
+    "2026-10-11-offsite-backup-retirement.json"
+  ],
+  "documentationValidation": {
+    "status": "documentation_preflight_validated",
+    "localLinksVerified": 143,
+    "historicalEvidencePreserved": 3,
+    "privacyBoundaryValidated": true,
+    "repositoryFormatCheck": "passed",
+    "formatterMatchedFiles": 352,
+    "documentationExcludedByRepositoryFormatter": true,
+    "diffWhitespaceCheck": "passed",
+    "fullRuntimeSuiteRunForDocumentationChange": false
+  }
+}

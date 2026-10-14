@@ -1,4 +1,4 @@
-import { and, eq, isNull, notInArray, or, sql } from "drizzle-orm";
+import { and, eq, getTableColumns, isNull, notInArray, or, sql } from "drizzle-orm";
 
 import type { StackLensDatabase } from "./database.js";
 import { analysisDeliveries, analysisReports, analyses } from "./schema.js";
@@ -14,6 +14,13 @@ import type {
 } from "./types.js";
 
 const TERMINAL_STATUSES = ["completed", "completed_with_limitations", "failed"] as const;
+
+// The same reader serves migrated tables and pre-FR-100 tables during reader-first rollout.
+const analysisReadColumns = {
+  ...getTableColumns(analyses),
+  ownerGithubId: sql<string | null>`pg_catalog.to_jsonb(${analyses})->>'owner_github_id'`,
+  githubConnectionId: sql<string | null>`pg_catalog.to_jsonb(${analyses})->>'github_connection_id'`,
+};
 
 interface ClaimedDeliveryRow {
   readonly analysis_id: string;
@@ -56,6 +63,8 @@ function compactRecord(row: typeof analyses.$inferSelect): RepositoryAnalysisRec
     id: row.id,
     inputType: row.inputType,
     repositoryUrl: row.repositoryUrl,
+    ...(row.ownerGithubId === null ? {} : { ownerGithubId: row.ownerGithubId }),
+    ...(row.githubConnectionId === null ? {} : { githubConnectionId: row.githubConnectionId }),
     ...(row.requestedRef === null ? {} : { requestedRef: row.requestedRef }),
     status: row.status,
     progressStage: row.progressStage,
@@ -78,6 +87,10 @@ function compactRecord(row: typeof analyses.$inferSelect): RepositoryAnalysisRec
 }
 
 export interface AnalysisRepository {
+  withOwner?<T>(
+    ownerGithubId: string | undefined,
+    operation: (repository: AnalysisRepository) => Promise<T>,
+  ): Promise<T>;
   createQueuedRepositoryAnalysis(
     input: CreateQueuedRepositoryAnalysis,
   ): Promise<RepositoryAnalysisRecord>;
@@ -116,7 +129,25 @@ export interface AnalysisRepository {
 }
 
 export class DrizzleAnalysisRepository implements AnalysisRepository {
-  constructor(private readonly database: StackLensDatabase) {}
+  constructor(
+    private readonly database: Pick<
+      StackLensDatabase,
+      "select" | "insert" | "update" | "delete" | "execute" | "transaction"
+    >,
+  ) {}
+
+  /** Transaction-local context cannot leak identity across pooled requests. */
+  async withOwner<T>(
+    ownerGithubId: string | undefined,
+    operation: (repository: AnalysisRepository) => Promise<T>,
+  ): Promise<T> {
+    return this.database.transaction(async (transaction) => {
+      await transaction.execute(
+        sql`SELECT pg_catalog.set_config('stacklens.owner_github_id', ${ownerGithubId ?? ""}, true)`,
+      );
+      return operation(new DrizzleAnalysisRepository(transaction));
+    });
+  }
 
   /** SEC-003: bounded cleanup never deletes queued/running claims or edits Graphile internals. */
   async purgeExpiredTerminalAnalyses(now: string, limit = 100): Promise<number> {
@@ -141,15 +172,32 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
     return result.rows.length;
   }
 
-  async createQueuedRepositoryAnalysis(
-    input: CreateQueuedRepositoryAnalysis,
-  ): Promise<RepositoryAnalysisRecord> {
+  async #insertQueuedAnalysis(input: CreateQueuedRepositoryAnalysis): Promise<void> {
+    if (input.ownerGithubId === undefined && input.githubConnectionId === undefined) {
+      // Drizzle includes every modeled column even for undefined values. Explicit legacy columns
+      // keep anonymous submissions working before the Worker installs ownership columns.
+      await this.database.execute(sql`
+        INSERT INTO analysis (
+          id, input_type, repository_url, requested_ref, status, progress_stage,
+          created_at, updated_at, retention_expires_at
+        ) VALUES (
+          ${input.id}, 'repository', ${input.repositoryUrl}, ${input.requestedRef ?? null},
+          'queued', 'queued', ${input.createdAt}::timestamptz, ${input.createdAt}::timestamptz,
+          ${input.retentionExpiresAt ?? null}::timestamptz
+        ) ON CONFLICT (id) DO NOTHING
+      `);
+      return;
+    }
     await this.database
       .insert(analyses)
       .values({
         id: input.id,
         inputType: "repository",
         repositoryUrl: input.repositoryUrl,
+        ...(input.ownerGithubId === undefined ? {} : { ownerGithubId: input.ownerGithubId }),
+        ...(input.githubConnectionId === undefined
+          ? {}
+          : { githubConnectionId: input.githubConnectionId }),
         ...(input.requestedRef === undefined ? {} : { requestedRef: input.requestedRef }),
         status: "queued",
         progressStage: "queued",
@@ -160,7 +208,12 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
           : { retentionExpiresAt: input.retentionExpiresAt }),
       })
       .onConflictDoNothing({ target: analyses.id });
+  }
 
+  async createQueuedRepositoryAnalysis(
+    input: CreateQueuedRepositoryAnalysis,
+  ): Promise<RepositoryAnalysisRecord> {
+    await this.#insertQueuedAnalysis(input);
     const record = await this.findAnalysis(input.id);
 
     if (record === undefined) {
@@ -169,7 +222,9 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
 
     if (
       record.repositoryUrl !== input.repositoryUrl ||
-      record.requestedRef !== input.requestedRef
+      record.requestedRef !== input.requestedRef ||
+      record.ownerGithubId !== input.ownerGithubId ||
+      record.githubConnectionId !== input.githubConnectionId
     ) {
       throw new Error("Analysis identifier is already bound to different repository input.");
     }
@@ -181,25 +236,10 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
     input: CreateQueuedRepositoryAnalysis,
   ): Promise<RepositoryAnalysisRecord> {
     return this.database.transaction(async (transaction) => {
-      await transaction
-        .insert(analyses)
-        .values({
-          id: input.id,
-          inputType: "repository",
-          repositoryUrl: input.repositoryUrl,
-          ...(input.requestedRef === undefined ? {} : { requestedRef: input.requestedRef }),
-          status: "queued",
-          progressStage: "queued",
-          createdAt: input.createdAt,
-          updatedAt: input.createdAt,
-          ...(input.retentionExpiresAt === undefined
-            ? {}
-            : { retentionExpiresAt: input.retentionExpiresAt }),
-        })
-        .onConflictDoNothing({ target: analyses.id });
+      await new DrizzleAnalysisRepository(transaction).#insertQueuedAnalysis(input);
 
       const [row] = await transaction
-        .select()
+        .select(analysisReadColumns)
         .from(analyses)
         .where(eq(analyses.id, input.id))
         .limit(1);
@@ -210,7 +250,9 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
 
       if (
         row.repositoryUrl !== input.repositoryUrl ||
-        row.requestedRef !== (input.requestedRef ?? null)
+        row.requestedRef !== (input.requestedRef ?? null) ||
+        row.ownerGithubId !== (input.ownerGithubId ?? null) ||
+        row.githubConnectionId !== (input.githubConnectionId ?? null)
       ) {
         throw new Error("Analysis identifier is already bound to different repository input.");
       }
@@ -349,7 +391,12 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
   }
 
   async findAnalysis(id: string): Promise<RepositoryAnalysisRecord | undefined> {
-    const [row] = await this.database.select().from(analyses).where(eq(analyses.id, id)).limit(1);
+    // Read-only recovery of pre-FR-100 archives must not require altering their fingerprinted rows.
+    const [row] = await this.database
+      .select(analysisReadColumns)
+      .from(analyses)
+      .where(eq(analyses.id, id))
+      .limit(1);
     return row === undefined ? undefined : compactRecord(row);
   }
 

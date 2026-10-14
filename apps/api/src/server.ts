@@ -7,6 +7,7 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 
+import { registerGitHubAuthRoutes } from "./github-auth-http.js";
 import { ApiErrorSchema } from "./http-contracts.js";
 import {
   registerQuickManifestAnalysisRoutes,
@@ -63,11 +64,25 @@ function errorCode(error: unknown): string | undefined {
 
 export async function createStackLensApi(options: StackLensApiOptions): Promise<FastifyInstance> {
   const app = Fastify({
-    logger: options.logger ?? false,
+    // SEC-007: cookies, authorization codes, private URLs and analysis identifiers never enter request logs.
+    logger: options.logger
+      ? {
+          serializers: {
+            req(request: { method: string }) {
+              return { method: request.method };
+            },
+          },
+        }
+      : false,
   });
 
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
+
+  // SEC-007: Fastify's default 404 message includes the URL outside the request serializer.
+  app.setNotFoundHandler((_request, reply) =>
+    reply.code(404).send({ code: "not_found", message: "The requested route was not found." }),
+  );
 
   // SEC-003/NFR-008: anonymous input, progress and reports must not enter browser/CDN caches.
   app.addHook("onSend", async (_request, reply, payload) => {
@@ -113,6 +128,7 @@ export async function createStackLensApi(options: StackLensApiOptions): Promise<
   });
 
   registerRepositoryAnalysisRoutes(app, options);
+  registerGitHubAuthRoutes(app, options.githubConnections);
   registerQuickManifestAnalysisRoutes(app, options);
 
   app.get(

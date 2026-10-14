@@ -34,6 +34,8 @@ export interface RepositoryAnalysisRecord {
   readonly id: string;
   readonly inputType: "repository";
   readonly repositoryUrl: string;
+  readonly ownerGithubId?: string;
+  readonly githubConnectionId?: string;
   readonly requestedRef?: string;
   readonly status: AnalysisStatus;
   readonly progressStage: AnalysisProgressStage;
@@ -62,6 +64,8 @@ export interface StoredAnalysisReport {
 export interface CreateQueuedRepositoryAnalysis {
   readonly id: string;
   readonly repositoryUrl: string;
+  readonly ownerGithubId?: string;
+  readonly githubConnectionId?: string;
   readonly requestedRef?: string;
   readonly createdAt: string;
   readonly retentionExpiresAt?: string;

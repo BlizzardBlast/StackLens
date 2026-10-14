@@ -33,3 +33,4 @@ export {
 
 export { parsePublicGitHubRepositoryUrl } from "./github/url.js";
 export { GitHubRepositoryAdapter } from "./github/adapter.js";
+export { GitHubConfigurationError } from "./github/errors.js";

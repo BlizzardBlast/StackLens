@@ -11,14 +11,75 @@ const currentReport = reportV2Fixture();
 test.beforeEach(async ({ page }) => {
   // All API calls stay synthetic, including unexpected ones. A test cannot submit a live job.
   await page.route("**/v1/**", (route) =>
-    route.fulfill({
-      status: 500,
-      json: { code: "unexpected_request", message: "Unexpected test API request." },
-    }),
+    route.request().url().endsWith("/v1/auth/session")
+      ? route.fulfill({ json: { enabled: false } })
+      : route.fulfill({
+          status: 500,
+          json: { code: "unexpected_request", message: "Unexpected test API request." },
+        }),
   );
   expect(await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches)).toBe(
     true,
   );
+});
+
+test("FR-100, SEC-005/007, NFR-006/007: explicit connected submission and private report removal on sign-out", async ({
+  page,
+}) => {
+  let connected = true;
+  await page.route("**/v1/auth/session", (route) =>
+    route.fulfill({
+      json: connected
+        ? {
+            enabled: true,
+            installationUrl: "https://github.com/apps/stacklens-test/installations/new",
+            csrfToken: "a".repeat(43),
+            user: { login: "alice", expiresAt: new Date(Date.now() + 3600000).toISOString() },
+          }
+        : {
+            enabled: true,
+            installationUrl: "https://github.com/apps/stacklens-test/installations/new",
+          },
+    }),
+  );
+  await page.route("**/v1/analyses/github", (route) => {
+    expect(route.request().headers()["x-stacklens-csrf"]).toBe("a".repeat(43));
+    expect(route.request().postDataJSON()).toEqual({ repositoryUrl });
+    return route.fulfill({ status: 202, json: { analysisId } });
+  });
+  await page.route(`**/v1/analyses/${analysisId}`, (route) =>
+    route.fulfill(
+      connected
+        ? {
+            json: {
+              analysisId,
+              repositoryUrl,
+              access: "connected",
+              status: "completed",
+              progressStage: "completed",
+              createdAt: "2026-10-12T00:00:00Z",
+              updatedAt: "2026-10-12T00:00:01Z",
+              report: currentReport,
+            },
+          }
+        : { status: 404, json: { code: "analysis_not_found", message: "Analysis was not found." } },
+    ),
+  );
+  await page.route("**/v1/auth/sign-out", (route) => {
+    connected = false;
+    return route.fulfill({ json: { signedOut: true } });
+  });
+  await page.goto("/");
+  await expect(page.getByText("Connected as")).toBeVisible();
+  await page.getByRole("checkbox", { name: "Use my GitHub connection for this analysis" }).check();
+  await page.getByLabel("Connected GitHub repository").fill(repositoryUrl);
+  await page.getByRole("button", { name: "Analyze repository", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Analysis report", exact: true })).toBeVisible();
+  await expectNoOverflow(page);
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Analysis report", exact: true })).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByRole("alert")).toContainText("Analysis was not found");
 });
 
 async function expectNoOverflow(page: Page) {

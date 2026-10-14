@@ -5,10 +5,12 @@ import {
   type RepositoryAnalysisDependencies,
   type RepositoryAnalysisResult,
 } from "@stacklens/analysis-orchestration";
+import { GitHubConnectionError } from "@stacklens/github-auth";
 import {
   isTerminalAnalysisStatus,
   type AnalysisFailureSummary,
   type AnalysisRepository,
+  type RepositoryAnalysisRecord,
 } from "@stacklens/persistence";
 import {
   durableStageForProgress,
@@ -22,6 +24,10 @@ export type RepositoryAnalyzer = (
 ) => Promise<RepositoryAnalysisResult>;
 
 export interface RepositoryAnalysisTaskDependencies {
+  readonly createConnectedAnalysisDependencies?: (
+    analysis: RepositoryAnalysisRecord,
+    signal: AbortSignal,
+  ) => Omit<RepositoryAnalysisDependencies, "onProgress">;
   readonly repository: AnalysisRepository;
   readonly analysisDependencies: Omit<RepositoryAnalysisDependencies, "onProgress">;
   readonly createAnalysisDependencies?: (
@@ -93,9 +99,22 @@ export async function executeRepositoryAnalysisJob(
   try {
     job.abortSignal?.throwIfAborted();
     const analysisDependencies =
-      job.abortSignal !== undefined && dependencies.createAnalysisDependencies !== undefined
-        ? dependencies.createAnalysisDependencies(job.abortSignal)
-        : dependencies.analysisDependencies;
+      existing.ownerGithubId !== undefined || existing.githubConnectionId !== undefined
+        ? (() => {
+            if (
+              existing.githubConnectionId === undefined ||
+              existing.ownerGithubId === undefined ||
+              dependencies.createConnectedAnalysisDependencies === undefined
+            )
+              throw new GitHubConnectionError();
+            return dependencies.createConnectedAnalysisDependencies(
+              existing,
+              job.abortSignal ?? new AbortController().signal,
+            );
+          })()
+        : job.abortSignal !== undefined && dependencies.createAnalysisDependencies !== undefined
+          ? dependencies.createAnalysisDependencies(job.abortSignal)
+          : dependencies.analysisDependencies;
     result = await analyze(
       {
         analysisId: existing.id,
@@ -116,9 +135,23 @@ export async function executeRepositoryAnalysisJob(
       },
     );
     job.abortSignal?.throwIfAborted();
-  } catch {
+  } catch (error) {
     const updatedAt = now();
     const interrupted = job.abortSignal?.aborted === true;
+    if (!interrupted && error instanceof GitHubConnectionError) {
+      await dependencies.repository.fail({
+        id: existing.id,
+        jobId: job.id,
+        failureSummary: failureSummary(
+          "github_connection_unavailable",
+          "Reconnect GitHub and submit a new analysis with repository access.",
+          false,
+        ),
+        updatedAt,
+        completedAt: updatedAt,
+      });
+      return;
+    }
     const summary = failureSummary(
       interrupted ? "repository_analysis_interrupted" : "repository_analysis_unexpected_failure",
       interrupted
@@ -144,6 +177,7 @@ export async function executeRepositoryAnalysisJob(
       failureSummary: summary,
       updatedAt,
     });
+    // oxlint-disable-next-line preserve-caught-error -- Provider causes may contain credentials or source; queue errors expose only the safe summary.
     throw new Error(summary.message);
   }
 

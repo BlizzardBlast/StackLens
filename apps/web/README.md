@@ -1,5 +1,13 @@
 # StackLens web
 
+FR-100 adds an optional same-origin GitHub connection panel and explicit connected-analysis
+checkbox. Anonymous public/quick modes remain available. Only the server receives GitHub access
+tokens; the browser holds cookie session/CSRF display state. Sign-out/expiry clear analysis queries,
+and private results use a session-partitioned cache and hide when the connection ends. Cached
+session expiry is checked before rendering, including the first render after an unobserved expiry.
+Native labeled controls, semantic alerts/status and existing token/Button primitives preserve accessible
+responsive behavior. Hosted activation is pending; see [GitHub connections](../../docs/implementation/github-connections.md).
+
 ## Workspace report presentation
 
 Both schema versions are runtime-validated using the shared union. Schema 2 renders supplied

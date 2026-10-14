@@ -364,6 +364,28 @@ await test(
       assert.equal(verified.queueStarted, false);
       assert.equal(verified.ownedDatabaseRemoved, true);
       assert.deepEqual(await restoreNames(), before);
+      const connectedBundle = join(directory, "connected-reports");
+      await captureOffsiteFixture({
+        environment,
+        bundleDirectory: connectedBundle,
+        identity: expected,
+        connectedReport: true,
+      });
+      const connected = await verifyOnlineBackup({
+        environment,
+        bundleDirectory: connectedBundle,
+        master: fixtureKey,
+        expected,
+      });
+      assert.equal(connected.matchingTables, 7);
+      assert.equal(connected.fingerprintsMatched, true);
+      assert.equal(connected.strictReportReads, 1);
+      assert.equal(connected.apiReportReads, 0);
+      assert.equal(connected.privateReportAccessDenied, 1);
+      assert.equal(connected.connectionCredentialsRestored, false);
+      assert.equal(connected.historicalRowsUnchanged, true);
+      assert.equal(connected.ownedDatabaseRemoved, true);
+      assert.deepEqual(await restoreNames(), before);
       const key = deriveArchiveKey(fixtureKey, expected);
       const { value, header } = authenticateOnlineBackup(
         await readFile(join(bundleDirectory, offsiteFiles[0])),

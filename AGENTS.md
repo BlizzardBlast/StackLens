@@ -2,6 +2,23 @@
 
 These instructions apply to automated coding agents working anywhere in this repository.
 
+## GitHub connection boundary (FR-100)
+
+`packages/github-auth` owns GitHub App state/PKCE, fixed callbacks, expiring opaque sessions and
+encrypted token lookup. API client secrets never go to Worker/browser; the independent data key
+stays server-side. Private work uses explicit owner-bound connections and never falls back to the
+public provider token. Protect status/report reads before loading reports and preserve database
+RLS/transaction-local identity. Use synthetic providers and owned local non-owner tests. Deploy
+private-aware readers before writers; enabled APIs must be restricted non-owner/non-BYPASSRLS.
+They must have no permanent schema/database CREATE or ownership of schemas, databases or connection
+storage. Validate required and forbidden effective table/column grants at activation. Credential
+reads/writes and expiry cleanup must have bounded checkout/I/O and cancellation; stop cancels
+credential cleanup while analysis ownership drains normally. Qualify catalog functions in privileged row reads. Check cached session expiry before
+rendering private content, including after an unobserved expiry.
+Keep connection credentials outside analysis backups, preserve private owner markers, and require
+anonymous private-report 404 in restores. See `docs/implementation/github-connections.md` before
+hosted registration, grants or activation. No repository writes are implemented by this milestone.
+
 ## Read before changing behavior
 
 Read the smallest relevant set of source-of-truth documents before editing code:

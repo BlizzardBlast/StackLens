@@ -137,6 +137,10 @@ connection-file publication on seven fingerprints, strict retained reports, expi
 drained queue. Normal tests verify local restore and rejected-copy cleanup. Silly rejects the
 second free Worker creation because capacity is unavailable; the original preview stays active.
 Persistent public replacement and normal-provider cutover/rollback are still unverified.
+The [October 11 recovery preflight and plan](docs/implementation/recovery-rehearsal-plan.md)
+confirms the original services are available, but the existing Neon account has no projects and
+there is no verified independent persistent Worker. Repeating a temporary database switch on the
+original compute would not close that gate; allocation and live cutover remain separately scoped.
 
 The [Worker lifecycle extension](docs/implementation/worker-lifecycle.md) adds source-free signal
 and cleanup-stage diagnostics plus a packaged Linux restart rehearsal. Normal panel SIGINT and
@@ -247,7 +251,41 @@ StackLens is intended to evolve into whole-repository intelligence covering:
 
 `dependencies → configuration → source → architecture → tests → CI/CD → security → performance → technical debt`
 
-Future product surfaces include authenticated/private GitHub analysis, history and monitoring, migration automation, CLI, GitHub automation, and IDE integration. See **FR-100 through FR-118** for accepted future requirements.
+FR-100 GitHub sign-in and private analysis are delivered through
+[PR #58](https://github.com/BlizzardBlast/StackLens/pull/58); hosted activation is pending.
+The read-only GitHub App flow uses explicit selected repository grants,
+server-side encrypted expiring credentials and owner-only results, while anonymous analysis remains
+available. See [GitHub connections](docs/implementation/github-connections.md) and ADR-0023 for the
+activation/rollback sequence. App registration, restricted grants, credential provisioning and
+live private-provider acceptance require that separate activation sequence.
+The local review fixes enforce actual ownership policy definitions, API roles without permanent
+schema/database CREATE or credential ownership, approved table/column grants, bounded cancellable
+credential reads/writes and cleanup, terminal
+revoked-access handling, sign-out/expiry cache isolation and safe unmatched-route logging.
+Privileged row reads explicitly select PostgreSQL built-ins to prevent function-overload execution.
+The [earlier review-fix evidence](docs/implementation/release-evidence/2026-10-13-github-connections-final-review-fixes.json)
+preserves the 718-test source snapshot. The latest
+[grant/deadline evidence](docs/implementation/release-evidence/2026-10-13-github-connections-grants-and-deadlines.json)
+preserves the passing 775-test source snapshot and real-lock shutdown verification. The latest
+callback fix accepts bounded standard authorization-error metadata while preserving cookie cleanup
+and fixed redirects. The [callback-fix evidence](docs/implementation/release-evidence/2026-10-14-github-connections-callback-errors.json)
+records the passing 781-test local quality gate, including six new regressions.
+The subsequent provider response-cleanup fix closes unread GitHub/npm/OSV error streams on request
+exit while preserving safe failure classifications. Nine native-fetch regressions verify stalled
+response closure against owned local servers. See the
+[response-cleanup evidence](docs/implementation/release-evidence/2026-10-14-provider-response-cleanup.json)
+for the passing 790-test local quality gate and owned-resource cleanup; earlier dated evidence
+remains intact.
+The pre-merge compatibility correction preserves anonymous writes during the readers-first rollout
+before the Worker installs ownership columns. Connected writes still require the migrated schema.
+The [legacy-write evidence](docs/implementation/release-evidence/2026-10-14-github-connections-legacy-writes.json)
+records the passing 794-test gate, restricted old-schema cases and compiled API probe.
+Use PR #58 for the publication and final-head CI outcome. Hosted feature activation and acceptance
+remain pending; independently verify current main and deployed revisions before proceeding.
+
+Subsequent product surfaces include saved repositories (FR-101), history/comparisons (FR-102),
+monitoring, migration automation, CLI, GitHub automation, and IDE integration. See **FR-101 through
+FR-118**. Persistent public compute-loss/cutover/rollback remains a separate operational gate.
 
 The intended product model is an **open-source core with a hosted SaaS experience** (**PRD-006**).
 

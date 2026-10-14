@@ -2,6 +2,14 @@
 
 These wireframes intentionally omit final colors, shadows, and detailed component styling. They validate hierarchy first.
 
+The FR-100 local implementation extends the repository input panel with an optional connection
+section and a native explicit-use checkbox above the URL. Connection identity/sign-out appears
+above read-grant and privacy copy; on narrow screens the actions wrap. A private report includes
+the same connection section before report content. Anonymous layouts remain the baseline below.
+The connection is hidden when deployment configuration is disabled; failed/expired connections
+use text alerts and owner-only results are cleared after sign-out. Hosted activation is pending.
+See [user flows](user-flows.md) and [the runbook](../implementation/github-connections.md).
+
 ## 1. Analyzer — desktop
 
 ```text

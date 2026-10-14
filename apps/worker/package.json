@@ -19,6 +19,7 @@
   "dependencies": {
     "@stacklens/analysis-orchestration": "workspace:*",
     "@stacklens/data-sources": "workspace:*",
+    "@stacklens/github-auth": "workspace:*",
     "@stacklens/persistence": "workspace:*",
     "@stacklens/repository-jobs": "workspace:*",
     "graphile-worker": "0.18.0",

@@ -259,6 +259,10 @@ async function recover() {
   assert.deepEqual(restored.restoredSnapshot, value.source);
   assert.equal(restored.queueStarted, false);
   pool = createStackLensPool(restored.connectionString, undefined, { max: 1 });
+  assert.equal(
+    (await pool.query("SELECT to_regnamespace('stacklens_auth') AS schema")).rows[0].schema,
+    null,
+  );
   const repository = repositoryFor(pool);
   // Hash stored reports after terminal expiry cleanup and before starting replacement runtimes.
   const historical = new Map();
@@ -298,9 +302,15 @@ async function recover() {
   const origin = await api.app.listen({ host: "127.0.0.1", port: 0 });
   const request = async (path, options) =>
     fetch(`${origin}${path}`, { ...options, signal: AbortSignal.timeout(10_000) });
-  let readbacks = 0;
+  let readbacks = 0,
+    privateDenied = 0;
   for (const id of historical.keys()) {
     const response = await request(`/v1/analyses/${id}`);
+    if ((await repository.findAnalysis(id)).ownerGithubId !== undefined) {
+      assert.equal(response.status, 404);
+      privateDenied++;
+      continue;
+    }
     assert.equal(response.status, 200);
     assert.match((await response.json()).status, /^completed/u);
     readbacks++;
@@ -341,6 +351,8 @@ async function recover() {
   evidence.expiredTerminalRowsRemoved = restored.expiredTerminalRowsRemoved;
   evidence.historicalReportsUnchanged = historical.size;
   evidence.httpReadbacks = readbacks + 1;
+  evidence.privateReportAccessDenied = privateDenied;
+  evidence.connectionCredentialsRestored = false;
   evidence.newDurableSubmissionCompleted = true;
   evidence.originalResourcesContactedDuringRecovery = false;
 }

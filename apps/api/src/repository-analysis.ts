@@ -23,6 +23,11 @@ export interface RepositoryAnalysisApplicationDependencies {
   readonly retentionHours?: number;
 }
 
+export interface ConnectedAnalysisOwner {
+  readonly ownerGithubId: string;
+  readonly githubConnectionId: string;
+}
+
 export interface RepositoryAnalysisValidationError {
   readonly code: "invalid_repository_url";
   readonly message: string;
@@ -47,6 +52,7 @@ export interface RepositoryAnalysisSnapshot {
 export async function submitRepositoryAnalysis(
   command: SubmitRepositoryAnalysisCommand,
   dependencies: RepositoryAnalysisApplicationDependencies,
+  connection?: ConnectedAnalysisOwner,
 ): Promise<SubmitRepositoryAnalysisResult> {
   const repository = parsePublicGitHubRepositoryUrl(command.repositoryUrl);
 
@@ -75,6 +81,7 @@ export async function submitRepositoryAnalysis(
     {
       analysisId,
       repositoryUrl: repository.canonicalUrl,
+      ...(connection === undefined ? {} : connection),
       createdAt,
       ...(retentionHours === undefined
         ? {}
@@ -99,10 +106,15 @@ export async function submitRepositoryAnalysis(
 export async function readRepositoryAnalysis(
   analysisId: string,
   repository: AnalysisRepository,
+  ownerGithubId?: string,
 ): Promise<RepositoryAnalysisSnapshot | undefined> {
   const analysis = await repository.findAnalysis(analysisId);
 
-  if (analysis === undefined) {
+  if (
+    analysis === undefined ||
+    (analysis.ownerGithubId !== undefined && analysis.ownerGithubId !== ownerGithubId) ||
+    (analysis.githubConnectionId !== undefined && analysis.ownerGithubId === undefined)
+  ) {
     return undefined;
   }
 
@@ -119,5 +131,9 @@ export async function readRepositoryAnalysis(
   // Retention may remove the analysis between reads. Recheck once so only a missing row
   // becomes not found; a surviving completed row without its report remains unavailable.
   const refreshedAnalysis = await repository.findAnalysis(analysisId);
-  return refreshedAnalysis === undefined ? undefined : { analysis: refreshedAnalysis };
+  return refreshedAnalysis === undefined ||
+    (refreshedAnalysis.ownerGithubId !== undefined &&
+      refreshedAnalysis.ownerGithubId !== ownerGithubId)
+    ? undefined
+    : { analysis: refreshedAnalysis };
 }

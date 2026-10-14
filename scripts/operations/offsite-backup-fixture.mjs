@@ -33,6 +33,7 @@ export async function captureOffsiteFixture({
   bundleDirectory,
   identity,
   expireAllReports = false,
+  connectedReport = false,
 }) {
   const url = requireLocalDatabase(environment.DATABASE_URL);
   const name = `stacklens_offsite_${randomUUID().replaceAll("-", "")}`;
@@ -79,6 +80,16 @@ export async function captureOffsiteFixture({
       await until(async () => (await repository.findAnalysis(id))?.status.startsWith("completed"));
     }
     const retainedHash = sha256(JSON.stringify((await repository.findReport(ids[0])).report));
+    if (connectedReport) {
+      await pool.query(
+        "UPDATE analysis SET owner_github_id='123', github_connection_id=$1 WHERE id=$2",
+        ["ab".repeat(32), ids[0]],
+      );
+      await pool.query(
+        "INSERT INTO stacklens_auth.github_connection VALUES ($1,'123','fixture','synthetic-ciphertext',now()+interval '8 hours')",
+        ["ab".repeat(32)],
+      );
+    }
     await pool.query(
       "UPDATE analysis SET retention_expires_at=now()-interval '1 hour' WHERE id=$1",
       [ids[1]],

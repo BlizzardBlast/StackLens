@@ -270,6 +270,8 @@ export class NpmRegistryAdapter implements EvidenceProvider<
         endpoint,
       );
     } finally {
+      // Close unread error bodies as well as completed requests; never leave cleanup to GC.
+      controller.abort();
       clearTimeout(timeout);
     }
   }

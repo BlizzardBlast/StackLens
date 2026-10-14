@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-13T23:46:53.133Z",
+  "milestone": "FR-100 authorization-error callback compatibility fix",
+  "status": "local_verified_uncommitted_hosted_activation_pending",
+  "requirements": [
+    "FR-100",
+    "SEC-003",
+    "SEC-007",
+    "NFR-005",
+    "NFR-006",
+    "GOV-002",
+    "GOV-003",
+    "GOV-007"
+  ],
+  "source": {
+    "branch": "codex/github-private-analysis",
+    "implementationBase": "e552076f47dd68a67347a4250c5f067287f00abd",
+    "workingTreeUncommitted": true,
+    "hashAlgorithm": "SHA-256",
+    "files": {
+      "packages/github-auth/src/crypto.ts": "e7641dadd9354ccdc9a185493b7ebfbc996047f2c84f636e82ccf6dc4d66aa87",
+      "packages/github-auth/src/github.ts": "cb586de4de5d881f2d1447c32ebed9545a3a683d42e0e1465835390f9344073b",
+      "packages/github-auth/src/service.ts": "cce963ba1db5448a886a0d04f76fce8f056268497ff0a20695062e20ebca2743",
+      "packages/persistence/src/migrate.ts": "601239d792964defccf489ed0ff072cfa8a4a349012fd57d0d0da3cbd5124844",
+      "packages/persistence/src/github-connections.ts": "46b6c0475647b38cd5d4f9808e5784895988d2df72e950e14e5f9863e03319a4",
+      "packages/persistence/src/repository.ts": "dc3d56d35b8bd98b47debab714c01cba2180169b290851a321707eed01e0473d",
+      "packages/persistence/src/schema.ts": "6723fc1cbf769ab6b7f22d542401ae0f8e6a3b14c519dfc7033cc916d6f46884",
+      "packages/data-sources/src/github/adapter.ts": "fdb951f3775e768ee589b3f14a73523f73a4a7ff3243d81a5b1c072bff0ec532",
+      "packages/data-sources/src/github/request.ts": "e29cbda27c4551a60b49786dd55b853d01b91f5c956b63a62b1c4eeff3976589",
+      "packages/data-sources/src/github/metadata.ts": "8294c26f08237dcc0c92496b0e235153d0df83933095807a22b1ff728061e695",
+      "packages/repository-jobs/src/enqueue.ts": "c29066d742630f537e2eca2f6dfa3a54d8caeb572e35d4e0dd862b6738b14a87",
+      "apps/api/src/github-auth-http.ts": "34a5092dce41a4e103f09f6705291bb06140da98d772b0d8555715e5268f721b",
+      "apps/api/src/repository-analysis-http.ts": "4842a8a7f6df22a5ea2c0f361e4cf09f7d8e71cace4c4ddc1d8b796300d929a8",
+      "apps/api/src/repository-analysis.ts": "471d587b2d86c59d6ac6798fa9093c8740050fcbb3e0d9c8bc3dd8b25beb0a15",
+      "apps/api/src/runtime.ts": "d9faf57ce700a22897f57e109e9773ad419d5c01d81f5689365ad200d6e67c40",
+      "apps/api/src/server.ts": "a7b355aa97d526f6a4b55973a8ad3593e32a0dae5779eb31ab820f1463e116ff",
+      "apps/api/src/vercel-runtime.ts": "90f3534f8916c72812a0fc74dc458377978a7d51d5a389b5f0fee467755cc97a",
+      "apps/worker/src/runtime.ts": "ffad7efe0d16802c1d6aae7d53908ad268bd5ad7c0aee9ebde143c2f634a3552",
+      "apps/worker/src/providers.ts": "e6f3614e4146cbf6e86bba75a1565cf0b93050638dc78ece3f3ad17a9f3a8d35",
+      "apps/worker/src/task.ts": "b466a64b73f0699efeb07d95033b1eb4badbfe0e5df88e3d602b101205af9b16",
+      "apps/worker/src/retention.ts": "7e5f5aabcacd18b584fd157780d13c4e1685416dd42893673113dde616b3f6a8",
+      "apps/web/src/features/github-connection/github-connection-api.ts": "d09d9fc13a2f384a1cf95415975dbbd35f742e812512067b4174812f4793377b",
+      "apps/web/src/features/github-connection/github-connection.tsx": "324cc462a23adaa5ddf484ba8b6a43d3010c2a25c57518ab88e68af516ea74e5",
+      "apps/web/src/features/repository-analysis/repository-analysis-home.tsx": "05ee38c73b495c2ac7f47c0eb42fb0ff93b49f2b0b912521a7582a9f06e3c11b",
+      "apps/web/src/features/repository-analysis/repository-analysis-page.tsx": "2293d0c09bce93e432612965f733ffa09f9c29da789fde31627cf887ff00ff3c",
+      "scripts/operations/offsite-backup.mjs": "bb31d19c1815d39c201dd378668a8b746220d2c95d35edb8c4aef53243653733",
+      "scripts/operations/portable-recovery.mjs": "91f7658be3d518ddeea91114936e8b6cd44cd7b29564f9c33f06a4b9a4de869f",
+      "scripts/operations/github-private-analysis.test.mjs": "9079c1a5a19ca02e1cca7157fa8b102bd06091d264632b95c0fc425ca49cf7bb",
+      "packages/persistence/test/github-ownership.test.ts": "bea41ce996fcbeddca45302090c0f9a6edf916af71800e19f8c599f0ac73d2ea",
+      "tests/browser/acceptance.spec.ts": "9f4497d1ae26689b729cc6065b3d6efd798b2a8421a8ba908d0cf71c5a212bdc",
+      "packages/persistence/src/ownership-policies.ts": "fcb59634880d94c57f514b3625f12a594765d454c0ab971a70ced0761e2879ec",
+      "packages/persistence/src/database.ts": "bc286966b4d2dd7bd665cc380ce75a8c3fbc55cfb29d2d31c7e784611f156757",
+      "packages/data-sources/src/github/types.ts": "525e593b5b511660c24c98b935983fcd84b39866992570516fd29f3c6378a66c",
+      "packages/data-sources/src/github/errors.ts": "d07d783681fb06270d455942b35c05e0a7f59ee264498bb5b991b9fc1444b3d9",
+      "packages/data-sources/src/github.ts": "25de0037b31ca529f7b277330cf9de238b3cb804e609b04a6cd5fd313f606fb3",
+      "packages/data-sources/src/index.ts": "911fb7a6605257b6c5700619bfe737ae9f113a2a88c3f72d16833dbe3487c35c",
+      "packages/data-sources/test/github.test.ts": "481ccc2f70aa3f77dc7d6507323dbd733f57987716d991c32a3f1488edf7545c",
+      "packages/github-auth/test/service.test.ts": "57da68e9270a01172655df5eb62071d5168c3b1bc655633e6399260dae31555b",
+      "apps/api/test/logging.test.ts": "6d32ab28d25bf095c01cb10393e5bc3bff51d19f314d48690f5ad25fa817a504",
+      "apps/worker/test/repository-analysis-task.test.ts": "eb3d5129b842cc14f6f8044853b1b402b575aa3ab6a56d7e4832df0f7779ed14",
+      "apps/web/src/features/github-connection/github-connection.test.tsx": "9da603c04bcc7f36452ca322d39adc80c9a463c4287b1e3727c5fefde8233524",
+      "packages/persistence/test/github-activation.test.ts": "c6d49adcb3b1e1954eca8d40999941e1189fbfd9b0087113e126b31f09681b77",
+      "scripts/operations/backup.mjs": "398f894c178c787e2aa1366fca807391383cca1a0b37d25675b0b0281ec050ef",
+      "scripts/operations/backup-fingerprint.test.mjs": "fc895936608f89e7e2707bea963b0feaa93513d30dcf269d720390ada6c7cf92",
+      "apps/worker/test/retention.test.ts": "9b39b8d3545755cce94f67b8c0cc1838964bc2a4a5a9f02b52b3a1144958df3b",
+      "README.md": "dac2f235dadc0be61493d888962dfe9f7f1dd011db527de3f147df83cd701124",
+      "AGENTS.md": "151489dc1a714857f58e11a746e0ee7b9ba3b295675efe0517aa01f78d7319cd",
+      "CONTRIBUTING.md": "d90bd1ff2eec3e1685adc4586eb430efd3a801a58bfc782c6393dbb839e991f0",
+      "docs/requirements.md": "3f5e938f53b6385777a0822dff06e7f6b04fd81142fa1bbffe6c4bc3a47c0adb",
+      "docs/architecture.md": "92adf057ea78132fae321659415985fb9ba67f0159030f86b9693be05da4b641",
+      "docs/adr/0023-read-only-github-connections.md": "f0a06386e8bfaaf891942bd5537210a0ff8934a7c3aafc31fe8c47eb84589362",
+      "docs/implementation/github-connections.md": "f825a65acc14853bbb94394c5f12d6926c28e1fa23bdd44bab543652204c66b5",
+      "packages/persistence/README.md": "44762c6768f140dfd436945d7fd24b123c6a7b2ba8b59e83ebcc090679c7249b",
+      "apps/worker/README.md": "640ce66646a442d5fd87ef07b02a5f66b6f3053facecd6ac0c86c47875f76729",
+      "docs/handover.md": "4ddeb2318261794791c2929ff2bd1c774722b042a02020594b674f7cd4dac3aa",
+      "docs/design/journey.md": "d68a34a6ed26687f81e6e4c22feaca901e84d803b463c40afd840c88cbc2787a",
+      "docs/design/user-flows.md": "7e15d7e688351dee1c586f4fc02979d8cae189488e92d3c7d08a74bfa3be9821",
+      "apps/api/README.md": "209c7930dedd6d8cd55aa9c240f90ab6470df8d9d9c2534926594b64441d1169"
+    }
+  },
+  "historicalEvidence": [
+    {
+      "path": "docs/implementation/release-evidence/2026-10-12-github-connections-local.json",
+      "sha256": "684bf5bce0ad185e8fb993fad2aa917dea61af182e646dff6c2ee794461adc6d",
+      "description": "Preserved dated evidence; current callback verification is recorded separately."
+    },
+    {
+      "path": "docs/implementation/release-evidence/2026-10-12-github-connections-review-fixes.json",
+      "sha256": "be4153865042e29ce6a416ff504346003a51c8107978189963af55721ac5f488",
+      "description": "Preserved dated evidence; current callback verification is recorded separately."
+    },
+    {
+      "path": "docs/implementation/release-evidence/2026-10-13-github-connections-final-review-fixes.json",
+      "sha256": "543ee7d8307d6972bf5d1d21ea95b149e9bb4e3e8245f932e8b5c73f61af45e5",
+      "description": "Preserved dated evidence; current callback verification is recorded separately."
+    },
+    {
+      "path": "docs/implementation/release-evidence/2026-10-11-recovery-rehearsal-preflight.json",
+      "sha256": "9157fff2fe180a8241c08ad301cee781e67fb833cb6f7bce4c23bfc0c02c6299",
+      "description": "Preserved dated evidence; current callback verification is recorded separately."
+    },
+    {
+      "path": "docs/implementation/release-evidence/2026-10-13-github-connections-grants-and-deadlines.json",
+      "sha256": "e71328c810b85536c909916d46e7860ced14dcdc3c22f118df842e2bf4bdaeb3",
+      "description": "Preserved dated evidence; current callback verification is recorded separately."
+    }
+  ],
+  "findingFixes": [
+    {
+      "priority": "P2",
+      "finding": "The callback rejected standard GitHub authorization-error responses containing error_uri before pending-state cleanup and error redirection.",
+      "resolution": "Accept optional error_uri strings bounded to 2000 characters and ignore their contents. Retain strict unknown-field rejection, fixed redirects and generic validation errors; publish the same bound and 400 response in OpenAPI.",
+      "verification": [
+        "Three full callback error envelopes cover access denial, suspended application and callback mismatch with absolute, relative and untrusted error URIs.",
+        "Accepted errors clear only pending OAuth state, set no-referrer/no-store headers and return to the fixed error notice without fetching/displaying the URI or storing credentials.",
+        "Oversized metadata and unknown fields are rejected before provider I/O.",
+        "OpenAPI reflects the bounded optional query field and stable validation response."
+      ]
+    }
+  ],
+  "localQuality": {
+    "command": "pnpm check",
+    "startedAt": "2026-10-13T23:42:50.593Z",
+    "finishedAt": "2026-10-13T23:45:49.044Z",
+    "exitCode": 0,
+    "localLog": ".cache/fr100-callback-errors-check.log",
+    "databaseBacked": true,
+    "providers": "synthetic",
+    "turboConcurrency": 2,
+    "gates": [
+      "build",
+      "compiled runtime smoke",
+      "UI configuration",
+      "typecheck",
+      "deployment tests",
+      "operations tests",
+      "package tests",
+      "browser acceptance",
+      "lint",
+      "format"
+    ],
+    "tests": {
+      "package": 702,
+      "operations": 50,
+      "deployment": 5,
+      "browser": 24,
+      "total": 781,
+      "addedRegressionCases": 6
+    },
+    "packageTests": {
+      "contracts": 24,
+      "ui": 6,
+      "persistence": 118,
+      "analyzer-core": 14,
+      "data-sources": 93,
+      "web": 59,
+      "scoring": 12,
+      "rules-javascript": 232,
+      "github-auth": 10,
+      "analysis-orchestration": 16,
+      "repository-jobs": 7,
+      "worker": 43,
+      "api": 58,
+      "design-tokens": 10
+    },
+    "browserProjects": [
+      "chromium-desktop",
+      "chromium-narrow",
+      "firefox-desktop",
+      "firefox-narrow",
+      "webkit-desktop",
+      "webkit-narrow"
+    ],
+    "localLogSha256": "85f3094880b7c4520fc335a390fcb7a2194f95d6a0f79a63b1713bf85256bb4b",
+    "cacheNote": "Valid Turbo inputs/results may be reused; the changed API tests and compiled runtime smoke, operations and browser acceptance run on this revision."
+  },
+  "focusedVerification": {
+    "transportTestsPassed": 27,
+    "addedRegressionCases": 6,
+    "typecheckPassed": true,
+    "lintPassed": true,
+    "providers": "synthetic",
+    "providerIOMadeForErrorCallbacks": false
+  },
+  "ownedCleanup": {
+    "observedAt": "2026-10-13T23:46:52.073Z",
+    "ownedTestDatabasesRemaining": 0,
+    "ownedTestRolesRemaining": 0,
+    "ownedTestSchemasRemaining": 0,
+    "otherLocalDataPreserved": true,
+    "localPostgresInitiallyStopped": true,
+    "localPostgresRestoredToStopped": true,
+    "localPostgresVolumePreserved": true,
+    "localPostgresStateVerifiedAt": "2026-10-13T23:46:53.115Z"
+  },
+  "correctedFocusedAttempts": [
+    "Targeted lint required explicit URLSearchParams.toString() in new test request URLs; the source was corrected without suppression."
+  ],
+  "correctedFullAttempt": {
+    "command": "pnpm check",
+    "startedAt": "2026-10-13T23:36:00.800Z",
+    "finishedAt": "2026-10-13T23:40:50.370Z",
+    "exitCode": 1,
+    "localLog": ".cache/fr100-callback-errors-check-attempt1.log",
+    "localLogSha256": "623ed71cc77bc40c20ae0a2885293b6108b927edfdc76c5b9f2178b01194660c",
+    "browserTestsPassed": 23,
+    "browserTestsFailed": 1,
+    "reason": "The Firefox narrow sign-out test exhausted its existing 30-second budget after reload. The unchanged isolated case passed in 3.3 seconds; the complete gate was rerun without timeout/retry changes.",
+    "traceSha256": "3786fe61a36757bc1a8a8874d38c901ad172748fd3938609fc80538c596cb4c9"
+  },
+  "documentationImpact": [
+    "README.md",
+    "docs/requirements.md",
+    "docs/adr/0023-read-only-github-connections.md",
+    "docs/implementation/github-connections.md",
+    "docs/design/user-flows.md",
+    "apps/api/README.md",
+    "docs/handover.md",
+    "docs/design/journey.md"
+  ],
+  "earlierCoverage": {
+    "preserved": {
+      "completePrivatePipeline": true,
+      "actualRestrictedLogin": true,
+      "sevenRecoveryFingerprints": true,
+      "strictPrivateReportReads": 1,
+      "anonymousPrivateReportDenied": true,
+      "connectionCredentialsRestored": false,
+      "historicalRowsUnchanged": true,
+      "quarantineAndOwnedRecoveryCleanup": true
+    },
+    "description": "The final full suite reruns the private pipeline and recovery fixtures as well as the earlier policy/credential/logging/sign-out regressions."
+  },
+  "hostedActions": {
+    "githubAppRegistered": false,
+    "credentialsProvisioned": false,
+    "apiRoleGrantsChanged": false,
+    "schemaMigrated": false,
+    "deployed": false,
+    "livePrivateProviderAccepted": false,
+    "finalHeadCiReviewed": false,
+    "committed": false,
+    "pushed": false
+  },
+  "preservedBoundaries": {
+    "anonymousAnalysisAvailable": true,
+    "sourceOrRepositoryCodeExecution": false,
+    "reportSchemasAndScoringUnchanged": true,
+    "connectionSchemaExcludedFromAnalysisArchives": true,
+    "backupRoleScopeUnchanged": true,
+    "backupSchedulesUnchanged": true,
+    "newHostingAccount": false,
+    "newBackupAutomation": false,
+    "unexpiredArchivesAndReferencedKeysPreserved": true,
+    "persistentComputeReplacementAcceptance": false
+  },
+  "remaining": [
+    "Review and publish the uncommitted milestone with final-head CI.",
+    "Review GitHub App registration, exact restricted API grants and separate private credential custody before hosted activation.",
+    "Deploy compatible readers and Worker migration before enabling connections; validate live consent, private provider access, revocation, cookie/proxy/log handling and scheduled recovery on that revision.",
+    "Keep persistent compute-loss/cutover/rollback acceptance separate."
+  ]
+}

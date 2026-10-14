@@ -3,6 +3,10 @@ import { Link } from "@tanstack/react-router";
 
 import { Button } from "@stacklens/ui/components/button";
 
+import {
+  GitHubConnectionControl,
+  useGitHubSession,
+} from "../github-connection/github-connection.js";
 import { AnalysisStatusView } from "./analysis-status-view.js";
 import {
   RepositoryAnalysisApiError,
@@ -45,8 +49,12 @@ export function RepositoryAnalysisPage({
   analysisId,
   client = repositoryAnalysisClient,
 }: Readonly<RepositoryAnalysisPageProps>) {
+  const { session } = useGitHubSession();
   const query = useQuery({
-    queryKey: ["repository-analysis", analysisId],
+    queryKey:
+      session?.user === undefined
+        ? ["repository-analysis", analysisId]
+        : ["repository-analysis", analysisId, session.csrfToken],
     queryFn: ({ signal }) => client.getAnalysis(analysisId, signal),
     refetchInterval: (currentQuery) => {
       if (isNotFound(currentQuery.state.error)) return false;
@@ -66,6 +74,17 @@ export function RepositoryAnalysisPage({
       return failureCount < 2;
     },
   });
+
+  if (query.data?.access === "connected" && session?.user === undefined)
+    return (
+      <div className="mx-auto grid max-w-4xl gap-5 px-4 py-8">
+        <AnalysisNavigation />
+        <output>
+          Connect GitHub with the account that created this analysis to open its private result.
+        </output>
+        <GitHubConnectionControl />
+      </div>
+    );
 
   if (query.isPending) {
     return (
@@ -143,6 +162,7 @@ export function RepositoryAnalysisPage({
   return (
     <div className="analysis-workspace mx-auto grid w-full max-w-6xl gap-5 px-4 py-8 sm:px-6 sm:py-10">
       <AnalysisNavigation />
+      {query.data.access === "connected" ? <GitHubConnectionControl /> : null}
       <AnalysisStatusView snapshot={query.data} />
     </div>
   );

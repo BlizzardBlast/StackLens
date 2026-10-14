@@ -1,16 +1,20 @@
 import type { RepositoryAnalysisDependencies } from "@stacklens/analysis-orchestration";
+import type { GitHubAdapterOptions } from "@stacklens/data-sources";
 import {
   GitHubRepositoryAdapter,
+  GitHubConfigurationError,
   NpmRegistryAdapter,
   OsvVulnerabilityAdapter,
   type EvidenceProvider,
 } from "@stacklens/data-sources";
+import { GitHubConnectionError } from "@stacklens/github-auth";
 
 /** NFR-008/009: cancellation belongs to the executing job, not shared providers. */
 export function createWorkerAnalysisDependencies(
   signal: AbortSignal,
   githubToken?: string,
   fetchImpl: typeof fetch = fetch,
+  authorizedAccess?: GitHubAdapterOptions["authorizedAccess"],
 ): Omit<RepositoryAnalysisDependencies, "onProgress"> {
   const fetchForJob: typeof fetch = (input, init) => {
     signal.throwIfAborted();
@@ -40,9 +44,40 @@ export function createWorkerAnalysisDependencies(
   let pendingNpm: Promise<unknown> = Promise.resolve();
 
   return {
-    githubRepositoryProvider: cancellable(
-      new GitHubRepositoryAdapter({ authToken: githubToken, fetchImpl: fetchForJob }),
-    ),
+    githubRepositoryProvider: cancellable({
+      id: "github-rest",
+      async fetch(request) {
+        try {
+          return await new GitHubRepositoryAdapter({
+            authToken: githubToken,
+            fetchImpl: fetchForJob,
+            signal,
+            ...(authorizedAccess === undefined
+              ? {}
+              : {
+                  authorizedAccess: {
+                    repositoryUrl: authorizedAccess.repositoryUrl,
+                    async getToken(lookupSignal) {
+                      try {
+                        return await authorizedAccess.getToken(lookupSignal);
+                      } catch (error) {
+                        if (error instanceof GitHubConnectionError)
+                          throw new GitHubConfigurationError(
+                            "Connected GitHub access is unavailable.",
+                          );
+                        throw error;
+                      }
+                    },
+                  },
+                }),
+          }).fetch(request);
+        } catch (error) {
+          if (authorizedAccess !== undefined && error instanceof GitHubConfigurationError)
+            throw new GitHubConnectionError();
+          throw error;
+        }
+      },
+    }),
     npmRegistryProvider: {
       id: npm.id,
       fetch(request) {

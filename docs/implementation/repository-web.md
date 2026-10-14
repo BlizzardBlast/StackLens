@@ -1,5 +1,11 @@
 # Repository Analysis Web Flow
 
+FR-100 locally adds optional GitHub connection/grant controls, explicit connected-analysis choice,
+owner-only result copy and a session-partitioned report cache cleared at sign-out/expiry. Anonymous
+public/quick flows remain available; switching modes clears input and loss of the selected
+connection never falls back to anonymous submission. Hosted activation is pending. See
+[GitHub connections](github-connections.md) and [user flows](../design/user-flows.md).
+
 > **Status:** Implemented Milestone K1 baseline  
 > **Date:** 2026-09-21  
 > **Requirements:** FR-003, FR-004, FR-017, FR-021, DATA-001–DATA-006, SCORE-001–SCORE-004, NFR-003, NFR-006, NFR-007, NFR-008, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007  

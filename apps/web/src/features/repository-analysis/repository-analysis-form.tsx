@@ -6,6 +6,7 @@ export interface RepositoryAnalysisFormProps {
   readonly onSubmit: (repositoryUrl: string) => Promise<void>;
   readonly isPending?: boolean;
   readonly serverError?: string;
+  readonly connected?: boolean;
 }
 
 function obviousUrlError(value: string): string | undefined {
@@ -30,6 +31,7 @@ export function RepositoryAnalysisForm({
   onSubmit,
   isPending = false,
   serverError,
+  connected = false,
 }: Readonly<RepositoryAnalysisFormProps>) {
   const [repositoryUrl, setRepositoryUrl] = useState("");
   const [clientError, setClientError] = useState<string>();
@@ -60,7 +62,7 @@ export function RepositoryAnalysisForm({
       <div className="grid gap-2">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <label htmlFor="repository-url" className="text-sm font-semibold">
-            Public GitHub repository
+            {connected ? "Connected GitHub repository" : "Public GitHub repository"}
           </label>
           <span className="text-xs text-muted-foreground">HTTPS URL</span>
         </div>
@@ -84,8 +86,9 @@ export function RepositoryAnalysisForm({
           className="min-h-12 w-full min-w-0 rounded-lg border border-input bg-background px-4 py-3 font-mono text-sm transition-[border-color,box-shadow,background-color] outline-none placeholder:font-sans placeholder:text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/35 disabled:cursor-not-allowed disabled:bg-muted/50 disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
         />
         <p id="repository-url-help" className="text-xs leading-5 text-muted-foreground">
-          Use the repository URL, such as github.com/owner/repository. It must be publicly
-          accessible.
+          {connected
+            ? "Use a repository you have explicitly granted StackLens access to on GitHub."
+            : "Use the repository URL, such as github.com/owner/repository. It must be publicly accessible."}
         </p>
         {error === undefined ? null : (
           <p id="repository-url-error" role="alert" className="text-sm text-destructive">

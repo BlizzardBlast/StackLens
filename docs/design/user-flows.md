@@ -1,5 +1,28 @@
 # StackLens MVP User Flows
 
+## Flow C — Optional GitHub connection (FR-100)
+
+Hosted activation is pending; the anonymous flows below remain available. When enabled, the
+repository form offers a read-only GitHub connection and a separate selected-repository grant
+link. Authorization happens on GitHub, then returns with a fixed success/error notice. Accepted
+GitHub error callbacks, including optional error URI metadata, clear pending state before returning
+to the error notice. The provider URI is never displayed or followed. The user
+explicitly checks **Use my GitHub connection for this analysis** before entering a granted
+repository. Help text, owner-only result copy and metadata disclosure describe private behavior.
+Losing that session fails closed; the user reconnects or unchecks the option to choose public mode.
+Switching modes clears the input, preventing accidental private-to-public submission.
+
+Private report screens show the connection/sign-out control. Confirmed sign-out or expiry removes
+cached analysis data and hides private results. Confirmed sign-out cancels pending session reads,
+so a delayed pre-sign-out response cannot restore connected controls.
+An expired cached session also hides connected controls/private results on the first render after
+returning from a screen without a connection observer, before asynchronous cache cleanup or refresh.
+Reconnection uses the same GitHub identity; other
+accounts and anonymous requests receive the normal missing-analysis response. Text and semantic
+alerts/status, native checkbox/links and existing Button focus styles support keyboard and narrow
+layouts. No password, OAuth token or permission scope editor is rendered in StackLens. See
+[the runbook](../implementation/github-connections.md) and ADR-0023.
+
 ## Flow A — Public GitHub repository analysis
 
 **Requirements:** FR-003, FR-004, FR-005–FR-021, NFR-008

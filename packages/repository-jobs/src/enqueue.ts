@@ -14,6 +14,8 @@ export interface RepositoryJobQueue {
 export interface CreateRepositoryAnalysisJobCommand {
   readonly analysisId: string;
   readonly repositoryUrl: string;
+  readonly ownerGithubId?: string;
+  readonly githubConnectionId?: string;
   readonly ref?: string;
   readonly createdAt: string;
   readonly retentionExpiresAt?: string;
@@ -31,6 +33,10 @@ export async function createRepositoryAnalysisJob(
   const record = await dependencies.repository.createQueuedRepositoryAnalysisWithDelivery({
     id: command.analysisId,
     repositoryUrl: command.repositoryUrl,
+    ...(command.ownerGithubId === undefined ? {} : { ownerGithubId: command.ownerGithubId }),
+    ...(command.githubConnectionId === undefined
+      ? {}
+      : { githubConnectionId: command.githubConnectionId }),
     ...(command.ref === undefined ? {} : { requestedRef: command.ref }),
     createdAt: command.createdAt,
     ...(command.retentionExpiresAt === undefined

@@ -5,10 +5,17 @@ export { createStackLensPool } from "./pool.js";
 export { readStackLensPoolOptions } from "./pool-options.js";
 export type { StackLensPoolOptions } from "./pool-options.js";
 
-export { migrateStackLensDatabase, verifyStackLensDatabase } from "./migrate.js";
+export {
+  migrateStackLensDatabase,
+  verifyStackLensDatabase,
+  verifyConnectedApiDatabase,
+} from "./migrate.js";
 
 export { DrizzleAnalysisRepository } from "./repository.js";
 export type { AnalysisRepository } from "./repository.js";
+
+export { DrizzleGitHubConnectionStore } from "./github-connections.js";
+export type { GitHubConnectionStore, StoredGitHubConnection } from "./github-connections.js";
 
 export { analyses, analysisReports } from "./schema.js";
 

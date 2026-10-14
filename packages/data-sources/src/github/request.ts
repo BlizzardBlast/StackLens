@@ -62,7 +62,9 @@ function rateLimitMessage(response: Response, operation: string, authenticated: 
 
 export interface GitHubRequestClientOptions {
   readonly fetchImpl: typeof fetch;
+  readonly signal?: AbortSignal;
   readonly authToken?: string | undefined;
+  readonly getToken?: (signal: AbortSignal) => Promise<string>;
   readonly timeoutMs: number;
   readonly maxResponseBytes: number;
   readonly maxRequests: number;
@@ -70,7 +72,9 @@ export interface GitHubRequestClientOptions {
 
 export class GitHubRequestClient {
   readonly #fetchImpl: typeof fetch;
+  readonly #signal: AbortSignal | undefined;
   readonly #authToken: string | undefined;
+  readonly #getToken: ((signal: AbortSignal) => Promise<string>) | undefined;
   readonly #timeoutMs: number;
   readonly #maxResponseBytes: number;
   readonly #maxRequests: number;
@@ -78,7 +82,9 @@ export class GitHubRequestClient {
 
   constructor(options: GitHubRequestClientOptions) {
     this.#fetchImpl = options.fetchImpl;
+    this.#signal = options.signal;
     this.#authToken = options.authToken;
+    this.#getToken = options.getToken;
     this.#timeoutMs = options.timeoutMs;
     this.#maxResponseBytes = options.maxResponseBytes;
     this.#maxRequests = options.maxRequests;
@@ -93,6 +99,7 @@ export class GitHubRequestClient {
   }
 
   async getJson(endpoint: string, operation: string): Promise<unknown> {
+    this.#signal?.throwIfAborted();
     if (this.#requestCount >= this.#maxRequests) {
       throw new GitHubRequestError(
         "github_request_limit_reached",
@@ -104,6 +111,10 @@ export class GitHubRequestClient {
 
     this.#requestCount += 1;
     const controller = new AbortController();
+    const signal =
+      this.#signal === undefined
+        ? controller.signal
+        : AbortSignal.any([this.#signal, controller.signal]);
     let timedOut = false;
     const timeout = setTimeout(() => {
       timedOut = true;
@@ -116,22 +127,46 @@ export class GitHubRequestClient {
         "x-github-api-version": GITHUB_REST_API_VERSION,
       };
 
-      if (this.#authToken !== undefined) {
-        headers.authorization = `Bearer ${this.#authToken}`;
+      let token = this.#authToken;
+      if (this.#getToken !== undefined) {
+        try {
+          token = await tokenForRequest(this.#getToken, signal);
+        } catch (error) {
+          signal.throwIfAborted();
+          if (error instanceof GitHubConfigurationError) throw error;
+          throw new GitHubRequestError(
+            "github_connection_lookup_failed",
+            "Connected GitHub credential lookup is temporarily unavailable.",
+            true,
+            endpoint,
+          );
+        }
+        if (typeof token !== "string" || token.length > 1_024 || !/^[!-~]+$/u.test(token))
+          throw new GitHubConfigurationError("Connected GitHub access is unavailable.");
+      }
+      if (token !== undefined) {
+        headers.authorization = `Bearer ${token}`;
       }
 
       const response = await this.#fetchImpl(endpoint, {
         method: "GET",
         headers,
         redirect: "error",
-        signal: controller.signal,
+        signal,
       });
 
       if (!response.ok) {
+        if (
+          this.#getToken !== undefined &&
+          (response.status === 401 ||
+            response.status === 404 ||
+            (response.status === 403 && !isRateLimitResponse(response)))
+        )
+          throw new GitHubConfigurationError("Connected GitHub access is unavailable.");
         if (isRateLimitResponse(response)) {
           throw new GitHubRequestError(
             `github_${operation}_rate_limited`,
-            rateLimitMessage(response, operation, this.#authToken !== undefined),
+            rateLimitMessage(response, operation, token !== undefined),
             false,
             endpoint,
           );
@@ -189,7 +224,32 @@ export class GitHubRequestClient {
         endpoint,
       );
     } finally {
+      // Close unread error bodies as well as completed requests; never leave cleanup to GC.
+      controller.abort();
       clearTimeout(timeout);
     }
+  }
+}
+
+async function tokenForRequest(
+  getToken: (signal: AbortSignal) => Promise<string>,
+  signal: AbortSignal,
+): Promise<string> {
+  signal.throwIfAborted();
+  let onAbort: (() => void) | undefined;
+  const interrupted = new Promise<never>((_resolve, reject) => {
+    onAbort = () => reject(signal.reason);
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+  try {
+    return await Promise.race([
+      Promise.resolve().then(() => {
+        signal.throwIfAborted();
+        return getToken(signal);
+      }),
+      interrupted,
+    ]);
+  } finally {
+    if (onAbort !== undefined) signal.removeEventListener("abort", onAbort);
   }
 }

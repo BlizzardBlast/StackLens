@@ -46,8 +46,12 @@ secrets remain backend-only. See [managed hosting](../../docs/implementation/man
 `STACKLENS_GITHUB_TOKEN` is optional. When present, the worker uses it only to authenticate
 read-only GitHub REST requests for the already-supported **public repository** analysis flow, which
 raises the provider rate-limit ceiling. The token is not persisted, logged, returned by the API, or
-used to enable private-repository access; private repositories remain rejected by the MVP provider
-boundary. Leave the variable unset to keep anonymous public GitHub access.
+used to enable private-repository access. Public-mode providers still reject private repositories.
+Leave the variable unset to keep anonymous public GitHub access. FR-100 connected jobs instead
+resolve an encrypted expiring user connection for the persisted owner/repository on every GitHub
+request, using `STACKLENS_GITHUB_SESSION_KEY` only. The Worker never receives the App client secret
+and never falls back to the global token. Ended/revoked connections fail safely. See
+[GitHub connections](../../docs/implementation/github-connections.md); hosted activation is pending.
 
 The runtime owns Graphile/StackLens migrations and provider composition; the process entrypoint owns
 signals and graceful shutdown.
@@ -70,5 +74,8 @@ Worker runtime starts bounded expired-terminal cleanup on startup and every sixt
 the prior sweep. It preserves queued/running claims and cascades reports/delivery rows through the
 persistence boundary. Shutdown waits for active maintenance before closing the pool. Retention
 errors are logged by name only. The compiled smoke explicitly disables retention cleanup so it
-does not delete existing rows. Production startup requires `DATABASE_URL`. See
+does not delete existing rows. FR-100 credential expiry cleanup has an eight-second database
+operation deadline and accepts shutdown cancellation. Stop cancels that purge and waits for its
+settlement before pool closure; analysis claims retain their normal drain/ownership guarantees.
+Production startup requires `DATABASE_URL`. See
 [backend hosting](../../docs/implementation/backend-hosting.md).
