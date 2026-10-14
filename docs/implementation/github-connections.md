@@ -98,7 +98,10 @@ backup schedule. Before live activation:
    Keep all API connection variables absent until step 5; deploy only the Worker data key in step 3.
    Leave browser `VITE_STACKLENS_API_BASE_URL` unset: connection requires the same-origin proxy.
 3. Deploy compatible API/web readers with connection configuration absent, then the Worker/schema
-   migration and Worker data key. Nullable columns preserve legacy data. Confirm the restricted
+   migration and Worker data key. Verify anonymous durable acceptance, status reads and outbox
+   delivery on the pre-migration schema with the restricted API login. Anonymous inserts name only
+   pre-existing columns and use compatible row projections; connected writes remain disabled.
+   Nullable columns preserve legacy data. Confirm the restricted
    API cannot read owner-bound synthetic rows, that policies/grants are intact and that the
    existing backup role's approved SELECT/BYPASSRLS scope is unchanged. It must still have no
    access to `stacklens_auth`. Do not broaden its scope.

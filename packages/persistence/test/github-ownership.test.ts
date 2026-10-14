@@ -59,6 +59,36 @@ function runConnectionOperation(
     });
     const database = createStackLensDatabase(owner);
     const repository = new DrizzleAnalysisRepository(createStackLensDatabase(restricted));
+    async function withLegacyWriter(
+      operation: (repo: DrizzleAnalysisRepository, pool: Pool) => Promise<void>,
+    ) {
+      const name = `stacklens_legacy_${randomUUID().replaceAll("-", "")}`;
+      const pool = new Pool({
+        connectionString: restrictedUrl.toString(),
+        options: `-c search_path=${name}`,
+      });
+      try {
+        await admin.query(`CREATE SCHEMA ${name}`);
+        await admin.query(`CREATE TABLE ${name}.analysis (LIKE ${schema}.analysis INCLUDING ALL)`);
+        await admin.query(
+          `ALTER TABLE ${name}.analysis DROP COLUMN owner_github_id, DROP COLUMN github_connection_id`,
+        );
+        await admin.query(
+          `CREATE TABLE ${name}.analysis_delivery (LIKE ${schema}.analysis_delivery INCLUDING ALL)`,
+        );
+        await admin.query(`GRANT USAGE ON SCHEMA ${name} TO ${role}`);
+        await admin.query(`GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA ${name} TO ${role}`);
+        await operation(new DrizzleAnalysisRepository(createStackLensDatabase(pool)), pool);
+        const columns = await admin.query(
+          "SELECT attname FROM pg_catalog.pg_attribute WHERE attrelid=$1::regclass AND attname IN ('owner_github_id','github_connection_id') AND NOT attisdropped",
+          [`${name}.analysis`],
+        );
+        expect(columns.rows).toHaveLength(0);
+      } finally {
+        await pool.end();
+        await admin.query(`DROP SCHEMA IF EXISTS ${name} CASCADE`);
+      }
+    }
     beforeAll(async () => {
       await admin.query(`CREATE SCHEMA ${schema}`);
       await migrateStackLensDatabase(database);
@@ -310,6 +340,65 @@ function runConnectionOperation(
         await oldPool.end();
       }
     });
+    it.each([
+      { method: "createQueuedRepositoryAnalysis", deliveries: 0 },
+      { method: "createQueuedRepositoryAnalysisWithDelivery", deliveries: 1 },
+    ] as const)(
+      "preserves anonymous writes on the old schema through $method [FR-003/100]",
+      async ({ method, deliveries }) => {
+        await withLegacyWriter(async (repo, pool) => {
+          const input = {
+            id: "legacy-submission",
+            repositoryUrl: "https://github.com/acme/public",
+            requestedRef: "main",
+            createdAt: now,
+            retentionExpiresAt: "2026-10-13T00:00:00.000Z",
+          };
+          const record = await repo[method](input);
+          expect(record).toMatchObject({
+            ...input,
+            status: "queued",
+            progressStage: "queued",
+          });
+          expect(record.ownerGithubId).toBeUndefined();
+          expect(record.githubConnectionId).toBeUndefined();
+          expect(await repo[method](input)).toEqual(record);
+          await expect(
+            repo[method]({ ...input, repositoryUrl: "https://github.com/acme/different" }),
+          ).rejects.toThrow("different repository input");
+          expect(
+            (await pool.query("SELECT count(*)::int AS count FROM analysis_delivery")).rows[0],
+          ).toEqual({ count: deliveries });
+        });
+      },
+    );
+    it.each([
+      "createQueuedRepositoryAnalysis",
+      "createQueuedRepositoryAnalysisWithDelivery",
+    ] as const)(
+      "rejects connected writes on the old schema through %s [FR-100]",
+      async (method) => {
+        await withLegacyWriter(async (repo, pool) => {
+          await expect(
+            repo[method]({
+              id: "connected-old-schema",
+              repositoryUrl: "https://github.com/acme/private",
+              createdAt: now,
+              ownerGithubId: "123",
+              githubConnectionId: "ab".repeat(32),
+            }),
+          ).rejects.toThrow("Failed query");
+          expect((await pool.query("SELECT count(*)::int AS count FROM analysis")).rows[0]).toEqual(
+            {
+              count: 0,
+            },
+          );
+          expect(
+            (await pool.query("SELECT count(*)::int AS count FROM analysis_delivery")).rows[0],
+          ).toEqual({ count: 0 });
+        });
+      },
+    );
     it("stores only sealed connection data and purges bounded expired connections", async () => {
       const store = new DrizzleGitHubConnectionStore(createStackLensDatabase(restricted));
       const hash = randomUUID().replaceAll("-", "").repeat(2);

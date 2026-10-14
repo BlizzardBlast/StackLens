@@ -3498,3 +3498,39 @@ unexpired archives/keys, approved role scope and protected manual recovery; pers
 compute-loss/cutover acceptance remains a separate milestone.
 
 **Traceability:** FR-100, SEC-003/004/005/006/007, NFR-008/009/010, GOV-002/006/007; ADR-0023.
+
+## 2026-10-14 — Preserve anonymous writes during the readers-first rollout
+
+While preparing the approved squash merge, an additional compatibility check found an issue the
+earlier review missed. Drizzle included new ownership columns in anonymous INSERT statements even
+when omitted from values, and the outbox path directly selected those columns. A reader-first
+deployment before Worker migration would therefore reject anonymous submissions on the old schema.
+
+Anonymous inserts now explicitly name only pre-existing columns. The two creation paths share
+insertion behavior and use the same catalog-qualified whole-row JSON projection for ownership
+and identity checks. Connected writes keep mandatory ownership columns and fail against an old
+schema. Atomic outbox delivery, finite retention, requested refs and idempotency remain intact.
+
+Four real restricted-login regressions cover anonymous and connected creation through both
+repository methods on fresh old-schema fixtures. The two anonymous cases fail before the fix;
+afterward all four pass and the persistence suite passes 122 tests. The fixtures verify that
+ownership columns remain absent and clean up their owned schemas. Targeted type/lint checks pass;
+a missing rejection-message assertion was corrected without suppressing the lint rule.
+An independent compiled API probe also confirms anonymous HTTP 202 acceptance, HTTP 200 queued
+readback and one durable outbox row under a restricted login on an old schema. No ownership
+columns are added, no live provider is contacted, and its owned schema/login are removed.
+The complete local gate passes 794 tests (715 package, 50 operations, five deployment and 24
+browser), build/runtime smoke, UI configuration, typecheck, lint and formatting. The initial full
+attempt reached the formatter after passing all functional/browser checks and lint; the final
+test-file layout was corrected and the whole command passed on rerun. No check was suppressed.
+The [legacy-write evidence](../implementation/release-evidence/2026-10-14-github-connections-legacy-writes.json)
+preserves current hashes, verification and cleanup without rewriting earlier snapshots. Owned
+database resources are removed and PostgreSQL returns to its initially stopped state.
+
+The correction and updated activation/persistence/ADR guidance stay in
+[PR #58](https://github.com/BlizzardBlast/StackLens/pull/58), before merge. Rerun the complete local
+gate and final-head CI/review/mergeability checks; preserve earlier evidence and the original
+hosting/credential boundaries. Current main and the merged tree must be independently verified
+before deleting the remote milestone branch.
+
+**Traceability:** FR-003/100, SEC-003/005/007, NFR-005/008/009, GOV-002/006/007; ADR-0023.

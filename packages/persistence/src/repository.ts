@@ -15,6 +15,13 @@ import type {
 
 const TERMINAL_STATUSES = ["completed", "completed_with_limitations", "failed"] as const;
 
+// The same reader serves migrated tables and pre-FR-100 tables during reader-first rollout.
+const analysisReadColumns = {
+  ...getTableColumns(analyses),
+  ownerGithubId: sql<string | null>`pg_catalog.to_jsonb(${analyses})->>'owner_github_id'`,
+  githubConnectionId: sql<string | null>`pg_catalog.to_jsonb(${analyses})->>'github_connection_id'`,
+};
+
 interface ClaimedDeliveryRow {
   readonly analysis_id: string;
   readonly repository_url: string;
@@ -165,9 +172,22 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
     return result.rows.length;
   }
 
-  async createQueuedRepositoryAnalysis(
-    input: CreateQueuedRepositoryAnalysis,
-  ): Promise<RepositoryAnalysisRecord> {
+  async #insertQueuedAnalysis(input: CreateQueuedRepositoryAnalysis): Promise<void> {
+    if (input.ownerGithubId === undefined && input.githubConnectionId === undefined) {
+      // Drizzle includes every modeled column even for undefined values. Explicit legacy columns
+      // keep anonymous submissions working before the Worker installs ownership columns.
+      await this.database.execute(sql`
+        INSERT INTO analysis (
+          id, input_type, repository_url, requested_ref, status, progress_stage,
+          created_at, updated_at, retention_expires_at
+        ) VALUES (
+          ${input.id}, 'repository', ${input.repositoryUrl}, ${input.requestedRef ?? null},
+          'queued', 'queued', ${input.createdAt}::timestamptz, ${input.createdAt}::timestamptz,
+          ${input.retentionExpiresAt ?? null}::timestamptz
+        ) ON CONFLICT (id) DO NOTHING
+      `);
+      return;
+    }
     await this.database
       .insert(analyses)
       .values({
@@ -188,7 +208,12 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
           : { retentionExpiresAt: input.retentionExpiresAt }),
       })
       .onConflictDoNothing({ target: analyses.id });
+  }
 
+  async createQueuedRepositoryAnalysis(
+    input: CreateQueuedRepositoryAnalysis,
+  ): Promise<RepositoryAnalysisRecord> {
+    await this.#insertQueuedAnalysis(input);
     const record = await this.findAnalysis(input.id);
 
     if (record === undefined) {
@@ -211,29 +236,10 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
     input: CreateQueuedRepositoryAnalysis,
   ): Promise<RepositoryAnalysisRecord> {
     return this.database.transaction(async (transaction) => {
-      await transaction
-        .insert(analyses)
-        .values({
-          id: input.id,
-          inputType: "repository",
-          repositoryUrl: input.repositoryUrl,
-          ...(input.ownerGithubId === undefined ? {} : { ownerGithubId: input.ownerGithubId }),
-          ...(input.githubConnectionId === undefined
-            ? {}
-            : { githubConnectionId: input.githubConnectionId }),
-          ...(input.requestedRef === undefined ? {} : { requestedRef: input.requestedRef }),
-          status: "queued",
-          progressStage: "queued",
-          createdAt: input.createdAt,
-          updatedAt: input.createdAt,
-          ...(input.retentionExpiresAt === undefined
-            ? {}
-            : { retentionExpiresAt: input.retentionExpiresAt }),
-        })
-        .onConflictDoNothing({ target: analyses.id });
+      await new DrizzleAnalysisRepository(transaction).#insertQueuedAnalysis(input);
 
       const [row] = await transaction
-        .select()
+        .select(analysisReadColumns)
         .from(analyses)
         .where(eq(analyses.id, input.id))
         .limit(1);
@@ -387,13 +393,7 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
   async findAnalysis(id: string): Promise<RepositoryAnalysisRecord | undefined> {
     // Read-only recovery of pre-FR-100 archives must not require altering their fingerprinted rows.
     const [row] = await this.database
-      .select({
-        ...getTableColumns(analyses),
-        ownerGithubId: sql<string | null>`pg_catalog.to_jsonb(${analyses})->>'owner_github_id'`,
-        githubConnectionId: sql<
-          string | null
-        >`pg_catalog.to_jsonb(${analyses})->>'github_connection_id'`,
-      })
+      .select(analysisReadColumns)
       .from(analyses)
       .where(eq(analyses.id, id))
       .limit(1);

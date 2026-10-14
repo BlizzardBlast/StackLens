@@ -276,6 +276,10 @@ response closure against owned local servers. See the
 [response-cleanup evidence](docs/implementation/release-evidence/2026-10-14-provider-response-cleanup.json)
 for the passing 790-test local quality gate and owned-resource cleanup; earlier dated evidence
 remains intact.
+The pre-merge compatibility correction preserves anonymous writes during the readers-first rollout
+before the Worker installs ownership columns. Connected writes still require the migrated schema.
+The [legacy-write evidence](docs/implementation/release-evidence/2026-10-14-github-connections-legacy-writes.json)
+records the passing 794-test gate, restricted old-schema cases and compiled API probe.
 Use PR #58 for the publication and final-head CI outcome. Hosted feature activation and acceptance
 remain pending; independently verify current main and deployed revisions before proceeding.
 

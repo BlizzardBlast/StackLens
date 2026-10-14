@@ -32,6 +32,12 @@ provider/analyzer orchestration, or source-file/manifest/script-content retentio
 Repository analysis identity is caller-supplied and stable. Creating the same analysis ID with the
 same normalized repository input is idempotent; binding that ID to different input fails.
 
+During the readers-first FR-100 rollout, anonymous inserts name only pre-existing analysis columns;
+Drizzle would otherwise emit new ownership columns even when their values are undefined. Shared
+whole-row JSON projections also keep outbox identity checks compatible with the older schema.
+Both creation paths preserve idempotency, requested refs, finite retention and atomic delivery.
+Connected writes still require the migrated ownership columns and never downgrade to anonymous.
+
 `DrizzleAnalysisRepository.purgeExpiredTerminalAnalyses` removes a bounded set of expired terminal
 records with row locks and `SKIP LOCKED`. Foreign keys cascade reports and delivery rows. The query
 preserves queued/running claims and legacy null-expiry records and never edits Graphile internals.

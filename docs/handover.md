@@ -80,6 +80,21 @@ Read the [response-cleanup evidence](implementation/release-evidence/2026-10-14-
 for the preserved 790-test source snapshot, full verification and cleanup. The publication handover
 changes documentation only; runtime source is unchanged from that snapshot. PR #58 records the
 final publication/CI outcome rather than rewriting dated evidence.
+The pre-merge compatibility check additionally reproduced anonymous insert failures against the
+pre-FR-100 schema: Drizzle emitted new ownership columns even when omitted, and the outbox path
+selected them directly. Anonymous creation now names only legacy columns; shared whole-row JSON
+projections keep identity/outbox reads compatible. Connected writes remain explicit and fail on
+the old schema. Four new restricted-login cases cover both creation methods, finite retention,
+requested refs, duplicate/mismatched identity, delivery and rejected connected writes without
+altering the old schema. This correction is included in PR #58 before squash merge.
+The compiled worker-managed API independently passes anonymous 202 acceptance, 200 queued status
+and one pending delivery under an owned restricted login on an old schema, without adding columns.
+The complete local gate passes 794 tests (715 package, 50 operations, five deployment and 24
+browser), build/runtime smoke, typecheck, lint and formatting. The first complete attempt passed
+the functional/browser checks and lint but flagged test formatting; the formatted full rerun
+passes without suppression or timeout changes. See the
+[legacy-write evidence](implementation/release-evidence/2026-10-14-github-connections-legacy-writes.json)
+for current source hashes and complete cleanup. PostgreSQL returns to its original stopped state.
 Read the [prior callback-fix evidence](implementation/release-evidence/2026-10-14-github-connections-callback-errors.json)
 for its preserved 781-test source snapshot, full verification and cleanup.
 Read the [prior grant/deadline evidence](implementation/release-evidence/2026-10-13-github-connections-grants-and-deadlines.json)

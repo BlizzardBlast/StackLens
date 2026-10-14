@@ -42,8 +42,11 @@ report access. PostgreSQL RLS on analysis/report/delivery tables protects privat
 public-only **restricted** API readers that set no identity. The Worker/backup owner retains its
 existing role scope. Activation requires a non-owner, non-BYPASSRLS request-bound API login;
 bootstrap development remains anonymous unless an explicitly injected test connection is used.
-Reader compatibility accepts older archives without ownership columns; hosted API schema
-verification and the activation guard fail closed until migrations/RLS are installed.
+Reader compatibility accepts older archives without ownership columns; connected API startup
+verifies ownership columns and fails closed until migrations/RLS are installed.
+Anonymous creation and outbox acceptance also use pre-existing columns and compatible row
+projections, so deploying readers before the Worker migration preserves public submissions.
+Connected inserts retain mandatory ownership columns and fail against an unmigrated schema.
 The guard validates policy applicability and canonical predicates rather than counting policies.
 Worker migration repairs the five owned definitions atomically and rejects unexpected policies.
 Activation rejects effective database/permanent-schema CREATE, including PUBLIC grants and schemas
