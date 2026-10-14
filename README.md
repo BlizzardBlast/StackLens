@@ -251,11 +251,13 @@ StackLens is intended to evolve into whole-repository intelligence covering:
 
 `dependencies → configuration → source → architecture → tests → CI/CD → security → performance → technical debt`
 
-FR-100 GitHub sign-in and private analysis are implemented locally on `codex/github-private-analysis`;
-hosted activation is pending. The read-only GitHub App flow uses explicit selected repository grants,
+FR-100 GitHub sign-in and private analysis are delivered through
+[PR #58](https://github.com/BlizzardBlast/StackLens/pull/58); hosted activation is pending.
+The read-only GitHub App flow uses explicit selected repository grants,
 server-side encrypted expiring credentials and owner-only results, while anonymous analysis remains
 available. See [GitHub connections](docs/implementation/github-connections.md) and ADR-0023 for the
-activation/rollback sequence. No live App registration, grants, migration or deployment is included.
+activation/rollback sequence. App registration, restricted grants, credential provisioning and
+live private-provider acceptance require that separate activation sequence.
 The local review fixes enforce actual ownership policy definitions, API roles without permanent
 schema/database CREATE or credential ownership, approved table/column grants, bounded cancellable
 credential reads/writes and cleanup, terminal
@@ -274,7 +276,8 @@ response closure against owned local servers. See the
 [response-cleanup evidence](docs/implementation/release-evidence/2026-10-14-provider-response-cleanup.json)
 for the passing 790-test local quality gate and owned-resource cleanup; earlier dated evidence
 remains intact.
-Publication and hosted acceptance remain pending.
+Use PR #58 for the publication and final-head CI outcome. Hosted feature activation and acceptance
+remain pending; independently verify current main and deployed revisions before proceeding.
 
 Subsequent product surfaces include saved repositories (FR-101), history/comparisons (FR-102),
 monitoring, migration automation, CLI, GitHub automation, and IDE integration. See **FR-101 through

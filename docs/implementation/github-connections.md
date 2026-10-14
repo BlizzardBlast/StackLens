@@ -1,6 +1,7 @@
 # GitHub sign-in and private analysis
 
-Status: implemented locally; hosted activation pending. Requirements: FR-100, FR-003/017/022,
+Status: implementation delivered through [PR #58](https://github.com/BlizzardBlast/StackLens/pull/58);
+hosted activation pending. Requirements: FR-100, FR-003/017/022,
 SEC-001/002/003/004/005/006/007/008, NFR-006/007/008/009/010. Decision: [ADR-0023](../adr/0023-read-only-github-connections.md).
 Saved repositories (FR-101), historical comparison (FR-102), and repository writes are outside this milestone.
 
@@ -78,7 +79,9 @@ access, rate limits and retryable server errors without contacting live provider
 
 ## Reviewable hosted activation sequence
 
-No hosted App, key, login grant, schema migration or deployment has been performed for FR-100.
+Implementation publication is separate from hosted FR-100 activation. Independently verify current
+main, web/API reader deployments and the Worker/schema revision before provisioning credentials
+or enabling connected submissions; a successful automatic build alone is not live acceptance.
 Use existing hosting and the approved restricted API/backup roles; do not create another host or
 backup schedule. Before live activation:
 

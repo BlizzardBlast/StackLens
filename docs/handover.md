@@ -2,8 +2,8 @@
 
 > **Prepared:** 2026-10-14\
 > **Architecture:** v0.1.27; requirements v0.1.5\
-> **Milestone:** FR-100 local implementation; hosted activation and persistent public replacement remain gated\
-> **Branch:** `codex/github-private-analysis`, existing checkout; includes preserved unpublished recovery preflight after merged [PR #57](https://github.com/BlizzardBlast/StackLens/pull/57)\
+> **Milestone:** FR-100 implementation through [PR #58](https://github.com/BlizzardBlast/StackLens/pull/58); hosted activation and persistent public replacement remain gated\
+> **Branch:** Milestone branch `codex/github-private-analysis`; the operator requested squash merge and remote branch deletion. Resolve current main after merge. Includes the preserved recovery preflight after [PR #57](https://github.com/BlizzardBlast/StackLens/pull/57)\
 > **Implementation base:** `e552076f47dd68a67347a4250c5f067287f00abd`; independently resolve current main and hosting revisions\
 > **Traceability:** FR-100/003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/005/006/007/008/009/010, SEC-001/002/003/004/005/006/007/008, GOV-002/003/006/007
 
@@ -14,9 +14,10 @@
 FR-100 has local API, Worker, database and browser implementation. Read
 [the activation/recovery runbook](implementation/github-connections.md) and
 [ADR-0023](adr/0023-read-only-github-connections.md). The API-only GitHub App client secret and
-shared API/Worker data key remain unconfigured on hosted services. No production registration,
-grants, migrations, routing change or deployment has been performed. Anonymous flows remain
-available. Saved repositories/comparisons (FR-101/102) follow live FR-100 activation and acceptance.
+shared API/Worker data key remain outside this publication. Hosted registration, exact restricted
+grants, Worker migration and feature activation require the separate reviewed sequence; do not infer
+live acceptance from an automatic web/API build. Anonymous flows remain available. Saved
+repositories/comparisons (FR-101/102) follow live FR-100 activation and acceptance.
 
 Connections require explicit selected repository read grants, expiring server-side encrypted
 tokens, state/PKCE, exact Origin/CSRF and owner-only results. Queue payloads do not gain secrets.
@@ -25,8 +26,11 @@ RLS. Preserve approved backup role scope/custody and protected manual recovery. 
 exclude connections while retaining owner markers/private reports; readback counts strict report
 preservation and public HTTP coverage separately and proves anonymous private 404. Historical
 report JSON and older archive readers are preserved. The prior recovery-planning changes are
-retained on this same checkout branch. Resolve current main independently before publication;
-this milestone is uncommitted and has no final-head CI or hosted acceptance yet.
+retained in PR #58. Its final-head CI, review/thread and mergeability checks gate squash merge;
+the operator also requested deleting the remote milestone branch. Resolve current main independently
+after merge and compare the published tree with the reviewed PR head. Complete handover is included
+in this PR; no later amendment to insert an unknowable squash SHA is needed. Verify live hosting
+revisions separately before enabling the feature.
 
 The prior callback-fix local `pnpm check`, after resolving ten review findings,
 passed all gates with 781 tests: 702 package, 50 operations, five deployment and 24 browser cases. Regressions cover
@@ -72,8 +76,10 @@ The complete `pnpm check` passes build, compiled runtime smoke, UI configuration
 790 tests (711 package, 50 operations, five deployment and 24 browser), lint and formatting.
 Owned HTTP servers, databases, roles and schemas are cleaned up, and PostgreSQL returns to its
 initially stopped state with its volume preserved. Earlier evidence and logs remain unchanged.
-Read the [current response-cleanup evidence](implementation/release-evidence/2026-10-14-provider-response-cleanup.json)
-for current source hashes, full verification and cleanup.
+Read the [response-cleanup evidence](implementation/release-evidence/2026-10-14-provider-response-cleanup.json)
+for the preserved 790-test source snapshot, full verification and cleanup. The publication handover
+changes documentation only; runtime source is unchanged from that snapshot. PR #58 records the
+final publication/CI outcome rather than rewriting dated evidence.
 Read the [prior callback-fix evidence](implementation/release-evidence/2026-10-14-github-connections-callback-errors.json)
 for its preserved 781-test source snapshot, full verification and cleanup.
 Read the [prior grant/deadline evidence](implementation/release-evidence/2026-10-13-github-connections-grants-and-deadlines.json)
@@ -84,7 +90,8 @@ for its preserved 718-test source snapshot. The
 preserves the earlier 704-test source snapshot. The
 [initial local evidence](implementation/release-evidence/2026-10-12-github-connections-local.json)
 preserves the earlier 684-test source snapshot, cleanup/recovery coverage and failed attempts.
-Publish/review this change before executing the separately gated hosted activation sequence.
+After PR #58 publication and merge verification, follow the separately gated hosted activation
+sequence. Preserve existing backup schedules/custody and protected manual recovery.
 
 ### October 11 recovery rehearsal preflight
 
