@@ -54,4 +54,48 @@ describe("retention maintenance [SEC-003, NFR-009]", () => {
     await vi.advanceTimersByTimeAsync(100);
     expect(purge).toHaveBeenCalledOnce();
   });
+  it("cancels an active credential purge on shutdown without leaving another sweep [FR-100, SEC-003, NFR-009]", async () => {
+    vi.useFakeTimers();
+    const onError = vi.fn<(error: unknown) => void>();
+    const purge = vi.fn<(now: string, signal: AbortSignal) => Promise<number>>(
+      (_now, signal) =>
+        new Promise((_resolve, reject) => {
+          signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+        }),
+    );
+    const pump = startAnalysisRetentionPump({
+      repository: { purgeExpiredTerminalAnalyses: async () => 0 },
+      intervalMs: 10,
+      purgeExpiredConnections: purge,
+      onError,
+    });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(purge).toHaveBeenCalledOnce();
+    await pump.stop();
+    expect(purge.mock.calls[0]?.[1].aborted).toBe(true);
+    expect(onError).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(100);
+    expect(purge).toHaveBeenCalledOnce();
+  });
+
+  it("reports credential cleanup failure and retries after its deadline [FR-100, NFR-009]", async () => {
+    vi.useFakeTimers();
+    const failure = new Error("credential cleanup timed out");
+    const onError = vi.fn<(error: unknown) => void>();
+    const purge = vi
+      .fn<(now: string, signal: AbortSignal) => Promise<number>>()
+      .mockRejectedValueOnce(failure)
+      .mockResolvedValue(0);
+    const pump = startAnalysisRetentionPump({
+      repository: { purgeExpiredTerminalAnalyses: async () => 0 },
+      intervalMs: 10,
+      purgeExpiredConnections: purge,
+      onError,
+    });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(onError).toHaveBeenCalledWith(failure);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(purge).toHaveBeenCalledTimes(2);
+    await pump.stop();
+  });
 });

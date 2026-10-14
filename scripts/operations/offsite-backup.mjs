@@ -123,9 +123,15 @@ export async function verifyOnlineBackup({ environment, bundleDirectory, master,
         pool = createStackLensPool(restored.connectionString, undefined, { max: 1 });
         const before = await fingerprint(pool);
         const reports = (
-          await pool.query("SELECT analysis_id, report FROM analysis_report ORDER BY analysis_id")
+          await pool.query(
+            "SELECT r.analysis_id, r.report, pg_catalog.to_jsonb(a)->>'owner_github_id' AS owner_github_id FROM analysis_report r JOIN analysis a ON a.id = r.analysis_id ORDER BY r.analysis_id",
+          )
         ).rows;
         for (const row of reports) AnalysisReportSchema.parse(row.report);
+        assert.equal(
+          (await pool.query("SELECT to_regnamespace('stacklens_auth') AS schema")).rows[0].schema,
+          null,
+        );
         const hashes = reports.map((row) => sha256(JSON.stringify(row.report))).toSorted();
         api = await createStackLensApiRuntime({
           connectionString: restored.connectionString,
@@ -139,6 +145,15 @@ export async function verifyOnlineBackup({ environment, bundleDirectory, master,
             method: "GET",
             url: `/v1/analyses/${row.analysis_id}`,
           });
+          if (row.owner_github_id !== null) {
+            assert.equal(response.statusCode, 404);
+            assert.deepEqual(response.json(), {
+              code: "analysis_not_found",
+              message: "Analysis was not found.",
+            });
+            assert.equal(response.headers["cache-control"], "private, no-store");
+            continue;
+          }
           assert.equal(response.statusCode, 200);
           assert.deepEqual(
             AnalysisReportSchema.parse(response.json().report),
@@ -166,8 +181,10 @@ export async function verifyOnlineBackup({ environment, bundleDirectory, master,
           fingerprintsMatched: true,
           archivedStrictReportReads: restored.reportsRead,
           strictReportReads: reports.length,
-          apiReportReads: reports.length,
-          populatedReportReadbackCovered: reports.length > 0,
+          apiReportReads: reports.filter((row) => row.owner_github_id === null).length,
+          privateReportAccessDenied: reports.filter((row) => row.owner_github_id !== null).length,
+          connectionCredentialsRestored: false,
+          populatedReportReadbackCovered: reports.some((row) => row.owner_github_id === null),
           retainedReportHashes: hashes,
           missingAnalysisApiReadback: true,
           historicalRowsUnchanged: true,

@@ -1,12 +1,22 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 
 import { AnalysisInputPanel } from "../analyze/analysis-input-panel.js";
 import { EvidencePath } from "../analyze/evidence-path.js";
+import {
+  githubConnectionClient,
+  GitHubConnectionApiError,
+} from "../github-connection/github-connection-api.js";
+import {
+  GitHubConnectionControl,
+  useGitHubSession,
+} from "../github-connection/github-connection.js";
 import { RepositoryAnalysisApiError, repositoryAnalysisClient } from "./repository-analysis-api.js";
 import { RepositoryAnalysisForm } from "./repository-analysis-form.js";
 
 function errorMessage(error: unknown): string | undefined {
+  if (error instanceof GitHubConnectionApiError) return error.message;
   if (error instanceof RepositoryAnalysisApiError) return error.message;
   if (error instanceof Error) return "StackLens could not submit this repository right now.";
   return undefined;
@@ -29,8 +39,20 @@ const capabilities = [
 
 export function RepositoryAnalysisHome() {
   const navigate = useNavigate();
+  const { session } = useGitHubSession();
+  const [useConnection, setUseConnection] = useState(false);
+  const connected = useConnection;
+  const [connectionFailed] = useState(
+    () => new URLSearchParams(window.location.search).get("github") === "error",
+  );
   const mutation = useMutation({
-    mutationFn: (repositoryUrl: string) => repositoryAnalysisClient.submitRepository(repositoryUrl),
+    mutationFn: (repositoryUrl: string) => {
+      if (useConnection) {
+        if (session?.csrfToken === undefined) throw new GitHubConnectionApiError();
+        return githubConnectionClient.submit(repositoryUrl, session.csrfToken);
+      }
+      return repositoryAnalysisClient.submitRepository(repositoryUrl);
+    },
   });
 
   async function handleSubmit(repositoryUrl: string): Promise<void> {
@@ -54,18 +76,49 @@ export function RepositoryAnalysisHome() {
 
         <AnalysisInputPanel
           current="repository"
-          formTitle="Inspect a public repository"
+          formTitle={connected ? "Inspect a connected repository" : "Inspect a public repository"}
           formDescription="Start with a GitHub URL. Get a report on supported dependencies, configuration, and source evidence at a fixed revision."
           className="lg:col-start-2 lg:row-span-2"
         >
+          {connectionFailed ? (
+            <p role="alert" className="text-sm text-destructive">
+              GitHub connection was not completed. Start the connection again when you are ready.
+            </p>
+          ) : null}
+          {connected && session?.user === undefined ? (
+            <p role="alert" className="text-sm text-destructive">
+              Your GitHub session ended. Reconnect, or uncheck the connection to analyze a public
+              repository.
+            </p>
+          ) : null}
+          {session?.user === undefined && !connected ? null : (
+            <label className="flex items-start gap-3 text-sm">
+              <input
+                type="checkbox"
+                checked={useConnection}
+                disabled={mutation.isPending}
+                onChange={(event) => {
+                  setUseConnection(event.currentTarget.checked);
+                  mutation.reset();
+                }}
+                className="mt-1 size-4 accent-primary"
+              />
+              Use my GitHub connection for this analysis
+            </label>
+          )}
           <RepositoryAnalysisForm
+            key={connected ? "connected" : "anonymous"}
+            connected={connected}
             onSubmit={handleSubmit}
             isPending={mutation.isPending}
             {...(mutationError === undefined ? {} : { serverError: mutationError })}
           />
           <p className="border-t pt-4 text-sm text-muted-foreground">
-            No account required. Public repositories only.
+            {connected
+              ? "Only your account can open this analysis. Reconnect when your session expires."
+              : "No account required for public repositories."}
           </p>
+          <GitHubConnectionControl />
         </AnalysisInputPanel>
 
         <div className="lg:col-start-1 lg:row-start-2">

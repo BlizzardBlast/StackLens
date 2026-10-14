@@ -1,5 +1,6 @@
 import { attachDatabasePool } from "@vercel/functions";
 
+import { readGitHubAuthorizationConfig } from "@stacklens/github-auth";
 import { readStackLensPoolOptions } from "@stacklens/persistence";
 
 import { createStackLensApiRuntime, type StackLensApiRuntime } from "./runtime.js";
@@ -17,6 +18,7 @@ export async function createVercelApiRuntime(
     throw new Error("STACKLENS_RETENTION_HOURS must be an integer from 1 to 8760.");
   }
   const poolOptions = readStackLensPoolOptions(environment);
+  const githubAuthorization = readGitHubAuthorizationConfig(environment);
   const databaseMode = environment.STACKLENS_DATABASE_MODE ?? "bootstrap";
   if (databaseMode !== "bootstrap" && databaseMode !== "worker-managed") {
     throw new Error("STACKLENS_DATABASE_MODE must be bootstrap or worker-managed.");
@@ -35,6 +37,7 @@ export async function createVercelApiRuntime(
     logger: false,
     startDeliveryPump: false,
     databaseMode,
+    ...(githubAuthorization === undefined ? {} : { githubAuthorization }),
     onDatabasePoolCreated: attachDatabasePool,
     onDatabasePoolError(error) {
       process.stderr.write(`StackLens API database pool error (${error.name}).\n`);

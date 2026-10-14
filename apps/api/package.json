@@ -22,6 +22,7 @@
     "@stacklens/analyzer-core": "workspace:*",
     "@stacklens/contracts": "workspace:*",
     "@stacklens/data-sources": "workspace:*",
+    "@stacklens/github-auth": "workspace:*",
     "@stacklens/persistence": "workspace:*",
     "@stacklens/repository-jobs": "workspace:*",
     "@stacklens/rules-javascript": "workspace:*",

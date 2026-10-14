@@ -8,6 +8,8 @@ export const analyses = pgTable("analysis", {
   id: text("id").primaryKey(),
   inputType: text("input_type").$type<"repository">().notNull(),
   repositoryUrl: text("repository_url").notNull(),
+  ownerGithubId: text("owner_github_id"),
+  githubConnectionId: text("github_connection_id"),
   requestedRef: text("requested_ref"),
   status: text("status").$type<AnalysisStatus>().notNull(),
   progressStage: text("progress_stage").$type<AnalysisProgressStage>().notNull(),

@@ -10,6 +10,7 @@ import {
 
 import {
   GITHUB_PROVIDER_ID,
+  GitHubConfigurationError,
   GitHubRepositoryAdapter,
   githubBlobApiUrl,
   githubCommitApiUrl,
@@ -159,6 +160,105 @@ function successfulBaseFetch(
 
   return fetchImpl;
 }
+
+describe("explicit connected acquisition [FR-100, SEC-004, SEC-005, SEC-007]", () => {
+  it("accepts a granted private snapshot, binds access to one repository, and rechecks credentials per request", async () => {
+    const fetchImpl = successfulBaseFetch(
+      treePayload([treeEntry("package.json", manifestSha, 2)]),
+      [blobPayload(manifestSha, "{}")],
+    );
+    // Replace the first public metadata response while preserving subsequent immutable reads.
+    fetchImpl
+      .mockReset()
+      .mockResolvedValueOnce(jsonResponse(repositoryPayload({ private: true })))
+      .mockResolvedValueOnce(jsonResponse(commitPayload()))
+      .mockResolvedValueOnce(jsonResponse(treePayload([treeEntry("package.json", manifestSha, 2)])))
+      .mockResolvedValueOnce(jsonResponse(blobPayload(manifestSha, "{}")));
+    const getToken = vi.fn<() => Promise<string>>(async () => "synthetic-connected-token");
+    const adapter = new GitHubRepositoryAdapter({
+      fetchImpl,
+      authorizedAccess: { repositoryUrl: `https://github.com/${owner}/${name}`, getToken },
+    });
+    const result = await adapter.fetch({ repositoryUrl: `https://github.com/${owner}/${name}` });
+    expect(result.ok).toBe(true);
+    expect(getToken).toHaveBeenCalledTimes(fetchImpl.mock.calls.length);
+    expect(fetchImpl.mock.calls.length).toBeGreaterThanOrEqual(4);
+    for (const [, init] of fetchImpl.mock.calls)
+      expect(new Headers(init?.headers).get("authorization")).toBe(
+        "Bearer synthetic-connected-token",
+      );
+    const calls = fetchImpl.mock.calls.length;
+    await expect(
+      adapter.fetch({ repositoryUrl: "https://github.com/other/private" }),
+    ).rejects.toThrow("binding does not match");
+    expect(fetchImpl).toHaveBeenCalledTimes(calls);
+  });
+  it.each([401, 403, 404])(
+    "stops private acquisition when GitHub revokes access (%s) without retaining provider details",
+    async (status) => {
+      const fetchImpl = vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(new Response("secret provider content", { status }));
+      const adapter = new GitHubRepositoryAdapter({
+        fetchImpl,
+        authorizedAccess: {
+          repositoryUrl: `https://github.com/${owner}/${name}`,
+          async getToken() {
+            return "synthetic-token";
+          },
+        },
+      });
+      await expect(
+        adapter.fetch({ repositoryUrl: `https://github.com/${owner}/${name}` }),
+      ).rejects.toThrow("Connected GitHub access is unavailable");
+      expect(fetchImpl).toHaveBeenCalledOnce();
+    },
+  );
+  it("stops before another HTTP request after local sign-out", async () => {
+    const fetchImpl = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(jsonResponse(repositoryPayload({ private: true })));
+    const getToken = vi
+      .fn<() => Promise<string>>()
+      .mockResolvedValueOnce("synthetic-token")
+      .mockRejectedValueOnce(
+        new GitHubConfigurationError("Connected GitHub access is unavailable."),
+      );
+    const adapter = new GitHubRepositoryAdapter({
+      fetchImpl,
+      authorizedAccess: { repositoryUrl: `https://github.com/${owner}/${name}`, getToken },
+    });
+    await expect(
+      adapter.fetch({ repositoryUrl: `https://github.com/${owner}/${name}` }),
+    ).rejects.toThrow("Connected GitHub access is unavailable");
+    expect(fetchImpl).toHaveBeenCalledOnce();
+  });
+  it("bounds a stalled token supplier by the acquisition deadline [NFR-008]", async () => {
+    vi.useFakeTimers();
+    const fetchImpl = vi.fn<typeof fetch>();
+    let lookupSignal: AbortSignal | undefined;
+    const getToken = vi.fn<(signal: AbortSignal) => Promise<string>>((signal) => {
+      lookupSignal = signal;
+      return new Promise(() => {});
+    });
+    const adapter = new GitHubRepositoryAdapter({
+      fetchImpl,
+      timeoutMs: 20,
+      authorizedAccess: {
+        repositoryUrl: `https://github.com/${owner}/${name}`,
+        getToken,
+      },
+    });
+    const request = adapter.fetch({ repositoryUrl: `https://github.com/${owner}/${name}` });
+    await vi.advanceTimersByTimeAsync(21);
+    expect(await request).toMatchObject({
+      ok: false,
+      failure: { code: "github_repository_timeout", retryable: true },
+    });
+    expect(lookupSignal?.aborted).toBe(true);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+});
 
 afterEach(() => {
   vi.useRealTimers();

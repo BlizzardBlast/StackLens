@@ -1,3 +1,4 @@
+import { readGitHubAuthorizationConfig } from "@stacklens/github-auth";
 import { readStackLensPoolOptions } from "@stacklens/persistence";
 
 import { createStackLensApiRuntime } from "./runtime.js";
@@ -32,9 +33,14 @@ async function main(): Promise<void> {
   if (process.env.NODE_ENV === "production" && !process.env.DATABASE_URL) {
     throw new Error("Production API requires DATABASE_URL.");
   }
+  const githubAuthorization = readGitHubAuthorizationConfig(process.env);
   const runtime = await createStackLensApiRuntime({
     connectionString: process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
     databasePoolOptions: readStackLensPoolOptions(process.env),
+    ...(githubAuthorization === undefined ? {} : { githubAuthorization }),
+    ...(process.env.STACKLENS_DATABASE_MODE === "worker-managed"
+      ? { databaseMode: "worker-managed" as const }
+      : {}),
     logger: true,
     retentionHours: environmentInteger("STACKLENS_RETENTION_HOURS", 24, 8_760),
     onDatabasePoolError(error) {

@@ -13,7 +13,7 @@ async function legacy(pool) {
     JSON.stringify(
       (
         await pool.query(
-          "SELECT to_jsonb(t) AS row FROM graphile_worker.migrations t ORDER BY to_jsonb(t)::text",
+          "SELECT pg_catalog.to_jsonb(t) AS row FROM graphile_worker.migrations t ORDER BY pg_catalog.to_jsonb(t)::text",
         )
       ).rows.map((item) => item.row),
     ),

@@ -3226,3 +3226,251 @@ The next session must resolve current main independently rather than rely on a f
 The milestone is [PR #57](https://github.com/BlizzardBlast/StackLens/pull/57).
 
 **Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022, GOV-002/006/007; ADR-0022.
+
+## 2026-10-11 — Prepare recovery execution scope against the existing services
+
+After retirement publishes through PR #57, the operator requests recovery/rollback preparation
+using existing resources and signs into Aiven and Neon. Read-only preflight resolves main `e552076`,
+verifies source TLS/PostgreSQL 18 and zero current reports/queue/outbox work, and observes Ready
+Vercel API/web plus the Running original Silly Worker and Aiven service. Direct/proxied OpenAPI
+return HTTP 200. Protected manual recovery remains active, main-only and reviewer protected;
+published workflow/staging source hashes match. Existing rollback artifact hashes are verified.
+
+Neon has no projects and Wispbyte is offline without accepted unattended lifecycle evidence.
+The unsubmitted Free Neon form offers PostgreSQL 18 and Singapore; its storage allowance differs
+from primary plan documentation, requiring allocation-time verification. No project, credential
+grant, capture, source write, routing change or new schedule/account is created. The form is closed.
+The plan records fresh fenced/drained portable capture, paired destinations, bounded usage,
+normal-provider readback, rollback and complete owned cleanup as execution gates. It preserves
+the distinction between October 4's temporary database recovery on original compute and the
+still-unverified persistent compute-loss replacement. Allocating another database solely to repeat
+the former would not close the latter; the plan leaves allocation deferred and records FR-100 as
+the next separate product milestone.
+
+Documentation-impact review updates README, the persistent staging runbook, current handover and
+a separate execution plan/datestamped safe inventory. Requirements, architecture/custody,
+analyzer/scoring, report schema, UI and tokens are unchanged. This unpublished documentation-only
+change is validated for formatting, local links, evidence consistency and privacy. No live
+rehearsal or runtime test result is claimed.
+
+**Traceability:** FR-003/004/017/021/022, NFR-008/009, SEC-001/002/003/007, GOV-002/006/007;
+ADR-0019/0021.
+
+## 2026-10-12 — Implement explicit GitHub connections and private analysis locally
+
+The operator requests the next step after recovery preflight. A new same-checkout
+`codex/github-private-analysis` branch preserves that planning work and implements accepted FR-100.
+The read-only GitHub App decision avoids broad OAuth repository/write scope. State/PKCE, opaque
+cookies, exact Origin/CSRF, encrypted expiring tokens and identity/expiry authentication keep
+credentials server-side; refresh tokens are discarded. The API commits owner-bound metadata with
+the existing outbox, and Worker acquisition rereads the exact connection before every request.
+Ended/revoked access fails without a global-token fallback; analyzer/report scoring policy stays
+unchanged. Anonymous analysis remains available.
+
+Nullable ownership and transaction-local RLS protect legacy restricted readers and pooled request
+identity. Connection storage lives outside the seven analysis backup tables. Recovery fixtures
+preserve private reports and fingerprints without restoring credentials, and prove anonymous 404
+separately from public HTTP coverage. Earlier archives remain readable without changing report
+JSON. The web adds explicit connected/public choice, grant/privacy copy, accessible connection
+controls and cache removal at sign-out/expiry. Switching mode clears privately entered input.
+
+Documentation-impact review updates requirements/architecture, ADR-0023, README, handover, package
+guides, implementation/activation/recovery guidance and design flows/wireframe extension. Synthetic
+authorization, API, Worker and real local non-owner PostgreSQL tests cover identity, state, expiry,
+tampering, CSRF, revocation, atomic writes and legacy-reader isolation. Quarantined private backup
+readback verifies seven fingerprints and owned cleanup. Browser acceptance exercises explicit
+submission and removal after sign-out across Chromium, Firefox and WebKit at desktop/narrow sizes.
+The final local `pnpm check` passes 684 tests (605 package, 50 operations, five deployment and
+24 browser cases), plus build, runtime smoke, UI configuration, type checks, lint and formatting.
+A complete local private-analysis pipeline covers OAuth, restricted-login API, durable delivery,
+Graphile/Worker processing, owner-only readback and sign-out. An elevated database session that
+switches to a restricted role is explicitly rejected. The
+[dated local evidence](../implementation/release-evidence/2026-10-12-github-connections-local.json)
+preserves source hashes and earlier failed attempts. Publication still
+requires final-head CI/review and hosted activation acceptance. No GitHub App registration,
+production grants/migration/deployment, additional host/account or backup schedule is performed.
+Persistent compute-loss/cutover/rollback stays separate; FR-101/102 follow FR-100 live acceptance.
+
+**Traceability:** FR-100/003/017/021/022, SEC-001/002/003/004/005/006/007/008,
+NFR-005/006/007/008/009/010, GOV-002/003/006/007; ADR-0023.
+
+## 2026-10-12 — Resolve the five FR-100 code-review findings
+
+The operator authorizes remediation of every confirmed review finding in the existing checkout.
+The activation guard now checks each ownership policy's predicate, command, role and permissiveness,
+so a valid policy count cannot hide unsafe access. Worker migration reconciles only the five owned
+definitions inside its advisory-locked transaction and rejects unexpected operator policies.
+Real restricted-login PostgreSQL regressions prove rejection, repair, owner isolation and rollback.
+
+Worker authorization uses typed GitHub configuration failures instead of a class-name string.
+Actual denied/ended connections produce the terminal reconnect result without public-token fallback;
+temporary credential-store failures remain retryable under the existing public failure contract.
+Request deadlines and job cancellation cover credential lookup, including a stalled token supplier.
+PostgreSQL lookup bounds pool checkout and I/O, uses transaction-local statement timeout and releases
+only its borrowed client, including a checkout that resolves after cancellation. Tests exercise
+blocked queries and a saturated pool, prove healthy reuse, and recheck token expiry after lookup.
+
+React sign-out cancels pending session reads before clearing private analysis state, preventing a
+late authenticated response from restoring connected controls. The regression starts a real pending
+query before sign-out and verifies its abort and final cache state. Fastify returns a generic 404
+from an explicit unmatched-route handler, keeping callback codes and private paths out of native
+logger messages as well as responses. A child process exercises current TypeScript source and
+captures real Pino output with synthetic privacy markers for 404, validation and server errors.
+
+The focused test/type-check graph and final full `pnpm check` pass. The latter covers 704 tests
+(625 package, 50 operations, five deployment and 24 browser), build, compiled runtime smoke,
+UI configuration, type checks, lint and formatting. These include 20 new regressions. Earlier
+focused failures corrected the retry test's expected public code, a session-race setup that had not
+started its request, and overly strict assumptions about which of the database deadline layers wins.
+No type or lint policy is weakened. Current-source logging avoids depending on a stale package build.
+The [review-fix evidence](../implementation/release-evidence/2026-10-12-github-connections-review-fixes.json)
+records current hashes and cleanup separately from the original 684-test evidence.
+
+Documentation-impact review updates accepted FR-100 acceptance details, architecture, ADR-0023,
+connection flow, package guides, activation runbook, README and handover. Scoring/report contracts,
+backup custody/schedules and the preserved recovery preflight remain unchanged. The milestone stays
+uncommitted and unpublished, with final-head CI/review and hosted activation still pending. No
+production registration, credential grant, migration, deployment or hosted-data action is performed.
+
+**Traceability:** FR-100, SEC-003/005/007, NFR-008/009, GOV-002/003/006/007; ADR-0023.
+
+## 2026-10-13 — Close the subsequent FR-100 privilege and session-expiry findings
+
+The subsequent review found two additional defects. An API login with schema CREATE could install
+an exact-type `to_jsonb(analysis)` overload that executed during a privileged Worker read and
+removed private ownership markers. An expired session retained while no connection hook was mounted
+could expose connected controls and a cached private analysis on the first render after returning.
+Both findings are fixed on the existing uncommitted `codex/github-private-analysis` checkout.
+
+Connected activation rejects effective database/permanent-schema CREATE, including PUBLIC grants
+and schemas outside the API search path, database/schema ownership and credential-table ownership.
+Owners remain unsafe after revoking their own CREATE because they can regrant it. Persistence and
+recovery row reads explicitly select PostgreSQL catalog JSON functions; identity/timeout calls and
+ownership-policy migration also select catalog functions. A fresh owned local database exercises
+approved access, ten unsafe grant/ownership cases and an actual restricted-login function overload.
+Normal Worker reads preserve both private ownership markers and anonymous reads remain denied.
+
+The React hook checks cached and refreshed session expiry synchronously before returning connected
+state. Effects retain timed expiry, cancellation and cache removal. Real remount tests retain the
+normal query GC lifetime, leave the session refresh pending and assert that controls/private status
+do not render before zero-delay cleanup. The private cache entry is removed; an anonymous loading
+query can remain active. Earlier sign-out, policy drift, credential cancellation and logging fixes
+remain covered without changing report/scoring contracts or Fastify transport boundaries.
+
+Final `pnpm check` passes build, compiled runtime smoke, UI configuration, type checks, 718 tests
+(639 package, 50 operations, five deployment and 24 browser), lint and formatting. Fourteen new
+regression cases cover these fixes. Earlier focused attempts corrected fixture ACL restoration
+after PostgreSQL ownership transfer and an overly broad cache-empty assertion. The first full
+command passed all tests but lint rejected a conditional test assertion; it was made unconditional
+and the complete command rerun. No compiler or lint setting is weakened. Owned test databases,
+schemas and roles are removed, and local PostgreSQL is returned to its initially stopped state
+with its volume preserved.
+
+The [final review-fix evidence](../implementation/release-evidence/2026-10-13-github-connections-final-review-fixes.json)
+records current source hashes and verification separately from the unchanged 684- and 704-test
+snapshots. Documentation-impact review updates FR-100 acceptance, architecture/ADR-0023, connection
+flow, contributor/agent and package guidance, activation runbook, README and handover. Hosted
+registration, grants, migration, deployment and final-head CI remain pending. Earlier recovery
+preflight, private archive/key custody, backup schedules and protected manual recovery are preserved.
+
+**Traceability:** FR-100, SEC-003/005/007, NFR-008/009, GOV-002/003/006/007; ADR-0023.
+
+## 2026-10-13 — Enforce FR-100 table privileges and bound credential mutations
+
+A fresh review reproduced two additional defects in an owned local database. Connected activation
+accepted an extra TRUNCATE grant, allowing deletion of public and private synthetic analyses despite
+RLS. Connection creation, deletion and expiry cleanup lacked the read path's execution deadline,
+so a held table lock blocked authentication requests and retention-pump shutdown.
+
+Activation now validates required table permissions and rejects extra table/column grants across
+analysis, report, delivery and connection storage, including PUBLIC grants and PostgreSQL 18
+MAINTAIN. The approved connection DELETE scope is retained. Parameterized credential operations
+share an eight-second checkout/statement/commit deadline, transaction-local server timeout and
+borrowed-client cancellation. Late checkouts issue no SQL; ordinary pooled clients keep their
+timeout settings. Worker stop cancels credential cleanup and waits for its settlement while
+analysis maintenance and Graphile ownership retain their existing drain behavior.
+
+Focused PostgreSQL activation/ownership (81 tests), Worker retention (four tests) and an independent
+real-lock probe pass. The probe rejects unsafe activation, preserves private ownership, confirms
+locked writes time out without committing and completes Worker stop before releasing the lock.
+It removes its owned database and role. Fifty-seven new regressions cover the privilege matrix,
+missing required grants, statement/checkout deadlines and cancellation for all four credential
+operations, cleanup retry and shutdown. The complete `pnpm check` passes build, compiled runtime
+smoke, UI configuration, type checks, 775 tests (696 package, 50 operations, five deployment and
+24 browser), lint and formatting. Owned databases, roles and schemas are removed; local PostgreSQL
+returns to its initially stopped state with its volume preserved. Docker Desktop became unavailable
+before a repeated focused pass reached PostgreSQL; the engine was restored, the inventory was
+empty and the independent probe/full gate passed. Intermediate targeted lint diagnostics were
+fixed without weakening checks.
+
+The [grant/deadline evidence](../implementation/release-evidence/2026-10-13-github-connections-grants-and-deadlines.json)
+records current source hashes, verification and cleanup separately from earlier 684-, 704- and
+718-test snapshots.
+
+Documentation-impact review updates FR-100 acceptance, architecture/ADR-0023, the activation
+runbook, contributor/agent guidance, persistence/Worker guides, README and handover. Earlier dated
+verification, recovery preflight and private archive/key custody remain intact. No hosted account,
+registration, grants, migration, deployment, backup schedule or publication is changed.
+
+**Traceability:** FR-100, SEC-003/005/007, NFR-008/009, GOV-002/003/006/007; ADR-0023.
+
+## 2026-10-14 — Preserve the GitHub authorization-error callback flow
+
+The review's synthetic callback probe reproduced a provider compatibility defect: GitHub's
+standard denial response includes `error_uri`, but the strict query schema rejected it before
+state-cookie cleanup and the fixed error redirect. The provider-error metadata is now accepted
+as an optional string bounded to 2,000 characters. Its value is never fetched, displayed or used
+for navigation. Unknown fields and oversized metadata still receive the stable validation error,
+and OpenAPI documents the same optional field and 400 response.
+
+The focused transport suite passes 27 tests, including six new regressions. They cover denial,
+suspension and callback mismatch with absolute, relative and untrusted URIs; prove cookie cleanup,
+the fixed error notice, no-referrer/no-store headers and zero provider/token-storage calls; and
+check strict validation plus the published OpenAPI bound. The complete `pnpm check` passes build,
+compiled runtime smoke, UI configuration, type checks, 781 tests (702 package, 50 operations,
+five deployment and 24 browser), lint and formatting. Targeted lint required explicit
+`URLSearchParams.toString()` in the new request URLs; no rule was suppressed. The first full
+attempt exhausted the existing Firefox narrow sign-out test budget after reload, with the other
+23 browser cases passing. The unchanged isolated case passed in 3.3 seconds, then the full command
+passed without timeout/retry changes. Its failed log and trace are preserved. Owned test databases,
+roles and schemas are removed, and PostgreSQL returns to its initially stopped state with its
+volume preserved.
+
+The [callback-fix evidence](../implementation/release-evidence/2026-10-14-github-connections-callback-errors.json)
+records current source hashes and verification separately from the unchanged earlier snapshots.
+
+Documentation-impact review updates FR-100 acceptance, ADR-0023, connection flow, API guidance,
+activation runbook, README and handover. Existing release evidence and earlier recovery preflight
+are preserved. This change does not register an App, alter hosted grants, deploy, publish or touch
+archives, keys, backup schedules or protected recovery custody.
+
+**Traceability:** FR-100, SEC-003/007, NFR-005/006, GOV-002/003/007; ADR-0023.
+
+## 2026-10-14 — Close rejected provider response streams
+
+The follow-up review reproduced one shared cleanup defect in GitHub, npm and OSV: an HTTP failure
+returned before body consumption, then cleared the request timer while its stalled response stream
+remained open. Each adapter now aborts its own request controller on every exit, closing unread
+error streams without consuming or retaining their details. Existing authorization, rate-limit,
+retryable-failure and successful-report semantics remain in their current adapters; no analyzer,
+React or Fastify policy is introduced.
+
+Nine native-fetch regressions use owned loopback HTTP servers that send error headers/body bytes
+but never finish. They retain the response through actual connection-close assertions so garbage
+collection cannot substitute for cleanup. Connected GitHub 401/403/404, public GitHub 429/503 and
+npm/OSV 429/503 are covered with their existing safe failure classifications. All nine fail before
+the fix; the provider suite passes 102 tests after it. Targeted TypeScript and lint checks pass
+after restructuring conditional test assertions without suppressing a rule.
+The complete `pnpm check` passes build, compiled runtime smoke, UI configuration, type checks,
+790 tests (711 package, 50 operations, five deployment and 24 browser), lint and formatting.
+Owned HTTP servers and database test resources are cleaned up. Local PostgreSQL returns to its
+initially stopped state with its volume preserved.
+
+The [response-cleanup evidence](../implementation/release-evidence/2026-10-14-provider-response-cleanup.json)
+records the complete quality gate, source hashes and owned-resource cleanup separately from the
+unchanged earlier snapshots. Documentation-impact review updates the provider safety guide,
+connection runbook, README and handover. Accepted requirements, architecture, ADRs, UI semantics
+and report contracts remain applicable. Hosted registration, grants, deployments and publication
+remain pending; backup schedules, archives, keys and protected recovery custody are preserved.
+
+**Traceability:** FR-003/006/011/100, SEC-007, NFR-008/009, GOV-002/007.

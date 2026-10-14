@@ -1,5 +1,16 @@
 # Contributing to StackLens
 
+FR-100 uses synthetic GitHub responses and owned local PostgreSQL RLS fixtures. Run `pnpm check`
+with `TEST_DATABASE_URL` for non-owner ownership tests and private-report quarantined restore.
+Ordinary checks must never authorize a real private repository. Follow
+[GitHub connections](docs/implementation/github-connections.md) before hosted App/grant/activation
+changes. Keep private-aware readers before writers, API logins without permanent schema/database
+CREATE or database/schema/connection-table ownership, and GitHub credentials
+outside reports, queue payloads, logs and analysis backups.
+Activation also enforces the approved table/column privilege scope. Credential writes and cleanup
+must retain bounded database execution and cancellation, with owned lock/checkout tests and
+shutdown coverage; do not weaken the guard or leave a timed-out query using pooled resources.
+
 StackLens is requirements-driven.
 
 Before proposing or implementing product behavior, read [docs/requirements.md](docs/requirements.md).

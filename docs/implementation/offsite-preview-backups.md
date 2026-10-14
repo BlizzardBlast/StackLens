@@ -1,5 +1,13 @@
 # Scheduled offsite preview backups
 
+FR-100 compatibility: captures retain owner markers and private reports in the same seven
+fingerprinted tables while excluding `stacklens_auth` connection credentials. Quarantined restores
+strictly validate retained private reports and expect anonymous HTTP 404 for them; receipts report
+private-denial and public API readback counts separately. Zero public API coverage is explicit and
+does not replace the earlier populated public/PC-off acceptance proof. Existing capture schedule,
+restricted backup SELECT/BYPASSRLS role scope, custody, deadlines and owned cleanup are unchanged.
+See [GitHub connections](github-connections.md). Hosted FR-100 activation is pending.
+
 **Updated:** October 11, 2026. **Status:** scheduled/PC-off/authenticated expiry acceptance verified;
 old Codex scheduler configuration retired after a successful scheduled backup following pause.
 **Traceability:** NFR-010/009, SEC-003/007, FR-003/017/022; ADR-0022.

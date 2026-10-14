@@ -48,6 +48,7 @@ const RepositoryAnalysisSnapshotSchema = z.strictObject({
   completedAt: IsoDateTimeSchema.optional(),
   failure: AnalysisFailureSchema.optional(),
   report: AnalysisReportSchema.optional(),
+  access: z.literal("connected").optional(),
 });
 
 export type RepositoryAnalysisStatus = (typeof ANALYSIS_STATUSES)[number];

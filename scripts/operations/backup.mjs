@@ -40,14 +40,14 @@ export async function fingerprint(connection) {
     bytes += Number(
       (
         await connection.query(
-          `SELECT coalesce(sum(octet_length(to_jsonb(t)::text)), 0) AS bytes FROM ${table} t`,
+          `SELECT coalesce(sum(octet_length(pg_catalog.to_jsonb(t)::text)), 0) AS bytes FROM ${table} t`,
         )
       ).rows[0].bytes,
     );
     if (bytes > maximumArchiveBytes) throw new Error("backup_fingerprint_limit_exceeded");
     const rows = (
       await connection.query(
-        `SELECT to_jsonb(t) AS row FROM ${table} t ORDER BY to_jsonb(t)::text COLLATE "C"`,
+        `SELECT pg_catalog.to_jsonb(t) AS row FROM ${table} t ORDER BY pg_catalog.to_jsonb(t)::text COLLATE "C"`,
       )
     ).rows.map((item) => item.row);
     result[table] = { count: rows.length, sha256: sha256(JSON.stringify(rows)) };

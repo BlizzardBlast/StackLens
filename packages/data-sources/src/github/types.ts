@@ -53,7 +53,13 @@ export interface GitHubRepositorySnapshot {
 
 export interface GitHubAdapterOptions {
   readonly fetchImpl?: typeof fetch;
+  readonly signal?: AbortSignal;
   readonly authToken?: string | undefined;
+  /** Trusted server composition only: one repository and a fresh per-request user credential. */
+  readonly authorizedAccess?: {
+    readonly repositoryUrl: string;
+    readonly getToken: (signal: AbortSignal) => Promise<string>;
+  };
   readonly now?: () => string;
   readonly timeoutMs?: number;
   readonly maxResponseBytes?: number;

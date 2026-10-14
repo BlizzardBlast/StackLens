@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-12T13:57:55.573Z",
+  "milestone": "FR-100 remediation of all five confirmed code-review findings",
+  "status": "local_verified_uncommitted_hosted_activation_pending",
+  "requirements": [
+    "FR-100",
+    "SEC-003",
+    "SEC-005",
+    "SEC-007",
+    "NFR-008",
+    "NFR-009",
+    "GOV-002",
+    "GOV-003",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "source": {
+    "branch": "codex/github-private-analysis",
+    "implementationBase": "e552076f47dd68a67347a4250c5f067287f00abd",
+    "workingTreeUncommitted": true,
+    "hashAlgorithm": "SHA-256",
+    "files": {
+      "packages/github-auth/src/crypto.ts": "e7641dadd9354ccdc9a185493b7ebfbc996047f2c84f636e82ccf6dc4d66aa87",
+      "packages/github-auth/src/github.ts": "cb586de4de5d881f2d1447c32ebed9545a3a683d42e0e1465835390f9344073b",
+      "packages/github-auth/src/service.ts": "cce963ba1db5448a886a0d04f76fce8f056268497ff0a20695062e20ebca2743",
+      "packages/persistence/src/migrate.ts": "e221ee1b257bfc76dd264da99d6f522bb949e217e43166b34c0e32b9a7c80097",
+      "packages/persistence/src/github-connections.ts": "fc8f9334ad09e409182a49453e11d769fb13b2627251887b2aba5948dbc30824",
+      "packages/persistence/src/repository.ts": "c0e0af1050e512c0984fc266f7a0b4290994c32d12933a6553d9d8d203ee57cf",
+      "packages/persistence/src/schema.ts": "6723fc1cbf769ab6b7f22d542401ae0f8e6a3b14c519dfc7033cc916d6f46884",
+      "packages/data-sources/src/github/adapter.ts": "fdb951f3775e768ee589b3f14a73523f73a4a7ff3243d81a5b1c072bff0ec532",
+      "packages/data-sources/src/github/request.ts": "e29cbda27c4551a60b49786dd55b853d01b91f5c956b63a62b1c4eeff3976589",
+      "packages/data-sources/src/github/metadata.ts": "8294c26f08237dcc0c92496b0e235153d0df83933095807a22b1ff728061e695",
+      "packages/repository-jobs/src/enqueue.ts": "c29066d742630f537e2eca2f6dfa3a54d8caeb572e35d4e0dd862b6738b14a87",
+      "apps/api/src/github-auth-http.ts": "df2ad9878cf7314d0c20910e74e36ce4466281bd3304cd48a6cdf9019598999d",
+      "apps/api/src/repository-analysis-http.ts": "4842a8a7f6df22a5ea2c0f361e4cf09f7d8e71cace4c4ddc1d8b796300d929a8",
+      "apps/api/src/repository-analysis.ts": "471d587b2d86c59d6ac6798fa9093c8740050fcbb3e0d9c8bc3dd8b25beb0a15",
+      "apps/api/src/runtime.ts": "d9faf57ce700a22897f57e109e9773ad419d5c01d81f5689365ad200d6e67c40",
+      "apps/api/src/server.ts": "a7b355aa97d526f6a4b55973a8ad3593e32a0dae5779eb31ab820f1463e116ff",
+      "apps/api/src/vercel-runtime.ts": "90f3534f8916c72812a0fc74dc458377978a7d51d5a389b5f0fee467755cc97a",
+      "apps/worker/src/runtime.ts": "23f433d11e214266768ae7d90c28353544e69788e657534ba1bd4f16048f2b8c",
+      "apps/worker/src/providers.ts": "e6f3614e4146cbf6e86bba75a1565cf0b93050638dc78ece3f3ad17a9f3a8d35",
+      "apps/worker/src/task.ts": "b466a64b73f0699efeb07d95033b1eb4badbfe0e5df88e3d602b101205af9b16",
+      "apps/worker/src/retention.ts": "7e715d5892a00c90a266e325e3faf3119c4b140f832f1e8bf8f0c611707e021f",
+      "apps/web/src/features/github-connection/github-connection-api.ts": "d09d9fc13a2f384a1cf95415975dbbd35f742e812512067b4174812f4793377b",
+      "apps/web/src/features/github-connection/github-connection.tsx": "74ee50e4ee23567651e1eb1505dc008c3672662dbcb452cc18f93896d708a6a3",
+      "apps/web/src/features/repository-analysis/repository-analysis-home.tsx": "05ee38c73b495c2ac7f47c0eb42fb0ff93b49f2b0b912521a7582a9f06e3c11b",
+      "apps/web/src/features/repository-analysis/repository-analysis-page.tsx": "2293d0c09bce93e432612965f733ffa09f9c29da789fde31627cf887ff00ff3c",
+      "scripts/operations/offsite-backup.mjs": "96ac87114b44e398277be2c9e72d8576758b551edfafae19d7c7e22033b321ea",
+      "scripts/operations/portable-recovery.mjs": "91f7658be3d518ddeea91114936e8b6cd44cd7b29564f9c33f06a4b9a4de869f",
+      "scripts/operations/github-private-analysis.test.mjs": "9079c1a5a19ca02e1cca7157fa8b102bd06091d264632b95c0fc425ca49cf7bb",
+      "packages/persistence/test/github-ownership.test.ts": "c5c218283c5b5a57ede6aad008bbd72f9223b415ac948dc576e0d2ab7fbab772",
+      "tests/browser/acceptance.spec.ts": "9f4497d1ae26689b729cc6065b3d6efd798b2a8421a8ba908d0cf71c5a212bdc",
+      "packages/persistence/src/ownership-policies.ts": "fcb59634880d94c57f514b3625f12a594765d454c0ab971a70ced0761e2879ec",
+      "packages/persistence/src/database.ts": "bc286966b4d2dd7bd665cc380ce75a8c3fbc55cfb29d2d31c7e784611f156757",
+      "packages/data-sources/src/github/types.ts": "525e593b5b511660c24c98b935983fcd84b39866992570516fd29f3c6378a66c",
+      "packages/data-sources/src/github/errors.ts": "d07d783681fb06270d455942b35c05e0a7f59ee264498bb5b991b9fc1444b3d9",
+      "packages/data-sources/src/github.ts": "25de0037b31ca529f7b277330cf9de238b3cb804e609b04a6cd5fd313f606fb3",
+      "packages/data-sources/src/index.ts": "911fb7a6605257b6c5700619bfe737ae9f113a2a88c3f72d16833dbe3487c35c",
+      "packages/data-sources/test/github.test.ts": "481ccc2f70aa3f77dc7d6507323dbd733f57987716d991c32a3f1488edf7545c",
+      "packages/github-auth/test/service.test.ts": "57da68e9270a01172655df5eb62071d5168c3b1bc655633e6399260dae31555b",
+      "apps/api/test/logging.test.ts": "6d32ab28d25bf095c01cb10393e5bc3bff51d19f314d48690f5ad25fa817a504",
+      "apps/worker/test/repository-analysis-task.test.ts": "eb3d5129b842cc14f6f8044853b1b402b575aa3ab6a56d7e4832df0f7779ed14",
+      "apps/web/src/features/github-connection/github-connection.test.tsx": "4156a59b322fe286367526adee78fc27f6d147a90aa076a6fd0957e81f507795"
+    }
+  },
+  "historicalEvidence": {
+    "path": "docs/implementation/release-evidence/2026-10-12-github-connections-local.json",
+    "sha256": "684bf5bce0ad185e8fb993fad2aa917dea61af182e646dff6c2ee794461adc6d",
+    "description": "Unmodified initial 684-test source snapshot; current hashes and review-fix coverage are recorded here."
+  },
+  "findingFixes": [
+    {
+      "priority": "P1",
+      "finding": "Ownership activation checked only policy count and migration retained drift.",
+      "resolution": "Validate each owned policy predicate, command, role and permissiveness; atomically reconcile the five owned definitions and reject unexpected policies.",
+      "verification": [
+        "Real restricted-login PostgreSQL rejects six changed/missing policy cases and repair restores owner-only access.",
+        "Unexpected permissive operator policy is rejected without deleting it."
+      ]
+    },
+    {
+      "priority": "P2",
+      "finding": "Worker name-string discrimination missed actual GitHub configuration failures.",
+      "resolution": "Use typed errors through the actual adapter-to-Worker boundary; terminal reconnect for ended/revoked access and sanitized retries for temporary credential lookup failures.",
+      "verification": [
+        "Actual GitHub 401, 403, 404 and local ended-connection paths produce terminal reconnect without public fallback or report.",
+        "Temporary lookup failure uses existing repository_unavailable contract and retry behavior."
+      ]
+    },
+    {
+      "priority": "P2",
+      "finding": "A pending session response could restore connected UI after sign-out.",
+      "resolution": "Cancel pending session queries before clearing private analysis caches and setting signed-out state.",
+      "verification": [
+        "A started deferred GET is aborted on successful sign-out; its late resolution cannot restore controls or cached private analysis."
+      ]
+    },
+    {
+      "priority": "P2",
+      "finding": "Credential lookup ignored request timeout and job cancellation.",
+      "resolution": "Pass combined AbortSignal into token retrieval and race the request deadline; bound PostgreSQL checkout/I/O and server statements, releasing only the borrowed client; validate expiry after lookup.",
+      "verification": [
+        "Stalled supplier times out safely with zero GitHub requests.",
+        "Worker cancellation aborts lookup; a late token never reaches transport.",
+        "Real blocked PostgreSQL query and saturated-pool cases release owned clients and preserve healthy pooled reuse.",
+        "Default token expiry clock is read after lookup."
+      ]
+    },
+    {
+      "priority": "P2",
+      "finding": "Fastify unmatched-route messages exposed URLs outside the request serializer.",
+      "resolution": "Register a generic not-found handler and retain fixed validation/server failure responses.",
+      "verification": [
+        "Real native Pino capture from current TypeScript source contains none of the synthetic callback-code, private-path, cookie or error-detail markers for 404, 400 and 500 requests."
+      ]
+    }
+  ],
+  "localQuality": {
+    "command": "pnpm check",
+    "startedAt": "2026-10-12T13:50:50.732Z",
+    "finishedAt": "2026-10-12T13:53:56.049Z",
+    "exitCode": 0,
+    "databaseBacked": true,
+    "providers": "synthetic",
+    "turboConcurrency": 2,
+    "gates": [
+      "build",
+      "compiled runtime smoke",
+      "UI configuration",
+      "typecheck",
+      "deployment tests",
+      "operations tests",
+      "package tests",
+      "browser acceptance",
+      "lint",
+      "format"
+    ],
+    "tests": {
+      "package": 625,
+      "operations": 50,
+      "deployment": 5,
+      "browser": 24,
+      "total": 704,
+      "addedRegressionCases": 20
+    },
+    "packageTests": {
+      "contracts": 24,
+      "ui": 6,
+      "persistence": 51,
+      "data-sources": 93,
+      "analyzer-core": 14,
+      "scoring": 12,
+      "github-auth": 10,
+      "web": 57,
+      "rules-javascript": 232,
+      "repository-jobs": 7,
+      "worker": 41,
+      "api": 52,
+      "analysis-orchestration": 16,
+      "design-tokens": 10
+    },
+    "turboTestGraph": {
+      "successfulTasks": 24,
+      "cachedTasks": 22,
+      "totalTasks": 24
+    },
+    "cacheNote": "Valid Turbo results from the focused source checks are reused; the compiled smoke, operations and browser gates execute in the final full command.",
+    "browserProjects": [
+      "chromium-desktop",
+      "chromium-narrow",
+      "firefox-desktop",
+      "firefox-narrow",
+      "webkit-desktop",
+      "webkit-narrow"
+    ],
+    "localLogSha256": "05ecd5c71ca1c7620602cbc4b59d18cda2e9828ab139c75965dcda67cbad45da"
+  },
+  "ownedCleanup": {
+    "observedAt": "2026-10-12T13:57:55.555Z",
+    "ownedTestDatabasesRemaining": 0,
+    "ownedTestRolesRemaining": 0,
+    "ownedTestSchemasRemaining": 0,
+    "otherLocalDataPreserved": true,
+    "localPostgres": {
+      "initialState": "stopped",
+      "verificationState": "exited",
+      "restoredInitialState": true,
+      "volumePreserved": true,
+      "observedAt": "2026-10-12T14:00:01.651Z"
+    }
+  },
+  "preservedCoverage": {
+    "completePrivatePipeline": true,
+    "actualRestrictedLogin": true,
+    "sevenRecoveryFingerprints": true,
+    "strictPrivateReportReads": 1,
+    "anonymousPrivateReportDenied": true,
+    "connectionCredentialsRestored": false,
+    "historicalRowsUnchanged": true,
+    "quarantineAndOwnedRecoveryCleanup": true
+  },
+  "correctedFocusedAttempts": [
+    "The retry regression initially expected a provider code instead of the existing orchestration repository_unavailable code; corrected the assertion.",
+    "The session race fixture was changed to prove the GET had actually started before sign-out.",
+    "The blocked PostgreSQL deadline assertion accepts either server statement cancellation or the total deadline while requiring release and successful subsequent lookup.",
+    "Native logger regression imports current TypeScript source because standalone package tests do not build the same package first."
+  ],
+  "documentationImpact": [
+    "README",
+    "requirements acceptance detail",
+    "architecture",
+    "ADR-0023",
+    "connection flow",
+    "package guides",
+    "activation runbook",
+    "handover",
+    "chronological journey"
+  ],
+  "hostedActions": {
+    "githubAppRegistered": false,
+    "credentialsProvisioned": false,
+    "apiRoleGrantsChanged": false,
+    "schemaMigrated": false,
+    "deployed": false,
+    "livePrivateProviderAccepted": false,
+    "finalHeadCiReviewed": false,
+    "committed": false,
+    "pushed": false
+  },
+  "preservedBoundaries": {
+    "anonymousAnalysisAvailable": true,
+    "sourceOrRepositoryCodeExecution": false,
+    "reportSchemasAndScoringUnchanged": true,
+    "connectionSchemaExcludedFromAnalysisArchives": true,
+    "backupRoleScopeUnchanged": true,
+    "backupSchedulesUnchanged": true,
+    "newHostingAccount": false,
+    "newBackupAutomation": false,
+    "unexpiredArchivesAndReferencedKeysPreserved": true,
+    "persistentComputeReplacementAcceptance": false
+  },
+  "remaining": [
+    "Review and publish the uncommitted milestone with final-head CI.",
+    "Review GitHub App registration, exact restricted API grants and separate private credential custody before hosted activation.",
+    "Deploy compatible readers and Worker migration before enabling connections; validate live consent, private provider access, revocation, cookie/proxy/log handling and scheduled recovery on that revision.",
+    "Keep persistent compute-loss/cutover/rollback acceptance separate."
+  ]
+}

@@ -1,4 +1,9 @@
-export class GitHubConfigurationError extends Error {}
+export class GitHubConfigurationError extends Error {
+  constructor(message?: string) {
+    super(message);
+    this.name = "GitHubConfigurationError";
+  }
+}
 
 export class GitHubRequestError extends Error {
   constructor(

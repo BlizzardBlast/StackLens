@@ -1,8 +1,8 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.26
-> **Date:** 2026-10-09
+> **Architecture version:** 0.1.27
+> **Date:** 2026-10-12
 > **Requirements source:** [requirements.md](requirements.md)  
 > **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-010, GOV-006–GOV-007
 
@@ -13,8 +13,8 @@ StackLens will be implemented as a **TypeScript modular monolith with an indepen
 The hosted product has three runtime applications:
 
 1. **Web** — React single-page application.
-2. **API** — Fastify HTTP API for validation, orchestration, report delivery, and future authentication.
-3. **Worker** — background Node.js process for public-repository analyses and later monitoring tasks.
+2. **API** — Fastify HTTP API for validation, orchestration, report delivery, and optional GitHub App sessions.
+3. **Worker** — background Node.js process for public or explicitly connected repository analyses and later monitoring tasks.
 
 The analyzer itself is **not** coupled to any of those applications. It lives in reusable workspace packages and accepts normalized project snapshots plus normalized external metadata. This is required so the same analyzer can later power the web product, CLI, GitHub automation, and IDE integration without duplicating product logic (**NFR-004**, **NFR-005**, **FR-108–FR-110**).
 
@@ -105,7 +105,7 @@ See [Repository Analysis Web Flow](implementation/repository-web.md).
 - enforce input/resource limits;
 - map application errors to stable API errors;
 - publish an OpenAPI contract;
-- own future authentication/session integration.
+- own optional GitHub App authentication/session integration through `@stacklens/github-auth`.
 
 The API is a transport/job-management boundary, not the home of rule logic. Quick
 `package.json` analysis is exposed synchronously at `POST /v1/analyze/manifest` through a strict
@@ -144,7 +144,8 @@ MVP uses it for:
 
 Quick `package.json` analysis should remain capable of running without persistence.
 
-Future use includes saved repositories, analysis history, user/account data, monitoring state, and notification state (**FR-100–FR-103**).
+FR-100 adds expiring GitHub connections and analysis ownership. Saved repositories, analysis history,
+additional account data, monitoring and notifications remain future use (**FR-101–FR-103**).
 
 ### 4.5 Background job system
 
@@ -679,7 +680,8 @@ Initial logical entities:
 
 Source files and uploaded manifests are not permanently stored by default. Temporary material used by a worker must be discarded after the analysis lifecycle according to **SEC-003**.
 
-Future user/repository/history tables are added only when **FR-100–FR-103** are implemented.
+FR-100 adds `stacklens_auth.github_connection` and nullable owner/connection references on analysis;
+future saved-repository/history/monitoring tables remain deferred to **FR-101–FR-103**.
 
 ## 13. Progress model
 
@@ -725,7 +727,34 @@ Controls include:
 
 ### Private repositories
 
-Private repository support is explicitly post-MVP. When added:
+FR-100 private repository support is implemented locally; hosted activation is pending. It uses a
+read-only GitHub App, explicit selected-repository installation and eight-hour-or-shorter opaque
+sessions. State/PKCE, Origin/CSRF, fixed callbacks and encrypted server-side user tokens belong in
+`packages/github-auth`; browser/queue/report payloads never receive provider credentials. Worker
+acquisition rereads the connection on every request and never falls back to public credentials.
+Credential lookup is included in request deadlines and job cancellation; bounded database reads
+release their own client on interruption. Connection creation, deletion and expired cleanup share
+the same eight-second operation deadline and transaction-local server timeout. Worker shutdown
+cancels credential cleanup before closing its pool while analysis ownership drains normally.
+Authorization denial is terminal, while temporary credential-store failure retains typed retryable
+provider semantics.
+
+Owner-only application checks and transaction-local identity/RLS protect durable reports. The
+auth-enabled API must be a restricted non-owner/non-BYPASSRLS login; old restricted public-only
+readers cannot see private rows. Activation verifies ownership policy definitions and applicability;
+Worker migration atomically repairs owned policies and rejects unexpected policies.
+API activation also rejects effective CREATE on the database or any permanent schema, database/schema
+ownership and credential-table ownership. Whole-row JSON and identity/timeout calls explicitly use
+PostgreSQL catalog functions. Activation verifies required table permissions and rejects extra
+table/column write, TRUNCATE, TRIGGER, REFERENCES or MAINTAIN grants, including PUBLIC grants.
+An application-schema overload cannot run through a privileged read. Cached browser session expiry
+is checked synchronously before private rendering; effects handle cancellation/cache cleanup.
+Private-aware readers precede writers. The credential schema is excluded from analysis backups;
+independent restore proves strict report preservation and anonymous 404 separately. Reconnection
+is required after recovery. See [ADR-0023](adr/0023-read-only-github-connections.md)
+and [the runbook](implementation/github-connections.md).
+
+These boundaries remain mandatory:
 
 - GitHub permissions must be least privilege (**SEC-005**);
 - source is transient by default (**SEC-004**);
@@ -919,10 +948,10 @@ Analyzer rule packages should remain reusable libraries even if orchestration is
 The following are not required to begin implementation:
 
 - backend hosted cloud provider (the static web target is selected in ADR-0015);
-- user/account authentication provider;
+- additional user/account authentication providers;
 - billing;
 - notification provider;
-- private GitHub App permission model details;
+- live GitHub App registration and permission/custody acceptance (the read-only model is ADR-0023);
 - long-term historical-report retention policy;
 - dedicated cache infrastructure;
 - Redis;

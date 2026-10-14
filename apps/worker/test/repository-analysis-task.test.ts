@@ -11,6 +11,7 @@ import type {
   OsvVulnerabilitySnapshot,
   ProviderResult,
 } from "@stacklens/data-sources";
+import { GitHubConnectionError } from "@stacklens/github-auth";
 import type { AnalysisRepository, RepositoryAnalysisRecord } from "@stacklens/persistence";
 
 import {
@@ -18,8 +19,170 @@ import {
   type RepositoryAnalyzer,
   type RepositoryAnalysisTaskDependencies,
 } from "../src/index.js";
+import { createWorkerAnalysisDependencies } from "../src/providers.js";
 
 const createdAt = "2026-09-21T00:00:00.000Z";
+
+describe("connected Worker ownership [FR-100, SEC-005, SEC-007]", () => {
+  it.each([401, 403, 404, "ended"])(
+    "makes real adapter access denial terminal without public fallback (%s)",
+    async (denial) => {
+      const h = repositoryHarness(
+        record({ ownerGithubId: "123", githubConnectionId: "ab".repeat(32) }),
+      );
+      const fetchImpl = vi.fn<typeof fetch>(
+        async () =>
+          new Response("sensitive provider detail", {
+            status: typeof denial === "number" ? denial : 200,
+          }),
+      );
+      const connected = createWorkerAnalysisDependencies(
+        new AbortController().signal,
+        undefined,
+        fetchImpl,
+        {
+          repositoryUrl: "https://github.com/acme/demo",
+          async getToken() {
+            if (denial === "ended") throw new GitHubConnectionError();
+            return "synthetic-connected-token";
+          },
+        },
+      );
+      const publicFactory = vi.fn<
+        NonNullable<RepositoryAnalysisTaskDependencies["createAnalysisDependencies"]>
+      >(() => analysisDependencies);
+      await executeRepositoryAnalysisJob(
+        { analysisId: "analysis-001", repositoryUrl: "https://github.com/acme/demo", ref: "main" },
+        { id: "owned-job", attempts: 1, maxAttempts: 5 },
+        {
+          repository: h.repository,
+          analysisDependencies,
+          createAnalysisDependencies: publicFactory,
+          createConnectedAnalysisDependencies: () => connected,
+        },
+      );
+      expect(fetchImpl).toHaveBeenCalledTimes(denial === "ended" ? 0 : 1);
+      expect(publicFactory).not.toHaveBeenCalled();
+      expect(h.mocks.markRetryPending).not.toHaveBeenCalled();
+      expect(h.mocks.complete).not.toHaveBeenCalled();
+      expect(h.mocks.fail).toHaveBeenCalledWith(
+        expect.objectContaining({
+          failureSummary: {
+            code: "github_connection_unavailable",
+            message: "Reconnect GitHub and submit a new analysis with repository access.",
+            retryable: false,
+          },
+        }),
+      );
+    },
+  );
+  it("retries transient credential-store failures without contacting GitHub [NFR-008]", async () => {
+    const h = repositoryHarness(
+      record({ ownerGithubId: "123", githubConnectionId: "ab".repeat(32) }),
+    );
+    const fetchImpl = vi.fn<typeof fetch>();
+    const connected = createWorkerAnalysisDependencies(
+      new AbortController().signal,
+      undefined,
+      fetchImpl,
+      {
+        repositoryUrl: "https://github.com/acme/demo",
+        async getToken() {
+          throw new Error("sensitive database detail");
+        },
+      },
+    );
+    await expect(
+      executeRepositoryAnalysisJob(
+        { analysisId: "analysis-001", repositoryUrl: "https://github.com/acme/demo", ref: "main" },
+        { id: "owned-job", attempts: 1, maxAttempts: 5 },
+        {
+          repository: h.repository,
+          analysisDependencies,
+          createConnectedAnalysisDependencies: () => connected,
+        },
+      ),
+    ).rejects.toThrow("retryable");
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(h.mocks.fail).not.toHaveBeenCalled();
+    expect(h.mocks.markRetryPending).toHaveBeenCalledWith(
+      expect.objectContaining({
+        failureSummary: expect.objectContaining({
+          code: "repository_unavailable",
+          message: "Connected GitHub credential lookup is temporarily unavailable.",
+          retryable: true,
+        }),
+      }),
+    );
+    expect(JSON.stringify(h.mocks.markRetryPending.mock.calls)).not.toContain(
+      "sensitive database detail",
+    );
+  });
+  it.each([false, true])(
+    "never falls back to public credentials for missing/revoked access (factory=%s)",
+    async (factory) => {
+      const h = repositoryHarness(
+        record({ ownerGithubId: "123", githubConnectionId: "ab".repeat(32) }),
+      );
+      const analyze = vi.fn<RepositoryAnalyzer>();
+      const publicFactory = vi.fn<
+        NonNullable<RepositoryAnalysisTaskDependencies["createAnalysisDependencies"]>
+      >(() => analysisDependencies);
+      await executeRepositoryAnalysisJob(
+        { analysisId: "analysis-001", repositoryUrl: "https://github.com/acme/demo", ref: "main" },
+        { id: "owned-job", attempts: 1, maxAttempts: 5 },
+        {
+          repository: h.repository,
+          analysisDependencies,
+          createAnalysisDependencies: publicFactory,
+          analyze,
+          ...(factory
+            ? {
+                createConnectedAnalysisDependencies() {
+                  throw new GitHubConnectionError();
+                },
+              }
+            : {}),
+        },
+      );
+      expect(analyze).not.toHaveBeenCalled();
+      expect(publicFactory).not.toHaveBeenCalled();
+      expect(h.mocks.markRetryPending).not.toHaveBeenCalled();
+      expect(h.mocks.fail).toHaveBeenCalledWith(
+        expect.objectContaining({
+          failureSummary: expect.objectContaining({
+            code: "github_connection_unavailable",
+            retryable: false,
+          }),
+        }),
+      );
+    },
+  );
+  it("routes connected work through the per-record provider and preserves normal report policy", async () => {
+    const h = repositoryHarness(
+      record({ ownerGithubId: "123", githubConnectionId: "ab".repeat(32) }),
+    );
+    const createConnectedAnalysisDependencies = vi.fn<
+      NonNullable<RepositoryAnalysisTaskDependencies["createConnectedAnalysisDependencies"]>
+    >(() => analysisDependencies);
+    const analyze = vi.fn<RepositoryAnalyzer>(async () => successfulResult());
+    await executeRepositoryAnalysisJob(
+      { analysisId: "analysis-001", repositoryUrl: "https://github.com/acme/demo", ref: "main" },
+      { id: "owned-job", attempts: 1, maxAttempts: 5 },
+      {
+        repository: h.repository,
+        analysisDependencies,
+        createConnectedAnalysisDependencies,
+        analyze,
+      },
+    );
+    expect(createConnectedAnalysisDependencies).toHaveBeenCalledWith(
+      expect.objectContaining({ ownerGithubId: "123" }),
+      expect.any(AbortSignal),
+    );
+    expect(h.mocks.complete).toHaveBeenCalledOnce();
+  });
+});
 
 function record(overrides: Partial<RepositoryAnalysisRecord> = {}): RepositoryAnalysisRecord {
   return {

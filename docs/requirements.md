@@ -1,8 +1,8 @@
 # StackLens Product & System Requirements
 
 > **Status:** Accepted baseline  
-> **Version:** 0.1.4\
-> **Last updated:** 2026-10-09\
+> **Version:** 0.1.5\
+> **Last updated:** 2026-10-14\
 > **Product:** StackLens  
 > **Repository:** BlizzardBlast/StackLens
 
@@ -546,6 +546,47 @@ Users must be able to connect GitHub and explicitly grant access to supported pr
 
 Access must comply with `SEC-004`, `SEC-005`, and `SEC-006`.
 
+The private-analysis flow discloses that dependency names and exact versions may be queried at
+npm/OSV before submission. Loss of a selected connection fails closed rather than silently
+sending input through the anonymous endpoint. Recovery distinguishes strict private report
+preservation from public HTTP readback; private reports remain inaccessible anonymously after
+restoration, and connection credentials are not restored with them.
+
+Acceptance criteria:
+
+- Public repository and quick-manifest analysis remain available without an account.
+- A read-only GitHub App connection uses explicit installation/repository grants; no repository
+  write or broad OAuth `repo` scope is requested for analysis.
+  Authorization-error callbacks accept bounded standard error metadata, clear pending connection
+  state and return to the fixed error notice. Provider error URIs never control navigation or I/O.
+- Connected submissions require a valid server-side session and explicit use of that connection.
+  The API checks repository access before accepting durable work; the Worker checks the bound
+  connection again during acquisition. Credentials never enter browser storage, reports or jobs.
+- Connected analysis status and reports are visible only to the submitting GitHub identity.
+  Unauthenticated and other-user reads return the same not-found response; anonymous analyses
+  retain their existing access behavior. Database policies also hide connected rows from legacy
+  public-only restricted readers.
+  Unsafe or incomplete ownership-policy configuration prevents connected API activation.
+  The API login cannot own connection storage or create permanent schema/database objects that
+  could run with Worker privileges; effective grants and ownership are checked at activation.
+  Table and column grants must match the approved API scope: SELECT on analysis/report/delivery,
+  INSERT on analysis/delivery, and SELECT/INSERT/DELETE on connection storage. Extra write,
+  TRUNCATE, TRIGGER, REFERENCES or MAINTAIN grants prevent activation, including PUBLIC grants.
+- Sessions expire with the GitHub user token, at most eight hours. Signing out deletes the local
+  connection and stops subsequent acquisition requests using it. No refresh token is retained.
+  Existing reports remain owner protected after reconnecting; GitHub permission revocation blocks
+  new source reads but does not transfer report ownership.
+  An in-flight browser session response cannot undo confirmed sign-out. Credential lookup is
+  bounded and respects acquisition cancellation; authorization denial remains distinct from
+  temporary lookup failure.
+  Credential creation, deletion and expiry cleanup also have bounded checkout/I/O deadlines;
+  Worker shutdown cancels credential cleanup without releasing analysis job ownership early.
+  Cached session expiry is enforced before rendering connected controls or private results,
+  including when returning after expiry while no connection screen was mounted.
+- Connected analyses have the same finite retention policy as anonymous analyses. Private source
+  and provider bodies remain transient. Encrypted connection state is excluded from analysis
+  backups; recovery requires a new explicit connection rather than restoring credentials.
+
 ### FR-101 — Saved repositories
 
 **Phase:** Next  
@@ -1034,7 +1075,8 @@ Technology and architecture decisions are intentionally kept outside the product
 
 The accepted architecture and current technology selections are documented in [architecture.md](architecture.md) and the architecture decision records under [adr/](adr/).
 
-Some lower-level choices remain intentionally deferred, including hosted cloud and authentication
-providers, cache infrastructure and workspace behavior beyond the supported static scope. Current
+Some lower-level choices remain deferred, including persistent replacement hosting, additional
+authentication providers, cache infrastructure and workspace behavior beyond the supported static scope. FR-100's
+read-only GitHub App connection is ADR-0023. Current
 scoring bands/check weights are versioned in ADR-0013; future policies and priority changes must
 satisfy the accepted requirements and receive versioned review.

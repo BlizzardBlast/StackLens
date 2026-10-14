@@ -715,6 +715,8 @@ export class OsvVulnerabilityAdapter implements EvidenceProvider<
         },
       };
     } finally {
+      // Close unread error bodies as well as completed requests; never leave cleanup to GC.
+      controller.abort();
       clearTimeout(timeout);
     }
   }

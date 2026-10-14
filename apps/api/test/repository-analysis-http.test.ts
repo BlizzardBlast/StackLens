@@ -2,6 +2,8 @@ import type { FastifyInstance } from "fastify";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { AnalysisReport } from "@stacklens/contracts";
+import { GitHubConnectionService } from "@stacklens/github-auth";
+import type { StoredGitHubConnection } from "@stacklens/persistence";
 import type {
   AnalysisRepository,
   RepositoryAnalysisRecord,
@@ -93,6 +95,10 @@ function repositoryHarness(
       createdAt: input.createdAt,
       updatedAt: input.createdAt,
       ...(input.requestedRef === undefined ? {} : { requestedRef: input.requestedRef }),
+      ...(input.ownerGithubId === undefined ? {} : { ownerGithubId: input.ownerGithubId }),
+      ...(input.githubConnectionId === undefined
+        ? {}
+        : { githubConnectionId: input.githubConnectionId }),
     });
 
     return currentAnalysis;
@@ -165,6 +171,320 @@ function deliveryDispatcherHarness(error?: Error) {
 }
 
 const openApps: FastifyInstance[] = [];
+
+describe("GitHub connection transport [FR-100, SEC-003, SEC-005, SEC-007]", () => {
+  async function callbackHarness() {
+    const fetchImpl = vi.fn<typeof fetch>(async () => {
+      throw new Error("Authorization errors must not contact GitHub.");
+    });
+    const save = vi.fn<(row: StoredGitHubConnection) => Promise<void>>(async () => {});
+    const service = new GitHubConnectionService(
+      {
+        save,
+        async find() {
+          return undefined;
+        },
+        async remove() {},
+        async purgeExpired() {
+          return 0;
+        },
+      },
+      {
+        clientId: "Iv1.test",
+        clientSecret: "synthetic-client-secret",
+        sessionKey: "12".repeat(32),
+        publicOrigin: "https://stacklens.example",
+        installationUrl: "https://github.com/apps/stacklens-test/installations/new",
+      },
+      fetchImpl,
+    );
+    const app = await createStackLensApi({
+      repository: repositoryHarness().repository,
+      deliveryDispatcher: deliveryDispatcherHarness().deliveryDispatcher,
+      githubConnections: service,
+    });
+    openApps.push(app);
+    const started = await app.inject({ method: "GET", url: "/v1/auth/github/start" });
+    expect(started.statusCode).toBe(302);
+    const state = new URL(String(started.headers.location)).searchParams.get("state") ?? "";
+    const cookie = String(started.headers["set-cookie"]).split(";")[0] ?? "";
+    return { app, state, cookie, fetchImpl, save };
+  }
+
+  it.each([
+    {
+      error: "access_denied",
+      errorUri:
+        "https://docs.github.com/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-authorization-request-errors/#access-denied",
+    },
+    {
+      error: "application_suspended",
+      errorUri:
+        "/apps/building-integrations/setting-up-and-registering-oauth-apps/troubleshooting-authorization-request-errors/#application-suspended",
+    },
+    { error: "redirect_uri_mismatch", errorUri: "https://untrusted.invalid/synthetic-error-uri" },
+  ])(
+    "handles $error with provider error_uri without granting access [FR-100, SEC-007]",
+    async ({ error, errorUri }) => {
+      const { app, state, cookie, fetchImpl, save } = await callbackHarness();
+      const query = new URLSearchParams({
+        error,
+        state,
+        error_description: "synthetic-provider-detail",
+        error_uri: errorUri,
+      });
+      const response = await app.inject({
+        method: "GET",
+        url: `/v1/auth/github/callback?${query.toString()}`,
+        headers: { cookie },
+      });
+      expect(response.statusCode).toBe(302);
+      expect(response.headers.location).toBe("https://stacklens.example/?github=error");
+      expect(response.headers["set-cookie"]).toBe(
+        "__Host-stacklens_oauth=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Secure",
+      );
+      expect(response.headers["referrer-policy"]).toBe("no-referrer");
+      expect(response.headers["cache-control"]).toBe("private, no-store");
+      expect(response.body).not.toContain(errorUri);
+      expect(response.body).not.toContain("synthetic-provider-detail");
+      expect(fetchImpl).not.toHaveBeenCalled();
+      expect(save).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(["oversized error_uri", "unknown query field"] as const)(
+    "rejects %s before provider I/O [FR-100, SEC-007]",
+    async (invalid) => {
+      const { app, state, cookie, fetchImpl, save } = await callbackHarness();
+      const query = new URLSearchParams({ error: "access_denied", state });
+      query.set(
+        invalid === "oversized error_uri" ? "error_uri" : "unsupported",
+        invalid === "oversized error_uri" ? "x".repeat(2_001) : "synthetic-value",
+      );
+      const response = await app.inject({
+        method: "GET",
+        url: `/v1/auth/github/callback?${query.toString()}`,
+        headers: { cookie },
+      });
+      expect(response.statusCode).toBe(400);
+      expect(response.json()).toEqual({
+        code: "invalid_request",
+        message: "Request does not match the API schema.",
+      });
+      expect(fetchImpl).not.toHaveBeenCalled();
+      expect(save).not.toHaveBeenCalled();
+    },
+  );
+
+  it("publishes bounded optional authorization-error metadata in OpenAPI [FR-100, NFR-005]", async () => {
+    const { app } = await callbackHarness();
+    const response = await app.inject({ method: "GET", url: "/openapi.json" });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({
+      paths: {
+        "/v1/auth/github/callback": {
+          get: {
+            parameters: expect.arrayContaining([
+              expect.objectContaining({
+                name: "error_uri",
+                in: "query",
+                required: false,
+                schema: expect.objectContaining({ type: "string", maxLength: 2_000 }),
+              }),
+            ]),
+            responses: { "400": {}, "503": {} },
+          },
+        },
+      },
+    });
+  });
+
+  it("protects callback cookies and rejects CSRF/foreign owners before any report read", async () => {
+    const rows = new Map<string, StoredGitHubConnection>();
+    const fetchImpl = vi.fn<typeof fetch>(async (input) =>
+      (input instanceof Request ? input.url : input instanceof URL ? input.href : input).includes(
+        "access_token",
+      )
+        ? Response.json({
+            access_token: "ghu_syntheticTestToken0123456789",
+            token_type: "bearer",
+            scope: "",
+            expires_in: 28800,
+          })
+        : (input instanceof Request
+              ? input.url
+              : input instanceof URL
+                ? input.href
+                : input
+            ).endsWith("/user")
+          ? Response.json({ id: 123, login: "alice" })
+          : Response.json({ private: true, name: "demo", owner: { login: "acme" } }),
+    );
+    const service = new GitHubConnectionService(
+      {
+        async save(row) {
+          rows.set(row.sessionHash, row);
+        },
+        async find(id) {
+          return rows.get(id);
+        },
+        async remove(id) {
+          rows.delete(id);
+        },
+        async purgeExpired() {
+          return 0;
+        },
+      },
+      {
+        clientId: "Iv1.test",
+        clientSecret: "synthetic-client-secret",
+        sessionKey: "12".repeat(32),
+        publicOrigin: "https://stacklens.example",
+        installationUrl: "https://github.com/apps/stacklens-test/installations/new",
+      },
+      fetchImpl,
+      () => Date.parse(createdAt),
+    );
+    const h = repositoryHarness(),
+      jobs = deliveryDispatcherHarness();
+    const app = await createStackLensApi({
+      repository: h.repository,
+      deliveryDispatcher: jobs.deliveryDispatcher,
+      githubConnections: service,
+      createAnalysisId: () => "analysis-test-001",
+      now: () => createdAt,
+    });
+    openApps.push(app);
+    const start = await app.inject({ method: "GET", url: "/v1/auth/github/start" });
+    expect(start.statusCode).toBe(302);
+    const state = new URL(String(start.headers.location)).searchParams.get("state");
+    const pending = String(start.headers["set-cookie"]).split(";")[0] ?? "";
+    expect(pending).toMatch(/^__Host-stacklens_oauth=/u);
+    expect(start.headers["set-cookie"]).toContain("HttpOnly; SameSite=Lax");
+    expect(start.headers["set-cookie"]).toContain("Secure");
+    const callback = await app.inject({
+      method: "GET",
+      url: `/v1/auth/github/callback?code=synthetic-code&state=${state}`,
+      headers: { cookie: pending },
+    });
+    expect(callback.headers.location).toBe("https://stacklens.example/?github=connected");
+    const cookies = callback.headers["set-cookie"];
+    const sessionCookie =
+      (Array.isArray(cookies) ? cookies : [String(cookies)])
+        .find((value) => value.startsWith("__Host-stacklens_session="))
+        ?.split(";")[0] ?? "";
+    expect(sessionCookie).not.toBe("");
+    const response = await app.inject({
+      method: "GET",
+      url: "/v1/auth/session",
+      headers: { cookie: sessionCookie },
+    });
+    const session = response.json<{ csrfToken: string; user: { login: string } }>();
+    expect(session.user.login).toBe("alice");
+    expect(response.body).not.toContain("ghu_");
+    expect(response.body).not.toContain("connectionId");
+    const headers = {
+      cookie: sessionCookie,
+      origin: "https://stacklens.example",
+      "x-stacklens-csrf": session.csrfToken,
+    };
+    const deniedSubmissions = await Promise.all(
+      [
+        { ...headers, origin: "https://evil.example" },
+        { ...headers, "x-stacklens-csrf": "wrong" },
+        { origin: headers.origin },
+      ].map((invalid) =>
+        app.inject({
+          method: "POST",
+          url: "/v1/analyses/github",
+          headers: invalid,
+          payload: { repositoryUrl: "https://github.com/acme/demo" },
+        }),
+      ),
+    );
+    expect(deniedSubmissions.map((result) => result.statusCode)).toEqual([403, 403, 403]);
+    expect(h.createQueuedRepositoryAnalysisWithDelivery).not.toHaveBeenCalled();
+    const accepted = await app.inject({
+      method: "POST",
+      url: "/v1/analyses/github",
+      headers,
+      payload: { repositoryUrl: "https://github.com/acme/demo" },
+    });
+    expect(accepted.statusCode).toBe(202);
+    expect(h.createQueuedRepositoryAnalysisWithDelivery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ownerGithubId: "123",
+        retentionExpiresAt: "2026-09-22T12:00:00.000Z",
+      }),
+    );
+    const privateRead = await app.inject({
+      method: "GET",
+      url: "/v1/analyses/analysis-test-001",
+      headers,
+    });
+    expect(privateRead.json()).toMatchObject({ access: "connected" });
+    const denied = await app.inject({ method: "GET", url: "/v1/analyses/analysis-test-001" });
+    const absent = await app.inject({ method: "GET", url: "/v1/analyses/missing" });
+    expect(denied.statusCode).toBe(404);
+    expect(denied.body).toBe(absent.body);
+    expect(h.findReport).not.toHaveBeenCalled();
+    h.setAnalysis(
+      record({
+        ownerGithubId: "456",
+        githubConnectionId: "ab".repeat(32),
+        status: "completed",
+        progressStage: "completed",
+      }),
+    );
+    expect(
+      (await app.inject({ method: "GET", url: "/v1/analyses/analysis-test-001", headers }))
+        .statusCode,
+    ).toBe(404);
+    expect(h.findReport).not.toHaveBeenCalled();
+    expect(
+      (await app.inject({ method: "POST", url: "/v1/auth/sign-out", headers, payload: {} }))
+        .statusCode,
+    ).toBe(200);
+    expect(rows.size).toBe(0);
+    expect(
+      (
+        await app.inject({
+          method: "POST",
+          url: "/v1/analyses/github",
+          headers,
+          payload: { repositoryUrl: "https://github.com/acme/demo" },
+        })
+      ).statusCode,
+    ).toBe(403);
+  });
+  it("keeps anonymous analysis available with connections disabled", async () => {
+    const app = await testApi(
+      repositoryHarness().repository,
+      deliveryDispatcherHarness().deliveryDispatcher,
+    );
+    expect((await app.inject({ method: "GET", url: "/v1/auth/session" })).json()).toEqual({
+      enabled: false,
+    });
+    expect(
+      (
+        await app.inject({
+          method: "POST",
+          url: "/v1/analyses/github",
+          payload: { repositoryUrl: "https://github.com/acme/demo" },
+        })
+      ).statusCode,
+    ).toBe(403);
+    expect(
+      (
+        await app.inject({
+          method: "POST",
+          url: "/v1/analyses/repository",
+          payload: { repositoryUrl: "https://github.com/acme/demo" },
+        })
+      ).statusCode,
+    ).toBe(202);
+  });
+});
 
 afterEach(async () => {
   const apps = openApps.splice(0);

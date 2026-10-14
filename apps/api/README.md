@@ -1,5 +1,22 @@
 # @stacklens/api
 
+## Optional GitHub App connection (FR-100)
+
+`/v1/auth/session`, `/v1/auth/github/start`, `/v1/auth/github/callback` and
+`/v1/auth/sign-out` implement state/PKCE and opaque cookie sessions. Explicit
+`POST /v1/analyses/github` requires an active connection, exact Origin and CSRF header, verifies
+repository access, then commits owner-bound analysis/outbox data. Public/quick routes remain
+anonymous. Owner checks precede report reads; private status adds `access: connected`, without
+exposing owner identifiers or connection references.
+Authorization-error callbacks accept bounded optional `error_uri` metadata, ignore its contents,
+clear pending state and redirect to the fixed error notice. Unknown/oversized query fields retain
+the stable 400 response; Fastify validation and OpenAPI share this schema.
+
+Hosted configuration remains disabled/pending. Activated APIs require worker-managed database mode
+and a restricted RLS-protected non-owner login; startup fails closed otherwise. Request logs omit
+codes/cookies/private URLs. See [GitHub connections](../../docs/implementation/github-connections.md)
+for configuration, exact role grants, reader-first deployment and recovery.
+
 ## Report compatibility and quick composition
 
 Existing URLs serve the shared strict schema 1.0.0/2.0.0 response union in Zod and OpenAPI. Quick

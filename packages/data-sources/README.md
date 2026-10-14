@@ -62,6 +62,13 @@ dist-tag references a returned version.
 
 Provider responses are untrusted.
 
+GitHub, npm and OSV each abort their request-owned controller on every exit, including failures
+returned immediately after HTTP headers. Unread error bodies must not retain sockets until provider
+EOF or garbage collection. Cleanup preserves typed authorization, rate-limit and retryable failure
+classifications without reading or retaining provider error details. Owned loopback HTTP fixtures
+use native fetch and stalled bodies to verify actual connection closure, with responses retained
+through the assertion so garbage collection cannot hide missing cleanup.
+
 The npm adapter therefore:
 
 - uses a fixed provider origin rather than a user-controlled host;
@@ -217,8 +224,16 @@ messages.
 
 The adapter may receive an operator-supplied token for authenticated REST reads of public
 repositories. That token only changes GitHub transport/rate-limit capacity: the repository parser
-still rejects private repositories and the adapter performs no writes. User-connected GitHub
-authentication, private repository access, and write access remain outside this milestone.
+still rejects private repositories in public mode and the adapter performs no writes. FR-100 adds
+a server-only `authorizedAccess` seam bound to exactly one validated repository, with credential
+lookup before every request. Connected mode permits private metadata only through this seam and
+stops on ended credentials or 401/403/404 access failure. It cannot be combined with the operator
+public token. Its token supplier receives the combined deadline/job `AbortSignal`. Ended access
+uses exported `GitHubConfigurationError`; other lookup failures become sanitized retryable provider
+failures. Token retrieval itself is bounded even if a supplier ignores cancellation. Source/privacy/
+resource limits remain identical. User authorization belongs in
+`@stacklens/github-auth`, never in analyzer rules or the browser. See
+[the runbook](../../docs/implementation/github-connections.md). Write access remains outside scope.
 
 Rate-limit responses are classified without copying GitHub response bodies into StackLens failures.
 A `429`, or a `403` carrying GitHub rate-limit headers such as

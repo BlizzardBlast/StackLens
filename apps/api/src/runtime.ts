@@ -2,12 +2,15 @@ import type { FastifyInstance } from "fastify";
 import { makeWorkerUtils } from "graphile-worker";
 import type { Pool } from "pg";
 
+import { GitHubConnectionService, type GitHubAuthorizationConfig } from "@stacklens/github-auth";
 import {
   createStackLensDatabase,
   createStackLensPool,
   DrizzleAnalysisRepository,
+  DrizzleGitHubConnectionStore,
   migrateStackLensDatabase,
   verifyStackLensDatabase,
+  verifyConnectedApiDatabase,
   type StackLensPoolOptions,
 } from "@stacklens/persistence";
 import {
@@ -21,6 +24,7 @@ import { quickManifestAnalyzer } from "./quick-manifest-analyzer.js";
 import { createStackLensApi } from "./server.js";
 
 export interface StackLensApiRuntimeOptions {
+  readonly githubAuthorization?: GitHubAuthorizationConfig;
   readonly connectionString: string;
   readonly logger?: boolean;
   readonly retentionHours?: number;
@@ -52,12 +56,21 @@ export async function createStackLensApiRuntime(
     const database = createStackLensDatabase(pool);
     if (options.databaseMode === "worker-managed") {
       await verifyStackLensDatabase(database);
+      if (options.githubAuthorization !== undefined) await verifyConnectedApiDatabase(database);
       const app = await createStackLensApi({
         repository: new DrizzleAnalysisRepository(database),
         // The atomic analysis/outbox commit is sufficient for acceptance; the Worker delivers it.
         deliveryDispatcher: { async dispatchReady() {} },
         quickManifestAnalyzer,
         retentionHours: options.retentionHours ?? 24,
+        ...(options.githubAuthorization === undefined
+          ? {}
+          : {
+              githubConnections: new GitHubConnectionService(
+                new DrizzleGitHubConnectionStore(database),
+                options.githubAuthorization,
+              ),
+            }),
         ...(options.logger === undefined ? {} : { logger: options.logger }),
       });
       let stopped = false;
@@ -74,6 +87,10 @@ export async function createStackLensApiRuntime(
         },
       };
     }
+    if (options.githubAuthorization !== undefined)
+      throw new Error(
+        "GitHub connections require worker-managed database mode and a restricted API login.",
+      );
     await migrateStackLensDatabase(database);
 
     const workerUtils = await makeWorkerUtils({ pgPool: pool });

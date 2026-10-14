@@ -1,4 +1,4 @@
-import { and, eq, isNull, notInArray, or, sql } from "drizzle-orm";
+import { and, eq, getTableColumns, isNull, notInArray, or, sql } from "drizzle-orm";
 
 import type { StackLensDatabase } from "./database.js";
 import { analysisDeliveries, analysisReports, analyses } from "./schema.js";
@@ -56,6 +56,8 @@ function compactRecord(row: typeof analyses.$inferSelect): RepositoryAnalysisRec
     id: row.id,
     inputType: row.inputType,
     repositoryUrl: row.repositoryUrl,
+    ...(row.ownerGithubId === null ? {} : { ownerGithubId: row.ownerGithubId }),
+    ...(row.githubConnectionId === null ? {} : { githubConnectionId: row.githubConnectionId }),
     ...(row.requestedRef === null ? {} : { requestedRef: row.requestedRef }),
     status: row.status,
     progressStage: row.progressStage,
@@ -78,6 +80,10 @@ function compactRecord(row: typeof analyses.$inferSelect): RepositoryAnalysisRec
 }
 
 export interface AnalysisRepository {
+  withOwner?<T>(
+    ownerGithubId: string | undefined,
+    operation: (repository: AnalysisRepository) => Promise<T>,
+  ): Promise<T>;
   createQueuedRepositoryAnalysis(
     input: CreateQueuedRepositoryAnalysis,
   ): Promise<RepositoryAnalysisRecord>;
@@ -116,7 +122,25 @@ export interface AnalysisRepository {
 }
 
 export class DrizzleAnalysisRepository implements AnalysisRepository {
-  constructor(private readonly database: StackLensDatabase) {}
+  constructor(
+    private readonly database: Pick<
+      StackLensDatabase,
+      "select" | "insert" | "update" | "delete" | "execute" | "transaction"
+    >,
+  ) {}
+
+  /** Transaction-local context cannot leak identity across pooled requests. */
+  async withOwner<T>(
+    ownerGithubId: string | undefined,
+    operation: (repository: AnalysisRepository) => Promise<T>,
+  ): Promise<T> {
+    return this.database.transaction(async (transaction) => {
+      await transaction.execute(
+        sql`SELECT pg_catalog.set_config('stacklens.owner_github_id', ${ownerGithubId ?? ""}, true)`,
+      );
+      return operation(new DrizzleAnalysisRepository(transaction));
+    });
+  }
 
   /** SEC-003: bounded cleanup never deletes queued/running claims or edits Graphile internals. */
   async purgeExpiredTerminalAnalyses(now: string, limit = 100): Promise<number> {
@@ -150,6 +174,10 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
         id: input.id,
         inputType: "repository",
         repositoryUrl: input.repositoryUrl,
+        ...(input.ownerGithubId === undefined ? {} : { ownerGithubId: input.ownerGithubId }),
+        ...(input.githubConnectionId === undefined
+          ? {}
+          : { githubConnectionId: input.githubConnectionId }),
         ...(input.requestedRef === undefined ? {} : { requestedRef: input.requestedRef }),
         status: "queued",
         progressStage: "queued",
@@ -169,7 +197,9 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
 
     if (
       record.repositoryUrl !== input.repositoryUrl ||
-      record.requestedRef !== input.requestedRef
+      record.requestedRef !== input.requestedRef ||
+      record.ownerGithubId !== input.ownerGithubId ||
+      record.githubConnectionId !== input.githubConnectionId
     ) {
       throw new Error("Analysis identifier is already bound to different repository input.");
     }
@@ -187,6 +217,10 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
           id: input.id,
           inputType: "repository",
           repositoryUrl: input.repositoryUrl,
+          ...(input.ownerGithubId === undefined ? {} : { ownerGithubId: input.ownerGithubId }),
+          ...(input.githubConnectionId === undefined
+            ? {}
+            : { githubConnectionId: input.githubConnectionId }),
           ...(input.requestedRef === undefined ? {} : { requestedRef: input.requestedRef }),
           status: "queued",
           progressStage: "queued",
@@ -210,7 +244,9 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
 
       if (
         row.repositoryUrl !== input.repositoryUrl ||
-        row.requestedRef !== (input.requestedRef ?? null)
+        row.requestedRef !== (input.requestedRef ?? null) ||
+        row.ownerGithubId !== (input.ownerGithubId ?? null) ||
+        row.githubConnectionId !== (input.githubConnectionId ?? null)
       ) {
         throw new Error("Analysis identifier is already bound to different repository input.");
       }
@@ -349,7 +385,18 @@ export class DrizzleAnalysisRepository implements AnalysisRepository {
   }
 
   async findAnalysis(id: string): Promise<RepositoryAnalysisRecord | undefined> {
-    const [row] = await this.database.select().from(analyses).where(eq(analyses.id, id)).limit(1);
+    // Read-only recovery of pre-FR-100 archives must not require altering their fingerprinted rows.
+    const [row] = await this.database
+      .select({
+        ...getTableColumns(analyses),
+        ownerGithubId: sql<string | null>`pg_catalog.to_jsonb(${analyses})->>'owner_github_id'`,
+        githubConnectionId: sql<
+          string | null
+        >`pg_catalog.to_jsonb(${analyses})->>'github_connection_id'`,
+      })
+      .from(analyses)
+      .where(eq(analyses.id, id))
+      .limit(1);
     return row === undefined ? undefined : compactRecord(row);
   }
 

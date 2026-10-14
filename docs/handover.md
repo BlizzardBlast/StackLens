@@ -1,13 +1,116 @@
 # StackLens Session Handover
 
-> **Prepared:** 2026-10-11\
-> **Architecture:** v0.1.26; requirements v0.1.4\
-> **Milestone:** Offsite handover accepted; post-pause scheduled capture/restore verified and old backup automation configuration deleted\
-> **Branch:** `codex/offsite-backup-retirement`, existing checkout; PRs #53–#56 merged; [PR #57](https://github.com/BlizzardBlast/StackLens/pull/57) records retirement; independently resolve its final checks and current main\
-> **Implementation base:** `6e3d544ff75e17b1a2f7d8981b536630444c0afb`; independently resolve current main and hosting revisions\
-> **Traceability:** FR-003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/008/009/010, SEC-001/002/003/007, GOV-002/006/007
+> **Prepared:** 2026-10-14\
+> **Architecture:** v0.1.27; requirements v0.1.5\
+> **Milestone:** FR-100 local implementation; hosted activation and persistent public replacement remain gated\
+> **Branch:** `codex/github-private-analysis`, existing checkout; includes preserved unpublished recovery preflight after merged [PR #57](https://github.com/BlizzardBlast/StackLens/pull/57)\
+> **Implementation base:** `e552076f47dd68a67347a4250c5f067287f00abd`; independently resolve current main and hosting revisions\
+> **Traceability:** FR-100/003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/005/006/007/008/009/010, SEC-001/002/003/004/005/006/007/008, GOV-002/003/006/007
 
 ## Current handover
+
+### October 14 GitHub connections and private analysis
+
+FR-100 has local API, Worker, database and browser implementation. Read
+[the activation/recovery runbook](implementation/github-connections.md) and
+[ADR-0023](adr/0023-read-only-github-connections.md). The API-only GitHub App client secret and
+shared API/Worker data key remain unconfigured on hosted services. No production registration,
+grants, migrations, routing change or deployment has been performed. Anonymous flows remain
+available. Saved repositories/comparisons (FR-101/102) follow live FR-100 activation and acceptance.
+
+Connections require explicit selected repository read grants, expiring server-side encrypted
+tokens, state/PKCE, exact Origin/CSRF and owner-only results. Queue payloads do not gain secrets.
+Private-aware readers precede writers, and activated API credentials must not own tables or bypass
+RLS. Preserve approved backup role scope/custody and protected manual recovery. Analysis backups
+exclude connections while retaining owner markers/private reports; readback counts strict report
+preservation and public HTTP coverage separately and proves anonymous private 404. Historical
+report JSON and older archive readers are preserved. The prior recovery-planning changes are
+retained on this same checkout branch. Resolve current main independently before publication;
+this milestone is uncommitted and has no final-head CI or hosted acceptance yet.
+
+The prior callback-fix local `pnpm check`, after resolving ten review findings,
+passed all gates with 781 tests: 702 package, 50 operations, five deployment and 24 browser cases. Regressions cover
+real PostgreSQL policy drift/repair and blocked credential reads, the pending-session sign-out
+race, real adapter-to-Worker revoked-access handling and native Fastify logging from current source.
+Ownership activation checks all five actual policy definitions and applicability; Worker migration
+repairs only owned definitions atomically and rejects unexpected policies. Credential lookup is
+bounded and cancellable, and temporary lookup failures retain retries. The full local private-analysis
+pipeline uses a real restricted database login and synthetic providers; an elevated session using
+`SET ROLE` is rejected at activation. Activation also rejects effective database/permanent-schema
+CREATE and schema/database/credential-table ownership, including an owner that revoked its own
+CREATE privilege. PostgreSQL catalog qualification prevents a hostile exact-type JSON overload
+from running during Worker reads. Browser cached-session expiry is checked synchronously before
+connected controls/private content render after an unobserved expiry.
+The next review found two more defects: extra destructive table grants passed activation, and
+credential writes/cleanup could block on locks without a deadline. Both are fixed locally.
+Activation validates required permissions and rejects extra table/column grants on all four
+tables, including PUBLIC grants and PostgreSQL 18 MAINTAIN. Credential creation/deletion/purge
+share the bounded cancellable read execution. Worker stop cancels a purge before pool closure,
+while analysis ownership drains normally. Focused activation/ownership (81 tests), Worker retention
+(four tests) and a real-lock shutdown probe pass. Fifty-seven new regressions extend the coverage;
+the complete gate also reruns private-pipeline/recovery and browser acceptance. Owned databases,
+roles and schemas are removed, and local PostgreSQL is returned to its initially stopped state
+with its volume preserved. A Docker Desktop interruption before a repeated focused pass is
+resolved before the successful independent probe and full quality gate.
+The October 14 review found that a standard GitHub denial callback containing `error_uri` failed
+strict validation before cookie cleanup/error redirection. The callback now accepts that bounded
+optional metadata and ignores it; absolute, relative and untrusted URIs never control I/O,
+navigation or displayed errors. Six new cases cover accepted error envelopes, strict bounds and
+OpenAPI alignment. The focused transport suite passes 27 tests; the complete gate passes 781.
+The first full attempt timed out in the existing Firefox narrow sign-out/reload case after 23
+browser passes. Its unchanged isolated rerun passed in 3.3 seconds, then the complete command
+passed without timeout or retry changes. The failed log and trace are retained. Owned databases,
+roles and schemas are removed, and local PostgreSQL is returned to stopped with its volume preserved.
+The subsequent review found one shared cleanup defect: GitHub/npm/OSV returned safe HTTP failures
+without closing unread response bodies, then cleared the request timer. Each adapter now aborts
+only its request-owned controller on every exit. Nine native-fetch regressions retain stalled
+responses through actual socket-close assertions, preventing garbage collection from hiding the
+defect. They cover connected 401/403/404, public GitHub 429/503, and npm/OSV 429/503 while preserving
+failure classification and safe summaries. All nine fail before the source fix; the provider suite
+passes 102 tests after it. No live provider or hosted state is used.
+The complete `pnpm check` passes build, compiled runtime smoke, UI configuration, type checks,
+790 tests (711 package, 50 operations, five deployment and 24 browser), lint and formatting.
+Owned HTTP servers, databases, roles and schemas are cleaned up, and PostgreSQL returns to its
+initially stopped state with its volume preserved. Earlier evidence and logs remain unchanged.
+Read the [current response-cleanup evidence](implementation/release-evidence/2026-10-14-provider-response-cleanup.json)
+for current source hashes, full verification and cleanup.
+Read the [prior callback-fix evidence](implementation/release-evidence/2026-10-14-github-connections-callback-errors.json)
+for its preserved 781-test source snapshot, full verification and cleanup.
+Read the [prior grant/deadline evidence](implementation/release-evidence/2026-10-13-github-connections-grants-and-deadlines.json)
+for its preserved 775-test source snapshot and cleanup.
+Read the [prior review-fix evidence](implementation/release-evidence/2026-10-13-github-connections-final-review-fixes.json)
+for its preserved 718-test source snapshot. The
+[five-finding evidence](implementation/release-evidence/2026-10-12-github-connections-review-fixes.json)
+preserves the earlier 704-test source snapshot. The
+[initial local evidence](implementation/release-evidence/2026-10-12-github-connections-local.json)
+preserves the earlier 684-test source snapshot, cleanup/recovery coverage and failed attempts.
+Publish/review this change before executing the separately gated hosted activation sequence.
+
+### October 11 recovery rehearsal preflight
+
+Read the [concrete plan](implementation/recovery-rehearsal-plan.md) and
+[safe dated evidence](implementation/release-evidence/2026-10-11-recovery-rehearsal-preflight.json).
+Vercel API/web are Ready on current main; direct and proxied OpenAPI return HTTP 200. The original
+Silly Worker and Aiven source are Running. A source read-only transaction verifies TLS and
+PostgreSQL 18, with zero reports, in-flight analyses, queue/locked jobs and pending delivery.
+This is online observation, not actual executor fencing or a drained capture. No ordinary analysis,
+source mutation, protected-workflow dispatch, credential transfer or routing change is performed.
+
+After operator sign-in, Neon lists no projects. Its unsubmitted Free project form offers PostgreSQL
+18 and AWS Singapore, but no endpoint is allocated. Wispbyte is offline and still lacks accepted
+lifecycle/unattended evidence. No suitable independent persistent Worker exists in this inventory.
+Do not hunt for new hosts/accounts or create another schedule. The October 4 temporary database
+recovery already proved normal-provider cutover/rollback through original compute; repeating that
+proof would not close persistent compute loss. Target creation is deferred until an explicitly
+selected exercise needs it. FR-100 remains the next separate product milestone.
+
+The plan preserves exact original service destinations and rollback archive hashes, requires fresh
+fencing/drain and a protected portable capture, and gates any new credential destination or routing
+on concrete approval. Current deployed Worker module hashes and allocated target quotas must be
+checked before execution. Protected manual recovery is active/main-only with a required reviewer.
+The old backup and temporary handover automation configurations are already deleted; keep them
+deleted. Existing cloud capture/maintenance and their custody continue. Formatting, evidence/privacy
+and link validation are the applicable local gates for this unpublished documentation-only change.
 
 ### October 11 completed old backup configuration retirement
 

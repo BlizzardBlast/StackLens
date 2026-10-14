@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-12T12:55:39.201Z",
+  "milestone": "FR-100 GitHub connections and owner-protected private analysis",
+  "status": "local_verified_uncommitted_hosted_activation_pending",
+  "requirements": [
+    "FR-100",
+    "FR-003",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "SEC-001",
+    "SEC-002",
+    "SEC-003",
+    "SEC-004",
+    "SEC-005",
+    "SEC-006",
+    "SEC-007",
+    "SEC-008",
+    "NFR-005",
+    "NFR-006",
+    "NFR-007",
+    "NFR-008",
+    "NFR-009",
+    "NFR-010",
+    "GOV-002",
+    "GOV-003",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "source": {
+    "branch": "codex/github-private-analysis",
+    "implementationBase": "e552076f47dd68a67347a4250c5f067287f00abd",
+    "remoteMainVerified": "e552076f47dd68a67347a4250c5f067287f00abd",
+    "remoteMainObservedAt": "2026-10-12T12:54:14Z",
+    "hashAlgorithm": "SHA-256",
+    "files": {
+      "packages/github-auth/src/crypto.ts": "e7641dadd9354ccdc9a185493b7ebfbc996047f2c84f636e82ccf6dc4d66aa87",
+      "packages/github-auth/src/github.ts": "cb586de4de5d881f2d1447c32ebed9545a3a683d42e0e1465835390f9344073b",
+      "packages/github-auth/src/service.ts": "cdf7ec00a0261a0dee13ad7c1a68ac692367b7118edb05792bd69d0532decb6b",
+      "packages/persistence/src/migrate.ts": "7879798b1fdc0c19d3ea8a56d61b7150557a9e8fdc10b2befca4e1a09a19e1e9",
+      "packages/persistence/src/github-connections.ts": "f4bd56cb4c383b9cd6f50deb2123e464c30938ea5f466d06f06ea32ba1c8598b",
+      "packages/persistence/src/repository.ts": "c0e0af1050e512c0984fc266f7a0b4290994c32d12933a6553d9d8d203ee57cf",
+      "packages/persistence/src/schema.ts": "6723fc1cbf769ab6b7f22d542401ae0f8e6a3b14c519dfc7033cc916d6f46884",
+      "packages/data-sources/src/github/adapter.ts": "3d208604b6971e65f484852d55442082c0693b0932ac0b41ca165d2411c1ddb1",
+      "packages/data-sources/src/github/request.ts": "e364f85472daa50d7a2b299d5f445b82aae7a88c6c128df44e5450b373971311",
+      "packages/data-sources/src/github/metadata.ts": "8294c26f08237dcc0c92496b0e235153d0df83933095807a22b1ff728061e695",
+      "packages/repository-jobs/src/enqueue.ts": "c29066d742630f537e2eca2f6dfa3a54d8caeb572e35d4e0dd862b6738b14a87",
+      "apps/api/src/github-auth-http.ts": "df2ad9878cf7314d0c20910e74e36ce4466281bd3304cd48a6cdf9019598999d",
+      "apps/api/src/repository-analysis-http.ts": "4842a8a7f6df22a5ea2c0f361e4cf09f7d8e71cace4c4ddc1d8b796300d929a8",
+      "apps/api/src/repository-analysis.ts": "471d587b2d86c59d6ac6798fa9093c8740050fcbb3e0d9c8bc3dd8b25beb0a15",
+      "apps/api/src/runtime.ts": "d9faf57ce700a22897f57e109e9773ad419d5c01d81f5689365ad200d6e67c40",
+      "apps/api/src/server.ts": "8f5ae374decd52764b70663800a51b34a2405e756f53cfbf14a86c2dd887757a",
+      "apps/api/src/vercel-runtime.ts": "90f3534f8916c72812a0fc74dc458377978a7d51d5a389b5f0fee467755cc97a",
+      "apps/worker/src/runtime.ts": "a88a93aff97bd85549dff7c41267aac54ae5d2c926fa06480fccbcece895ff5e",
+      "apps/worker/src/providers.ts": "75c618a7036cdc04aca8f7411337aa0acb077090a7f5b560261d83759f80af4f",
+      "apps/worker/src/task.ts": "b466a64b73f0699efeb07d95033b1eb4badbfe0e5df88e3d602b101205af9b16",
+      "apps/worker/src/retention.ts": "7e715d5892a00c90a266e325e3faf3119c4b140f832f1e8bf8f0c611707e021f",
+      "apps/web/src/features/github-connection/github-connection-api.ts": "d09d9fc13a2f384a1cf95415975dbbd35f742e812512067b4174812f4793377b",
+      "apps/web/src/features/github-connection/github-connection.tsx": "12f56fc154d5ec09f9e409efbd0bc01d8392a21a3994144c6423355c50be5665",
+      "apps/web/src/features/repository-analysis/repository-analysis-home.tsx": "05ee38c73b495c2ac7f47c0eb42fb0ff93b49f2b0b912521a7582a9f06e3c11b",
+      "apps/web/src/features/repository-analysis/repository-analysis-page.tsx": "2293d0c09bce93e432612965f733ffa09f9c29da789fde31627cf887ff00ff3c",
+      "scripts/operations/offsite-backup.mjs": "96ac87114b44e398277be2c9e72d8576758b551edfafae19d7c7e22033b321ea",
+      "scripts/operations/portable-recovery.mjs": "91f7658be3d518ddeea91114936e8b6cd44cd7b29564f9c33f06a4b9a4de869f",
+      "scripts/operations/github-private-analysis.test.mjs": "9079c1a5a19ca02e1cca7157fa8b102bd06091d264632b95c0fc425ca49cf7bb",
+      "packages/persistence/test/github-ownership.test.ts": "0f27c8778367b515107fe48d1be304b77c140d0b962f7479efa206ee3704a9f3",
+      "tests/browser/acceptance.spec.ts": "9f4497d1ae26689b729cc6065b3d6efd798b2a8421a8ba908d0cf71c5a212bdc"
+    }
+  },
+  "localQuality": {
+    "command": "pnpm check",
+    "exitCode": 0,
+    "databaseBacked": true,
+    "providers": "synthetic",
+    "turboConcurrency": 2,
+    "gates": [
+      "build",
+      "compiled runtime smoke",
+      "UI configuration",
+      "typecheck",
+      "deployment tests",
+      "operations tests",
+      "package tests",
+      "browser acceptance",
+      "lint",
+      "format"
+    ],
+    "tests": {
+      "package": 605,
+      "operations": 50,
+      "deployment": 5,
+      "browser": 24,
+      "total": 684
+    },
+    "turboTestGraph": {
+      "successfulTasks": 24,
+      "cachedTasks": 19,
+      "totalTasks": 24
+    },
+    "browserProjects": [
+      "chromium-desktop",
+      "chromium-narrow",
+      "firefox-desktop",
+      "firefox-narrow",
+      "webkit-desktop",
+      "webkit-narrow"
+    ],
+    "localLogSha256": "5eeadc5baa4d3c284dba8114bdaff6bac08a020753e356b0026285c80adc6e70"
+  },
+  "ownershipVerification": {
+    "actualRestrictedLogin": true,
+    "elevatedSessionWithSetRoleRejected": true,
+    "ownerOnlyReadback": true,
+    "crossOwnerAndAnonymousNotFound": true,
+    "atomicOwnerAndDeliveryWrite": true,
+    "pooledIdentityIsolation": true,
+    "legacyArchiveReaderCompatible": true
+  },
+  "completePipeline": {
+    "oauthStateAndPkce": true,
+    "sessionAndOriginCsrf": true,
+    "realRestrictedDatabaseLogin": true,
+    "realDurableOutboxAndGraphileDelivery": true,
+    "realWorkerAndAnalyzer": true,
+    "syntheticGitHubNpmOsv": true,
+    "tokenOnlyOnFixedGitHubHost": true,
+    "ownerOnlyStrictApiReport": true,
+    "signOutEndsSessionAndWorkerTokenAccess": true,
+    "ownedWorkerApiPoolsDatabaseRoleCleanup": true
+  },
+  "privateRecoveryFixture": {
+    "matchingTables": 7,
+    "fingerprintsMatched": true,
+    "strictReportReads": 1,
+    "apiReportReads": 0,
+    "privateReportAccessDenied": 1,
+    "connectionCredentialsRestored": false,
+    "historicalRowsUnchanged": true,
+    "queueQuarantined": true,
+    "sourceContact": false,
+    "copiedClaimUnlock": false,
+    "ownedDatabaseRemoved": true
+  },
+  "preservedEarlierAttempts": [
+    {
+      "observation": "A full check encountered formatting changes made while browser checks were running.",
+      "resolution": "Formatted changed source; final full gate passed."
+    },
+    {
+      "observation": "An earlier full run encountered intermittent local Docker capture failures in recovery fixtures.",
+      "resolution": "Safe diagnostic and standalone recovery reruns did not reproduce the failure; final full gate passed. Root cause is not established."
+    },
+    {
+      "observation": "The first complete private-pipeline test reused large capacity packuments and exceeded its Windows test deadline.",
+      "resolution": "The authorization fixture now uses bounded small synthetic npm responses. Independent capacity tests retain their large payloads; final full gate passed."
+    },
+    {
+      "observation": "A new integration test contained an unused lint suppression.",
+      "resolution": "Removed the suppression; final lint and full gate passed."
+    }
+  ],
+  "hostedActions": {
+    "githubAppRegistered": false,
+    "credentialsProvisioned": false,
+    "apiRoleGrantsChanged": false,
+    "schemaMigrated": false,
+    "deployed": false,
+    "livePrivateProviderAccepted": false,
+    "finalHeadCiReviewed": false,
+    "committed": false,
+    "pushed": false
+  },
+  "preservedBoundaries": {
+    "anonymousAnalysisAvailable": true,
+    "sourceOrRepositoryCodeExecution": false,
+    "reportSchemasAndScoringUnchanged": true,
+    "connectionSchemaExcludedFromAnalysisArchives": true,
+    "backupRoleScopeUnchanged": true,
+    "backupSchedulesUnchanged": true,
+    "newHostingAccount": false,
+    "newBackupAutomation": false,
+    "unexpiredArchivesAndReferencedKeysPreserved": true,
+    "persistentComputeReplacementAcceptance": false
+  },
+  "remaining": [
+    "Review and publish the uncommitted milestone with final-head CI.",
+    "Review GitHub App registration, exact restricted API grants and separate private credential custody before hosted activation.",
+    "Deploy compatible readers and Worker migration before enabling connections; validate live consent, private provider access, revocation, cookie/proxy/log handling and scheduled recovery on that revision.",
+    "Keep persistent compute-loss/cutover/rollback acceptance separate."
+  ]
+}

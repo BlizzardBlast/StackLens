@@ -5,6 +5,7 @@ export interface AnalysisRetentionPumpOptions {
   readonly now?: () => string;
   readonly intervalMs?: number;
   readonly onError?: (error: unknown) => void;
+  readonly purgeExpiredConnections?: (now: string, signal: AbortSignal) => Promise<number>;
 }
 
 /** SEC-003/NFR-009: one bounded sweep at a time; stop waits before pool shutdown. */
@@ -18,13 +19,19 @@ export function startAnalysisRetentionPump(options: AnalysisRetentionPumpOptions
   let stopped = false;
   let running: Promise<void> | undefined;
   let timer: ReturnType<typeof setTimeout> | undefined;
+  const shutdown = new AbortController();
 
   const run = async (): Promise<void> => {
     if (stopped || running !== undefined) return;
+    const now = (options.now ?? (() => new Date().toISOString()))();
     running = options.repository
-      .purgeExpiredTerminalAnalyses((options.now ?? (() => new Date().toISOString()))(), 100)
-      .then(() => undefined)
-      .catch((error: unknown) => options.onError?.(error));
+      .purgeExpiredTerminalAnalyses(now, 100)
+      .then(async () => {
+        if (!stopped) await options.purgeExpiredConnections?.(now, shutdown.signal);
+      })
+      .catch((error: unknown) => {
+        if (!shutdown.signal.aborted || error !== shutdown.signal.reason) options.onError?.(error);
+      });
     try {
       await running;
     } finally {
@@ -42,6 +49,7 @@ export function startAnalysisRetentionPump(options: AnalysisRetentionPumpOptions
     async stop() {
       stopped = true;
       if (timer !== undefined) clearTimeout(timer);
+      shutdown.abort();
       await running;
     },
   };

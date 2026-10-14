@@ -73,6 +73,9 @@ async function main(): Promise<void> {
       databasePoolOptions: readStackLensPoolOptions(process.env),
       concurrency: environmentInteger("STACKLENS_WORKER_CONCURRENCY", DEFAULT_CONCURRENCY),
       ...(githubToken === undefined ? {} : { githubToken }),
+      ...(optionalEnvironmentSecret("STACKLENS_GITHUB_SESSION_KEY") === undefined
+        ? {}
+        : { githubSessionKey: optionalEnvironmentSecret("STACKLENS_GITHUB_SESSION_KEY")! }),
       onQueueOwnerId(ownerId) {
         process.stdout.write(`StackLens queue owner started (${ownerId}).\n`);
       },

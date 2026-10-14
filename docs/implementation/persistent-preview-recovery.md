@@ -102,6 +102,23 @@ Once zero-cost compute is available, complete these steps as a separate approved
    Confirm normal original delivery after rollback. Stop replacement compute, remove approved
    temporary credentials and drop only the identified owned target if the exercise is temporary.
 
+### October 11 current-resource preflight
+
+The [execution plan](recovery-rehearsal-plan.md) and
+[dated inventory](release-evidence/2026-10-11-recovery-rehearsal-preflight.json) confirm the original
+Aiven source and Silly Worker are running and Vercel API/web are Ready on published main. The
+signed-in Neon account has no projects; the October 4 temporary target was deleted. Wispbyte is
+offline and its exploratory probe does not establish accepted lifecycle or unattended operation.
+No replacement database or independent persistent Worker is provisioned by this preflight.
+
+The existing services can support an optional bounded database-switch exercise, but that repeats
+the October 4 proof on original compute and does not close persistent compute loss. Defer target
+allocation until it serves an approved exercise; no new host search, account or schedule is needed.
+A fresh fenced/drained portable capture, exact paired destinations and an agreed usage/rollback
+budget remain prerequisites. An online offsite backup and an empty current queue do not substitute
+for that capture. Recheck current Neon allocation limits; the signed-in form and primary plan
+documentation disagree on storage allowance, and continuous availability is not established.
+
 Persistent hosted staging, public replacement, normal-provider delivery, usage allowance and
 rollback remain unverified in this preparation. The full workstation-loss recovery claim also
 needs recoverable operator access and approved offsite secret custody for this staging path.

@@ -57,12 +57,13 @@ function isValidTreeEntryMode(type: TreeEntry["type"], mode: string): boolean {
 export function parseRepositoryPayload(
   value: unknown,
   expected: ParsedGitHubRepositoryUrl,
+  allowPrivate = false,
 ): RepositoryPayload {
   if (!isRecord(value) || typeof value.private !== "boolean" || typeof value.name !== "string") {
     throw new TypeError("invalid repository payload");
   }
 
-  if (value.private) {
+  if (value.private && !allowPrivate) {
     throw new GitHubRequestError(
       "github_private_repository_unsupported",
       `GitHub repository ${expected.owner}/${expected.name} is private; MVP acquisition supports public repositories only.`,

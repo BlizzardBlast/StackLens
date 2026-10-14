@@ -1,5 +1,12 @@
 # Repository Analysis HTTP Transport
 
+FR-100 extends this baseline locally with optional GitHub App authorization/session/sign-out routes,
+explicit `POST /v1/analyses/github`, and owner-protected GET results. Origin/CSRF and repository
+grant checks precede durable creation. Private responses add `access: connected`; owner/connection
+references and credentials never enter the REST report. Missing/other-owner reads share 404, and
+RLS protects legacy restricted readers. Hosted activation is pending. See
+[GitHub connections](github-connections.md) for configuration, rollout and recovery.
+
 > **Status:** Implemented Milestone J3 baseline  
 > **Date:** 2026-09-21  
 > **Requirements:** FR-003, FR-004, FR-017, FR-021, DATA-006, NFR-003, NFR-008, NFR-009, SEC-001, SEC-002, SEC-003, SEC-007, GOV-002, GOV-006, GOV-007  
