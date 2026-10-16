@@ -3799,3 +3799,22 @@ is uncommitted/unpushed; connections stay disabled and FR-101 has not started.
 
 **Traceability:** FR-100, SEC-003/004/005/007, NFR-005/006/007/008/009, GOV-002/003/006/007;
 ADR-0023/0024.
+
+## 2026-10-16 — Publish the callback transport for PR review
+
+After the complete local gate and review package, the operator explicitly approved committing,
+pushing and opening a PR only. The verified callback source and preserved prior activation evidence
+were published as [PR #59](https://github.com/BlizzardBlast/StackLens/pull/59). The Git credential
+manager supplied the existing push authorization; the GitHub connector created the PR without a
+new token or CLI login. Its initial existing Vercel preview checks succeeded and repository quality,
+portable-recovery and offsite-fixture workflows started. Resolve the latest PR head/checks instead
+of treating this publication observation as a final CI result. No merge, production runtime,
+GitHub callback, connection configuration, grant or backup change was authorized or performed.
+
+Handover and cutover guidance now identify this milestone PR and require verification of current
+main after any later merge, avoiding a second documentation PR for an unknown squash SHA. Dated
+local evidence remains unchanged and explicitly precedes publication. Documentation privacy/link/
+source-hash checks and whitespace checks cover the publication update; production privacy and live
+FR-100 acceptance remain gated.
+
+**Traceability:** FR-100, SEC-003/004/005/007, GOV-002/006/007; ADR-0024.

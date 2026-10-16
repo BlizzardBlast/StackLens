@@ -2,8 +2,8 @@
 
 > **Prepared:** 2026-10-16\
 > **Architecture:** v0.1.28; requirements v0.1.6\
-> **Milestone:** FR-100 implementation through [PR #58](https://github.com/BlizzardBlast/StackLens/pull/58); hosted activation and persistent public replacement remain gated\
-> **Branch:** Current activation branch `codex/github-connections-activation` in the existing checkout; callback implementation and rollout documentation are uncommitted. FR-100 implementation PR #58 is merged\
+> **Milestone:** FR-100 implementation through [PR #58](https://github.com/BlizzardBlast/StackLens/pull/58); callback transport proposed in [PR #59](https://github.com/BlizzardBlast/StackLens/pull/59); hosted activation and persistent public replacement remain gated\
+> **Branch:** `codex/github-connections-activation` in the existing checkout, published for PR #59 review. FR-100 implementation PR #58 is merged\
 > **Implementation base:** Verified main `6bb5aa28b6a7468abde5e64398a2269e251062f7`; independently recheck current main and hosting revisions\
 > **Traceability:** FR-100/003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/005/006/007/008/009/010, SEC-001/002/003/004/005/006/007/008, GOV-002/003/006/007
 
@@ -36,8 +36,12 @@ The final database-backed `pnpm check` passes: 729 Vitest, 69 Node and 84 browse
 runtime smoke, typechecking, lint and formatting. Its unique owned local PostgreSQL database was
 removed. The [dated evidence](implementation/release-evidence/2026-10-16-github-callback-transport.json)
 binds twenty source/config/test hashes. The first full attempt was superseded after browser test
-edits changed a title during execution; the frozen-source final run passed. This source snapshot
-has no pushed branch or current CI. Account log-dataset inspection also remains open after Chrome
+edits changed a title during execution; the frozen-source final run passed. That dated local evidence
+precedes publication. The operator then approved commit/push/PR only; the source is now
+[PR #59](https://github.com/BlizzardBlast/StackLens/pull/59). Resolve its current head and required CI
+before review/deployment, and resolve/verify current main after this milestone PR merges rather
+than relying on an unknowable squash SHA in this document. No merge or hosted deployment was
+authorized by that publication approval. Account log-dataset inspection also remains open after Chrome
 page reads timed out; no claim of an empty dataset or a Cloudflare outage follows from that error.
 Do not enable connections or begin FR-101 from local implementation alone.
 

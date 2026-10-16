@@ -11,6 +11,11 @@ recommendation, on `codex/github-connections-activation`, based on merged main
 `6bb5aa28b6a7468abde5e64398a2269e251062f7`. Pre-existing activation documentation/evidence is
 preserved. No secret, database/grant, hosted Worker or GitHub registration changes accompany it.
 
+The operator subsequently approved commit/push/PR publication only. This work is published as
+[PR #59](https://github.com/BlizzardBlast/StackLens/pull/59). Resolve its current head and required
+checks before review or deployment; the dated local gate below predates publication. Publication
+does not authorize merging, new hosted resources, credential activation or real OAuth.
+
 The earlier [dummy-only probe](release-evidence/2026-10-16-github-callback-probe-acceptance.json)
 continues to describe that exact module/version. It does not accept real OAuth. Do not overwrite
 its historical hashes, observations or failed editor attempts with the new artifact's evidence.
@@ -134,7 +139,8 @@ cases pass, including compiled native-entry/API/Worker smoke, actual restricted-
 pipeline and restore tests. Typechecking, lint and formatting pass. The unique owned PostgreSQL 18
 database was removed. Browser projects cover Chromium/Firefox/WebKit at 1280px and 320px; they do
 not establish physical Safari/iOS or spoken screen-reader acceptance. New-source CI and hosted
-production acceptance have not run. Source remains uncommitted/unpushed.
+production acceptance had not run at that local snapshot, when source was uncommitted/unpushed.
+PR #59 now supplies the current source/CI review surface; no hosted acceptance follows from it.
 
 The browser regression uses real owned loopback HTTP servers for the top-level cross-site 303
 and POST. WebKit's intercepted request view omitted Cookie and could not fulfill redirects;
@@ -161,5 +167,5 @@ this is not merge or activation approval. Risk is concentrated at hosted auth/pr
 | Hosted release/CI/logging        | Partial                 | Prior probe, bounded current account inspection and fixed cutover/rollback scope                        | Exact deployed candidate and body/error/trace/account logs not accepted |
 
 Execution status: local transport IMPLEMENTED; overall hosted FR-100 PARTIAL. The next review is
-publishing this source for current CI, followed by the scoped disabled-reader/relay deployment and
+reviewing PR #59's current source and CI, followed by the scoped disabled-reader/relay deployment and
 synthetic hosting verification. Real OAuth still waits for the remaining privacy/destination gates.

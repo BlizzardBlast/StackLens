@@ -271,6 +271,8 @@ The production transport is now prepared locally: fixed credential-free relay, i
 landing, exact-Origin POST, fixed PKCE callback configuration and legacy GET rejection. See
 [ADR-0024](docs/adr/0024-private-github-callback-transport.md) and the
 [reviewable cutover package](docs/implementation/github-callback-cutover.md).
+The proposal is published in [PR #59](https://github.com/BlizzardBlast/StackLens/pull/59); resolve its
+current head/checks before review or deployment.
 The database-backed local gate passes, including 84 three-engine browser cases; its
 [source/verification record](docs/implementation/release-evidence/2026-10-16-github-callback-transport.json)
 keeps hosted activation and current CI separate.
