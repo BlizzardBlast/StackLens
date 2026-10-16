@@ -1,0 +1,174 @@
+{
+  "recordedAt": "2026-10-16T00:08:40.407Z",
+  "sourceCommit": "6bb5aa28b6a7468abde5e64398a2269e251062f7",
+  "requirements": [
+    "FR-100",
+    "SEC-003",
+    "SEC-004",
+    "SEC-005",
+    "SEC-007",
+    "NFR-008",
+    "NFR-009",
+    "NFR-010",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "operatorDecision": {
+    "callbackLogRetentionException": "declined",
+    "connections": "keep_disabled_while_resolving_callback_logging",
+    "newHostApproved": false
+  },
+  "installation": {
+    "observedOn": "2026-10-15",
+    "installedAtDisplay": "2026-10-15 19:35 GMT+7",
+    "id": 171724341,
+    "settingsUrl": "https://github.com/settings/installations/171724341",
+    "app": "StackLens Preview BlizzardBlast",
+    "repositorySelection": "only_selected_repositories",
+    "selectedRepositories": ["BlizzardBlast/stacklens-fr100-acceptance"],
+    "readOnlyPermissions": ["Contents", "Metadata"],
+    "pendingSettingsChanges": false,
+    "stacklensOAuthConsentStarted": false,
+    "screenshot": "local_operator_evidence_not_committed",
+    "earlierVerificationTab": "stale_after_installation_completed"
+  },
+  "observation": {
+    "observedAt": "2026-10-16T00:06:31.443Z",
+    "rowsChanged": false,
+    "realOAuthSent": false,
+    "counts": {
+      "analyses": 1,
+      "reports": 0,
+      "connected_analyses": 0,
+      "connections": 0
+    },
+    "sessions": [
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "httpStatus": 200,
+        "enabled": false,
+        "cacheControl": "private, no-store"
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "httpStatus": 200,
+        "enabled": false,
+        "cacheControl": "private, no-store"
+      }
+    ],
+    "delivery": {
+      "observedAt": "2026-10-16T00:04:13.322Z",
+      "queue_jobs": 0,
+      "locked_jobs": 0,
+      "claimed_analyses": 0,
+      "pending_deliveries": 0,
+      "reports": 0
+    },
+    "reportReadback": {
+      "status": "not_repeatable_no_report_rows",
+      "previousReadbackRemainsHistorical": true,
+      "deletionCauseIndependentlyProven": false
+    },
+    "status": "disabled_api_and_empty_queue_verified"
+  },
+  "databasePreflight": {
+    "status": "read_only_preflight_complete",
+    "tlsVerified": true,
+    "policyCount": 5,
+    "apiDirectLogin": true,
+    "apiBypassRls": false,
+    "apiPermanentCreate": false,
+    "apiCredentialOwnership": false,
+    "backupConnectionSchemaUsage": false,
+    "backupConnectionTablePrivileges": false,
+    "failures": [],
+    "rowsChanged": false,
+    "grantsChanged": false
+  },
+  "probe": {
+    "status": "prepared_locally_not_deployed",
+    "candidate": "Cloudflare Workers Free HTTPS workers.dev",
+    "proposedResourceName": "stacklens-fr100-callback-probe",
+    "realOAuthValuesAccepted": false,
+    "bindings": [],
+    "secretDestinations": [],
+    "outboundFetches": false,
+    "persistentStorage": false,
+    "loggingCalls": false,
+    "observability": {
+      "enabled": false,
+      "logs": {
+        "enabled": false,
+        "invocation_logs": false
+      },
+      "traces": {
+        "enabled": false
+      },
+      "issues": {
+        "enabled": false
+      }
+    },
+    "tests": {
+      "command": "node --test .cache/fr100-callback-relay/worker.test.mjs",
+      "passed": 5,
+      "failed": 0,
+      "providerCalls": 0,
+      "transportTest": "owned_loopback_http_request_excludes_fragment",
+      "correctedInitialTestAssumption": "Request.url_retains_fragment_but_HTTP_transport_omits_it"
+    },
+    "dryRun": {
+      "wrangler": "4.151.0",
+      "status": "passed",
+      "totalUploadKiB": 1.77,
+      "gzipKiB": 0.78,
+      "bindings": 0,
+      "deployed": false
+    },
+    "artifacts": [
+      {
+        "name": "worker.mjs",
+        "bytes": 1646,
+        "sha256": "dd41ae67b69eb1e833e04ad0f47bdb4933d053470a3a0d92361974a023aaf28b"
+      },
+      {
+        "name": "worker.test.mjs",
+        "bytes": 3597,
+        "sha256": "ba9c5926dddd72693979d6be180d20ede4b3cbd920c7069e73237488252bd952"
+      },
+      {
+        "name": "wrangler.json",
+        "bytes": 442,
+        "sha256": "60bc2250ac564d2587f2f885203c47687718c777319109fdab51b04953213672"
+      },
+      {
+        "name": "build/worker.js",
+        "bytes": 1811,
+        "sha256": "2f69c84f5f9464a78c740b1823cae343c582792350c815c373f01124ed9f17a6"
+      }
+    ],
+    "hostedLogExclusionVerified": false,
+    "providerInternalRetentionProvenAbsent": false
+  },
+  "changes": {
+    "productionSourceChanged": false,
+    "githubCallbackChanged": false,
+    "deviceFlowEnabled": false,
+    "cloudflareResourceCreated": false,
+    "newAccountCreated": false,
+    "clientSecretSentToVercel": false,
+    "apiDataKeySentToVercel": false,
+    "existingWorkerChanged": false,
+    "backupCustodyChanged": false,
+    "backupSchedulesChanged": false,
+    "committed": false,
+    "pushed": false
+  },
+  "remaining": [
+    "Approve only the prepared synthetic hosting probe in an existing operator account",
+    "Verify hosted logging boundary with dummy canaries before selecting production mitigation",
+    "Implement and review production callback transport with requirements and ADR impact",
+    "Complete hosted FR-100 private isolation, session lifecycle and scheduled backup acceptance"
+  ],
+  "fr100HostedAcceptanceComplete": false
+}

@@ -1,6 +1,10 @@
 {
   "$schema": "https://turborepo.com/schema.json",
-  "globalDependencies": ["design/tokens/stacklens.tokens.json", "tsconfig.base.json"],
+  "globalDependencies": [
+    "design/tokens/stacklens.tokens.json",
+    "tsconfig.base.json",
+    "scripts/github-callback-landing.mjs"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

@@ -1,10 +1,10 @@
 # StackLens System Architecture
 
 > **Status:** Accepted baseline  
-> **Architecture version:** 0.1.27
-> **Date:** 2026-10-12
+> **Architecture version:** 0.1.28
+> **Date:** 2026-10-16
 > **Requirements source:** [requirements.md](requirements.md)  
-> **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-010, GOV-006–GOV-007
+> **Primary requirements:** PRD-001–PRD-007, FR-001–FR-023, FR-100, DATA-001–DATA-006, SCORE-001–SCORE-004, SEC-001–SEC-008, NFR-001–NFR-010, GOV-006–GOV-007
 
 ## 1. Architecture summary
 
@@ -738,6 +738,17 @@ the same eight-second operation deadline and transaction-local server timeout. W
 cancels credential cleanup before closing its pool while analysis ownership drains normally.
 Authorization denial is terminal, while temporary credential-store failure retains typed retryable
 provider semantics.
+
+ADR-0024 replaces the direct query callback with a credential-free HTTPS relay in
+`apps/github-callback-relay`. It redirects bounded fields only to the isolated static
+`/auth/github/complete.html` fragment. One hash-authorized inline script removes the fragment before
+parsing or I/O, then posts JSON to the same-origin API. Exact Origin, body/query bounds and the
+existing expiring state/PKCE cookie protect completion; GET returns 410. Both authorization and
+exchange use mandatory `STACKLENS_GITHUB_CALLBACK_URL`, also authenticated inside pending state.
+The landing loads no application, analytics, fonts or third-party resources. Vercel and local
+preview use the same computed script-hash/no-store/no-referrer policy. No database or analyzer
+contract changes. Hosted settings, synthetic body/error/trace checks and the exact real-code
+destination/callback review still gate activation; the earlier dummy-only probe remains separate.
 
 Owner-only application checks and transaction-local identity/RLS protect durable reports. The
 auth-enabled API must be a restricted non-owner/non-BYPASSRLS login; old restricted public-only

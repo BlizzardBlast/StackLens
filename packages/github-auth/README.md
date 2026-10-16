@@ -12,3 +12,9 @@ analysis backup bundles. Repository grants are checked on submission and every G
 Configuration is optional and fails closed when partial. Hosted activation remains pending;
 see [the runbook](../../docs/implementation/github-connections.md) for permissions, role grants,
 reader-first deployment and recovery limitations. Tests use synthetic GitHub responses.
+
+ADR-0024 requires `callbackUrl` / `STACKLENS_GITHUB_CALLBACK_URL` on every enabled configuration.
+It is a fixed HTTPS relay URI with `/v1/auth/github/callback`, different from `publicOrigin`, without
+credentials, query or fragment. Both authorization and exchange use it, and pending state
+authenticates it to reject callbacks after a configuration change. There is no direct GET fallback.
+The relay/isolated landing transport is outside this server-only package and has no access to keys.

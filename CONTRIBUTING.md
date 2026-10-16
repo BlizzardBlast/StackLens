@@ -7,6 +7,12 @@ Ordinary checks must never authorize a real private repository. Follow
 changes. Keep private-aware readers before writers, API logins without permanent schema/database
 CREATE or database/schema/connection-table ownership, and GitHub credentials
 outside reports, queue payloads, logs and analysis backups.
+ADR-0024's callback transport has deployment tests in `pnpm test:deployment` and built-page browser
+acceptance under `tests/browser/github-callback.spec.ts`. The isolated static page intentionally
+loads no app resources. Update its shared script-hash headers when changing it; generation is
+automatic through `scripts/github-callback-landing.mjs`, also a Turbo global input. A callback URL
+is now mandatory for enabled configuration. Normal tests use synthetic callbacks/providers and
+never deploy the relay. See [the callback cutover package](docs/implementation/github-callback-cutover.md).
 Activation also enforces the approved table/column privilege scope. Credential writes and cleanup
 must retain bounded database execution and cancellation, with owned lock/checkout tests and
 shutdown coverage; do not weaken the guard or leave a timed-out query using pooled resources.

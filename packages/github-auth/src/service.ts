@@ -51,7 +51,12 @@ export class GitHubConnectionService {
     const state = randomSecret(),
       verifier = randomSecret();
     const stateCookie = seal(
-      JSON.stringify({ state, verifier, expiresAt: this.now() + 600_000 }),
+      JSON.stringify({
+        state,
+        verifier,
+        callbackUrl: callbackUrl(this.config),
+        expiresAt: this.now() + 600_000,
+      }),
       this.#key,
       "oauth",
     );
@@ -88,6 +93,8 @@ export class GitHubConnectionService {
       !("expiresAt" in pending) ||
       typeof pending.expiresAt !== "number" ||
       pending.expiresAt <= this.now() ||
+      !("callbackUrl" in pending) ||
+      pending.callbackUrl !== callbackUrl(this.config) ||
       !equalSecret(pending.state, state)
     )
       throw new GitHubConnectionError();
@@ -204,6 +211,7 @@ export function readGitHubAuthorizationConfig(
     "STACKLENS_GITHUB_CLIENT_ID",
     "STACKLENS_GITHUB_CLIENT_SECRET",
     "STACKLENS_PUBLIC_ORIGIN",
+    "STACKLENS_GITHUB_CALLBACK_URL",
     "STACKLENS_GITHUB_INSTALLATION_URL",
     "STACKLENS_GITHUB_SESSION_KEY",
   ] as const;
@@ -213,6 +221,7 @@ export function readGitHubAuthorizationConfig(
     clientId: environment.STACKLENS_GITHUB_CLIENT_ID!,
     clientSecret: environment.STACKLENS_GITHUB_CLIENT_SECRET!,
     publicOrigin: environment.STACKLENS_PUBLIC_ORIGIN!,
+    callbackUrl: environment.STACKLENS_GITHUB_CALLBACK_URL!,
     installationUrl: environment.STACKLENS_GITHUB_INSTALLATION_URL!,
     sessionKey: environment.STACKLENS_GITHUB_SESSION_KEY!,
   };

@@ -1,0 +1,109 @@
+{
+  "observedOn": "2026-10-16",
+  "requirements": [
+    "FR-100",
+    "SEC-003",
+    "SEC-004",
+    "SEC-005",
+    "SEC-007",
+    "NFR-008",
+    "NFR-009",
+    "NFR-010",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "status": "browser_only_selected_editor_document_review_pending",
+  "authorization": {
+    "syntheticProbe": "approved",
+    "existingAccountSignIn": "completed_by_operator",
+    "realOAuth": false,
+    "productionCallbackChange": false,
+    "newCredential": "not_authorized_browser_only_selected"
+  },
+  "resource": {
+    "provider": "Cloudflare Workers",
+    "name": "stacklens-fr100-callback-probe",
+    "origin": "https://stacklens-fr100-callback-probe.fdsurya7.workers.dev",
+    "initialInventoryProjects": 0,
+    "freeDailyRequestAllocationDisplayed": 100000,
+    "billingAdded": false,
+    "accountCreated": false,
+    "repositoryIntegrationAdded": false,
+    "customDomains": 0,
+    "bindings": 0,
+    "runtimeVariablesOrSecrets": 0,
+    "previewUrlsEnabled": false,
+    "activeSource": "dashboard_hello_world_starter",
+    "starterVersionDisplay": "44cfbf71"
+  },
+  "sequence": [
+    "Dashboard requires starter creation before exposing observability settings",
+    "Created the approved named resource with its harmless starter",
+    "Disabled invocation logs, dashboard log persistence and log collection; traces and issues were already off",
+    "Deployed the settings and independently reloaded settings to verify all three collection switches are off",
+    "Verified preview URLs off, no custom domains, no bindings and no export destinations",
+    "Embedded source editor remained loading on initial visit and one reload",
+    "Editor automatically requested only the query-free root and showed the harmless starter console message after persistence was disabled",
+    "Left the editor to close its live preview and returned to saved settings",
+    "Wrangler whoami reported unauthenticated; no CLI login was started",
+    "Prepared a minimal single-account expiring token summary without clicking Create Token"
+  ],
+  "savedDashboardObservability": {
+    "enabled": true,
+    "logs": { "enabled": false, "invocation_logs": false, "persist": false },
+    "traces": { "enabled": false, "persist": true },
+    "issue_detection": { "enabled": false },
+    "exportDestinations": 0,
+    "reloadedSwitches": { "logs": false, "traces": false, "issues": false },
+    "note": "Dashboard retains parent/default flags; granular collection switches are disabled. Prepared Wrangler configuration disables the parent as well."
+  },
+  "pendingTokenProposal": {
+    "name": "StackLens FR-100 callback probe deploy",
+    "scope": "Workers Scripts: Edit",
+    "resources": "one_selected_operator_account_all_worker_scripts",
+    "configuredStart": "2026-10-16T00:15:00.000Z",
+    "configuredExpiry": "2026-10-16T01:45:00.000Z",
+    "timezoneDisplayed": "Western Indonesia Time GMT+7",
+    "tokenCreated": false,
+    "tokenValueRecorded": false,
+    "otherPermissions": [],
+    "laterOperatorDecision": "wait_for_browser_editor_instead",
+    "unsubmittedDraftTabClosed": true,
+    "unusedCliDeploymentHelperRemoved": true
+  },
+  "laterBrowserRetry": {
+    "observedOn": "2026-10-16",
+    "freshEditorTabOpened": true,
+    "diagnosticReloads": 1,
+    "boundedEventWaitSeconds": 45,
+    "finalVisibleState": "blank_embedded_editor_loading_with_disabled_deploy",
+    "dnsLookup": "editor_host_and_dashboard_resolve",
+    "taskConsoleErrorMessages": 0,
+    "embeddedDocumentCompletionObserved": false,
+    "browserToolReported": "raw_cdp_unavailable_while_resolving_paused_document_response",
+    "reviewDisposition": "pending_not_a_rejection",
+    "securityBypassAttempted": false,
+    "rawRequestsOrHeadersRecorded": false,
+    "editorLeftOpenForContinuation": true,
+    "screenshot": "local_operator_evidence_not_committed"
+  },
+  "acceptance": {
+    "preparedProbeModuleUploaded": false,
+    "callbackCanarySent": false,
+    "hostedBehaviorVerified": false,
+    "hostedLogExclusionVerified": false,
+    "providerInternalRetentionProvenAbsent": false,
+    "productionConnectionsEnabled": false,
+    "realOAuthCodeSent": false,
+    "appSecretOrDataKeySentToCloudflare": false,
+    "appSecretOrApiDataKeySentToVercel": false,
+    "githubCallbackChanged": false,
+    "backupConfigurationChanged": false
+  },
+  "evidence": {
+    "settingsScreenshot": "local_operator_evidence_not_committed",
+    "tokenSummaryScreenshot": "local_operator_evidence_not_committed",
+    "preparedArtifactDigests": "2026-10-16-github-connections-continuation.json"
+  }
+}

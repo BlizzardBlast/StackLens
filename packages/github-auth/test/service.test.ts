@@ -13,6 +13,7 @@ const config = {
   clientId: "Iv1.synthetic",
   clientSecret: "synthetic-client-secret",
   publicOrigin: "https://stacklens.example",
+  callbackUrl: "https://relay.example/v1/auth/github/callback",
   installationUrl: "https://github.com/apps/stacklens-test/installations/new",
   sessionKey: key,
 };
@@ -104,9 +105,7 @@ describe("GitHub App connection [FR-100, SEC-004, SEC-005, SEC-007]", () => {
     expect(url.origin).toBe("https://github.com");
     expect(url.searchParams.get("scope")).toBe("offline_access");
     expect(url.searchParams.get("code_challenge_method")).toBe("S256");
-    expect(url.searchParams.get("redirect_uri")).toBe(
-      `${config.publicOrigin}/v1/auth/github/callback`,
-    );
+    expect(url.searchParams.get("redirect_uri")).toBe(config.callbackUrl);
     const session = await h.service.finish(
       start.stateCookie,
       url.searchParams.get("state") ?? "",
@@ -125,6 +124,46 @@ describe("GitHub App connection [FR-100, SEC-004, SEC-005, SEC-007]", () => {
     expect(
       new URLSearchParams(typeof init?.body === "string" ? init.body : "").get("code_verifier"),
     ).toHaveLength(43);
+    expect(
+      new URLSearchParams(typeof init?.body === "string" ? init.body : "").get("redirect_uri"),
+    ).toBe(config.callbackUrl);
+  });
+  it.each([
+    "not-a-url",
+    " https://relay.example/v1/auth/github/callback",
+    "http://relay.example/v1/auth/github/callback",
+    "https://stacklens.example/v1/auth/github/callback",
+    "https://user:password@relay.example/v1/auth/github/callback",
+    "https://relay.example/v1/auth/github/callback?redirect=elsewhere",
+    "https://relay.example/v1/auth/github/callback#secret",
+    "https://relay.example/other",
+    "https://localhost/v1/auth/github/callback",
+  ])("rejects an unsafe or direct callback %s [SEC-007]", (callbackUrl) => {
+    const h = harness();
+    expect(() => new GitHubConnectionService(h.store, { ...config, callbackUrl })).toThrow(
+      "GitHub connection",
+    );
+  });
+  it("binds pending PKCE to the fixed relay during a configuration change [SEC-007]", async () => {
+    const h = harness();
+    const started = h.service.begin();
+    const changed = new GitHubConnectionService(
+      h.store,
+      {
+        ...config,
+        callbackUrl: "https://other-relay.example/v1/auth/github/callback",
+      },
+      h.fetchImpl,
+      h.now,
+    );
+    await expect(
+      changed.finish(
+        started.stateCookie,
+        new URL(started.location).searchParams.get("state") ?? "",
+        "code",
+      ),
+    ).rejects.toThrow("GitHub connection");
+    expect(h.fetchImpl).not.toHaveBeenCalled();
   });
   it("rejects mismatched, expired or altered state before token exchange", async () => {
     const h = harness(),
@@ -244,5 +283,19 @@ describe("GitHub App connection [FR-100, SEC-004, SEC-005, SEC-007]", () => {
     expect(() => readGitHubAuthorizationConfig({ STACKLENS_GITHUB_CLIENT_ID: "only" })).toThrow(
       "GitHub connection",
     );
+    const environment = {
+      STACKLENS_GITHUB_CLIENT_ID: config.clientId,
+      STACKLENS_GITHUB_CLIENT_SECRET: config.clientSecret,
+      STACKLENS_PUBLIC_ORIGIN: config.publicOrigin,
+      STACKLENS_GITHUB_INSTALLATION_URL: config.installationUrl,
+      STACKLENS_GITHUB_SESSION_KEY: config.sessionKey,
+    };
+    expect(() => readGitHubAuthorizationConfig(environment)).toThrow("GitHub connection");
+    expect(
+      readGitHubAuthorizationConfig({
+        ...environment,
+        STACKLENS_GITHUB_CALLBACK_URL: config.callbackUrl,
+      }),
+    ).toEqual(config);
   });
 });

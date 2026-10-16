@@ -258,6 +258,26 @@ server-side encrypted expiring credentials and owner-only results, while anonymo
 available. See [GitHub connections](docs/implementation/github-connections.md) and ADR-0023 for the
 activation/rollback sequence. App registration, restricted grants, credential provisioning and
 live private-provider acceptance require that separate activation sequence.
+The [October 15 activation record](docs/implementation/github-connections-activation.md)
+verifies the approved Worker deployment, canonical ownership migration and exact restricted grants.
+The read-only App is installed for exactly the private synthetic fixture. The operator declined
+callback-log retention and required connections to stay disabled. Dummy callback values appear in
+Vercel platform request logs; a verified mitigation and live private acceptance remain pending.
+The [callback privacy proposal](docs/implementation/github-callback-privacy.md) prepares a
+dummy-only HTTPS relay probe. Its separately approved Free resource is deployed through Chrome
+with collection disabled. Seven hosted cases pass; its stored-event canary search is empty and
+the matching Vercel landing request has no callback query. No deployment token was created.
+The production transport is now prepared locally: fixed credential-free relay, isolated fragment
+landing, exact-Origin POST, fixed PKCE callback configuration and legacy GET rejection. See
+[ADR-0024](docs/adr/0024-private-github-callback-transport.md) and the
+[reviewable cutover package](docs/implementation/github-callback-cutover.md).
+The proposal is published in [PR #59](https://github.com/BlizzardBlast/StackLens/pull/59); resolve its
+current head/checks before review or deployment.
+The database-backed local gate passes, including 84 three-engine browser cases; its
+[source/verification record](docs/implementation/release-evidence/2026-10-16-github-callback-transport.json)
+keeps hosted activation and current CI separate.
+Remaining hosted logging checks, CI and the exact real-code destination/callback review still gate activation.
+The App secret remains local. FR-101 follows hosted FR-100 acceptance.
 The local review fixes enforce actual ownership policy definitions, API roles without permanent
 schema/database CREATE or credential ownership, approved table/column grants, bounded cancellable
 credential reads/writes and cleanup, terminal

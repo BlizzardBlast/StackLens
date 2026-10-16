@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/wrangler.json",
+  "name": "stacklens-github-callback",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-16",
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": {
+    "enabled": false,
+    "logs": { "enabled": false, "invocation_logs": false, "persist": false },
+    "traces": { "enabled": false, "persist": false },
+    "issues": { "enabled": false }
+  }
+}

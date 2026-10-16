@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Connecting GitHub · StackLens</title>
+    <script>
+      // FR-100, SEC-007: this is the only script. Clear the URL before parsing or I/O.
+      (() => {
+        let fragment = window.location.hash;
+        const hadQuery = window.location.search !== "";
+        try {
+          window.history.replaceState(null, "", "/auth/github/complete.html");
+        } catch {
+          return;
+        }
+        const fail = () => window.location.replace("/?github=error");
+        try {
+          if (hadQuery || fragment.length > 8_192 || fragment.length < 2) return fail();
+          const fields = {};
+          const limits = {
+            code: 256,
+            state: 256,
+            error: 256,
+            error_description: 2_000,
+            error_uri: 2_000,
+          };
+          for (const [name, value] of new URLSearchParams(fragment.slice(1))) {
+            if (
+              !Object.hasOwn(limits, name) ||
+              Object.hasOwn(fields, name) ||
+              value.length > limits[name]
+            )
+              return fail();
+            fields[name] = value;
+          }
+          fragment = "";
+          if (
+            fields.error === undefined &&
+            (!/^[A-Za-z0-9_-]{1,256}$/u.test(fields.code ?? "") ||
+              !/^[A-Za-z0-9_-]{43}$/u.test(fields.state ?? ""))
+          )
+            return fail();
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 30_000);
+          fetch("/v1/auth/github/callback", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            credentials: "same-origin",
+            mode: "same-origin",
+            redirect: "error",
+            cache: "no-store",
+            // same-origin mode + no-referrer produces Origin:null in Firefox. This URL is already cleared.
+            referrerPolicy: "same-origin",
+            signal: controller.signal,
+            body: JSON.stringify(fields),
+          })
+            .then(async (response) => {
+              if (response.status !== 200) return fail();
+              const result = await response.json();
+              window.location.replace(
+                result?.connected === true ? "/?github=connected" : "/?github=error",
+              );
+            })
+            .catch(fail)
+            .finally(() => clearTimeout(timeout));
+        } catch {
+          fail();
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>Connecting GitHub</h1>
+      <p role="status">Completing your connection…</p>
+      <p>If this page does not continue, <a href="/">return to StackLens</a> and try again.</p>
+      <p>JavaScript is required to finish connecting GitHub.</p>
+    </main>
+  </body>
+</html>

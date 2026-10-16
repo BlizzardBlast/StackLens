@@ -122,6 +122,7 @@ await test(
           publicOrigin: "https://stacklens.fixture",
           installationUrl: "https://github.com/apps/stacklens-fixture/installations/new",
           clientId: "Iv1.fixture",
+          callbackUrl: "https://relay.example/v1/auth/github/callback",
           clientSecret: "synthetic-client-secret",
           sessionKey: key,
         },
@@ -153,11 +154,16 @@ await test(
       const start = await api.inject({ method: "GET", url: "/v1/auth/github/start" });
       const state = new URL(start.headers.location).searchParams.get("state");
       const callback = await api.inject({
-        method: "GET",
-        url: `/v1/auth/github/callback?state=${state}&code=synthetic`,
-        headers: { cookie: String(start.headers["set-cookie"]).split(";")[0] },
+        method: "POST",
+        url: "/v1/auth/github/callback",
+        headers: {
+          cookie: String(start.headers["set-cookie"]).split(";")[0],
+          origin: "https://stacklens.fixture",
+        },
+        payload: { state, code: "synthetic" },
       });
-      assert.equal(callback.headers.location, "https://stacklens.fixture/?github=connected");
+      assert.equal(callback.statusCode, 200);
+      assert.deepEqual(callback.json(), { connected: true });
       const cookie = callback.headers["set-cookie"]
         .find((value) => value.startsWith("__Host-stacklens_session="))
         .split(";")[0];

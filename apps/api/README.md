@@ -2,15 +2,19 @@
 
 ## Optional GitHub App connection (FR-100)
 
-`/v1/auth/session`, `/v1/auth/github/start`, `/v1/auth/github/callback` and
+`/v1/auth/session`, `/v1/auth/github/start`, `POST /v1/auth/github/callback` and
 `/v1/auth/sign-out` implement state/PKCE and opaque cookie sessions. Explicit
 `POST /v1/analyses/github` requires an active connection, exact Origin and CSRF header, verifies
 repository access, then commits owner-bound analysis/outbox data. Public/quick routes remain
 anonymous. Owner checks precede report reads; private status adds `access: connected`, without
 exposing owner identifiers or connection references.
 Authorization-error callbacks accept bounded optional `error_uri` metadata, ignore its contents,
-clear pending state and redirect to the fixed error notice. Unknown/oversized query fields retain
-the stable 400 response; Fastify validation and OpenAPI share this schema.
+clear pending state and return a fixed JSON failure. The isolated landing replaces history with
+the error notice. POST requires exact Origin before parsing, rejects all query fields and limits
+JSON bodies to 8 KiB. Trusted parser/schema failures also clear state. GET returns 410 and never
+exchanges codes. Fastify validation and OpenAPI share the body schema. Both authorization and
+exchange use mandatory `STACKLENS_GITHUB_CALLBACK_URL`, bound into the encrypted pending cookie.
+See [ADR-0024](../../docs/adr/0024-private-github-callback-transport.md).
 
 Hosted configuration remains disabled/pending. Activated APIs require worker-managed database mode
 and a restricted RLS-protected non-owner login; startup fails closed otherwise. Request logs omit
