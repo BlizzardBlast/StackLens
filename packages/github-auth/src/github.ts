@@ -10,6 +10,7 @@ export interface GitHubAuthorizationConfig {
   readonly clientId: string;
   readonly clientSecret: string;
   readonly publicOrigin: string;
+  readonly callbackUrl: string;
   readonly installationUrl: string;
   readonly sessionKey: string;
 }
@@ -63,7 +64,13 @@ function object(value: unknown): Record<string, unknown> {
 }
 
 export function validateAuthorizationConfig(config: GitHubAuthorizationConfig): void {
-  const origin = new URL(config.publicOrigin);
+  let origin: URL, callback: URL;
+  try {
+    origin = new URL(config.publicOrigin);
+    callback = new URL(config.callbackUrl);
+  } catch {
+    throw new GitHubConnectionError();
+  }
   if (
     origin.origin !== config.publicOrigin ||
     origin.username ||
@@ -72,6 +79,22 @@ export function validateAuthorizationConfig(config: GitHubAuthorizationConfig): 
       origin.protocol === "https:" ||
       (origin.protocol === "http:" && ["localhost", "127.0.0.1"].includes(origin.hostname))
     )
+  )
+    throw new GitHubConnectionError();
+  if (
+    callback.protocol !== "https:" ||
+    callback.username ||
+    callback.password ||
+    callback.search ||
+    callback.hash ||
+    callback.pathname !== "/v1/auth/github/callback" ||
+    callback.href !== config.callbackUrl ||
+    callback.href !== `${callback.origin}/v1/auth/github/callback` ||
+    callback.origin === origin.origin ||
+    callback.hostname === "localhost" ||
+    callback.hostname.endsWith(".localhost") ||
+    callback.hostname.startsWith("127.") ||
+    callback.hostname === "[::1]"
   )
     throw new GitHubConnectionError();
   if (
@@ -87,7 +110,7 @@ export function validateAuthorizationConfig(config: GitHubAuthorizationConfig): 
 }
 
 export function callbackUrl(config: GitHubAuthorizationConfig): string {
-  return `${config.publicOrigin}/v1/auth/github/callback`;
+  return config.callbackUrl;
 }
 
 export async function exchangeGitHubCode(

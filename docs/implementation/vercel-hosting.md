@@ -69,6 +69,11 @@ and the checks before routing was rebuilt. Earlier acceptance records retain the
 - Static output: `apps/web/dist`.
 - API rewrites preserve `/v1`; OpenAPI forwards to the same configured origin.
 - Direct visits to `/quick` and `/analyses/:analysisId` load `index.html`.
+- FR-100's `/auth/github/complete.html` is an isolated static document, not an SPA rewrite. Its
+  exact inline-script hash, no-store/no-referrer, frame denial and other headers come from
+  `scripts/github-callback-landing.mjs`. Do not add application or third-party resources to it.
+  See [ADR-0024](../adr/0024-private-github-callback-transport.md) and the
+  [gated callback cutover](github-callback-cutover.md); hosted connections remain disabled.
 - API responses use `Cache-Control: private, no-store`, `CDN-Cache-Control: no-store` and
   `Vercel-CDN-Cache-Control: no-store`. Do not add CDN caching to analysis status/report responses.
 - `.vercelignore` excludes local environment files, dependencies, cached build output, documents and

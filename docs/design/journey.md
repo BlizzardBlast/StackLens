@@ -3534,3 +3534,268 @@ hosting/credential boundaries. Current main and the merged tree must be independ
 before deleting the remote milestone branch.
 
 **Traceability:** FR-003/100, SEC-003/005/007, NFR-005/008/009, GOV-002/006/007; ADR-0023.
+
+## 2026-10-15 — Prepare the concrete FR-100 hosted activation
+
+The operator accepted hosted FR-100 activation before saved-repository development. The new
+`codex/github-connections-activation` branch uses the existing checkout. Main independently matches
+the PR #58 squash merge at `6bb5aa2`; push quality, portable recovery and offsite fixture CI pass.
+Both Vercel reader statuses are successful at that revision, and the API dashboard independently
+shows Ready/Current Production. Direct and same-origin session endpoints remain disabled.
+
+Bounded read-only transactions through the existing Worker/API/backup logins verify TLS and
+PostgreSQL 18.6, correct restricted public grants and the absence of the FR-100 migration/policies.
+The source has one pending analysis/delivery and zero queue/locked rows; the Worker panel separately
+reports Running. This is not a drained/fenced executor, so installation must preserve and resolve
+that pending work before obtaining fresh shutdown evidence. No source rows, grants or routes change.
+
+The repository-native Docker/Silly packaging path builds merged-main Linux Node 24 code. Archive
+inspection confirms credential/environment exclusion, launcher/ESM boundaries and the absence of
+root package metadata that would trigger panel installation. A read-only, network-disabled native
+smoke imports Worker/auth/persistence and verifies synthetic encryption and wrong-purpose rejection.
+The independent session key is generated only in exclusive user-only private local storage.
+
+After browser attachment recovery and operator-completed GitHub verification, Chrome's App form is
+prepared with an exact non-wildcard callback, expiring user tokens, Contents/Metadata read-only,
+no webhooks/other permissions and installation limited to the operator account for the personal
+preview. The form is unsubmitted. The [concrete review plan](../implementation/github-connections-activation.md)
+names the proposed synthetic private fixture, secret destinations, exact connection-only grants,
+tested archive hash, execution order and privacy-preserving rollback. Current GitHub registration
+documentation is retrieved through Context7. Registration, installation, hosted credentials,
+migration/grants and private acceptance remain pending; no FR-101 behavior is introduced.
+
+The [dated preflight evidence](../implementation/release-evidence/2026-10-15-github-connections-activation-preflight.json)
+keeps preparation separate from future activation. Documentation impact updates README, runbook,
+handover and this chronological entry; accepted requirements, architecture/ADRs, UI design and
+runtime source remain applicable. Final preparation checks validate formatting, evidence privacy
+and document links. Existing backups and protected recovery remain intact.
+
+**Traceability:** FR-100/003/004/017/021/022, SEC-003/004/005/006/007, NFR-008/009/010,
+GOV-002/006/007; ADR-0023.
+
+## 2026-10-15 — Roll out the approved Worker and verify the callback-log boundary
+
+Following explicit approval of the concrete activation package, GitHub accepted the read-only
+StackLens App and private synthetic fixture. The fixture's manifest/static import/README are
+committed with only `is-number@7.0.0`; the account's existing automatic Codecov/SonarQube Cloud
+installations were applied during creation. The StackLens App installation waits at fresh GitHub
+verification. Its initial client secret and required signing key remain in private local custody.
+
+Normal restart of the original Worker completed preserved pending delivery and a strict limited
+report, matching direct/proxy reads. Installed original entrypoint/runtime match the preserved
+rollback package. Two normal Stops reached Offline without Kill or claim unlocking. Startup form
+edits initially did not persist and one start used the original launcher; after persisted-setting
+verification, the reviewed Linux archive installed successfully. Installed module hashes match,
+normal startup is restored and the completed installer is retired as a text deployment record.
+Only the independent data key was added to the unchanged existing Worker environment.
+
+The canonical Worker migration and five policies are active. Only the approved connection USAGE
+and table SELECT/INSERT/DELETE grants were added. The actual restricted API login passes required/
+forbidden-grant, CREATE/ownership and policy checks; backup credential access remains denied with
+its approved public scope unchanged. A rolled-back synthetic transaction verifies owner versus
+anonymous/other-owner analysis/delivery reads, with zero committed test rows. An anonymous request
+for the private fixture receives durable acceptance, is delivered once and safely fails without a
+private report. The queue drains, and there are no connected analyses or stored connections.
+
+Dummy callback values reveal that Vercel's platform Request Logs retain `code` and `state` in Search
+Params. Its documented Hobby retention is one hour, and no supported pre-storage exclusion has
+been verified. This differs from application log redaction and leaves an explicit operator decision
+or verified callback-hosting mitigation before real OAuth under the approved plan. API credentials
+remain absent and no real OAuth code was used. Live private consent/isolation, sign-out/expiry/
+revocation and fresh scheduled capture/restore remain open; FR-101 has not started.
+
+The [rollout evidence](../implementation/release-evidence/2026-10-15-github-connections-worker-rollout.json)
+preserves these results and failed attempts separately from historical preparation. Current main
+is freshly fetched at the same reviewed revision. Documentation impact updates README, handover,
+activation/runbook evidence and this appended correction; runtime source, accepted requirements,
+architecture/design decisions and backup custody/schedules are unchanged. Documentation privacy,
+links, artifact hashes and applicable formatting checks cover these local uncommitted edits;
+the full runtime suite is not claimed as rerun.
+
+**Traceability:** FR-100/003/004/017/021/022, SEC-003/004/005/007, NFR-008/009/010,
+GOV-002/006/007; ADR-0023.
+
+## 2026-10-16 — Preserve the callback privacy decision and prepare a synthetic hosting probe
+
+The operator declined the callback-log retention exception and directed connections to stay
+disabled while logging is resolved. The selected-repository App installation actually completed
+on October 15 at 19:35 WIB (`171724341`); its old verification tab was stale. Installed settings
+show exactly the synthetic fixture and read-only Contents/Metadata. No real StackLens OAuth
+consent was started. Current status documents now distinguish completed installation from the
+remaining privacy and hosted acceptance gates, without rewriting the earlier checkpoint.
+
+Direct/proxied session reads remain HTTP 200, `enabled: false`, `private, no-store`. Read-only TLS
+preflight confirms five policies and unchanged API/backup access boundaries. Queue jobs, locks,
+claims and pending deliveries are zero; no connections or connected analyses exist. There are
+now no report rows, so the prior report readback cannot be repeated. Its removal cause is not
+independently established; October 15 report evidence remains historical.
+
+Current Cloudflare documentation supports disabling request invocation logs, with new Workers
+otherwise logging by default. A locally prepared dummy-only HTTPS probe rejects real-looking
+credentials, duplicates, extra fields, body submissions and redirect injection. It redirects
+synthetic values only to the fixed StackLens home fragment, with no network calls, storage,
+bindings or logging. Logs, traces and issue collection are explicitly disabled. Five local tests
+pass, including an owned loopback transport check; pinned Wrangler 4.151.0 validates the config
+and builds without deploying. An initial test incorrectly assumed `Request.url` drops fragments;
+it was corrected to observe the actual HTTP request target. The dry-run makes no hosted privacy
+claim. Artifact hashes and coverage are recorded in the
+[continuation evidence](../implementation/release-evidence/2026-10-16-github-connections-continuation.json).
+
+The [reviewable proposal](../implementation/github-callback-privacy.md) scopes a possible next
+approval to a free synthetic probe in an existing operator account. A new host is outside the
+original activation authorization. No resource/account, GitHub callback, production source,
+sign-in protocol, existing Worker or backup configuration is changed. A later production relay
+would need requirements/ADR updates, isolated fragment handling, same-origin body submission,
+preserved state/PKCE, logging verification and full acceptance. Device flow remains an unchosen
+alternative. No declined retention exception is re-offered, and API credentials remain local.
+
+Documentation impact updates README, handover, activation/runbook status, the proposal, evidence
+and this chronological entry. Accepted requirements, ADRs, architecture and UI semantics are
+unchanged because production behavior is unchanged. Documentation/privacy/link/hash checks,
+applicable formatting and diff whitespace validation cover this local preparation; a fresh full
+runtime quality gate is not claimed. FR-100 hosted acceptance remains open and FR-101 has not started.
+
+**Traceability:** FR-100, SEC-003/004/005/007, NFR-008/009/010, GOV-002/003/006/007; ADR-0023.
+
+## 2026-10-16 — Create the approved synthetic host and preserve the deployment-access boundary
+
+The operator approved the named Cloudflare Free probe and completed existing-account sign-in.
+The account showed no projects and its Free request allocation. The dashboard creates a harmless
+Hello World starter before exposing observability settings, so the originally proposed initial
+CLI configuration was not used. The approved resource was created, then invocation logs,
+dashboard log persistence and collection were disabled and deployed. Traces/issues were already
+off. Fresh settings navigation verifies all collection switches off. Preview URLs are off, with
+no runtime variables/secrets, bindings, export destinations or custom domains. No billing,
+account creation or repository integration was added.
+
+The embedded editor remained loading on its initial visit and one reload. Its live preview
+automatically requested the query-free root and displayed the starter's fixed console message
+after persistence was disabled. The editor was left to close that preview. No prepared module
+upload or callback canary has occurred, so neither hosted behavior nor log exclusion is accepted.
+Wrangler's read-only identity check reports no authenticated session; no CLI login was started.
+
+A custom token summary is prepared without issuing credentials: Workers Scripts: Edit on the
+one selected account, covering all its Worker scripts, with a configured October 16 07:15–08:45
+WIB lifetime. Creating and locally using this credential requires separate access approval.
+The operator has not approved a broader OAuth login or additional permissions. No token value
+exists in source, evidence or logs. The prepared CLI helper will verify actual expiry and artifact
+hashes before deployment and suppress raw provider/CLI failure output.
+
+The [host preparation evidence](../implementation/release-evidence/2026-10-16-github-callback-probe-host.json)
+records the changed sequence and incomplete outcome separately from the pre-approval snapshot.
+README, handover, activation checkpoint and callback proposal reflect the actual state. Production
+source, requirements/ADR decisions, GitHub callback, API connection credentials and backups remain
+unchanged; connections stay disabled as directed. Documentation/privacy/link/hash and formatting
+checks apply to this preparation; full production tests and hosted canary acceptance are not claimed.
+
+**Traceability:** FR-100, SEC-003/004/005/007, NFR-008/009/010, GOV-002/006/007; ADR-0023.
+
+## 2026-10-16 — Keep browser-only deployment while the editor response is reviewed
+
+The operator chose to wait for the browser editor instead of creating the proposed deployment
+token. The unsubmitted token tab is closed and the unused CLI deployment helper is removed.
+No credential was created or authorized; the existing synthetic-host approval does not authorize
+token creation or CLI login. Connections remain disabled under the earlier privacy decision.
+
+A fresh Chrome editor tab and one diagnostic reload still show an empty embedded source frame
+and disabled Deploy after a bounded 45-second event wait. DNS resolves for both dashboard and
+editor hosts, with no captured task console errors. The browser tool then reports that raw
+diagnostics are unavailable while it resolves a paused document response. This records pending
+browser review, not a rejection or a proven Cloudflare outage. No security bypass is attempted.
+Transient diagnostic request data is discarded and the editor is left open for continuation.
+
+The host still contains only its harmless starter with collection disabled. The prepared probe
+has not been uploaded and no callback canary, real OAuth code, App secret or data key was sent.
+The [host evidence](../implementation/release-evidence/2026-10-16-github-callback-probe-host.json)
+preserves the original preparation and appends this later decision. README, runbook, activation
+checkpoint and handover now identify the browser review as the current blocker. Accepted product
+behavior, architecture/ADRs, production source, database/Worker runtime and backups are unchanged.
+Documentation privacy/link/hash, formatting and changed-line whitespace checks cover this update;
+hosted probe or FR-100 acceptance is not claimed.
+
+**Traceability:** FR-100, SEC-003/004/005/007, NFR-008/009/010, GOV-002/006/007; ADR-0023.
+
+## 2026-10-16 — Deploy the loaded browser probe and verify scoped callback metadata
+
+The operator's screenshot showed the previously blank editor had loaded. Fresh automation
+inspection confirmed the current page, superseding the earlier captured loading view and pending
+document report. The complete reviewed dummy-only module was pasted through Chrome and copied
+back in full for comparison before publishing. The dashboard reports Version saved and active
+version `d8a636de`. No deployment token, CLI login or security bypass was needed.
+
+After leaving the editor preview and stopping transient network diagnostics, fresh saved settings
+confirm logs/traces/issues still disabled, with no variables/secrets, bindings or export destinations.
+Seven hosted cases pass: health, root denial, fixed fragment redirect, non-dummy code denial,
+duplicate code denial, redirect injection denial and POST denial. Responses are empty with
+no-store/no-referrer. Only synthetic canaries are used; the landing succeeds and both API origins
+still return disabled sessions with private, no-store.
+
+Cloudflare's stored-event canary search returns no events in a verified window covering the probe,
+refreshed after its stated two-minute ingestion delay. The unfiltered history retains two harmless
+starter events before collection disable, which are preserved in the evidence. Vercel's CDN view
+independently identifies the exact landing request ID as query-free `GET /`, HTTP 200. Its ordinary
+Request Logs view initially had no entries for this static landing. These observations combine
+configuration and live canary evidence; they do not establish absence from provider-internal
+systems or complete all account security logging review.
+
+The [scoped probe evidence](../implementation/release-evidence/2026-10-16-github-callback-probe-acceptance.json)
+records module identity, cases, log-search window, matching landing metadata and limits separately
+from earlier preparation. README, handover, runbook and activation/callback status now reflect the
+successful browser deployment. The production relay, isolated landing/POST contract, requirements/
+ADR impact and body/error/trace verification remain open before final real-code destination and
+GitHub callback review. Real OAuth, API credentials, production source, Worker/database and backups
+are unchanged. Documentation privacy/link/hash, formatting and changed-line whitespace checks
+cover this update; no fresh full runtime quality gate or hosted FR-100 completion is claimed.
+
+**Traceability:** FR-100, SEC-003/004/005/007, NFR-008/009/010, GOV-002/006/007; ADR-0023.
+
+## 2026-10-16 — Implement the privacy-gated production callback transport locally
+
+The operator accepted the next-step recommendation to finish the relay, isolated landing and
+same-origin POST callback while preserving the disabled-connection hold. FR-100 now states the
+logging/transport acceptance boundary. ADR-0024 supersedes only ADR-0023's direct GET transport;
+existing encrypted sessions, explicit grants, owner/RLS reads and backup exclusions remain.
+
+A single-module credential-free HTTPS relay accepts bounded known metadata, rejects duplicates
+and redirect injection, discards provider error descriptions/URIs and redirects only to the fixed
+dedicated StackLens fragment landing. One hash-authorized inline script clears callback values
+before parsing or I/O, loads no application/third-party resources, and posts JSON to the same-origin
+API without retries. A visible heading/status, JavaScript requirement and return link support
+the minimal handoff without new visual tokens. Vercel and local preview share the computed script
+hash and isolation/no-store/no-referrer headers; HTML line endings normalize for Windows hashing.
+
+The API validates exact Origin before parsing, rejects query fields, limits callback bodies to
+8 KiB and clears trusted pending state on parser/schema/provider failure. Foreign Origins cannot
+clear cookies. Legacy GET returns 410 and never exchanges a code. Mandatory fixed relay configuration
+is shared by authorization/exchange and authenticated inside the ten-minute state/PKCE cookie.
+No schema, report, analyzer, permission or credential change is needed.
+
+Cross-browser testing found Firefox sends Origin:null for same-origin mode with no-referrer.
+The POST explicitly uses same-origin referrer policy after URL clearing, retaining exact Origin
+with only the sanitized landing path as Referer; document and relay remain no-referrer. WebKit's
+request interception omitted cookies and could not fulfill a 303, so the regression uses real
+owned loopback HTTP servers and observes cookie/Origin/body on the wire in all six projects.
+The JavaScript requirement text is always visible rather than relying on noscript interpretation.
+
+Read-only hosting review reconfirms existing probe collection off, samples administrative audit
+metadata without the query body/canary, and records account WAF offered as an Enterprise add-on
+and Security Insights with no scans yet. Account log-dataset inspection remains incomplete after
+an unattached debugger and timed-out fresh tab; this does not establish an empty dataset or a
+Cloudflare outage. The new relay was not deployed and no real callback or API credentials changed.
+
+The frozen-source database-backed `pnpm check` passes at 14:12:36 WIB: 729 Vitest, 69 Node and all
+84 browser cases, compiled native Vercel/API/Worker smoke, restricted private pipeline, restoration,
+typechecking, lint and formatting. Its unique owned PostgreSQL database was removed. The pinned
+Wrangler dry-run builds a 2.11 KiB/gzip 0.92 KiB module with no bindings and no deploy/authentication.
+The first full attempt was superseded after browser edits changed a title during execution; its
+database was also removed. New-source CI and hosted OAuth/private/scheduled acceptance are not claimed.
+
+The [source/verification evidence](../implementation/release-evidence/2026-10-16-github-callback-transport.json)
+binds twenty source/config/test hashes. The [cutover package](../implementation/github-callback-cutover.md)
+records exact destinations, conditional rollout, rollback, remaining log/body/error/trace gates and
+review coverage. Requirements, architecture, ADR, design flow, README, handover, contributor/package
+and Vercel/runbook docs are updated. Earlier probe/activation artifacts remain historical. Source
+is uncommitted/unpushed; connections stay disabled and FR-101 has not started.
+
+**Traceability:** FR-100, SEC-003/004/005/007, NFR-005/006/007/008/009, GOV-002/003/006/007;
+ADR-0023/0024.

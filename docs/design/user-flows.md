@@ -23,6 +23,15 @@ alerts/status, native checkbox/links and existing Button focus styles support ke
 layouts. No password, OAuth token or permission scope editor is rendered in StackLens. See
 [the runbook](../implementation/github-connections.md) and ADR-0023.
 
+ADR-0024 adds a minimal connecting document between GitHub and the existing notice. It removes
+callback values from the address before any other resource or POST, shows a plain heading/status
+and a labeled return link, and replaces its history entry on success or failure. No normal app
+bootstrap, fonts, styles, analytics or third-party resources load on this page. Native text/link
+presentation is deliberate for this isolated security handoff; it defines no new product tokens.
+JavaScript is required and stated in visible text. Disabled JavaScript makes no callback request;
+the return link remains available. Invalid metadata, timeout and denial return the fixed error
+notice without retries or provider detail. Reload/back cannot resubmit cleared callback values.
+
 ## Flow A — Public GitHub repository analysis
 
 **Requirements:** FR-003, FR-004, FR-005–FR-021, NFR-008

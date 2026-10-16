@@ -1,3 +1,5 @@
+import { callbackLandingHeaders, callbackLandingPath } from "./github-callback-landing.mjs";
+
 /**
  * Prepare the static web target without moving the API or Worker into Vercel Functions.
  * Supports FR-001/003/004/022, NFR-008/009 and SEC-003/007 under ADR-0002/0004.
@@ -57,6 +59,7 @@ export function createVercelConfig(environment) {
       { source: "/analyses/:analysisId", destination: "/index.html" },
     ],
     headers: [
+      { source: callbackLandingPath, headers: callbackLandingHeaders },
       { source: "/v1/:path*", headers: noStoreHeaders },
       { source: "/openapi.json", headers: noStoreHeaders },
     ],

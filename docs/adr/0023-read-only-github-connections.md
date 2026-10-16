@@ -7,6 +7,10 @@
 
 ## Decision
 
+ADR-0024 supersedes the direct GET callback transport with a credential-free relay, isolated
+fragment landing and exact-Origin POST. All session, token, owner, persistence and rollout
+boundaries below remain applicable. Hosted activation remains gated.
+
 Use the GitHub App web authorization flow with random state and PKCE S256, read-only Contents
 and Metadata permissions, and explicit installation/repository selection. Do not use a classic
 OAuth application's broad `repo` scope, installation-wide service credential or repository write

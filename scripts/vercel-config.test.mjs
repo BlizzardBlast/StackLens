@@ -1,7 +1,31 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
+import { callbackLandingHeaders, callbackLandingPath } from "./github-callback-landing.mjs";
 import { createVercelConfig } from "./vercel-config.mjs";
+
+await test("FR-100/SEC-007: isolated landing has one exact hash policy and no app/third-party resources", () => {
+  const config = createVercelConfig({ STACKLENS_API_ORIGIN: "https://api.example.com" });
+  assert.deepEqual(
+    config.headers.find((rule) => rule.source === callbackLandingPath).headers,
+    callbackLandingHeaders,
+  );
+  const html = readFileSync(
+    new URL("../apps/web/public/auth/github/complete.html", import.meta.url),
+    "utf8",
+  );
+  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gu)];
+  assert.equal(scripts.length, 1);
+  const hash = createHash("sha256").update(scripts[0][1].replace(/\r\n?/gu, "\n")).digest("base64");
+  const policy = callbackLandingHeaders.find(
+    (header) => header.key === "Content-Security-Policy",
+  ).value;
+  assert.ok(policy.includes(`script-src 'sha256-${hash}'`));
+  assert.doesNotMatch(policy, /unsafe-inline|unsafe-eval|report-to|report-uri|report-sample/u);
+  assert.doesNotMatch(html, /<script[^>]+src|<link|<img|<iframe|analytics|console\./iu);
+});
 
 await test("FR-003/004/022: repository and quick requests preserve the public API prefix", () => {
   const config = createVercelConfig({ STACKLENS_API_ORIGIN: " https://api.example.com/ " });

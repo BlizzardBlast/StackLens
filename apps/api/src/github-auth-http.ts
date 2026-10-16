@@ -131,13 +131,53 @@ export function registerGitHubAuthRoutes(
       return reply.redirect(started.location);
     },
   );
+  // SEC-007: never complete authorization from a platform-retained request URL.
   api.get(
     "/v1/auth/github/callback",
     {
       schema: {
+        operationId: "removedGitHubQueryCallback",
+        tags: ["connection"],
+        deprecated: true,
+        response: { 410: ApiErrorSchema },
+      },
+    },
+    async (_request, reply) => {
+      reply.header("Referrer-Policy", "no-referrer");
+      return reply.code(410).send({
+        code: "connection_callback_removed",
+        message: "Start a new GitHub connection from StackLens.",
+      });
+    },
+  );
+  api.post(
+    "/v1/auth/github/callback",
+    {
+      bodyLimit: 8_192,
+      onRequest: async (request, reply) => {
+        reply.header("Referrer-Policy", "no-referrer");
+        if (service === undefined)
+          return reply.code(503).send({
+            code: "connection_disabled",
+            message: "GitHub connection is not enabled on this deployment.",
+          });
+        if (
+          request.headers.origin !== service.config.publicOrigin ||
+          request.headers["sec-fetch-site"] === "cross-site"
+        )
+          return reply.code(403).send({
+            code: "invalid_connection_request",
+            message: "Start the connection from StackLens.",
+          });
+        // Cleanup also covers JSON parser/schema failures, before the handler runs.
+        reply.header("Set-Cookie", cookie(service, stateCookieName(service), "", 0));
+        return undefined;
+      },
+      schema: {
         operationId: "finishGitHubConnection",
         tags: ["connection"],
-        querystring: z.strictObject({
+        querystring: z.strictObject({}),
+        body: z.strictObject({
           code: z.string().max(256).optional(),
           state: z.string().max(256).optional(),
           error: z.string().max(256).optional(),
@@ -145,22 +185,28 @@ export function registerGitHubAuthRoutes(
           // Provider error metadata is accepted but never fetched, displayed or used as a redirect.
           error_uri: z.string().max(2_000).optional(),
         }),
-        response: { 400: ApiErrorSchema, 503: ApiErrorSchema },
+        response: {
+          200: z.strictObject({ connected: z.literal(true) }),
+          400: ApiErrorSchema,
+          403: ApiErrorSchema,
+          503: ApiErrorSchema,
+        },
       },
     },
     async (request, reply) => {
-      if (service === undefined)
-        return reply.code(503).send({
-          code: "connection_disabled",
-          message: "GitHub connection is not enabled on this deployment.",
-        });
-      const pending = readCookie(request, stateCookieName(service));
-      reply.header("Set-Cookie", cookie(service, stateCookieName(service), "", 0));
-      reply.header("Referrer-Policy", "no-referrer");
       try {
-        if (request.query.error !== undefined || !request.query.code || !request.query.state)
+        if (
+          service === undefined ||
+          request.body.error !== undefined ||
+          !request.body.code ||
+          !request.body.state
+        )
           throw new GitHubConnectionError();
-        const session = await service.finish(pending, request.query.state, request.query.code);
+        const session = await service.finish(
+          readCookie(request, stateCookieName(service)),
+          request.body.state,
+          request.body.code,
+        );
         reply.header("Set-Cookie", [
           cookie(service, stateCookieName(service), "", 0),
           cookie(
@@ -170,9 +216,12 @@ export function registerGitHubAuthRoutes(
             Math.max(0, Math.floor((Date.parse(session.expiresAt) - service.now()) / 1_000)),
           ),
         ]);
-        return reply.redirect(`${service.config.publicOrigin}/?github=connected`);
+        return { connected: true as const };
       } catch {
-        return reply.redirect(`${service.config.publicOrigin}/?github=error`);
+        return reply.code(400).send({
+          code: "connection_failed",
+          message: "GitHub connection could not be completed. Start again from StackLens.",
+        });
       }
     },
   );

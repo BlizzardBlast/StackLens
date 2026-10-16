@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-15T00:09:27.588Z",
+  "status": "prepared_registration_and_linux_package_hosted_activation_pending",
+  "requirements": [
+    "FR-100",
+    "FR-003",
+    "FR-004",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "SEC-003",
+    "SEC-004",
+    "SEC-005",
+    "SEC-006",
+    "SEC-007",
+    "NFR-008",
+    "NFR-009",
+    "NFR-010",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "source": {
+    "commit": "6bb5aa28b6a7468abde5e64398a2269e251062f7",
+    "implementationPullRequest": "https://github.com/BlizzardBlast/StackLens/pull/58",
+    "runtimeSourceChanged": false,
+    "branch": "codex/github-connections-activation"
+  },
+  "publication": {
+    "quality": {
+      "conclusion": "success",
+      "run": "https://github.com/BlizzardBlast/StackLens/actions/runs/38572994438"
+    },
+    "portableRecovery": {
+      "conclusion": "success",
+      "run": "https://github.com/BlizzardBlast/StackLens/actions/runs/38572994486"
+    },
+    "offsiteFixture": {
+      "conclusion": "success",
+      "run": "https://github.com/BlizzardBlast/StackLens/actions/runs/38572994498"
+    },
+    "webReader": {
+      "status": "deployment_completed",
+      "url": "https://vercel.com/freys-projects/stacklens/Hfg8J4q1DwSjLNhntvK4YWAtXuEa"
+    },
+    "apiReader": {
+      "status": "ready_current_production",
+      "url": "https://vercel.com/freys-projects/stacklens-api/7knp9RkNwGRoJZSosyHwSmsMehdK"
+    }
+  },
+  "sourceObservation": {
+    "observedAt": "2026-10-14T23:53:59.985Z",
+    "status": "read_only_preflight_complete",
+    "tlsVerified": true,
+    "readOnlyTransactions": true,
+    "postgresVersion": "18.6",
+    "ownershipColumnPresent": false,
+    "connectionSchemaPresent": false,
+    "connectionTablePresent": false,
+    "ownershipPolicyCount": 0,
+    "counts": {
+      "in_flight": 1,
+      "reports": 0,
+      "pending_deliveries": 1,
+      "queue_jobs": 0,
+      "locked_jobs": 0
+    },
+    "rowsChanged": false,
+    "grantsChanged": false,
+    "executorFenced": false,
+    "drainVerified": false
+  },
+  "restrictedApi": {
+    "role": "stacklens_api_preview",
+    "directLogin": true,
+    "connectionLimit": 6,
+    "superuser": false,
+    "bypassRls": false,
+    "privileged": false,
+    "memberships": false,
+    "databaseCreate": false,
+    "grants": [
+      {
+        "table": "analysis",
+        "rls": false,
+        "owner": false,
+        "select": true,
+        "insert": true,
+        "update": false,
+        "delete": false,
+        "truncate": false,
+        "trigger": false,
+        "references": false,
+        "maintain": false,
+        "forbidden_column": false
+      },
+      {
+        "table": "analysis_delivery",
+        "rls": false,
+        "owner": false,
+        "select": true,
+        "insert": true,
+        "update": false,
+        "delete": false,
+        "truncate": false,
+        "trigger": false,
+        "references": false,
+        "maintain": false,
+        "forbidden_column": false
+      },
+      {
+        "table": "analysis_report",
+        "rls": false,
+        "owner": false,
+        "select": true,
+        "insert": false,
+        "update": false,
+        "delete": false,
+        "truncate": false,
+        "trigger": false,
+        "references": false,
+        "maintain": false,
+        "forbidden_column": false
+      }
+    ],
+    "permanentSchemaCreate": false,
+    "ownsPermanentSchema": false
+  },
+  "backup": {
+    "role": "stacklens_backup_preview",
+    "connectionLimit": 2,
+    "approvedBypassRls": true,
+    "publicTableSelectOnly": true,
+    "scopeChanged": false
+  },
+  "workerPanel": {
+    "existingService": "60761d98",
+    "statusObserved": "Running",
+    "runtimeFilesChanged": false,
+    "configurationChanged": false,
+    "moduleHashesVerified": false
+  },
+  "app": {
+    "name": "StackLens Preview BlizzardBlast",
+    "account": "BlizzardBlast",
+    "homepage": "https://stacklens-web.vercel.app",
+    "redirectUri": "https://stacklens-web.vercel.app/v1/auth/github/callback",
+    "wildcardMatching": false,
+    "expireUserTokens": true,
+    "userAuthorizationDuringInstallation": false,
+    "deviceFlow": false,
+    "webhooks": false,
+    "permissions": {
+      "contents": "read",
+      "metadata": "read"
+    },
+    "installationAvailability": "only_on_this_account",
+    "formPrepared": true,
+    "registrationSubmitted": false,
+    "installationGranted": false
+  },
+  "privateAcceptance": {
+    "proposedSyntheticRepository": "BlizzardBlast/stacklens-fr100-acceptance",
+    "proposedRegistryQuery": {
+      "package": "is-number",
+      "version": "7.0.0"
+    },
+    "repositoryCreated": false,
+    "consentPending": true,
+    "liveAnalysisSubmitted": false
+  },
+  "credentials": {
+    "independent32ByteDataKeyPreparedLocally": true,
+    "exclusiveUserOnlyFile": true,
+    "backupKeyReused": false,
+    "appClientSecretGenerated": false,
+    "credentialsTransmitted": false,
+    "proposedClientSecretDestination": "existing_vercel_stacklens_api_production_only",
+    "proposedDataKeyDestinations": [
+      "existing_vercel_stacklens_api_production",
+      "existing_silly_worker_60761d98"
+    ]
+  },
+  "package": {
+    "observedAt": "2026-10-15T00:05:17.019Z",
+    "sourceCommit": "6bb5aa28b6a7468abde5e64398a2269e251062f7",
+    "artifact": {
+      "bytes": 16875570,
+      "sha256": "2a8a5fe05eff1949ab1f89d6aac682fff2a17027f5f31ae329c31fafa869dc98",
+      "credentialsExcluded": true,
+      "launcherAndEsmBoundaryPresent": true
+    },
+    "smoke": {
+      "status": "linux_native_package_smoke_passed",
+      "nativeNode": true,
+      "networkDisabled": true,
+      "syntheticCredentialOnly": true,
+      "moduleHashes": {
+        "dist/main.js": "1fff29186b595e6f95d1d51453c5565eb093668777c646079819281825785c4d",
+        "dist/runtime.js": "9e6ab0aeae272eaee516ed0f3275998c249f3434f04b941af094f6f78a172223",
+        "dist/providers.js": "5eb0c58a4b823c7f5fe17f14610d8a36d8fc12e973a6c68abfcc65d873d2bd3d",
+        "dist/task.js": "f33df552e4c553df3e771f58e008c734ffb216859a38b53af38f2a5579fa1c21",
+        "dist/retention.js": "465645d4352a367470093f8b7e0d16af3cbf9871e68d9fb34325544e08c7731d",
+        "node_modules/@stacklens/persistence/dist/migrate.js": "c6f36dfba65fe38dafc07459bed7c27876fb0c8bbbf38de2544783e184d6db28",
+        "node_modules/@stacklens/persistence/dist/github-connections.js": "36948d3b5b5ee61e23bef445bb7a7ae41595881f49a91a075a5889f09ba62abd",
+        "node_modules/@stacklens/persistence/dist/ownership-policies.js": "6bb9cc8e017af2092e4dfd29a78d1c9ade406e89dfa41b3fa446ca8a6f27b28d",
+        "node_modules/@stacklens/github-auth/dist/crypto.js": "4cf490874ca6b42a41a1bd3e3bb40646dca614711ee507e94f8ca39f5e7f8692",
+        "node_modules/@stacklens/github-auth/dist/github.js": "a4a269f735c8e8fbeda03f6aa8c43a0809904e222d9c4c0531b783e8e4cdaea4",
+        "node_modules/@stacklens/github-auth/dist/service.js": "1b98d7b7450e3f268d602119dc6cb1227374d0a486193cca067e014ca60b5e2f"
+      }
+    }
+  },
+  "pending": [
+    "exact_registration_repository_access_and_credential_destination_review",
+    "normal_pending_delivery_and_fresh_worker_shutdown_evidence",
+    "original_worker_module_hash_and_rollback_configuration_preservation",
+    "canonical_worker_migration_and_actual_restricted_login_activation_guard",
+    "live_callback_private_owner_logout_expiry_and_revocation_acceptance",
+    "fresh_scheduled_capture_and_independent_restore_on_activated_revision"
+  ],
+  "limitations": [
+    "Successful reader builds and local packaging are not hosted private-feature acceptance.",
+    "Worker panel Running and queue counts do not prove executor fencing or pending delivery completion.",
+    "Persistent public replacement/cutover and broader capacity remain separate release gates."
+  ]
+}

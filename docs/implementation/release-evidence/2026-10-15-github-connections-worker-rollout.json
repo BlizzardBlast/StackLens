@@ -1,0 +1,256 @@
+{
+  "observedAt": "2026-10-15T12:20:26.404Z",
+  "status": "worker_rollout_complete_connected_api_disabled",
+  "requirements": [
+    "FR-100",
+    "FR-003",
+    "FR-004",
+    "FR-017",
+    "FR-021",
+    "FR-022",
+    "SEC-003",
+    "SEC-004",
+    "SEC-005",
+    "SEC-007",
+    "NFR-008",
+    "NFR-009",
+    "NFR-010",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "source": {
+    "commit": "6bb5aa28b6a7468abde5e64398a2269e251062f7",
+    "mainReverified": true,
+    "runtimeSourceChanged": false,
+    "fullLocalSuiteRerun": false,
+    "qualityRun": "https://github.com/BlizzardBlast/StackLens/actions/runs/38572994438"
+  },
+  "app": {
+    "name": "StackLens Preview BlizzardBlast",
+    "slug": "stacklens-preview-blizzardblast",
+    "id": 5323725,
+    "registrationSubmitted": true,
+    "contents": "read",
+    "metadata": "read",
+    "otherPermissions": "none",
+    "accountOnly": true,
+    "installation": "pending_fresh_github_verification",
+    "selectedRepository": "BlizzardBlast/stacklens-fr100-acceptance",
+    "liveOAuthConsentRun": false
+  },
+  "fixture": {
+    "visibility": "private",
+    "committedFiles": {
+      "package.json": "99667a612419fd8590c0cf65b1aab938e7c10e92",
+      "index.js": "b472ce1a97a723324cd77fc2daa595ec0ae01262",
+      "README.md": "416ff819b8fc0e9849a364c7677d8530ccd16fd0"
+    },
+    "dependency": "is-number@7.0.0",
+    "syntheticOnly": true,
+    "accountAutomaticIntegrations": ["Codecov", "SonarQube Cloud"],
+    "automaticIntegrationsManuallyGranted": false
+  },
+  "credentials": {
+    "clientSecretGenerated": true,
+    "clientSecretCustody": "private_local_only",
+    "clientSecretSentToVercel": false,
+    "clientSecretSentToWorker": false,
+    "independentDataKeyOnWorker": true,
+    "independentDataKeyOnApi": false,
+    "signingKeyCustody": "private_local_only",
+    "connectionRecords": 0
+  },
+  "worker": {
+    "server": "60761d98",
+    "package": {
+      "bytes": 16875570,
+      "sha256": "2a8a5fe05eff1949ab1f89d6aac682fff2a17027f5f31ae329c31fafa869dc98",
+      "credentialsExcluded": true,
+      "launcherAndEsmBoundaryPresent": true
+    },
+    "installed": {
+      "observedAt": "2026-10-15T12:07:07.222Z",
+      "status": "hosted_worker_modules_match_reviewed_package",
+      "sourceCommit": "6bb5aa28b6a7468abde5e64398a2269e251062f7",
+      "modules": {
+        "dist/main.js": {
+          "sha256": "1fff29186b595e6f95d1d51453c5565eb093668777c646079819281825785c4d",
+          "matchesReviewedPackage": true
+        },
+        "dist/runtime.js": {
+          "sha256": "9e6ab0aeae272eaee516ed0f3275998c249f3434f04b941af094f6f78a172223",
+          "matchesReviewedPackage": true
+        }
+      }
+    },
+    "rollback": {
+      "observedAt": "2026-10-15T11:54:01.011Z",
+      "status": "preserved_original_worker_modules_match",
+      "archive": {
+        "bytes": 16826528,
+        "sha256": "c648c3f0537dcccb69a085a32703d9f64c54d6940393c4473039f24a55ad5439",
+        "credentialsExcluded": true
+      },
+      "modules": {
+        "dist/main.js": {
+          "sha256": "e3ad759b65c4961be142e060768f629bda0609cc1afe7ebbbb72f02149738880",
+          "matchesPreservedArchive": true
+        },
+        "dist/runtime.js": {
+          "sha256": "6ce342cbf77b63f83c5c30a0d510c8b0d2a2a93b72aba39cacd3c61736d0d80d",
+          "matchesPreservedArchive": true
+        }
+      }
+    },
+    "originalEnvironmentPreserved": true,
+    "onlyAddedEnvironmentKey": "STACKLENS_GITHUB_SESSION_KEY",
+    "normalLauncher": "start-worker.js",
+    "additionalArguments": "",
+    "normalStopsReachedOffline": 2,
+    "killUsed": false,
+    "claimsUnlocked": false,
+    "installerResult": "Reviewed StackLens Worker runtime installed.",
+    "archiveRemovedByInstaller": true,
+    "installerRetiredAs": "fr100-installer.completed.txt",
+    "correctedAttempt": "Initial startup edits did not persist; the original launcher restarted without extracting. Persisted settings were verified before the successful installer run."
+  },
+  "database": {
+    "canonicalWorkerMigrationApplied": true,
+    "grantExecutionObservedAt": "2026-10-15T12:10:51.129Z",
+    "approvedGrantStatements": [
+      "GRANT USAGE ON SCHEMA stacklens_auth TO stacklens_api_preview",
+      "GRANT SELECT, INSERT, DELETE ON TABLE stacklens_auth.github_connection TO stacklens_api_preview"
+    ],
+    "grantsApplied": true,
+    "guardRecheck": {
+      "observedAt": "2026-10-15T12:18:51.193Z",
+      "grantsApplied": false,
+      "credentialMaterialRecorded": false,
+      "canonicalPolicies": 5,
+      "actualRestrictedApiLoginVerified": true,
+      "requiredAndForbiddenEffectiveGrantsVerified": true,
+      "permanentCreateAndOwnershipRejected": true,
+      "backupConnectionAccessDenied": true,
+      "backupBypassRlsPreserved": true,
+      "status": "canonical_activation_guard_passed"
+    },
+    "isolation": {
+      "observedAt": "2026-10-15T12:19:32.221Z",
+      "status": "restricted_hosted_transaction_isolation_passed",
+      "actualApiLogin": true,
+      "syntheticOwnerReads": {
+        "analyses": 1,
+        "deliveries": 1
+      },
+      "otherOwnerReads": {
+        "analyses": 0,
+        "deliveries": 0
+      },
+      "anonymousReads": {
+        "analyses": 0,
+        "deliveries": 0
+      },
+      "transactionRolledBack": true,
+      "committedRows": 0,
+      "connectionRowsCreated": 0,
+      "reportBodyAccessNotExercised": true
+    }
+  },
+  "acceptance": {
+    "existingReport": {
+      "observedAt": "2026-10-15T12:11:59.819Z",
+      "status": "original_worker_recovery_readback_passed",
+      "analysisStatus": "completed_with_limitations",
+      "strictReportReads": 1,
+      "reads": [
+        {
+          "origin": "https://stacklens-api.vercel.app",
+          "httpStatus": 200,
+          "strictReportMatch": true,
+          "cacheControl": "private, no-store",
+          "connectionEnabled": false
+        },
+        {
+          "origin": "https://stacklens-web.vercel.app",
+          "httpStatus": 200,
+          "strictReportMatch": true,
+          "cacheControl": "private, no-store",
+          "connectionEnabled": false
+        }
+      ],
+      "rowsChanged": false,
+      "credentialsOrReportBodiesRecorded": false
+    },
+    "anonymousPrivateFixture": {
+      "observedAt": "2026-10-15T12:16:10.142Z",
+      "status": "failed",
+      "cacheControl": "private, no-store",
+      "privateReportReturned": false,
+      "ownerMarkersReturned": false,
+      "failureCode": "repository_unavailable",
+      "sensitiveProviderInput": "synthetic_fixture_only"
+    },
+    "delivery": {
+      "observedAt": "2026-10-15T12:18:48.620Z",
+      "status": "worker_delivery_and_private_denial_verified",
+      "counts": {
+        "queue_jobs": 0,
+        "locked_jobs": 0,
+        "claimed_analyses": 0,
+        "pending_deliveries": 0,
+        "reports": 1,
+        "connections": 0,
+        "connected_analyses": 0
+      },
+      "anonymousFixture": {
+        "status": "failed",
+        "anonymous": true,
+        "unclaimed": true,
+        "delivery_status": "delivered",
+        "attempts": 1
+      },
+      "rowsChanged": false,
+      "claimsUnlocked": false,
+      "rawReportsOrCredentialsRecorded": false
+    },
+    "livePrivateReport": false,
+    "signOutExpiryRevocation": false,
+    "postActivationScheduledCaptureRestore": false
+  },
+  "platformLogs": {
+    "observedAt": "2026-10-15T12:13:03.340Z",
+    "status": "synthetic_callback_log_canaries_sent",
+    "marker": "stacklens-fr100-dummy-20261015",
+    "realOAuthCodeSent": false,
+    "reads": [
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "status": 503,
+        "cacheControl": "private, no-store"
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "status": 503,
+        "cacheControl": "private, no-store"
+      }
+    ],
+    "dummyCodeAndStateVisibleInRequestSearchParams": true,
+    "appClientSecretOrRealOAuthCodeSent": false,
+    "documentedHobbyRetention": "1 hour",
+    "reference": "https://vercel.com/docs/logs/runtime",
+    "supportedPreStorageExclusionVerified": false,
+    "exceptionDecision": "pending_operator_reply"
+  },
+  "remaining": [
+    "Resolve or explicitly review the platform callback-query retention before API credentials and real OAuth",
+    "Complete GitHub fresh verification and selected fixture installation",
+    "Enable API-only Production configuration last and redeploy verified main",
+    "Complete live synthetic private analysis, owner isolation, sign-out, expiry and revocation acceptance",
+    "Observe fresh existing scheduled cloud capture and independent restore on the activated revision"
+  ],
+  "fr100HostedAcceptanceComplete": false,
+  "fr101Started": false,
+  "existingBackupCustodyOrSchedulesChanged": false,
+  "pushedOrCommitted": false
+}

@@ -17,7 +17,7 @@
     "runtime:smoke": "node ./scripts/runtime-smoke.mjs",
     "test": "pnpm test:deployment && pnpm test:operations && turbo run test",
     "test:browser": "playwright test",
-    "test:deployment": "node --test scripts/vercel-config.test.mjs",
+    "test:deployment": "node --test scripts/vercel-config.test.mjs scripts/github-callback-relay.test.mjs",
     "test:operations": "node --test --test-concurrency=1 scripts/operations/*.test.mjs",
     "typecheck": "turbo run typecheck && pnpm typecheck:browser",
     "typecheck:browser": "tsc --project tests/browser/tsconfig.json --noEmit",

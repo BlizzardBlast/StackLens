@@ -1,8 +1,8 @@
 # StackLens Product & System Requirements
 
 > **Status:** Accepted baseline  
-> **Version:** 0.1.5\
-> **Last updated:** 2026-10-14\
+> **Version:** 0.1.6\
+> **Last updated:** 2026-10-16\
 > **Product:** StackLens  
 > **Repository:** BlizzardBlast/StackLens
 
@@ -559,6 +559,13 @@ Acceptance criteria:
   write or broad OAuth `repo` scope is requested for analysis.
   Authorization-error callbacks accept bounded standard error metadata, clear pending connection
   state and return to the fixed error notice. Provider error URIs never control navigation or I/O.
+- Hosted authorization codes and state must stay out of retained request URLs, logs, traces and
+  error reports. A fixed credential-free HTTPS relay may pass bounded callback fields through a
+  fragment to an isolated first-party landing page. That page removes the fragment before any
+  further resource load or request and submits fields only in a same-origin POST body. The API
+  requires exact Origin and the expiring state/PKCE cookie; GET cannot complete authorization.
+  The authorization request and token exchange use the same reviewed relay URI. Connections
+  remain disabled until hosting collection settings and synthetic URL/body/error checks pass.
 - Connected submissions require a valid server-side session and explicit use of that connection.
   The API checks repository access before accepting durable work; the Worker checks the bound
   connection again during acquisition. Credentials never enter browser storage, reports or jobs.

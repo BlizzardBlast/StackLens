@@ -194,6 +194,7 @@ describe("GitHub connection transport [FR-100, SEC-003, SEC-005, SEC-007]", () =
         clientSecret: "synthetic-client-secret",
         sessionKey: "12".repeat(32),
         publicOrigin: "https://stacklens.example",
+        callbackUrl: "https://relay.example/v1/auth/github/callback",
         installationUrl: "https://github.com/apps/stacklens-test/installations/new",
       },
       fetchImpl,
@@ -234,12 +235,13 @@ describe("GitHub connection transport [FR-100, SEC-003, SEC-005, SEC-007]", () =
         error_uri: errorUri,
       });
       const response = await app.inject({
-        method: "GET",
-        url: `/v1/auth/github/callback?${query.toString()}`,
-        headers: { cookie },
+        method: "POST",
+        url: "/v1/auth/github/callback",
+        headers: { cookie, origin: "https://stacklens.example" },
+        payload: Object.fromEntries(query),
       });
-      expect(response.statusCode).toBe(302);
-      expect(response.headers.location).toBe("https://stacklens.example/?github=error");
+      expect(response.statusCode).toBe(400);
+      expect(response.headers.location).toBeUndefined();
       expect(response.headers["set-cookie"]).toBe(
         "__Host-stacklens_oauth=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Secure",
       );
@@ -262,9 +264,10 @@ describe("GitHub connection transport [FR-100, SEC-003, SEC-005, SEC-007]", () =
         invalid === "oversized error_uri" ? "x".repeat(2_001) : "synthetic-value",
       );
       const response = await app.inject({
-        method: "GET",
-        url: `/v1/auth/github/callback?${query.toString()}`,
-        headers: { cookie },
+        method: "POST",
+        url: "/v1/auth/github/callback",
+        headers: { cookie, origin: "https://stacklens.example" },
+        payload: Object.fromEntries(query),
       });
       expect(response.statusCode).toBe(400);
       expect(response.json()).toEqual({
@@ -283,20 +286,111 @@ describe("GitHub connection transport [FR-100, SEC-003, SEC-005, SEC-007]", () =
     expect(response.json()).toMatchObject({
       paths: {
         "/v1/auth/github/callback": {
-          get: {
-            parameters: expect.arrayContaining([
-              expect.objectContaining({
-                name: "error_uri",
-                in: "query",
-                required: false,
-                schema: expect.objectContaining({ type: "string", maxLength: 2_000 }),
-              }),
-            ]),
-            responses: { "400": {}, "503": {} },
+          post: {
+            requestBody: {
+              content: {
+                "application/json": {
+                  schema: {
+                    properties: { error_uri: { type: "string", maxLength: 2_000 } },
+                    additionalProperties: false,
+                  },
+                },
+              },
+            },
+            responses: { "200": {}, "400": {}, "403": {}, "503": {} },
           },
+          get: { deprecated: true, responses: { "410": {} } },
         },
       },
     });
+  });
+
+  it.each([
+    undefined,
+    "null",
+    "https://evil.example",
+    "https://stacklens.example.evil.invalid",
+    "https://stacklens.example",
+  ])(
+    "rejects callback Origin %s or cross-site metadata before parsing/cleanup/I/O [FR-100, SEC-007]",
+    async (origin) => {
+      const { app, cookie, fetchImpl, save } = await callbackHarness();
+      const response = await app.inject({
+        method: "POST",
+        url: "/v1/auth/github/callback",
+        headers: {
+          cookie,
+          "content-type": "application/json",
+          ...(origin ? { origin } : {}),
+          ...(origin === "https://stacklens.example" ? { "sec-fetch-site": "cross-site" } : {}),
+        },
+        payload: "{",
+      });
+      expect(response.statusCode).toBe(403);
+      expect(response.headers["set-cookie"]).toBeUndefined();
+      expect(fetchImpl).not.toHaveBeenCalled();
+      expect(save).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([
+    "malformed JSON",
+    "oversized body",
+    "query values",
+    "unknown body",
+    "missing state",
+    "wrong state",
+    "provider failure",
+  ])(
+    "clears trusted pending state for %s without leaking callback fields [FR-100, SEC-007]",
+    async (invalid) => {
+      const { app, state, cookie, fetchImpl, save } = await callbackHarness();
+      const response = await app.inject({
+        method: "POST",
+        url:
+          invalid === "query values"
+            ? "/v1/auth/github/callback?code=synthetic-query"
+            : "/v1/auth/github/callback",
+        headers: {
+          cookie,
+          origin: "https://stacklens.example",
+          "content-type": "application/json",
+        },
+        payload:
+          invalid === "malformed JSON"
+            ? "{"
+            : invalid === "oversized body"
+              ? "x".repeat(8_193)
+              : {
+                  code: "synthetic-code",
+                  ...(invalid === "missing state"
+                    ? {}
+                    : { state: invalid === "wrong state" ? "other" : state }),
+                  ...(invalid === "unknown body" ? { redirect: "https://evil.example" } : {}),
+                },
+      });
+      expect(response.statusCode).toBe(400);
+      expect(response.headers["set-cookie"]).toContain("Max-Age=0");
+      expect(response.headers["cache-control"]).toBe("private, no-store");
+      expect(response.body).not.toContain("synthetic-code");
+      expect(response.body).not.toContain(state);
+      expect(response.headers.location).toBeUndefined();
+      expect(fetchImpl).toHaveBeenCalledTimes(invalid === "provider failure" ? 1 : 0);
+      expect(save).not.toHaveBeenCalled();
+    },
+  );
+
+  it("rejects the legacy GET without exchanging codes or clearing cookies [FR-100, SEC-007]", async () => {
+    const { app, state, cookie, fetchImpl } = await callbackHarness();
+    const response = await app.inject({
+      method: "GET",
+      url: `/v1/auth/github/callback?code=synthetic&state=${state}`,
+      headers: { cookie },
+    });
+    expect(response.statusCode).toBe(410);
+    expect(response.headers["set-cookie"]).toBeUndefined();
+    expect(response.body).not.toContain(state);
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   it("protects callback cookies and rejects CSRF/foreign owners before any report read", async () => {
@@ -340,6 +434,7 @@ describe("GitHub connection transport [FR-100, SEC-003, SEC-005, SEC-007]", () =
         clientSecret: "synthetic-client-secret",
         sessionKey: "12".repeat(32),
         publicOrigin: "https://stacklens.example",
+        callbackUrl: "https://relay.example/v1/auth/github/callback",
         installationUrl: "https://github.com/apps/stacklens-test/installations/new",
       },
       fetchImpl,
@@ -363,11 +458,13 @@ describe("GitHub connection transport [FR-100, SEC-003, SEC-005, SEC-007]", () =
     expect(start.headers["set-cookie"]).toContain("HttpOnly; SameSite=Lax");
     expect(start.headers["set-cookie"]).toContain("Secure");
     const callback = await app.inject({
-      method: "GET",
-      url: `/v1/auth/github/callback?code=synthetic-code&state=${state}`,
-      headers: { cookie: pending },
+      method: "POST",
+      url: "/v1/auth/github/callback",
+      headers: { cookie: pending, origin: "https://stacklens.example" },
+      payload: { code: "synthetic-code", state },
     });
-    expect(callback.headers.location).toBe("https://stacklens.example/?github=connected");
+    expect(callback.statusCode).toBe(200);
+    expect(callback.json()).toEqual({ connected: true });
     const cookies = callback.headers["set-cookie"];
     const sessionCookie =
       (Array.isArray(cookies) ? cookies : [String(cookies)])

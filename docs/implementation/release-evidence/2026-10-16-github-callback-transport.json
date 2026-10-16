@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-16T07:13:33.356Z",
+  "status": "local_transport_verified_hosted_cutover_gated",
+  "requirements": [
+    "FR-100",
+    "SEC-003",
+    "SEC-004",
+    "SEC-005",
+    "SEC-007",
+    "NFR-005",
+    "NFR-006",
+    "NFR-007",
+    "NFR-008",
+    "NFR-009",
+    "GOV-002",
+    "GOV-003",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "source": {
+    "branch": "codex/github-connections-activation",
+    "baseCommit": "6bb5aa28b6a7468abde5e64398a2269e251062f7",
+    "remoteMainRecheckedDuringFinalGate": "git ls-remote matched baseCommit",
+    "workingTree": "uncommitted",
+    "currentRevisionCiRun": false,
+    "artifacts": [
+      {
+        "path": ".env.example",
+        "bytes": 1537,
+        "sha256": "047f47f229773427dc88d955928f5e7bbfa3cc59eb7b8936d4c83eab45678e32"
+      },
+      {
+        "path": "package.json",
+        "bytes": 1804,
+        "sha256": "3c0e31fa5a1064776ff329d9f15b4f47118918d09cfa01d129cf40a8ba410588"
+      },
+      {
+        "path": "turbo.json",
+        "bytes": 472,
+        "sha256": "7b63335b6e3d727cb115d3f7ae3082af4ab36083512fd32eb4464691d74569db"
+      },
+      {
+        "path": "apps/github-callback-relay/worker.mjs",
+        "bytes": 2198,
+        "sha256": "9395f9ba8010f6b2f7d1f9f17b304790060f28a28774bfb0dcda9987f4a88460"
+      },
+      {
+        "path": "apps/github-callback-relay/wrangler.json",
+        "bytes": 426,
+        "sha256": "8304cd89e580bd7753708145122a95c1facc6acb93b03029d64888a9957d2c01"
+      },
+      {
+        "path": "apps/web/public/auth/github/complete.html",
+        "bytes": 2962,
+        "sha256": "e82a60dbae037d3bf2d709825f66beb6d7260bc4cba3a8033b216a13e183a1e3"
+      },
+      {
+        "path": "apps/web/vite.config.ts",
+        "bytes": 1102,
+        "sha256": "9d787ef2380e9c42b3cda3eba4b847639529f9af6c4b5f5341001c2048937288"
+      },
+      {
+        "path": "apps/api/src/github-auth-http.ts",
+        "bytes": 8468,
+        "sha256": "803ed5d9047da0efc5b201191ae8970b6bcde789a60e13c6d311b07b12a806d5"
+      },
+      {
+        "path": "apps/api/test/repository-analysis-http.test.ts",
+        "bytes": 39633,
+        "sha256": "ae7ec0d261f89975d284fc115373ca895de2669f4b6bb3956642230c195a0bb2"
+      },
+      {
+        "path": "apps/api/test/logging.test.ts",
+        "bytes": 6250,
+        "sha256": "4cc626f3346b16b1f45ddcdca8827f8dac10de947463d378597924cd3053f021"
+      },
+      {
+        "path": "packages/github-auth/src/github.ts",
+        "bytes": 6375,
+        "sha256": "df729df6955d704b6021504cd8362d67b2cddcf4349fe7f465337b076fddd1e6"
+      },
+      {
+        "path": "packages/github-auth/src/service.ts",
+        "bytes": 7472,
+        "sha256": "0efa127525815ce8a9cba3c3a795bdcd76ea4f5d3a77a5e573b9db4c835b9765"
+      },
+      {
+        "path": "packages/github-auth/test/service.test.ts",
+        "bytes": 11571,
+        "sha256": "c78cb99fea7a52bfa81176fba7733b593abd603a2c6a5574941b7bc0c21ff288"
+      },
+      {
+        "path": "scripts/github-callback-landing.mjs",
+        "bytes": 1390,
+        "sha256": "ac26a5b6945b4511e8bfcbc69c524dccad81609ae26b10944bec5e0fbdf40d51"
+      },
+      {
+        "path": "scripts/github-callback-landing.d.mts",
+        "bytes": 113,
+        "sha256": "ddb0b471b5e6dfff891fc6a72f663919b1aca0062a52252bffcfbc359d3c5194"
+      },
+      {
+        "path": "scripts/github-callback-relay.test.mjs",
+        "bytes": 3702,
+        "sha256": "1aef868f60e90d671f79227a4547ec8fa65b035640e7fc4bb3cd46425c477276"
+      },
+      {
+        "path": "scripts/vercel-config.mjs",
+        "bytes": 2197,
+        "sha256": "a13f3613f65e6c177424bf4d0674019273422df3e47654ef9e17e1c3abf58840"
+      },
+      {
+        "path": "scripts/vercel-config.test.mjs",
+        "bytes": 4064,
+        "sha256": "ea4d86a2b06c3cbc2884ae16fab3955d4185733690c81c3522a86aa4a3bb4b63"
+      },
+      {
+        "path": "scripts/operations/github-private-analysis.test.mjs",
+        "bytes": 10575,
+        "sha256": "3b916cceb1e4a5b9ef49b5c2845ee833839e0e5ed5f2c13faad9d496ebdf97b7"
+      },
+      {
+        "path": "tests/browser/github-callback.spec.ts",
+        "bytes": 8272,
+        "sha256": "4549a26747c0523434759a60699d6c8d35e4469c37f12934538867fcd7816d19"
+      }
+    ]
+  },
+  "transport": {
+    "relayResource": "stacklens-github-callback",
+    "deployed": false,
+    "proposedCallbackUrl": "https://stacklens-github-callback.fdsurya7.workers.dev/v1/auth/github/callback",
+    "landingUrl": "https://stacklens-web.vercel.app/auth/github/complete.html",
+    "legacyGet": {
+      "status": 410,
+      "exchangesCode": false
+    },
+    "post": {
+      "origin": "exact configured browser origin before parsing",
+      "bodyLimitBytes": 8192,
+      "acceptsQueryFields": false,
+      "clearsTrustedInvalidPendingState": true
+    },
+    "landing": {
+      "clearsFragmentBeforeParsingOrIo": true,
+      "appOrThirdPartyResources": false,
+      "timeoutMilliseconds": 30000,
+      "automaticRetry": false,
+      "documentReferrerPolicy": "no-referrer",
+      "postReferrerPolicy": "same-origin after URL clearing",
+      "nullOriginAcceptedByApi": false,
+      "csp": "default-src 'none'; script-src 'sha256-+7e2yj2uGV0Wc1TzDCX3nnsIGb5NMcjOWVsUoXrYS7I='; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'"
+    },
+    "callbackConfiguration": "mandatory, canonical, separate HTTPS origin; shared authorization/exchange and authenticated pending state"
+  },
+  "verification": {
+    "command": "pnpm check",
+    "startedAt": "2026-10-16T07:01:55.895Z",
+    "finishedAt": "2026-10-16T07:12:36.478Z",
+    "exitCode": 0,
+    "localDatabase": "unique owned local PostgreSQL 18 database",
+    "ownedDatabaseRemoved": true,
+    "compiledRuntime": "native Vercel entry, API, request-bound adapter and Worker passed",
+    "vitest": [
+      {
+        "package": "contracts",
+        "passed": 24
+      },
+      {
+        "package": "data-sources",
+        "passed": 102
+      },
+      {
+        "package": "analyzer-core",
+        "passed": 14
+      },
+      {
+        "package": "persistence",
+        "passed": 122
+      },
+      {
+        "package": "github-auth",
+        "passed": 20
+      },
+      {
+        "package": "ui",
+        "passed": 6
+      },
+      {
+        "package": "scoring",
+        "passed": 12
+      },
+      {
+        "package": "rules-javascript",
+        "passed": 232
+      },
+      {
+        "package": "analysis-orchestration",
+        "passed": 16
+      },
+      {
+        "package": "repository-jobs",
+        "passed": 7
+      },
+      {
+        "package": "api",
+        "passed": 72
+      },
+      {
+        "package": "web",
+        "passed": 59
+      },
+      {
+        "package": "worker",
+        "passed": 43
+      }
+    ],
+    "vitestPassed": 729,
+    "nodeTestGroupsPassed": [9, 50, 10],
+    "nodeTestsPassed": 69,
+    "browserPassed": 84,
+    "browserProjects": [
+      "chromium-desktop",
+      "chromium-narrow",
+      "firefox-desktop",
+      "firefox-narrow",
+      "webkit-desktop",
+      "webkit-narrow"
+    ],
+    "realLoopbackCrossSiteCookieOrigin": "passed in all six projects; no provider I/O",
+    "logger": "actual Pino output in child process, enabled and disabled callback/parser/provider failure paths",
+    "typecheck": "passed",
+    "lint": "passed",
+    "format": "passed",
+    "dryRun": {
+      "wrangler": "4.151.0",
+      "authenticated": false,
+      "deployed": false,
+      "bindings": 0,
+      "uploadKiB": 2.11,
+      "gzipKiB": 0.92,
+      "artifact": {
+        "path": ".cache/fr100-production-relay-build/worker.js",
+        "bytes": 2156,
+        "sha256": "a8f31905c10a2550d593da99a1a204b800dadaa312bc5f82547845a36d40a30a"
+      }
+    },
+    "supersededAttempt": {
+      "exitCode": 1,
+      "databaseRemoved": true,
+      "note": "Browser test edits during the first gate changed a title; superseded by a frozen-source final run. Earlier no-referrer Origin:null product defect fixed and covered by actual HTTP tests."
+    }
+  },
+  "hostingReview": {
+    "probeCollection": {
+      "logs": false,
+      "traces": false,
+      "issues": false,
+      "bindings": 0,
+      "variablesOrSecrets": 0,
+      "exports": 0
+    },
+    "accountAudit": {
+      "inspectedAction": "Run a query",
+      "actionTime": "2026-10-16T00:41:24.447Z",
+      "managementMethod": "POST",
+      "rawPathCategory": "workers observability telemetry query",
+      "includesQueryBodyOrCallbackCanary": false,
+      "scope": "one administrative audit record; not invocation or provider-internal retention proof"
+    },
+    "accountWaf": "Enterprise add-on offered; no active account policy shown",
+    "securityInsights": "No scans yet; no scan/settings changes",
+    "accountLogDatasets": "not inspected: debugger unattached, fresh tab timed out",
+    "realRelaySettingsOrCanary": "not deployed; requires reviewed hosting scope",
+    "providerInternalRetention": "not observable; no absence claim"
+  },
+  "unchangedHostedBoundaries": {
+    "apiConnectionsEnabled": false,
+    "apiCredentialsTransmitted": false,
+    "appCallbackChanged": false,
+    "realOAuthCodeSent": false,
+    "appSecretOrDataKeySentToRelay": false,
+    "deploymentTokenCreated": false,
+    "workerChanged": false,
+    "databaseOrGrantsChanged": false,
+    "backupsChanged": false,
+    "probeChanged": false
+  },
+  "outstanding": [
+    "Publish/review source and current CI",
+    "Approved disabled-reader and exact Free relay deployment",
+    "Exact-version collection and synthetic request-body/error/trace/account-security verification",
+    "Exact real-code destination and GitHub callback review before consent",
+    "Hosted private analysis and owner/anonymous/other-owner isolation",
+    "Sign-out/expiry/revocation",
+    "Fresh scheduled private-preserving credential-free backup/restore"
+  ],
+  "fr100HostedAcceptanceComplete": false,
+  "fr101Started": false
+}

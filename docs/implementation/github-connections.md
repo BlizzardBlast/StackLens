@@ -1,8 +1,11 @@
 # GitHub sign-in and private analysis
 
 Status: implementation delivered through [PR #58](https://github.com/BlizzardBlast/StackLens/pull/58);
-hosted activation pending. Requirements: FR-100, FR-003/017/022,
+approved hosted Worker/migration/grants verified; connected API activation pending. Requirements: FR-100, FR-003/017/022,
 SEC-001/002/003/004/005/006/007/008, NFR-006/007/008/009/010. Decision: [ADR-0023](../adr/0023-read-only-github-connections.md).
+The local callback transport is extended by [ADR-0024](../adr/0024-private-github-callback-transport.md);
+see [its review and cutover package](github-callback-cutover.md). Neither source implementation nor
+the earlier dummy-only probe enables hosted connections.
 Saved repositories (FR-101), historical comparison (FR-102), and repository writes are outside this milestone.
 
 ## User flow
@@ -31,14 +34,19 @@ resume an analysis tied to an ended connection. Submit a new analysis after reco
 
 ## Server and database boundaries
 
-`packages/github-auth` owns OAuth state/PKCE (10 minutes), fixed-origin callback, an expiring
+`packages/github-auth` owns OAuth state/PKCE (10 minutes), the fixed relay callback, an expiring
 GitHub App user token (at most eight hours), and session/CSRF. Refresh tokens are discarded.
 The browser receives only a host-only HttpOnly, SameSite=Lax, Secure HTTPS session cookie and
 session display/CSRF data. Localhost HTTP development uses unprefixed cookies; HTTPS uses
 `__Host-` cookies with Path=/ and no Domain. `POST /v1/analyses/github` and sign-out require exact
-configured Origin plus `X-StackLens-CSRF` from the session response. The callback redirects only
-to the configured home page
-and application logs omit request URLs/cookies/codes, including unmatched-route messages. The
+configured Origin plus `X-StackLens-CSRF` from the session response. A credential-free HTTPS relay
+redirects only to the dedicated landing fragment. The landing clears it before posting JSON to
+same-origin `POST /v1/auth/github/callback`; this endpoint requires exact Origin before parsing,
+rejects query fields, limits bodies to 8 KiB and returns only a fixed result. Trusted parse/schema,
+provider and store failures also clear pending state. Foreign Origins cannot clear cookies.
+`GET /v1/auth/github/callback` returns 410 and performs no exchange. The landing replaces history
+with the fixed success/error home notice. Application logs omit URLs/cookies/codes/body values,
+including unmatched-route messages. The
 generic not-found response does not echo a URL. Denied provider payloads become fixed safe errors.
 GitHub authorization errors accept optional `error_uri` metadata up to 2,000 characters, including
 relative references. The field is ignored: it is never fetched, rendered or used as a redirect.
@@ -82,16 +90,33 @@ access, rate limits and retryable server errors without contacting live provider
 Implementation publication is separate from hosted FR-100 activation. Independently verify current
 main, web/API reader deployments and the Worker/schema revision before provisioning credentials
 or enabling connected submissions; a successful automatic build alone is not live acceptance.
-Use existing hosting and the approved restricted API/backup roles; do not create another host or
-backup schedule. Before live activation:
+Use existing hosting and the approved restricted API/backup roles for production activation;
+do not create another production host or backup schedule without a separately reviewed scope.
+Before live activation:
+
+The [October 15 activation record](github-connections-activation.md) preserves the original proposal
+and the approved Worker/migration/grant rollout separately. Actual restricted-login activation and
+rolled-back synthetic owner isolation pass. The connected API remains disabled: dummy callback
+query values appear in Vercel platform request logs. The operator declined a retention exception
+and explicitly required connections to remain disabled while resolving logging. The App is now
+installed for exactly the selected synthetic fixture. A verified mitigation, live private acceptance
+and fresh scheduled recovery evidence remain open. The [callback privacy proposal](github-callback-privacy.md)
+now records the separately approved synthetic Cloudflare probe deployed through Chrome with
+collection disabled. Seven hosted cases and the scoped stored-event/Vercel landing checks pass.
+The earlier editor wait cleared; no deployment token or CLI login was used. Remaining platform
+logging boundaries and production activation remain gated. The new local transport follows
+ADR-0024 and [its cutover package](github-callback-cutover.md). The probe approval does not enable real OAuth.
 
 1. Register/review a GitHub App with Contents **read**, Metadata **read**, selected repositories,
-   expiring user tokens, and callback `https://WEB_ORIGIN/v1/auth/github/callback`. Leave all write
+   expiring user tokens, and the exact separately reviewed HTTPS relay callback at
+   `/v1/auth/github/callback`. The initial direct Vercel callback must be replaced only after the
+   logging gates, not used for real consent. Leave all write
    and organization permissions off. Keep user authorization during installation off: installation
    and StackLens's state/PKCE sign-in are separate explicit steps. Review this exact registration
-   before submitting it.
+before submitting it.
 2. Prepare API-only `STACKLENS_GITHUB_CLIENT_ID`, `STACKLENS_GITHUB_CLIENT_SECRET`,
-   `STACKLENS_PUBLIC_ORIGIN` (exact browser origin), and
+   `STACKLENS_PUBLIC_ORIGIN` (exact browser origin), `STACKLENS_GITHUB_CALLBACK_URL` (exact HTTPS
+   relay URI, different from the browser origin), and
    `STACKLENS_GITHUB_INSTALLATION_URL=https://github.com/apps/APP-SLUG/installations/new` in private
    operator configuration outside Git. Prepare a separate random 32-byte hex `STACKLENS_GITHUB_SESSION_KEY`
    for API and Worker; retain it privately for existing sessions. Never use a backup master key.

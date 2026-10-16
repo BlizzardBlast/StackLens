@@ -1,0 +1,189 @@
+{
+  "recordedAt": "2026-10-16T00:44:52.036Z",
+  "requirements": [
+    "FR-100",
+    "SEC-003",
+    "SEC-004",
+    "SEC-005",
+    "SEC-007",
+    "NFR-008",
+    "NFR-009",
+    "NFR-010",
+    "GOV-002",
+    "GOV-006",
+    "GOV-007"
+  ],
+  "status": "synthetic_probe_deployed_and_scoped_checks_passed_production_not_activated",
+  "deployment": {
+    "method": "operator_approved_chrome_dashboard",
+    "resource": "stacklens-fr100-callback-probe",
+    "origin": "https://stacklens-fr100-callback-probe.fdsurya7.workers.dev",
+    "activeVersionDisplay": "d8a636de",
+    "sourceSha256": "dd41ae67b69eb1e833e04ad0f47bdb4933d053470a3a0d92361974a023aaf28b",
+    "sourceBytes": 1646,
+    "fullEditorReadbackMatchesReviewedSourceNormalizingCrLf": true,
+    "versionSavedAndActiveObserved": true,
+    "loadedEditorBecameAvailableAfterEarlierWait": true,
+    "earlierBlankClaimScope": "prior_captured_view_only_superseded_by_operator_screenshot_and_current_ui",
+    "cliTokenCreated": false,
+    "cliLoginPerformed": false,
+    "browserSecurityBypassed": false,
+    "diagnosticNetworkCaptureDisabledBeforeCanaries": true,
+    "editorPreviewLeftBeforeCanaries": true
+  },
+  "behavior": {
+    "observedAt": "2026-10-16T00:38:42.117Z",
+    "origin": "https://stacklens-fr100-callback-probe.fdsurya7.workers.dev",
+    "realOAuthSent": false,
+    "secretsSent": false,
+    "cases": [
+      {
+        "name": "health",
+        "status": 204,
+        "emptyBody": true,
+        "noStore": true,
+        "noReferrer": true
+      },
+      {
+        "name": "root_denied",
+        "status": 404,
+        "emptyBody": true,
+        "noStore": true,
+        "noReferrer": true
+      },
+      {
+        "name": "synthetic_callback",
+        "status": 303,
+        "emptyBody": true,
+        "noStore": true,
+        "noReferrer": true
+      },
+      {
+        "name": "non_dummy_code_denied",
+        "status": 400,
+        "emptyBody": true,
+        "noStore": true,
+        "noReferrer": true
+      },
+      {
+        "name": "duplicate_code_denied",
+        "status": 400,
+        "emptyBody": true,
+        "noStore": true,
+        "noReferrer": true
+      },
+      {
+        "name": "redirect_injection_denied",
+        "status": 400,
+        "emptyBody": true,
+        "noStore": true,
+        "noReferrer": true
+      },
+      {
+        "name": "post_denied",
+        "status": 405,
+        "emptyBody": true,
+        "noStore": true,
+        "noReferrer": true
+      }
+    ],
+    "canary": {
+      "code": "stacklens-fr100-dummy-20261016003842118-3cbb68",
+      "state": "synthetic-state-20261016003842118-3cbb68",
+      "callbackTimestamp": "2026-10-16T00:38:42.308Z",
+      "fixedLanding": "https://stacklens-web.vercel.app/",
+      "landingQueryEmpty": true,
+      "valuesInFragmentOnly": true
+    },
+    "landing": {
+      "httpStatus": 200,
+      "requestTarget": "/",
+      "search": "",
+      "timestamp": "2026-10-16T00:38:43.046Z",
+      "vercelRequestId": "sin1::m98rq-1792111122464-80c716d7ad49",
+      "reportBodyRecorded": false
+    },
+    "sessions": [
+      {
+        "origin": "https://stacklens-api.vercel.app",
+        "httpStatus": 200,
+        "enabled": false,
+        "cacheControl": "private, no-store"
+      },
+      {
+        "origin": "https://stacklens-web.vercel.app",
+        "httpStatus": 200,
+        "enabled": false,
+        "cacheControl": "private, no-store"
+      }
+    ],
+    "status": "hosted_synthetic_probe_behavior_passed_requires_log_surface_review"
+  },
+  "logReview": {
+    "postDeploymentSettings": {
+      "logsEnabled": false,
+      "tracesEnabled": false,
+      "issuesEnabled": false,
+      "variablesOrSecrets": 0,
+      "bindings": 0,
+      "exportDestinations": 0
+    },
+    "cloudflareStoredEvents": {
+      "search": "contains($metadata.message, \"stacklens-fr100-dummy-20261016003842118-3cbb68\")",
+      "matches": 0,
+      "displayedResult": "No events found",
+      "rangeStartLocal": "2026-10-16 06:41 GMT+7",
+      "rangeEndLocal": "2026-10-16 07:41 GMT+7",
+      "canaryTimeLocal": "2026-10-16 07:38:42 GMT+7",
+      "displayedIngestionDelayMaximumMinutes": 2,
+      "refreshedAfterIngestionWindow": true,
+      "unfilteredEarlierEvents": [
+        {
+          "timestamp": "2026-10-16 07:13:39.343 GMT+7",
+          "message": "GET https://stacklens-fr100-callback-probe.fdsurya7.workers.dev/"
+        },
+        {
+          "timestamp": "2026-10-16 07:13:39.343 GMT+7",
+          "message": "Hello World Worker received a request!"
+        }
+      ],
+      "earlierEventsPrecedeCollectionDisableAndContainNoCallbackValues": true,
+      "emptySearchAloneUsedAsProof": false
+    },
+    "vercelLanding": {
+      "view": "stacklens CDN Requests",
+      "timestamp": "2026-10-16T00:38:42.464Z",
+      "requestId": "m98rq-1792111122464-80c716d7ad49",
+      "matchesBehaviorResponseRequestId": true,
+      "request": "GET stacklens-web.vercel.app/",
+      "status": 200,
+      "pathType": "static",
+      "callbackQueryValuesPresent": false,
+      "deploymentId": "dpl_Hfg8J4q1DwSjLNhntvK4YWAtXuEa",
+      "requestLogsViewInitiallyEmptyForStaticLanding": true
+    },
+    "coveredBoundary": "configured_Workers_stored_event_collection_and_observed_Vercel_CDN_landing_metadata",
+    "allAccountSecurityLoggingSurfacesIndependentlyVerified": false,
+    "providerInternalRetentionProvenAbsent": false,
+    "productionCallbackBodyLoggingVerified": false
+  },
+  "boundaries": {
+    "realOAuthCodeSent": false,
+    "appSecretOrDataKeySentToCloudflare": false,
+    "appSecretOrApiDataKeySentToVercel": false,
+    "githubAppCallbackChanged": false,
+    "acceptedSignInProtocolChanged": false,
+    "productionSourceChanged": false,
+    "databaseWorkerOrBackupChanged": false,
+    "connectionsEnabled": false,
+    "fr100HostedAcceptanceComplete": false
+  },
+  "evidenceScreenshots": "local_operator_evidence_not_committed",
+  "remaining": [
+    "Review remaining account/platform logging boundaries before real callback traffic",
+    "Implement and review the production relay and isolated landing/POST callback transport with requirements and ADR impact",
+    "Verify production callback body/error/trace logging with synthetic values",
+    "Obtain final review of exact real-code relay destination and GitHub callback change before live OAuth",
+    "Complete hosted private isolation/session lifecycle and scheduled backup acceptance"
+  ]
+}

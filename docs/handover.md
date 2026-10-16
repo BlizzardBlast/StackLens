@@ -1,13 +1,145 @@
 # StackLens Session Handover
 
-> **Prepared:** 2026-10-14\
-> **Architecture:** v0.1.27; requirements v0.1.5\
+> **Prepared:** 2026-10-16\
+> **Architecture:** v0.1.28; requirements v0.1.6\
 > **Milestone:** FR-100 implementation through [PR #58](https://github.com/BlizzardBlast/StackLens/pull/58); hosted activation and persistent public replacement remain gated\
-> **Branch:** Milestone branch `codex/github-private-analysis`; the operator requested squash merge and remote branch deletion. Resolve current main after merge. Includes the preserved recovery preflight after [PR #57](https://github.com/BlizzardBlast/StackLens/pull/57)\
-> **Implementation base:** `e552076f47dd68a67347a4250c5f067287f00abd`; independently resolve current main and hosting revisions\
+> **Branch:** Current activation branch `codex/github-connections-activation` in the existing checkout; callback implementation and rollout documentation are uncommitted. FR-100 implementation PR #58 is merged\
+> **Implementation base:** Verified main `6bb5aa28b6a7468abde5e64398a2269e251062f7`; independently recheck current main and hosting revisions\
 > **Traceability:** FR-100/003/004/006/011/017/021/022, DATA-001/003, NFR-001/003/005/006/007/008/009/010, SEC-001/002/003/004/005/006/007/008, GOV-002/003/006/007
 
 ## Current handover
+
+### October 16 local production callback continuation
+
+The operator accepted the production callback recommendation while retaining the disabled-connection
+hold. [ADR-0024](adr/0024-private-github-callback-transport.md) and FR-100 now define the fixed relay,
+isolated fragment landing and exact-Origin JSON POST. Source, configuration, OpenAPI and synthetic
+auth/API/browser/deployment tests are implemented; see [the reviewable cutover package](implementation/github-callback-cutover.md).
+Mandatory `STACKLENS_GITHUB_CALLBACK_URL` is shared by authorization/exchange and bound inside
+pending PKCE state. Legacy GET returns 410. No database/report/analyzer changes are required.
+
+The isolated static page uses one hash-authorized script and removes callback data before parsing
+or I/O. It loads no normal app or third-party resources. A real browser check exposed Firefox's
+Origin:null with same-origin fetch plus no-referrer; the POST now explicitly uses same-origin
+referrer policy after clearing the URL, preserving exact Origin with only a sanitized landing path.
+Document and relay remain no-referrer. A visible JavaScript requirement/return link is always
+available. The pinned relay dry-run succeeds with no bindings and without authentication/deploy.
+
+Read-only Chrome review reconfirms probe collection off, samples administrative audit metadata
+without callback/query body, and finds account WAF offered as an Enterprise add-on. These observations
+do not establish absence from every provider-internal surface. Exact candidate settings and timed
+synthetic body/error/trace/account-security checks remain hosted gates. No real OAuth code, new
+token, App secret/API data key, GitHub callback, hosted runtime, grant or backup changes occurred.
+The original dummy probe remains deployed unchanged; its evidence/hashes are historical.
+
+The final database-backed `pnpm check` passes: 729 Vitest, 69 Node and 84 browser cases, compiled
+runtime smoke, typechecking, lint and formatting. Its unique owned local PostgreSQL database was
+removed. The [dated evidence](implementation/release-evidence/2026-10-16-github-callback-transport.json)
+binds twenty source/config/test hashes. The first full attempt was superseded after browser test
+edits changed a title during execution; the frozen-source final run passed. This source snapshot
+has no pushed branch or current CI. Account log-dataset inspection also remains open after Chrome
+page reads timed out; no claim of an empty dataset or a Cloudflare outage follows from that error.
+Do not enable connections or begin FR-101 from local implementation alone.
+
+### October 16 probe checkpoint before production source work (historical)
+
+The operator explicitly approved the concrete activation package. Read the current checkpoint in
+[the activation record](implementation/github-connections-activation.md) and
+[worker rollout evidence](implementation/release-evidence/2026-10-15-github-connections-worker-rollout.json).
+Main was freshly fetched and still matches `6bb5aa28b6a7468abde5e64398a2269e251062f7`.
+The read-only GitHub App is installed for exactly the committed private synthetic fixture
+(`171724341`, October 15 at 19:35 WIB). Its selected-repository setting and read-only code/metadata
+permissions are verified. The old verification tab was stale; do not ask for another code to finish
+this installation. Installation does not authorize a StackLens connection. The initial App secret,
+independent data key and required RSA signing key have user-only private local custody. Only the
+data key was added to the existing Worker; no App secret went to Worker or Vercel.
+
+The original pending analysis completed after normal restart, and its strict report matches both
+HTTP origins. Original installed entrypoint/runtime match the preserved rollback archive. Normal
+Stops reached Offline twice, without Kill or claim unlocking. The reviewed Linux package installed,
+and installed entrypoint/runtime hashes match. Startup form edits initially did not persist, so one
+start used the original launcher; the successful installer and restored `start-worker.js`/empty
+arguments were independently checked after reload. The uploaded archive was removed by the
+installer; its retired record is `fr100-installer.completed.txt`.
+
+The Worker applied canonical ownership/connection migration and all five RLS policies. Only the
+approved connection-schema USAGE and connection-table SELECT/INSERT/DELETE were granted to
+`stacklens_api_preview`. Its actual login passes the canonical guard; backup public SELECT and
+BYPASSRLS remain unchanged, with connection access denied. A rolled-back synthetic transaction
+proves owner analysis/delivery reads versus zero anonymous/other-owner rows. It creates no durable
+test or connection data and does not exercise private report contents. Anonymous submission to the
+private fixture receives durable `202`, is delivered once and safely fails without a private report.
+The queue, locks, claims and pending deliveries are empty; no connected analysis/session exists.
+The October 16 read-only recheck finds no report rows, so the October 15 strict HTTP report readback
+cannot be repeated. Preserve that earlier evidence separately; this observation does not establish
+the deletion cause or prove fresh report/restore acceptance.
+
+The remaining callback-log blocker is concrete: dummy `code`/`state` values appear in Vercel's
+private Request Logs search parameters, including the web proxy request. Documented Hobby
+retention is one hour; a supported pre-storage exclusion has not been verified. The approved plan
+requires callback codes outside logs. The operator declined the retention exception and directed
+connections to stay disabled while logging is resolved. Do not re-ask for that exception. Direct
+and proxied session responses still confirm `enabled: false`, HTTP 200, `private, no-store`.
+No App secret or API data key has been sent to Vercel, and no real OAuth code has been used.
+
+The [callback privacy proposal](implementation/github-callback-privacy.md) prepares a dummy-only
+Cloudflare HTTPS probe with disabled observability. Five local tests and a pinned Wrangler dry-run
+pass. The operator subsequently approved the synthetic host and completed existing-account sign-in.
+Its Free resource initially used the harmless dashboard starter. Logs/invocation/persistence
+were disabled and deployed before opening the editor; traces/issues and preview URLs are off,
+with no bindings, secrets or export destinations. Reloaded settings verify collection off.
+The dashboard starter-before-settings sequence differs from the initial CLI proposal. The embedded
+editor initially remained loading and the browser tool reported a pending embedded-document review.
+The operator chose to wait instead of creating a token; the unsubmitted draft and unused helper
+were removed. The editor later loaded, confirmed by the operator screenshot and fresh inspection.
+Chrome full-source readback matched the reviewed module before publishing active version
+`d8a636de`. No deployment token, CLI login or security bypass was used. Collection stayed off
+after deployment. All seven hosted synthetic cases pass; the Cloudflare stored-event canary search
+is empty after its ingestion delay and Vercel's matching CDN landing request is query-free `GET /`.
+Two earlier starter events precede collection disable; preserve that history. Both API origins
+still report connections disabled. See the
+[scoped probe acceptance](implementation/release-evidence/2026-10-16-github-callback-probe-acceptance.json),
+[host preparation evidence](implementation/release-evidence/2026-10-16-github-callback-probe-host.json)
+and earlier [continuation evidence](implementation/release-evidence/2026-10-16-github-connections-continuation.json).
+Remaining account/platform logging review and production callback body/error/trace verification
+are open; scoped canary checks do not prove provider-internal absence. The relay/isolated landing/
+POST transport still needed implementation, requirement/ADR review and final callback-destination
+review before real OAuth. The registered GitHub callback remains unchanged.
+After verified mitigation and production implementation/review, finish consent, live private
+isolation/sign-out/expiry/revocation, and fresh scheduled capture/restore. Preserve backup custody
+and protected recovery. FR-101 has not started.
+
+At that probe checkpoint, documentation impact updated activation/runbook evidence and journey. No runtime
+source, accepted requirement, architecture decision, design semantics, backup schedule or hosting
+resource was changed by those documentation edits. The newer local source continuation above supersedes
+that status; the branch remains uncommitted and unpushed.
+
+### October 15 preparation before approval (historical)
+
+The operator accepted the FR-100 activation then FR-101 development sequence. Main matches the
+PR #58 squash merge and its push quality/portable/offsite-fixture CI passes. Both Vercel readers
+report successful deployment at that commit; the API dashboard is Ready/Current Production.
+Direct/proxied session reads remain disabled. Read the
+[concrete activation preparation](implementation/github-connections-activation.md) and
+[dated preflight evidence](implementation/release-evidence/2026-10-15-github-connections-activation-preflight.json).
+
+Read-only verified-TLS PostgreSQL 18.6 checks confirm the schema has not yet received ownership
+columns, connection storage or RLS policies. The API/backup roles retain approved public scope.
+One analysis/delivery is pending with zero queue/locked rows; the Worker panel separately says
+Running. Preserve that work, diagnose/resolve delivery and obtain fresh shutdown/drain evidence
+before changing runtime files. No hosted row, grant, secret destination or route changes during
+preparation. The native Linux Worker package is built and passes a network-disabled import and
+synthetic encryption smoke; it excludes environment/key files. A fresh independent session key
+is prepared only in exclusive user-only local storage.
+
+Chrome uses the existing account sessions after operator-completed GitHub verification. Its exact
+read-only App registration form is filled but unsubmitted, restricted to the operator account and
+the proposed selected synthetic private repository for initial acceptance. Registration, repository
+creation/installation, App secret generation, credential transfer, Worker migration/grants and API
+activation remain pending the concrete review sequence. Preserve backups and protected recovery.
+FR-101/102 follow hosted FR-100 acceptance; no saved-repository behavior is introduced by this
+preparation. Documentation-impact review changes the runbook, README, handover and journey only;
+requirements, architecture/ADRs, design semantics and runtime source remain applicable.
 
 ### October 14 GitHub connections and private analysis
 
