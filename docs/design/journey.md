@@ -3818,3 +3818,23 @@ source-hash checks and whitespace checks cover the publication update; productio
 FR-100 acceptance remain gated.
 
 **Traceability:** FR-100, SEC-003/004/005/007, GOV-002/006/007; ADR-0024.
+
+## 2026-10-23 — Experiment with scoped agent guidance for rule analysis
+
+The root agent instructions were large enough to justify a bounded evaluation of
+progressive loading. The JavaScript/TypeScript rule-package section is now also available as
+a scoped packages/rules-javascript/AGENTS.md, while the root retains an explicit mandatory
+pointer for both direct rule changes and cross-package consumers. The original specialized
+constraints were transferred unchanged; all root-wide security and analyzer safety rules remain.
+
+**Why:** Investigate whether reducing unrelated always-loaded instructions improves full-task
+efficiency without losing review coverage or behavior. Unlike blanket context compression,
+agents must recover complete evidence for relevant modules.
+
+**Alternatives and limits:** No new router, LLM summarizer, CI gate, or agent dependency.
+This is a draft-only, reversible experiment. Source-section reconstruction was checked;
+real Codex/OpenCode context-loading, token consumption and defect outcomes **have not**
+been measured here. See docs/implementation/scoped-agent-context-experiment.md for the
+proposed paired evaluation, cross-boundary tasks, acceptance and rollback.
+
+**Traceability:** GOV-002, GOV-006, GOV-007; existing agent instructions and architecture.
