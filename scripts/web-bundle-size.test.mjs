@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
@@ -48,7 +48,10 @@ await test("[GOV-007] measures gzipped JS/CSS assets independently with stable p
 
     const snapshot = await measureWebBundle(dir);
     assert.equal(snapshot.schemaVersion, 1);
-    assert.deepEqual(snapshot.assets.map(({ path }) => path), ["assets/a.css", "assets/z.js"]);
+    assert.deepEqual(
+      snapshot.assets.map(({ path }) => path),
+      ["assets/a.css", "assets/z.js"],
+    );
     const js = Buffer.from("export const b = 1;\n");
     const css = Buffer.from("body { color: red; }\n");
     assert.deepEqual(snapshot.totals.js, { bytes: js.length, gzipBytes: gzipSync(js).length });
@@ -173,31 +176,3 @@ await test("[GOV-007] CLI emits machine-readable comparisons and rejects bad opt
   });
 });
 
-// Temporary CI-only diagnostic: removed after exact formatter output is captured.
-await test("[GOV-007] temporary formatter diagnostic", async (t) => {
-  if (process.env.GITHUB_ACTIONS !== "true") {
-    t.skip("Only required to capture the pinned formatter's CI output");
-    return;
-  }
-  const input = await readFile(fileURLToPath(import.meta.url), "utf8");
-  const formatter = spawnSync(
-    join(process.cwd(), "node_modules/.bin/oxfmt"),
-    ["--stdin-filepath", "scripts/web-bundle-size.test.mjs", "--config", ".oxfmtrc.json"],
-    { input, encoding: "utf8" },
-  );
-  assert.equal(formatter.status, 0, formatter.stderr);
-  const directory = await mkdtemp(join(tmpdir(), "stacklens-format-diff-"));
-  try {
-    const output = join(directory, "formatted.mjs");
-    await writeFile(output, formatter.stdout);
-    const diff = spawnSync(
-      "git",
-      ["diff", "--no-index", "--", fileURLToPath(import.meta.url), output],
-      { encoding: "utf8" },
-    );
-    assert.ok(diff.status === 0 || diff.status === 1, diff.stderr);
-    console.log("PINNED_OXFMT_DIFF_BEGIN\n" + diff.stdout + "\nPINNED_OXFMT_DIFF_END");
-  } finally {
-    await rm(directory, { recursive: true, force: true });
-  }
-});
