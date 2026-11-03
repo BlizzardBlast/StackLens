@@ -3818,3 +3818,17 @@ source-hash checks and whitespace checks cover the publication update; productio
 FR-100 acceptance remain gated.
 
 **Traceability:** FR-100, SEC-003/004/005/007, GOV-002/006/007; ADR-0024.
+
+
+## 2026-11-04 — Opt-in web bundle-size experiment measurements
+
+**Traceability:** GOV-002 and GOV-007. The prior MVP release reported a historical
+gzipped Vite chunk warning, but no comparable build-output measurements for
+candidate improvements. Add a deterministic, dependency-free JS/CSS gzip
+snapshot/comparison command and synthetic Node tests to the existing deployment
+test command. [Web bundle experiments](../implementation/web-bundle-experiments.md)
+records the Clarity-inspired bounded build/measure/verify loop, compatibility
+and maintainability checks, and why per-file gzip totals are not initial
+transfer-size claims. No product behavior, CI threshold, dependency or
+automatic optimization is introduced; production build results and browser
+verification remain to be obtained before claiming an optimization.
