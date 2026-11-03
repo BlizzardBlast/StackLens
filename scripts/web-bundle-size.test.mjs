@@ -26,7 +26,20 @@ const write = async (directory, path, content) => {
   await writeFile(full, content);
 };
 
-test("[GOV-007] measures gzipped JS/CSS assets independently with stable paths", async () => {
+async function symlinkOrSkip(t, target, link, type) {
+  try {
+    await symlink(target, link, type);
+    return true;
+  } catch (error) {
+    if (process.platform === "win32" && ["EPERM", "EACCES"].includes(error?.code)) {
+      t.skip("Windows permissions do not permit creating this symlink fixture");
+      return false;
+    }
+    throw error;
+  }
+}
+
+await test("[GOV-007] measures gzipped JS/CSS assets independently with stable paths", async () => {
   await withOutput(async (dir) => {
     await write(dir, "assets/z.js", "export const b = 1;\n");
     await write(dir, "assets/a.css", "body { color: red; }\n");
@@ -45,7 +58,7 @@ test("[GOV-007] measures gzipped JS/CSS assets independently with stable paths",
   });
 });
 
-test("[GOV-007] compares aggregate bytes even when hashed asset names change", async () => {
+await test("[GOV-007] compares aggregate bytes even when hashed asset names change", async () => {
   await withOutput(async (dir) => {
     await write(dir, "assets/app-aaa.js", "a".repeat(100));
     const baseline = await measureWebBundle(dir);
@@ -70,16 +83,74 @@ test("[GOV-007] compares aggregate bytes even when hashed asset names change", a
   });
 });
 
-test("[GOV-007] fails safely for missing assets and symlinks", async () => {
+await test("[GOV-007] rejects malformed or inconsistent snapshot ledgers", async () => {
   await withOutput(async (dir) => {
-    await assert.rejects(() => measureWebBundle(dir), /No JavaScript or CSS assets/);
-    await write(dir, "assets/app.js", "app();");
-    await symlink(join(dir, "assets/app.js"), join(dir, "linked.js"));
-    await assert.rejects(() => measureWebBundle(dir), /Refusing symlink/);
+    await write(dir, "app.js", "app();");
+    const current = await measureWebBundle(dir);
+    const altered = structuredClone(current);
+    altered.totals.js.bytes = 999_999;
+    assert.throws(() => compareWebBundles(current, altered), /totals for js: do not match assets/);
+
+    const inconsistentSum = structuredClone(current);
+    inconsistentSum.totals.all.gzipBytes += 1;
+    assert.throws(() => compareWebBundles(current, inconsistentSum), /totals for all/);
+
+    const missingAssets = { schemaVersion: 1, totals: current.totals };
+    assert.throws(() => compareWebBundles(current, missingAssets), /Invalid baseline assets/);
+
+    const duplicate = structuredClone(current);
+    duplicate.assets.push({ ...duplicate.assets[0] });
+    assert.throws(() => compareWebBundles(current, duplicate), /Invalid baseline asset entry/);
+
+    const escaped = structuredClone(current);
+    escaped.assets[0].path = "../app.js";
+    assert.throws(() => compareWebBundles(current, escaped), /Invalid baseline asset entry/);
+
+    const missingType = structuredClone(current);
+    missingType.assets[0].path = "unexpected.bin";
+    delete missingType.assets[0].type;
+    assert.throws(() => compareWebBundles(current, missingType), /Invalid baseline asset entry/);
+
+    const negative = structuredClone(current);
+    negative.assets[0].gzipBytes = -1;
+    assert.throws(() => compareWebBundles(current, negative), /Invalid baseline asset entry/);
+
+    const badCurrent = structuredClone(current);
+    badCurrent.totals.js.bytes += 1;
+    assert.throws(() => compareWebBundles(badCurrent, current), /Invalid current snapshot totals/);
   });
 });
 
-test("[GOV-007] CLI emits machine-readable comparisons and rejects bad options", async () => {
+await test("[GOV-007] fails for missing assets", async () => {
+  await withOutput(async (dir) => {
+    await assert.rejects(() => measureWebBundle(dir), /No JavaScript or CSS assets/);
+  });
+});
+
+await test("[GOV-007] refuses symlinks within build output", async (t) => {
+  await withOutput(async (dir) => {
+    await write(dir, "assets/app.js", "app();");
+    if (!(await symlinkOrSkip(t, join(dir, "assets/app.js"), join(dir, "linked.js"), "file"))) {
+      return;
+    }
+    await assert.rejects(() => measureWebBundle(dir), /Refusing symlink in build output/);
+  });
+});
+
+await test("[GOV-007] refuses a symlinked output root", async (t) => {
+  await withOutput(async (dir) => {
+    await write(dir, "assets/app.js", "app();");
+    const rootLink = join(dir, "linked-build");
+    const linkType = process.platform === "win32" ? "junction" : "dir";
+    if (!(await symlinkOrSkip(t, join(dir, "assets"), rootLink, linkType))) return;
+    await assert.rejects(
+      () => measureWebBundle(rootLink),
+      /Refusing symlink for build output root/,
+    );
+  });
+});
+
+await test("[GOV-007] CLI emits machine-readable comparisons and rejects bad options", async () => {
   await withOutput(async (dir) => {
     await write(dir, "assets/app.js", "someCode();");
     const initial = spawnSync(process.execPath, [script, "--dir", dir], { encoding: "utf8" });

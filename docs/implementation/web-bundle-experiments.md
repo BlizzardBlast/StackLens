@@ -14,12 +14,18 @@ output before claiming a network-size improvement.
 
 Run from the repository root, with the project's pinned Node/pnpm versions:
 
+First, create a comparable baseline (the Node command for creating `.cache` works
+in Windows PowerShell, Command Prompt, and POSIX shells):
+
 ```sh
 pnpm build
-mkdir -p .cache
+node -e "require('node:fs').mkdirSync('.cache', { recursive: true })"
 node scripts/web-bundle-size.mjs > .cache/web-bundle-baseline.json
+```
 
-# Make one candidate change, preserving the baseline file. Then:
+Make one candidate change, preserve the baseline file, and then run:
+
+```sh
 pnpm build
 node scripts/web-bundle-size.mjs --compare .cache/web-bundle-baseline.json
 ```
@@ -35,9 +41,15 @@ this metric. Sum of all JS chunks is **not** initial-load JS: route splitting,
 which chunks a user requests and cache behavior matter. Use a browser/network
 trace for a real page-load claim.
 
-The command fails for missing build assets, unreadable output, symlinks or an
-invalid comparison snapshot. It **does not fail on an increase**, impose an
-arbitrary budget or create files/network requests on its own; shell redirection
+The command fails for missing build assets, unreadable output, symlinks at the
+selected output root or below it, or a malformed/inconsistent comparison snapshot.
+Symlinks/junctions in **ancestor directories** of the selected output root are
+resolved normally by the operating system; the directly selected root entry
+and descendants are checked. This is a build-measurement integrity guard, not
+a filesystem sandbox for hostile or concurrently modified directories.
+
+It **does not fail on an increase**, impose an arbitrary budget or create files/network
+requests on its own; shell redirection
 is an operator choice. Do not commit `.cache` results or automatically run
 large optimization loops in CI. Run focused fixture checks via:
 
@@ -47,6 +59,8 @@ node --test scripts/web-bundle-size.test.mjs
 
 The ordinary `test:deployment` command includes these deterministic tests,
 without adding a separate workflow or a production build to that test step.
+Windows symlink fixture tests explicitly skip only when the operating system
+denies symlink creation with `EPERM` or `EACCES`; other filesystem errors are not skipped.
 
 ## Bounded change / build / measure / verify loop
 
