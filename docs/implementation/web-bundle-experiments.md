@@ -32,8 +32,11 @@ node scripts/web-bundle-size.mjs --compare .cache/web-bundle-baseline.json
 
 The script measures the built `apps/web/dist` tree by default (override with
 `--dir BUILD_DIR`). It emits deterministic JSON with each `.js` and `.css`
-asset's raw byte count and Node zlib gzip byte count. Totals sum **individually
-gzipped files**, grouped into JS, CSS, and both. The comparison reports signed
+asset's raw byte count and Node zlib gzip byte count. To bound memory and file
+handles, the tool enumerates directories sequentially and streams files through
+zlib in batches of at most four active pipelines; it does not retain whole
+file contents. Totals sum **individually gzipped files**, grouped into JS, CSS,
+and both. The comparison reports signed
 raw/gzip byte deltas; a negative delta means fewer bytes. Hashed filenames
 are not treated as stable identifiers across builds. Source maps, HTML, fonts,
 images, HTTP headers, CDN compression choices and browser caching are outside
@@ -59,8 +62,10 @@ node --test scripts/web-bundle-size.test.mjs
 
 The ordinary `test:deployment` command includes these deterministic tests,
 without adding a separate workflow or a production build to that test step.
-Windows symlink fixture tests explicitly skip only when the operating system
-denies symlink creation with `EPERM` or `EACCES`; other filesystem errors are not skipped.
+The fixtures include a 12 MiB asset compared to `gzipSync`, multiple batches of
+assets and a symlinked nested directory. Windows symlink fixture tests explicitly
+skip only when the operating system denies symlink creation with `EPERM` or
+`EACCES`; other filesystem errors are not skipped.
 
 ## Bounded change / build / measure / verify loop
 

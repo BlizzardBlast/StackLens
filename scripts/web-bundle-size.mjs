@@ -1,13 +1,17 @@
+import { createReadStream } from "node:fs";
 import { lstat, readdir, readFile } from "node:fs/promises";
 import { extname, join, relative, resolve, sep } from "node:path";
+import { Transform, Writable } from "node:stream";
+import { pipeline } from "node:stream/promises";
 import { pathToFileURL } from "node:url";
-import { gzipSync } from "node:zlib";
+import { createGzip } from "node:zlib";
 
 const assetTypes = new Map([
   [".js", "js"],
   [".css", "css"],
 ]);
 const categories = ["js", "css", "all"];
+const MAX_CONCURRENT_ASSETS = 4;
 
 const emptyTotal = () => ({ bytes: 0, gzipBytes: 0 });
 const isSize = (value) => Number.isSafeInteger(value) && value >= 0;
@@ -68,47 +72,68 @@ function validateSnapshot(snapshot, role) {
   }
 }
 
+/** Stream a single asset without retaining its raw or compressed body. */
+async function measureAsset(candidate) {
+  let bytes = 0;
+  let gzipBytes = 0;
+  const countInput = new Transform({
+    transform(chunk, _encoding, done) {
+      bytes += chunk.length;
+      done(null, chunk);
+    },
+  });
+  const countOutput = new Writable({
+    write(chunk, _encoding, done) {
+      gzipBytes += chunk.length;
+      done();
+    },
+  });
+
+  await pipeline(createReadStream(candidate.absolutePath), countInput, createGzip(), countOutput);
+  return { path: candidate.path, type: candidate.type, bytes, gzipBytes };
+}
+
 export async function measureWebBundle(directory) {
   const root = resolve(directory);
   // A symlink selected as the output root must not silently measure another directory.
   if ((await lstat(root)).isSymbolicLink()) {
     throw new Error(`Refusing symlink for build output root: ${root}`);
   }
-  const assets = [];
+  const candidates = [];
 
   async function walk(folder) {
     const entries = await readdir(folder, { withFileTypes: true });
-    await Promise.all(
-      entries.map(async (entry) => {
-        const absolutePath = join(folder, entry.name);
-        const assetPath = relative(root, absolutePath).split(sep).join("/");
-        if (entry.isSymbolicLink()) {
-          throw new Error(`Refusing symlink in build output: ${assetPath}`);
-        }
-        if (entry.isDirectory()) {
-          await walk(absolutePath);
-        } else if (entry.isFile()) {
-          const type = assetTypes.get(extname(entry.name));
-          if (!type) return;
-          const content = await readFile(absolutePath);
-          assets.push({
-            path: assetPath,
-            type,
-            bytes: content.length,
-            gzipBytes: gzipSync(content).length,
-          });
-        }
-      }),
-    );
+    for (const entry of entries) {
+      const absolutePath = join(folder, entry.name);
+      const assetPath = relative(root, absolutePath).split(sep).join("/");
+      if (entry.isSymbolicLink()) {
+        throw new Error(`Refusing symlink in build output: ${assetPath}`);
+      }
+      if (entry.isDirectory()) {
+        // oxlint-disable-next-line no-await-in-loop -- Traverse one directory at a time.
+        await walk(absolutePath);
+      } else if (entry.isFile()) {
+        const type = assetTypes.get(extname(entry.name));
+        if (type) candidates.push({ absolutePath, path: assetPath, type });
+      }
+    }
   }
 
   await walk(root);
-  assets.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
-  if (assets.length === 0) {
+  if (candidates.length === 0) {
     throw new Error(
       `No JavaScript or CSS assets found in ${root}; run the production web build first`,
     );
   }
+
+  // A fixed-size batch bounds active file reads, gzip streams, and memory use.
+  const assets = [];
+  for (let offset = 0; offset < candidates.length; offset += MAX_CONCURRENT_ASSETS) {
+    const batch = candidates.slice(offset, offset + MAX_CONCURRENT_ASSETS);
+    // oxlint-disable-next-line no-await-in-loop -- Bound work to one batch at a time.
+    assets.push(...(await Promise.all(batch.map(measureAsset))));
+  }
+  assets.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
 
   const totals = { js: emptyTotal(), css: emptyTotal(), all: emptyTotal() };
   for (const asset of assets) {

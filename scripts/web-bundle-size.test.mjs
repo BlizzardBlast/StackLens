@@ -153,6 +153,42 @@ await test("[GOV-007] refuses a symlinked output root", async (t) => {
   });
 });
 
+await test("[GOV-007] rejects a symlinked nested directory", async (t) => {
+  await withOutput(async (dir) => {
+    await write(dir, "assets/nested/app.js", "app();");
+    const target = join(dir, "assets/nested");
+    const link = join(dir, "assets/linked-folder");
+    const linkType = process.platform === "win32" ? "junction" : "dir";
+    if (!(await symlinkOrSkip(t, target, link, linkType))) return;
+    await assert.rejects(() => measureWebBundle(dir), /Refusing symlink in build output/);
+  });
+});
+
+await test("[GOV-007] streams large assets in bounded batches", async () => {
+  await withOutput(async (dir) => {
+    const large = Buffer.alloc(12 * 1024 * 1024, 0x61);
+    await write(dir, "assets/large.js", large);
+    await Promise.all(
+      Array.from({ length: 8 }, (_, index) =>
+        write(dir, `assets/chunk-${index}.js`, `export const chunk${index} = ${index};\n`),
+      ),
+    );
+
+    const snapshot = await measureWebBundle(dir);
+    const largest = snapshot.assets.find((asset) => asset.path === "assets/large.js");
+    assert.deepEqual(
+      { bytes: largest.bytes, gzipBytes: largest.gzipBytes },
+      { bytes: large.length, gzipBytes: gzipSync(large).length },
+    );
+    assert.equal(snapshot.assets.length, 9);
+    assert.equal(
+      snapshot.totals.js.bytes,
+      snapshot.assets.reduce((sum, asset) => sum + asset.bytes, 0),
+    );
+    assert.deepEqual(await measureWebBundle(dir), snapshot);
+  });
+});
+
 await test("[GOV-007] CLI emits machine-readable comparisons and rejects bad options", async () => {
   await withOutput(async (dir) => {
     await write(dir, "assets/app.js", "someCode();");

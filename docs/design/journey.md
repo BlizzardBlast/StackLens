@@ -3831,4 +3831,6 @@ records the Clarity-inspired bounded build/measure/verify loop, compatibility
 and maintainability checks, and why per-file gzip totals are not initial
 transfer-size claims. No product behavior, CI threshold, dependency or
 automatic optimization is introduced; production build results and browser
-verification remain to be obtained before claiming an optimization.
+verification remain to be obtained before claiming an optimization. Subsequent
+review narrowed active compression work to four streaming asset pipelines,
+and added large-file, multiple-batch and nested symlink regression cases.
