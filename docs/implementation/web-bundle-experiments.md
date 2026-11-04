@@ -15,12 +15,12 @@ output before claiming a network-size improvement.
 Run from the repository root, with the project's pinned Node/pnpm versions:
 
 First, create a comparable baseline (the Node command for creating `.cache` works
-in Windows PowerShell, Command Prompt, and POSIX shells):
+in Windows PowerShell 5.1/7, Command Prompt, and POSIX shells):
 
 ```sh
 pnpm build
 node -e "require('node:fs').mkdirSync('.cache', { recursive: true })"
-node scripts/web-bundle-size.mjs > .cache/web-bundle-baseline.json
+node scripts/web-bundle-size.mjs --output .cache/web-bundle-baseline.json
 ```
 
 Make one candidate change, preserve the baseline file, and then run:
@@ -29,6 +29,12 @@ Make one candidate change, preserve the baseline file, and then run:
 pnpm build
 node scripts/web-bundle-size.mjs --compare .cache/web-bundle-baseline.json
 ```
+
+The `--output SNAPSHOT_JSON` option writes **UTF-8 without a BOM**, independent of
+shell redirection rules (including Windows PowerShell 5.1). It refuses to
+overwrite an existing file, protecting the saved baseline from accidental
+replacement; choose a new filename or intentionally remove an old snapshot
+to recapture. Without `--output`, JSON is printed to standard output.
 
 The script measures the built `apps/web/dist` tree by default (override with
 `--dir BUILD_DIR`). It emits deterministic JSON with each `.js` and `.css`
@@ -51,9 +57,8 @@ resolved normally by the operating system; the directly selected root entry
 and descendants are checked. This is a build-measurement integrity guard, not
 a filesystem sandbox for hostile or concurrently modified directories.
 
-It **does not fail on an increase**, impose an arbitrary budget or create files/network
-requests on its own; shell redirection
-is an operator choice. Do not commit `.cache` results or automatically run
+It **does not fail on an increase** or impose an arbitrary budget. It writes a
+file only when `--output` is explicitly supplied, and performs no network I/O. Do not commit `.cache` results or automatically run
 large optimization loops in CI. Run focused fixture checks via:
 
 ```sh
@@ -63,7 +68,8 @@ node --test scripts/web-bundle-size.test.mjs
 The ordinary `test:deployment` command includes these deterministic tests,
 without adding a separate workflow or a production build to that test step.
 The fixtures include a 12 MiB asset compared to `gzipSync`, multiple batches of
-assets and a symlinked nested directory. Windows symlink fixture tests explicitly
+assets, a direct assertion of the four-task concurrency cap, a UTF-8 baseline
+written without shell redirection, and a symlinked nested directory. Windows symlink fixture tests explicitly
 skip only when the operating system denies symlink creation with `EPERM` or
 `EACCES`; other filesystem errors are not skipped.
 

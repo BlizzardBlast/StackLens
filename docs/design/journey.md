@@ -3833,4 +3833,7 @@ transfer-size claims. No product behavior, CI threshold, dependency or
 automatic optimization is introduced; production build results and browser
 verification remain to be obtained before claiming an optimization. Subsequent
 review narrowed active compression work to four streaming asset pipelines,
-and added large-file, multiple-batch and nested symlink regression cases.
+and added large-file, multiple-batch and nested symlink regression cases. A
+follow-up added a direct four-task concurrency regression and explicit UTF-8
+snapshot output to avoid Windows PowerShell 5.1 redirection encoding pitfalls,
+with exclusive-create protection against overwriting a saved baseline.

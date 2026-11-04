@@ -1,5 +1,5 @@
 import { createReadStream } from "node:fs";
-import { lstat, readdir, readFile } from "node:fs/promises";
+import { lstat, readdir, readFile, writeFile } from "node:fs/promises";
 import { extname, join, relative, resolve, sep } from "node:path";
 import { Transform, Writable } from "node:stream";
 import { pipeline } from "node:stream/promises";
@@ -93,6 +93,17 @@ async function measureAsset(candidate) {
   return { path: candidate.path, type: candidate.type, bytes, gzipBytes };
 }
 
+/** Preserve input order and cap simultaneous measurements to four tasks. */
+export async function runInBatches(items, task) {
+  const results = [];
+  for (let offset = 0; offset < items.length; offset += MAX_CONCURRENT_ASSETS) {
+    const batch = items.slice(offset, offset + MAX_CONCURRENT_ASSETS);
+    // oxlint-disable-next-line no-await-in-loop -- Finish each bounded batch before starting another.
+    results.push(...(await Promise.all(batch.map(task))));
+  }
+  return results;
+}
+
 export async function measureWebBundle(directory) {
   const root = resolve(directory);
   // A symlink selected as the output root must not silently measure another directory.
@@ -126,13 +137,8 @@ export async function measureWebBundle(directory) {
     );
   }
 
-  // A fixed-size batch bounds active file reads, gzip streams, and memory use.
-  const assets = [];
-  for (let offset = 0; offset < candidates.length; offset += MAX_CONCURRENT_ASSETS) {
-    const batch = candidates.slice(offset, offset + MAX_CONCURRENT_ASSETS);
-    // oxlint-disable-next-line no-await-in-loop -- Bound work to one batch at a time.
-    assets.push(...(await Promise.all(batch.map(measureAsset))));
-  }
+  // Limit active gzip streams and file handles while retaining deterministic output.
+  const assets = await runInBatches(candidates, measureAsset);
   assets.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
 
   const totals = { js: emptyTotal(), css: emptyTotal(), all: emptyTotal() };
@@ -161,19 +167,19 @@ export function compareWebBundles(current, baseline) {
 }
 
 function parseArgs(args) {
-  const options = { dir: "apps/web/dist", compare: undefined };
+  const options = { dir: "apps/web/dist", compare: undefined, output: undefined };
   const seen = new Set();
   for (let index = 0; index < args.length; index += 2) {
     const flag = args[index];
     const value = args[index + 1];
     if (
-      !["--dir", "--compare"].includes(flag) ||
+      !["--dir", "--compare", "--output"].includes(flag) ||
       seen.has(flag) ||
       !value ||
       value.startsWith("--")
     ) {
       throw new Error(
-        "Usage: node scripts/web-bundle-size.mjs [--dir BUILD_DIR] [--compare BASELINE_JSON]",
+        "Usage: node scripts/web-bundle-size.mjs [--dir BUILD_DIR] [--compare BASELINE_JSON] [--output SNAPSHOT_JSON]",
       );
     }
     seen.add(flag);
@@ -183,13 +189,19 @@ function parseArgs(args) {
 }
 
 async function main(args) {
-  const { dir, compare } = parseArgs(args);
+  const { dir, compare, output } = parseArgs(args);
   const snapshot = await measureWebBundle(dir);
   if (compare) {
     const baseline = JSON.parse(await readFile(compare, "utf8"));
     snapshot.comparison = compareWebBundles(snapshot, baseline);
   }
-  process.stdout.write(`${JSON.stringify(snapshot, null, 2)}\n`);
+  const json = `${JSON.stringify(snapshot, null, 2)}\n`;
+  if (output) {
+    // Never silently replace the saved baseline with a later comparison build.
+    await writeFile(output, json, { encoding: "utf8", flag: "wx" });
+  } else {
+    process.stdout.write(json);
+  }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

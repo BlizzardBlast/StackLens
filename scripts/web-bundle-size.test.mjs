@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
 
-import { compareWebBundles, measureWebBundle } from "./web-bundle-size.mjs";
+import { compareWebBundles, measureWebBundle, runInBatches } from "./web-bundle-size.mjs";
 
 const script = join(dirname(fileURLToPath(import.meta.url)), "web-bundle-size.mjs");
 
@@ -186,6 +186,74 @@ await test("[GOV-007] streams large assets in bounded batches", async () => {
       snapshot.assets.reduce((sum, asset) => sum + asset.bytes, 0),
     );
     assert.deepEqual(await measureWebBundle(dir), snapshot);
+  });
+});
+
+await test("[GOV-007] never exceeds four active measurements", async () => {
+  const started = [];
+  let active = 0;
+  let peak = 0;
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+
+  const pending = runInBatches(
+    Array.from({ length: 9 }, (_, index) => index),
+    async (index) => {
+      started.push(index);
+      active += 1;
+      peak = Math.max(peak, active);
+      try {
+        await gate;
+        return index * 2;
+      } finally {
+        active -= 1;
+      }
+    },
+  );
+
+  try {
+    assert.deepEqual(started, [0, 1, 2, 3]);
+    assert.equal(active, 4);
+    assert.equal(peak, 4);
+  } finally {
+    release();
+  }
+
+  assert.deepEqual(await pending, [0, 2, 4, 6, 8, 10, 12, 14, 16]);
+  assert.equal(active, 0);
+  assert.equal(peak, 4);
+});
+
+await test("[GOV-007] writes a UTF-8 baseline without shell redirection or overwrites", async () => {
+  await withOutput(async (dir) => {
+    await write(dir, "assets/app.js", "app();");
+    const baseline = join(dir, "baseline.json");
+    const args = [script, "--dir", dir, "--output", baseline];
+
+    const created = spawnSync(process.execPath, args, { encoding: "utf8" });
+    assert.equal(created.status, 0, created.stderr);
+    assert.equal(created.stdout, "");
+
+    const bytes = await readFile(baseline);
+    assert.equal(bytes[0], 0x7b);
+    assert.equal(JSON.parse(bytes.toString("utf8")).schemaVersion, 1);
+
+    const duplicate = spawnSync(process.execPath, args, { encoding: "utf8" });
+    assert.notEqual(duplicate.status, 0);
+    assert.match(duplicate.stderr, /EEXIST/);
+    assert.deepEqual(await readFile(baseline), bytes);
+
+    await write(dir, "assets/app.js", "app();changed();");
+    const comparison = spawnSync(process.execPath, [script, "--dir", dir, "--compare", baseline], {
+      encoding: "utf8",
+    });
+    assert.equal(comparison.status, 0, comparison.stderr);
+    assert.equal(
+      JSON.parse(comparison.stdout).comparison.js.bytesDelta,
+      "changed();".length,
+    );
   });
 });
 
