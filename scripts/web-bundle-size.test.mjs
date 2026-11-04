@@ -250,10 +250,7 @@ await test("[GOV-007] writes UTF-8 baselines without overwrites", async () => {
       encoding: "utf8",
     });
     assert.equal(comparison.status, 0, comparison.stderr);
-    assert.equal(
-      JSON.parse(comparison.stdout).comparison.js.bytesDelta,
-      "changed();".length,
-    );
+    assert.equal(JSON.parse(comparison.stdout).comparison.js.bytesDelta, "changed();".length);
   });
 });
 
@@ -278,27 +275,4 @@ await test("[GOV-007] CLI emits machine-readable comparisons and rejects bad opt
     assert.notEqual(invalid.status, 0);
     assert.match(invalid.stderr, /Usage:/);
   });
-});
-
-await test("[GOV-007] temporary on-disk Oxfmt diff probe", async (t) => {
-  if (process.env.GITHUB_ACTIONS !== "true") {
-    t.skip("Only needed to inspect the pinned CI formatter");
-    return;
-  }
-  const source = fileURLToPath(import.meta.url);
-  const copy = join(dirname(source), "__temporary-oxfmt-probe.mjs");
-  await writeFile(copy, await readFile(source, "utf8"));
-  try {
-    const format = spawnSync("pnpm", ["exec", "oxfmt", "--write", copy], {
-      encoding: "utf8",
-    });
-    assert.equal(format.status, 0, format.stderr);
-    const diff = spawnSync("git", ["diff", "--no-index", "--", source, copy], {
-      encoding: "utf8",
-    });
-    assert.ok(diff.status === 0 || diff.status === 1, diff.stderr);
-    process.stdout.write(`OXFMT_PROBE_BEGIN\n${diff.stdout}\nOXFMT_PROBE_END\n`);
-  } finally {
-    await rm(copy, { force: true });
-  }
 });
