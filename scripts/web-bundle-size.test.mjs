@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
@@ -176,3 +176,30 @@ await test("[GOV-007] CLI emits machine-readable comparisons and rejects bad opt
   });
 });
 
+
+// Temporary, file-mode Oxfmt diagnostic; remove after capturing the diff.
+await test("[GOV-007] temporary file-mode format diagnostic", async (t) => {
+  if (process.env.GITHUB_ACTIONS !== "true") {
+    t.skip("Diagnostic runs only on GitHub Actions");
+    return;
+  }
+  const sourcePath = fileURLToPath(import.meta.url);
+  const relativeCopy = "scripts/__oxfmt-diagnostic-copy.test.mjs";
+  const copyPath = join(process.cwd(), relativeCopy);
+  await writeFile(copyPath, await readFile(sourcePath, "utf8"));
+  try {
+    const format = spawnSync(
+      join(process.cwd(), "node_modules/.bin/oxfmt"),
+      ["--write", relativeCopy, "--config", ".oxfmtrc.json"],
+      { encoding: "utf8" },
+    );
+    assert.equal(format.status, 0, format.stderr);
+    const diff = spawnSync("git", ["diff", "--no-index", "--", sourcePath, copyPath], {
+      encoding: "utf8",
+    });
+    assert.ok(diff.status === 0 || diff.status === 1, diff.stderr);
+    console.log("ON_DISK_OXFMT_DIFF_BEGIN\n" + diff.stdout + "\nON_DISK_OXFMT_DIFF_END");
+  } finally {
+    await rm(copyPath, { force: true });
+  }
+});
