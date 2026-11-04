@@ -226,7 +226,7 @@ await test("[GOV-007] never exceeds four active measurements", async () => {
   assert.equal(peak, 4);
 });
 
-await test("[GOV-007] writes a UTF-8 baseline without shell redirection or overwrites", async () => {
+await test("[GOV-007] writes UTF-8 baselines without overwrites", async () => {
   await withOutput(async (dir) => {
     await write(dir, "assets/app.js", "app();");
     const baseline = join(dir, "baseline.json");
