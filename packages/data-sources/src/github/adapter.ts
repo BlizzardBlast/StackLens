@@ -574,6 +574,11 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
     // Only successfully retained decoded blobs are cached. Their total size is bounded
     // by the accepted aggregate byte budget; no content survives this acquisition.
     const cachedBlobs = new Map<string, CachedBlob>();
+    // Terminal outcomes carry no provider bodies. Retryable failures are not memoized.
+    type TerminalBlobOutcome =
+      | { readonly kind: "oversized" | "binary" | "lfs" }
+      | { readonly kind: "failure"; readonly code: string; readonly message: string };
+    const terminalBlobs = new Map<string, TerminalBlobOutcome>();
     const retainEntry = (entry: CandidateEntry, result: BlobResult | undefined): void => {
       if (entry.size !== undefined && entry.size > this.#maxFileBytes) {
         oversizedPaths.push(entry.path);
@@ -588,6 +593,23 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
       const endpoint = githubBlobApiUrl(repository.owner, repository.name, entry.sha);
 
       try {
+        const terminal = terminalBlobs.get(entry.sha);
+        if (terminal?.kind === "oversized") {
+          oversizedPaths.push(entry.path);
+          return;
+        }
+        if (terminal?.kind === "binary") {
+          binaryPaths.push(entry.path);
+          return;
+        }
+        if (terminal?.kind === "lfs") {
+          lfsPointerPaths.push(entry.path);
+          return;
+        }
+        if (terminal?.kind === "failure") {
+          throw new GitHubRequestError(terminal.code, terminal.message, false, endpoint);
+        }
+
         let blob = cachedBlobs.get(entry.sha);
         if (blob === undefined) {
           if (result === undefined) throw new Error("Missing GitHub blob response");
@@ -606,6 +628,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
           }
 
           if (rawBlob.size > this.#maxFileBytes) {
+            terminalBlobs.set(entry.sha, { kind: "oversized" });
             oversizedPaths.push(entry.path);
             return;
           }
@@ -615,6 +638,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
             decoded = decodeBlobText(rawBlob);
           } catch (error) {
             if (error instanceof GitHubBinaryContentError) {
+              terminalBlobs.set(entry.sha, { kind: "binary" });
               binaryPaths.push(entry.path);
               return;
             }
@@ -635,6 +659,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
         }
 
         if (blob.text.startsWith("version https://git-lfs.github.com/spec/v1\n")) {
+          terminalBlobs.set(entry.sha, { kind: "lfs" });
           lfsPointerPaths.push(entry.path);
           return;
         }
@@ -668,6 +693,13 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
                 endpoint,
               );
 
+        if (!failure.retryable && !failure.code.endsWith("_rate_limited")) {
+          terminalBlobs.set(entry.sha, {
+            kind: "failure",
+            code: failure.code,
+            message: failure.message,
+          });
+        }
         failedPaths.push(entry.path);
         rateLimited ||= failure.code.endsWith("_rate_limited");
         partialFailures.push(
@@ -687,13 +719,17 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
     let candidateIndex = 0;
     while (candidateIndex < retainedCandidates.length) {
+      this.#signal?.throwIfAborted();
       const batch: CandidateEntry[] = [];
       const pendingBlobs = new Set<string>();
       let reservedBytes = 0;
       while (batch.length < 4 && candidateIndex < retainedCandidates.length) {
         const entry = retainedCandidates[candidateIndex]!;
         const reservation = entry.size ?? this.#maxFileBytes;
-        const needsFetch = !cachedBlobs.has(entry.sha) && !pendingBlobs.has(entry.sha);
+        const needsFetch =
+          !cachedBlobs.has(entry.sha) &&
+          !terminalBlobs.has(entry.sha) &&
+          !pendingBlobs.has(entry.sha);
         if (
           rateLimited ||
           (needsFetch && client.requestCount + pendingBlobs.size >= client.maxRequests)
@@ -733,9 +769,13 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
           }
         }),
       );
+      this.#signal?.throwIfAborted();
       const resultsBySha = new Map(results);
       // Retain in path order: aliases save requests, not per-file byte reservations.
-      batch.forEach((entry) => retainEntry(entry, resultsBySha.get(entry.sha)));
+      for (const entry of batch) {
+        this.#signal?.throwIfAborted();
+        retainEntry(entry, resultsBySha.get(entry.sha));
+      }
       if (request.selectConfigurationPaths !== undefined) {
         const selected = request.selectConfigurationPaths(
           files,
@@ -883,6 +923,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
       ref: resolvedRef,
     };
 
+    this.#signal?.throwIfAborted();
     return {
       ok: true,
       data: {

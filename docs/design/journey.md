@@ -3858,3 +3858,17 @@ optimization, not a change to accepted findings, scoring or product requirements
 dependency, service, CI workflow or GitHub permission is added.
 
 Reference: https://github.blog/engineering/architecture-optimization/inside-githubs-new-git-storage-architecture/
+
+## 2026-11-06 — Review hardening for Git blob reuse
+
+**Traceability:** FR-003, FR-021, NFR-003, NFR-008/009, GOV-002/007.
+
+PR review found that cache-only batches could skip the adapter's cancellation check, and that
+repeated binary/LFS/oversized/invalid blobs could still consume new GitHub requests in later
+batches. The adapter now checks cancellation even when no HTTP is needed and before returning a
+snapshot; per-acquisition terminal results are memoized with only compact classifications or
+sanitized non-retryable failure details. Retryable failures remain eligible for another request.
+Every alias retains path-specific limitations, file/byte budgets, and deterministic ordering.
+The new synthetic tests cover same-batch aliases, cancellation between batches, terminal results
+across batches, and transient retries without provider-body leakage. No API, contract, dependency,
+persistent cache, or hosted infrastructure changed.
