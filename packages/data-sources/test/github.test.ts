@@ -336,6 +336,62 @@ describe("realistic bounded repository acquisition [FR-003, FR-009, FR-021, SEC-
     expect(result.data.manifestPaths).toEqual(["apps/a/package.json", "apps/b/package.json"]);
     expect(result.data.sourceCoverage.status).toBe("partial");
   });
+  it("reuses immutable blobs across batches within the request budget [FR-003, NFR-003]", async () => {
+    const entries = [
+      { path: "package.json", sha: manifestSha, content: "{}" },
+      { path: "src/a.ts", sha: sourceSha, content: "export {};" },
+      { path: "src/b.ts", sha: tsconfigSha, content: "export {};" },
+      { path: "src/c.ts", sha: viteSha, content: "export {};" },
+      { path: "src/d.ts", sha: sourceSha, content: "export {};" },
+      { path: "src/e.ts", sha: prettierSha, content: "export {};" },
+    ];
+    const fetchImpl = successfulBaseFetch(
+      treePayload(entries.map((entry) => treeEntry(entry.path, entry.sha, entry.content.length))),
+      [
+        blobPayload(manifestSha, "{}"),
+        blobPayload(sourceSha, "export {};"),
+        blobPayload(tsconfigSha, "export {};"),
+        blobPayload(viteSha, "export {};"),
+        blobPayload(prettierSha, "export {};"),
+      ],
+    );
+    const result = await createAdapter(fetchImpl, { maxRequests: 8 }).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected complete acquisition");
+    expect(fetchImpl).toHaveBeenCalledTimes(8); // Three metadata + five distinct blob SHAs.
+    expect(result.data.files.map((file) => file.path)).toEqual(
+      entries.slice(1).map((entry) => entry.path),
+    );
+    expect(result.data.files[0]?.content).toBe(result.data.files[3]?.content);
+    expect(result.data.limitations).toEqual([]);
+  });
+
+  it("charges each blob alias against the aggregate byte budget [FR-003, NFR-003]", async () => {
+    const shared = "export {};";
+    const fetchImpl = successfulBaseFetch(
+      treePayload([
+        treeEntry("package.json", manifestSha, 2),
+        treeEntry("src/a.ts", sourceSha, shared.length),
+        treeEntry("src/b.ts", sourceSha, shared.length),
+      ]),
+      [blobPayload(manifestSha, "{}"), blobPayload(sourceSha, shared)],
+    );
+    const result = await createAdapter(fetchImpl, { maxTotalFileBytes: 2 + shared.length }).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected bounded acquisition");
+    expect(fetchImpl).toHaveBeenCalledTimes(5);
+    expect(result.data.files.map((file) => file.path)).toEqual(["src/a.ts"]);
+    expect(
+      result.data.limitations.some(
+        (item) => item.kind === "resource_limit" && item.message.includes("aggregate"),
+      ),
+    ).toBe(true);
+  });
+
   it("bounds in-flight blob reads and retains candidate order after reversed completion", async () => {
     const entries = Array.from({ length: 9 }, (_, index) => ({
       path: index === 0 ? "package.json" : `src/file-${index}.ts`,

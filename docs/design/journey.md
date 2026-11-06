@@ -3837,3 +3837,24 @@ and added large-file, multiple-batch and nested symlink regression cases. A
 follow-up added a direct four-task concurrency regression and explicit UTF-8
 snapshot output to avoid Windows PowerShell 5.1 redirection encoding pitfalls,
 with exclusive-create protection against overwriting a saved baseline.
+
+## 2026-11-06 — Acquisition-local Git blob deduplication
+
+**Traceability:** FR-003, FR-021, NFR-003, NFR-009, GOV-002/007.
+
+GitHub Engineering's Project Rubicon storage discussion highlights that Git blobs are immutable
+and identified by content. The existing StackLens provider already pins a commit/tree and fetches
+blob SHAs, but duplicate content in separate selected paths could spend multiple HTTP requests.
+The acquisition adapter now reuses successfully decoded immutable blobs within one acquisition,
+including across four-request batches. Requests remain fixed-host and authorization-bound, and
+the cache is limited by already accepted aggregate content bytes; no source text persists across
+acquisitions or enters report provenance. Each file path still consumes its own byte/file budget
+and retains its own identity. Batches continue to respect the request cap, deterministic file
+ordering, partial failures and rate-limit stop behavior.
+
+Synthetic regression fixtures cover duplicate SHAs straddling batch boundaries with a tight
+request limit and duplicate paths that exceed the aggregate-content limit. This is a transport
+optimization, not a change to accepted findings, scoring or product requirements. No new
+dependency, service, CI workflow or GitHub permission is added.
+
+Reference: https://github.blog/engineering/architecture-optimization/inside-githubs-new-git-storage-architecture/

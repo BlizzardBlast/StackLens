@@ -182,7 +182,10 @@ Default GitHub acquisition bounds are:
 - maximum decoded bytes across retained files: 8 MiB;
 - maximum requests per acquisition: 520;
 - at most four in-flight blob reads, with byte/request reservations before dispatch and retention
-  in candidate order. A rate-limit response prevents further batches.
+  in candidate order. Identical immutable blob SHAs are fetched once within an acquisition, even
+  across batches. File/aggregate byte limits still count every path, and decoded content caching
+  is bounded by the accepted aggregate budget and never shared across acquisitions. A rate-limit
+  response prevents further batches.
 
 Root/workspace declarations, member manifests, shared lockfiles and bounded local configuration references are prioritized before
 optional configuration/source candidates when file/request budgets are tight. Lockfiles are excluded
