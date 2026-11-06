@@ -336,6 +336,223 @@ describe("realistic bounded repository acquisition [FR-003, FR-009, FR-021, SEC-
     expect(result.data.manifestPaths).toEqual(["apps/a/package.json", "apps/b/package.json"]);
     expect(result.data.sourceCoverage.status).toBe("partial");
   });
+  it("reuses immutable blobs across batches within the request budget [FR-003, NFR-003]", async () => {
+    const entries = [
+      { path: "package.json", sha: manifestSha, content: "{}" },
+      { path: "src/a.ts", sha: sourceSha, content: "export {};" },
+      { path: "src/b.ts", sha: tsconfigSha, content: "export {};" },
+      { path: "src/c.ts", sha: viteSha, content: "export {};" },
+      { path: "src/d.ts", sha: sourceSha, content: "export {};" },
+      { path: "src/e.ts", sha: prettierSha, content: "export {};" },
+    ];
+    const fetchImpl = successfulBaseFetch(
+      treePayload(entries.map((entry) => treeEntry(entry.path, entry.sha, entry.content.length))),
+      [
+        blobPayload(manifestSha, "{}"),
+        blobPayload(sourceSha, "export {};"),
+        blobPayload(tsconfigSha, "export {};"),
+        blobPayload(viteSha, "export {};"),
+        blobPayload(prettierSha, "export {};"),
+      ],
+    );
+    const result = await createAdapter(fetchImpl, { maxRequests: 8 }).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected complete acquisition");
+    expect(fetchImpl).toHaveBeenCalledTimes(8); // Three metadata + five distinct blob SHAs.
+    expect(result.data.files.map((file) => file.path)).toEqual(
+      entries.slice(1).map((entry) => entry.path),
+    );
+    expect(result.data.files[0]?.content).toBe(result.data.files[3]?.content);
+    expect(result.data.limitations).toEqual([]);
+  });
+
+  it("charges each blob alias against the aggregate byte budget [FR-003, NFR-003]", async () => {
+    const shared = "export {};";
+    const fetchImpl = successfulBaseFetch(
+      treePayload([
+        treeEntry("package.json", manifestSha, 2),
+        treeEntry("src/a.ts", sourceSha, shared.length),
+        treeEntry("src/b.ts", sourceSha, shared.length),
+      ]),
+      [blobPayload(manifestSha, "{}"), blobPayload(sourceSha, shared)],
+    );
+    const result = await createAdapter(fetchImpl, { maxTotalFileBytes: 2 + shared.length }).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected bounded acquisition");
+    expect(fetchImpl).toHaveBeenCalledTimes(5);
+    expect(result.data.files.map((file) => file.path)).toEqual(["src/a.ts"]);
+    expect(
+      result.data.limitations.some(
+        (item) => item.kind === "resource_limit" && item.message.includes("aggregate"),
+      ),
+    ).toBe(true);
+  });
+
+  it("deduplicates identical blobs within one batch [FR-003, NFR-003]", async () => {
+    const shared = "export const same = true;";
+    const fetchImpl = successfulBaseFetch(
+      treePayload([
+        treeEntry("package.json", manifestSha, 2),
+        treeEntry("src/a.ts", sourceSha, shared.length),
+        treeEntry("src/b.ts", sourceSha, shared.length),
+        treeEntry("src/c.ts", tsconfigSha, 2),
+      ]),
+      [
+        blobPayload(manifestSha, "{}"),
+        blobPayload(sourceSha, shared),
+        blobPayload(tsconfigSha, "{}"),
+      ],
+    );
+    const result = await createAdapter(fetchImpl, { maxRequests: 6 }).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected complete acquisition");
+    expect(fetchImpl).toHaveBeenCalledTimes(6); // Three metadata + three unique blobs.
+    expect(result.data.files.map((file) => file.path)).toEqual([
+      "src/a.ts",
+      "src/b.ts",
+      "src/c.ts",
+    ]);
+    expect(result.data.files[0]?.content).toBe(result.data.files[1]?.content);
+    expect(result.data.limitations).toEqual([]);
+  });
+
+  it("rejects a canceled cache-only batch [NFR-008]", async () => {
+    const controller = new AbortController();
+    const fetchImpl = successfulBaseFetch(
+      treePayload([
+        treeEntry("package.json", manifestSha, 2),
+        treeEntry("src/a.ts", sourceSha, 2),
+        treeEntry("src/b.ts", tsconfigSha, 2),
+        treeEntry("src/c.ts", viteSha, 2),
+        treeEntry("src/d.ts", sourceSha, 2),
+      ]),
+      [
+        blobPayload(manifestSha, "{}"),
+        blobPayload(sourceSha, "{}"),
+        blobPayload(tsconfigSha, "{}"),
+        blobPayload(viteSha, "{}"),
+      ],
+    );
+    let selectionCount = 0;
+    const adapter = new GitHubRepositoryAdapter({ fetchImpl, signal: controller.signal });
+    await expect(
+      adapter.fetch({
+        repositoryUrl: `https://github.com/${owner}/${name}`,
+        selectConfigurationPaths: () => {
+          selectionCount += 1;
+          if (selectionCount === 1) controller.abort(new Error("canceled after first batch"));
+          return [];
+        },
+      }),
+    ).rejects.toThrow("canceled after first batch");
+    expect(selectionCount).toBe(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(7); // The cached-only batch issues no requests.
+  });
+
+  it("reuses terminal outcomes across batches without retaining provider bodies", async () => {
+    const lfs = "version https://git-lfs.github.com/spec/v1\noid sha256:abc\nsize 1\n";
+    const valid = "export const value = 1;";
+    const entries = [
+      { path: "package.json", sha: manifestSha, size: 2 },
+      { path: "src/01-binary.ts", sha: tsconfigSha, size: 3 },
+      { path: "src/02-lfs.ts", sha: viteSha, size: lfs.length },
+      { path: "src/03-oversize.ts", sha: prettierSha, size: 1 },
+      { path: "src/04-invalid.ts", sha: symlinkSha, size: 1 },
+      { path: "src/05-binary.ts", sha: tsconfigSha, size: 3 },
+      { path: "src/06-lfs.ts", sha: viteSha, size: lfs.length },
+      { path: "src/07-oversize.ts", sha: prettierSha, size: 1 },
+      { path: "src/08-invalid.ts", sha: symlinkSha, size: 1 },
+      { path: "src/09-valid.ts", sha: sourceSha, size: valid.length },
+    ];
+    const fetchImpl = successfulBaseFetch(
+      treePayload(entries.map((entry) => treeEntry(entry.path, entry.sha, entry.size))),
+      [
+        blobPayload(manifestSha, "{}"),
+        {
+          sha: tsconfigSha,
+          size: 3,
+          encoding: "base64",
+          content: encodeBase64Bytes(new Uint8Array([0xff, 0xfe, 0xfd])),
+        },
+        blobPayload(viteSha, lfs),
+        blobPayload(prettierSha, "x".repeat(120)),
+        { sha: symlinkSha, size: 1, encoding: "base64", content: "not-base64!" },
+        blobPayload(sourceSha, valid),
+      ],
+    );
+    const result = await createAdapter(fetchImpl, {
+      maxFileBytes: 100,
+      maxRequests: 9,
+    }).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected partial acquisition");
+    expect(fetchImpl).toHaveBeenCalledTimes(9); // Three metadata + six distinct blobs.
+    expect(result.data.files.map((file) => file.path)).toEqual(["src/09-valid.ts"]);
+    expect(result.partialFailures.map((failure) => failure.code)).toEqual([
+      "github_invalid_blob_response",
+      "github_invalid_blob_response",
+    ]);
+    const limitations = result.data.limitations.map((item) => item.message).join("\n");
+    for (const path of [
+      "src/01-binary.ts",
+      "src/05-binary.ts",
+      "src/02-lfs.ts",
+      "src/06-lfs.ts",
+      "src/03-oversize.ts",
+      "src/07-oversize.ts",
+      "src/04-invalid.ts",
+      "src/08-invalid.ts",
+    ]) {
+      expect(limitations).toContain(path);
+    }
+    expect(JSON.stringify(result)).not.toContain("not-base64!");
+  });
+
+  it("retries transient blob failures on later aliases [NFR-003]", async () => {
+    const text = "export const later = true;";
+    const fetchImpl = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(jsonResponse(repositoryPayload()))
+      .mockResolvedValueOnce(jsonResponse(commitPayload()))
+      .mockResolvedValueOnce(
+        jsonResponse(
+          treePayload([
+            treeEntry("package.json", manifestSha, 2),
+            treeEntry("src/a.ts", sourceSha, text.length),
+            treeEntry("src/b.ts", tsconfigSha, 2),
+            treeEntry("src/c.ts", viteSha, 2),
+            treeEntry("src/d.ts", sourceSha, text.length),
+          ]),
+        ),
+      )
+      .mockResolvedValueOnce(jsonResponse(blobPayload(manifestSha, "{}")))
+      .mockResolvedValueOnce(jsonResponse({ message: "sensitive provider body" }, 503))
+      .mockResolvedValueOnce(jsonResponse(blobPayload(tsconfigSha, "{}")))
+      .mockResolvedValueOnce(jsonResponse(blobPayload(viteSha, "{}")))
+      .mockResolvedValueOnce(jsonResponse(blobPayload(sourceSha, text)));
+    const result = await createAdapter(fetchImpl).fetch({
+      repositoryUrl: `https://github.com/${owner}/${name}`,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("Expected partial acquisition");
+    expect(fetchImpl).toHaveBeenCalledTimes(8);
+    expect(result.data.files.map((file) => file.path)).toEqual([
+      "src/b.ts",
+      "src/c.ts",
+      "src/d.ts",
+    ]);
+    expect(result.partialFailures.map((failure) => failure.code)).toEqual(["github_blob_http_503"]);
+    expect(JSON.stringify(result)).not.toContain("sensitive provider body");
+  });
+
   it("bounds in-flight blob reads and retains candidate order after reversed completion", async () => {
     const entries = Array.from({ length: 9 }, (_, index) => ({
       path: index === 0 ? "package.json" : `src/file-${index}.ts`,

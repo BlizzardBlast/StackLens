@@ -565,7 +565,21 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
     let rateLimited = false;
 
     type BlobResult = { readonly payload: unknown } | { readonly error: unknown };
-    const retainEntry = (entry: CandidateEntry, result: BlobResult): void => {
+    type CachedBlob = {
+      readonly sha: string;
+      readonly size: number;
+      readonly text: string;
+      readonly byteLength: number;
+    };
+    // Only successfully retained decoded blobs are cached. Their total size is bounded
+    // by the accepted aggregate byte budget; no content survives this acquisition.
+    const cachedBlobs = new Map<string, CachedBlob>();
+    // Terminal outcomes carry no provider bodies. Retryable failures are not memoized.
+    type TerminalBlobOutcome =
+      | { readonly kind: "oversized" | "binary" | "lfs" }
+      | { readonly kind: "failure"; readonly code: string; readonly message: string };
+    const terminalBlobs = new Map<string, TerminalBlobOutcome>();
+    const retainEntry = (entry: CandidateEntry, result: BlobResult | undefined): void => {
       if (entry.size !== undefined && entry.size > this.#maxFileBytes) {
         oversizedPaths.push(entry.path);
         return;
@@ -579,50 +593,73 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
       const endpoint = githubBlobApiUrl(repository.owner, repository.name, entry.sha);
 
       try {
-        if ("error" in result) throw result.error;
-        const payload = result.payload;
-        let blob;
-
-        try {
-          blob = parseBlobPayload(payload, entry.sha);
-        } catch {
-          throw new GitHubRequestError(
-            "github_invalid_blob_response",
-            `GitHub returned an unsupported blob shape for ${JSON.stringify(entry.path)}.`,
-            false,
-            endpoint,
-          );
-        }
-
-        if (blob.size > this.#maxFileBytes) {
+        const terminal = terminalBlobs.get(entry.sha);
+        if (terminal?.kind === "oversized") {
           oversizedPaths.push(entry.path);
           return;
         }
+        if (terminal?.kind === "binary") {
+          binaryPaths.push(entry.path);
+          return;
+        }
+        if (terminal?.kind === "lfs") {
+          lfsPointerPaths.push(entry.path);
+          return;
+        }
+        if (terminal?.kind === "failure") {
+          throw new GitHubRequestError(terminal.code, terminal.message, false, endpoint);
+        }
 
-        let decoded;
+        let blob = cachedBlobs.get(entry.sha);
+        if (blob === undefined) {
+          if (result === undefined) throw new Error("Missing GitHub blob response");
+          if ("error" in result) throw result.error;
+          let rawBlob;
 
-        try {
-          decoded = decodeBlobText(blob);
-        } catch (error) {
-          if (error instanceof GitHubBinaryContentError) {
-            binaryPaths.push(entry.path);
+          try {
+            rawBlob = parseBlobPayload(result.payload, entry.sha);
+          } catch {
+            throw new GitHubRequestError(
+              "github_invalid_blob_response",
+              `GitHub returned an unsupported blob shape for ${JSON.stringify(entry.path)}.`,
+              false,
+              endpoint,
+            );
+          }
+
+          if (rawBlob.size > this.#maxFileBytes) {
+            terminalBlobs.set(entry.sha, { kind: "oversized" });
+            oversizedPaths.push(entry.path);
             return;
           }
 
-          throw new GitHubRequestError(
-            "github_invalid_blob_response",
-            `GitHub returned an unsupported blob payload for ${JSON.stringify(entry.path)}.`,
-            false,
-            endpoint,
-          );
+          let decoded;
+          try {
+            decoded = decodeBlobText(rawBlob);
+          } catch (error) {
+            if (error instanceof GitHubBinaryContentError) {
+              terminalBlobs.set(entry.sha, { kind: "binary" });
+              binaryPaths.push(entry.path);
+              return;
+            }
+
+            throw new GitHubRequestError(
+              "github_invalid_blob_response",
+              `GitHub returned an unsupported blob payload for ${JSON.stringify(entry.path)}.`,
+              false,
+              endpoint,
+            );
+          }
+          blob = { sha: rawBlob.sha, size: rawBlob.size, ...decoded };
         }
 
-        if (totalBytes + decoded.byteLength > this.#maxTotalFileBytes) {
+        if (totalBytes + blob.byteLength > this.#maxTotalFileBytes) {
           aggregateLimitedPaths.push(entry.path);
           return;
         }
 
-        if (decoded.text.startsWith("version https://git-lfs.github.com/spec/v1\n")) {
+        if (blob.text.startsWith("version https://git-lfs.github.com/spec/v1\n")) {
+          terminalBlobs.set(entry.sha, { kind: "lfs" });
           lfsPointerPaths.push(entry.path);
           return;
         }
@@ -630,10 +667,11 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
         const acquiredFile: GitHubRepositoryFile = {
           path: entry.path,
           blobSha: blob.sha,
-          byteLength: decoded.byteLength,
-          content: decoded.text,
+          byteLength: blob.byteLength,
+          content: blob.text,
         };
-        totalBytes += decoded.byteLength;
+        totalBytes += blob.byteLength;
+        cachedBlobs.set(entry.sha, blob);
 
         if (entry.path === "package.json") {
           manifest = acquiredFile;
@@ -655,6 +693,13 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
                 endpoint,
               );
 
+        if (!failure.retryable && !failure.code.endsWith("_rate_limited")) {
+          terminalBlobs.set(entry.sha, {
+            kind: "failure",
+            code: failure.code,
+            message: failure.message,
+          });
+        }
         failedPaths.push(entry.path);
         rateLimited ||= failure.code.endsWith("_rate_limited");
         partialFailures.push(
@@ -674,12 +719,21 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
 
     let candidateIndex = 0;
     while (candidateIndex < retainedCandidates.length) {
+      this.#signal?.throwIfAborted();
       const batch: CandidateEntry[] = [];
+      const pendingBlobs = new Set<string>();
       let reservedBytes = 0;
       while (batch.length < 4 && candidateIndex < retainedCandidates.length) {
         const entry = retainedCandidates[candidateIndex]!;
         const reservation = entry.size ?? this.#maxFileBytes;
-        if (rateLimited || client.requestCount + batch.length >= client.maxRequests) {
+        const needsFetch =
+          !cachedBlobs.has(entry.sha) &&
+          !terminalBlobs.has(entry.sha) &&
+          !pendingBlobs.has(entry.sha);
+        if (
+          rateLimited ||
+          (needsFetch && client.requestCount + pendingBlobs.size >= client.maxRequests)
+        ) {
           aggregateLimitedPaths.push(entry.path);
           candidateIndex += 1;
         } else if (reservation > this.#maxFileBytes) {
@@ -691,6 +745,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
           candidateIndex += 1;
         } else {
           batch.push(entry);
+          if (needsFetch) pendingBlobs.add(entry.sha);
           reservedBytes += reservation;
           candidateIndex += 1;
         }
@@ -698,20 +753,29 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
       // Reserve before starting requests, then retain in candidate order so timing cannot select files.
       // eslint-disable-next-line no-await-in-loop -- The next batch requires the prior batch's byte usage and rate-limit result.
       const results = await Promise.all(
-        batch.map(async (entry): Promise<BlobResult> => {
+        [...pendingBlobs].map(async (sha): Promise<readonly [string, BlobResult]> => {
           try {
-            return {
-              payload: await client.getJson(
-                githubBlobApiUrl(repository.owner, repository.name, entry.sha),
-                "blob",
-              ),
-            };
+            return [
+              sha,
+              {
+                payload: await client.getJson(
+                  githubBlobApiUrl(repository.owner, repository.name, sha),
+                  "blob",
+                ),
+              },
+            ];
           } catch (error) {
-            return { error };
+            return [sha, { error }];
           }
         }),
       );
-      batch.forEach((entry, index) => retainEntry(entry, results[index]!));
+      this.#signal?.throwIfAborted();
+      const resultsBySha = new Map(results);
+      // Retain in path order: aliases save requests, not per-file byte reservations.
+      for (const entry of batch) {
+        this.#signal?.throwIfAborted();
+        retainEntry(entry, resultsBySha.get(entry.sha));
+      }
       if (request.selectConfigurationPaths !== undefined) {
         const selected = request.selectConfigurationPaths(
           files,
@@ -859,6 +923,7 @@ export class GitHubRepositoryAdapter implements EvidenceProvider<
       ref: resolvedRef,
     };
 
+    this.#signal?.throwIfAborted();
     return {
       ok: true,
       data: {
