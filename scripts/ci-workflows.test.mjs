@@ -57,6 +57,42 @@ function block(text, name, indent) {
   }
   return lines.slice(start + 1, end).join("\n");
 }
+// Fail closed on valid YAML forms this lightweight checker does not support.
+function workflowEvents(source) {
+  const headers = [...source.matchAll(/^on:/gm)];
+  assert.equal(headers.length, 1, "Expected one block-style on: declaration");
+  const events = block(source, "on", 0)
+    .split("\n")
+    .filter((line) => /^ {2}\S/.test(line) && !line.trimStart().startsWith("#"));
+  assert.ok(events.length > 0, "At least one workflow event is required");
+  for (const declaration of events) {
+    assert.match(
+      declaration,
+      /^ {2}[a-z_][a-z_0-9-]*:$/,
+      "Unsupported event trigger syntax; use a block-style on: mapping",
+    );
+  }
+  return events.map((line) => line.trim().slice(0, -1));
+}
+
+function assertReadOnlyPermissions(source) {
+  assert.equal(
+    [...source.matchAll(/^permissions:/gm)].length,
+    1,
+    "Expected one top-level permissions declaration",
+  );
+  const entries = block(source, "permissions", 0)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#"));
+  assert.deepEqual(entries, ["contents: read"], "Unsupported workflow-level permissions");
+  assert.doesNotMatch(
+    block(source, "jobs", 0),
+    /^ {4}permissions:/m,
+    "Unexpected job-level permission override",
+  );
+}
+
 function value(text, key, indent) {
   const match = text.match(new RegExp("^ {" + indent + "}" + key + ": (.+)$", "m"));
   assert.ok(match, "Missing " + key + " at indentation " + indent);
@@ -71,12 +107,13 @@ function condition(job) {
 test("all pull_request workflows are covered by the draft policy", () => {
   const actual = readdirSync(directory)
     .filter((name) => /\.ya?ml$/.test(name))
-    .filter((name) => /^ {2}pull_request:\s*$/m.test(read(name)));
+    .filter((name) => workflowEvents(read(name)).includes("pull_request"));
   assert.deepEqual(actual.sort(), Object.keys(configurations).sort());
 });
 for (const [filename, config] of Object.entries(configurations)) {
   test(filename + " preserves lifecycle, job dependencies and concurrency", () => {
     const source = read(filename);
+    assert.ok(workflowEvents(source).includes("pull_request"));
     const on = block(source, "on", 0);
     const pr = block(on, "pull_request", 2);
     const activity = pr.match(/^ {4}types: \[([^\]]+)\]$/m);
@@ -89,7 +126,7 @@ for (const [filename, config] of Object.entries(configurations)) {
       value(concurrency, "cancel-in-progress", 2),
       "$" + "{{ github.event_name == 'pull_request' }}",
     );
-    assert.match(source, /^permissions:\n {2}contents: read$/m);
+    assertReadOnlyPermissions(source);
     const jobs = block(source, "jobs", 0);
     const actualJobs = [...jobs.matchAll(/^ {2}([a-z][a-z-]*):$/gm)].map((match) => match[1]);
     assert.deepEqual(actualJobs, config.jobs);
@@ -107,4 +144,34 @@ for (const [filename, config] of Object.entries(configurations)) {
 test("fixture and recovery check names are unique", () => {
   const labels = Object.values(configurations).flatMap((config) => Object.values(config.labels));
   assert.equal(new Set(labels).size, labels.length);
+});
+
+test("unsupported inline PR triggers cannot bypass inventory", () => {
+  assert.throws(
+    () => workflowEvents("name: unsafe\non: [pull_request]\njobs:\n"),
+    /Missing on section/,
+  );
+  assert.throws(
+    () => workflowEvents("on:\n  pull_request: { types: [opened] }\n"),
+    /Unsupported event trigger syntax/,
+  );
+});
+
+test("extra token grants and job-level overrides fail closed", () => {
+  const safe = read("quality.yml");
+  assertReadOnlyPermissions(safe);
+  assert.throws(
+    () => assertReadOnlyPermissions(safe.replace(
+      "  contents: read",
+      "  contents: read\n  actions: write",
+    )),
+    /Unsupported workflow-level permissions/,
+  );
+  assert.throws(
+    () => assertReadOnlyPermissions(safe.replace(
+      "    runs-on: ubuntu-latest",
+      "    permissions:\n      contents: write\n    runs-on: ubuntu-latest",
+    )),
+    /Unexpected job-level permission override/,
+  );
 });
