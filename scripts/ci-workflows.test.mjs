@@ -4,7 +4,8 @@ import { test } from "node:test";
 
 const directory = new URL("../.github/workflows/", import.meta.url);
 const events = ["opened", "reopened", "synchronize", "ready_for_review", "converted_to_draft"];
-const gate = "github.event_name != 'pull_request' || " +
+const gate =
+  "github.event_name != 'pull_request' || " +
   "!github.event.pull_request.draft || " +
   "github.event.action == 'ready_for_review'";
 const identity =
@@ -46,8 +47,13 @@ function block(text, name, indent) {
   assert.notEqual(start, -1, "Missing " + name + " section");
   let end = lines.length;
   for (let i = start + 1; i < lines.length; i++) {
-    if (!lines[i].trim() || lines[i].trimStart().startsWith("#")) continue;
-    if (lines[i].length - lines[i].trimStart().length <= indent) { end = i; break; }
+    if (!lines[i].trim() || lines[i].trimStart().startsWith("#")) {
+      continue;
+    }
+    if (lines[i].length - lines[i].trimStart().length <= indent) {
+      end = i;
+      break;
+    }
   }
   return lines.slice(start + 1, end).join("\n");
 }
@@ -63,7 +69,8 @@ function condition(job) {
 }
 
 test("all pull_request workflows are covered by the draft policy", () => {
-  const actual = readdirSync(directory).filter((name) => /\.ya?ml$/.test(name))
+  const actual = readdirSync(directory)
+    .filter((name) => /\.ya?ml$/.test(name))
     .filter((name) => /^ {2}pull_request:\s*$/m.test(read(name)));
   assert.deepEqual(actual.sort(), Object.keys(configurations).sort());
 });
