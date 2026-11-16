@@ -7,13 +7,35 @@ const events = ["opened", "reopened", "synchronize", "ready_for_review", "conver
 const gate = "github.event_name != 'pull_request' || " +
   "!github.event.pull_request.draft || " +
   "github.event.action == 'ready_for_review'";
-const identity = "$" + "{{ github.event_name == 'pull_request' && github.event.pull_request.number || github.event_name == 'push' && github.ref || github.run_id }}";
+const identity =
+  "$" +
+  "{{ github.event_name == 'pull_request' && github.event.pull_request.number || " +
+  "github.event_name == 'push' && github.ref || github.run_id }}";
 const configurations = {
-  "quality.yml": { jobs: ["quality"], first: "quality", group: "quality-" + "$" + "{{ github.workflow }}-" + identity, labels: {} },
-  "offsite-backup-fixture.yml": { jobs: ["capture", "verify"], first: "capture", group: "offsite-backup-fixture-" + identity,
-    labels: { capture: "Offsite fixture / capture", verify: "Offsite fixture / verify" } },
-  "portable-recovery.yml": { jobs: ["capture", "recover"], first: "capture", group: "portable-recovery-" + identity,
-    labels: { capture: "Portable recovery / capture", recover: "Portable recovery / restore" } },
+  "quality.yml": {
+    jobs: ["quality"],
+    first: "quality",
+    group: "quality-" + "$" + "{{ github.workflow }}-" + identity,
+    labels: {},
+  },
+  "offsite-backup-fixture.yml": {
+    jobs: ["capture", "verify"],
+    first: "capture",
+    group: "offsite-backup-fixture-" + identity,
+    labels: {
+      capture: "Offsite fixture / capture",
+      verify: "Offsite fixture / verify",
+    },
+  },
+  "portable-recovery.yml": {
+    jobs: ["capture", "recover"],
+    first: "capture",
+    group: "portable-recovery-" + identity,
+    labels: {
+      capture: "Portable recovery / capture",
+      recover: "Portable recovery / restore",
+    },
+  },
 };
 const read = (file) => readFileSync(new URL(file, directory), "utf8").replaceAll("\r\n", "\n");
 
@@ -56,7 +78,10 @@ for (const [filename, config] of Object.entries(configurations)) {
     assert.match(block(on, "push", 2), /^ {4}branches:(?: \[main\]|\n {6}- main)$/m);
     const concurrency = block(source, "concurrency", 0);
     assert.equal(value(concurrency, "group", 2), config.group);
-    assert.equal(value(concurrency, "cancel-in-progress", 2), "$" + "{{ github.event_name == 'pull_request' }}");
+    assert.equal(
+      value(concurrency, "cancel-in-progress", 2),
+      "$" + "{{ github.event_name == 'pull_request' }}",
+    );
     assert.match(source, /^permissions:\n {2}contents: read$/m);
     const jobs = block(source, "jobs", 0);
     const actualJobs = [...jobs.matchAll(/^ {2}([a-z][a-z-]*):$/gm)].map((match) => match[1]);
