@@ -2,6 +2,7 @@ name: offsite backup fixture
 
 on:
   pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
   push:
     branches: [main]
 
@@ -10,11 +11,16 @@ permissions:
 
 concurrency:
   group: offsite-backup-fixture-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # NFR-010/009, SEC-001/003/007. Public synthetic fixture key only; no hosted credentials.
 jobs:
   capture:
+    # Avoid paying for heavy validation while the PR is still a draft.
+    if: >-
+      github.event_name != 'pull_request' ||
+      !github.event.pull_request.draft ||
+      github.event.action == 'ready_for_review'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     services:

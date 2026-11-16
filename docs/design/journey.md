@@ -3872,3 +3872,24 @@ Every alias retains path-specific limitations, file/byte budgets, and determinis
 The new synthetic tests cover same-batch aliases, cancellation between batches, terminal results
 across batches, and transient retries without provider-body leakage. No API, contract, dependency,
 persistent cache, or hosted infrastructure changed.
+
+## 2026-11-16 — Delay heavy draft-PR CI until review
+
+**Traceability:** NFR-003, NFR-008/009, GOV-007.
+
+The quality workflow and the synthetic offsite backup fixture workflow now skip
+runner-intensive jobs while pull requests are drafts. An explicit
+`ready_for_review` trigger reruns validation when a draft is promoted, even
+if that transition carries a stale draft field in its event payload. Normal
+ready PR changes and main pushes retain their existing validation.
+
+The capture job is the only new gate for offsite backup fixtures; its dependent
+verification job continues to run only after capture succeeds. Superseded PR
+runs may still be cancelled, while main-branch validation is not cancelled by
+a later push. Scheduled offsite backups and manual recovery workflows remain
+unchanged, preserving the existing custody and recovery boundaries.
+
+This reduces unnecessary GitHub Actions usage during local-first development,
+without adding services, paid runners, test sharding, new privileges, or
+requirements on production behavior. Full validation remains necessary before
+merging a ready PR.
