@@ -3933,3 +3933,18 @@ pending main pushes can be coalesced. The latest pending push is prioritized;
 PR runs still cancel outdated validations and manually dispatched workflows
 remain unchanged. Intermediate pending main commits may not all be tested.
 Repository administrators must separately verify required status checks.
+
+## 2026-11-17 — Review all pull-request-related workflow events
+
+**Traceability:** NFR-003, NFR-009, SEC-001/003, GOV-007.
+
+The CI workflow inventory now includes pull_request_target, pull_request_review,
+pull_request_review_comment, and issue_comment alongside ordinary pull_request
+events. These event types have different permission and execution semantics:
+a newly introduced workflow must receive a deliberately reviewed policy rather
+than silently bypass draft cost control or inherit the same conditional guard.
+The existing three pull_request workflows retain their existing behavior.
+
+Dependency-free regression fixtures assert that each of these event sources
+is discoverable. No new hosted Actions jobs, dependencies or credentials were
+added, and the existing database recovery and backup boundaries are unchanged.

@@ -4,6 +4,15 @@ import { test } from "node:test";
 
 const directory = new URL("../.github/workflows/", import.meta.url);
 const events = ["opened", "reopened", "synchronize", "ready_for_review", "converted_to_draft"];
+// Events with PR-related payloads need an explicit policy before any jobs run.
+// issue_comment also covers ordinary issues; it must be reviewed separately.
+const prRelatedEvents = new Set([
+  "pull_request",
+  "pull_request_target",
+  "pull_request_review",
+  "pull_request_review_comment",
+  "issue_comment",
+]);
 const gate =
   "github.event_name != 'pull_request' || " +
   "!github.event.pull_request.draft || " +
@@ -75,6 +84,14 @@ function workflowEvents(source) {
   return events.map((line) => line.trim().slice(0, -1));
 }
 
+function relatedEvents(source) {
+  return workflowEvents(source).filter((event) => prRelatedEvents.has(event));
+}
+
+function reviewedWorkflowInventory(filenames, readSource) {
+  return filenames.filter((filename) => relatedEvents(readSource(filename)).length > 0);
+}
+
 function assertReadOnlyPermissions(source) {
   assert.equal(
     [...source.matchAll(/^permissions:/gm)].length,
@@ -104,16 +121,21 @@ function condition(job) {
   return match[1].trim().replace(/\s+/g, " ");
 }
 
-test("all pull_request workflows are covered by the draft policy", () => {
-  const actual = readdirSync(directory)
-    .filter((name) => /\.ya?ml$/.test(name))
-    .filter((name) => workflowEvents(read(name)).includes("pull_request"));
+test("all PR-related workflow event sources require reviewed policy", () => {
+  const actual = reviewedWorkflowInventory(
+    readdirSync(directory).filter((name) => /\.ya?ml$/.test(name)),
+    read,
+  );
   assert.deepEqual(actual.sort(), Object.keys(configurations).sort());
 });
 for (const [filename, config] of Object.entries(configurations)) {
   test(filename + " preserves lifecycle, job dependencies and concurrency", () => {
     const source = read(filename);
-    assert.ok(workflowEvents(source).includes("pull_request"));
+    assert.deepEqual(
+      relatedEvents(source),
+      ["pull_request"],
+      "Additional PR-related event requires a separately reviewed workflow policy",
+    );
     const on = block(source, "on", 0);
     const pr = block(on, "pull_request", 2);
     const activity = pr.match(/^ {4}types: \[([^\]]+)\]$/m);
@@ -174,4 +196,16 @@ test("extra token grants and job-level overrides fail closed", () => {
     )),
     /Unexpected job-level permission override/,
   );
+});
+
+test("review, target and issue comment events are visible to the inventory", () => {
+  const approved = Object.keys(configurations);
+  const extra = "unreviewed.yml";
+  for (const event of prRelatedEvents) {
+    const actual = reviewedWorkflowInventory(
+      [...approved, extra],
+      (filename) => filename === extra ? `on:\n  ${event}:\n` : read(filename),
+    );
+    assert.deepEqual(actual.sort(), [...approved, extra].sort());
+  }
 });
