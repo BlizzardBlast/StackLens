@@ -3918,3 +3918,18 @@ are external to this code change and require separate administrator review.
 
 No new dependencies, permissions, production behavior, or infrastructure
 were introduced.
+
+## 2026-11-16 — CI contract tests and cost-aware main push queuing
+
+**Traceability:** NFR-003, NFR-008/009, GOV-007.
+
+Dependency-free Node tests now run with the existing deployment test command.
+The contracts enumerate all PR-triggered workflows and check the lifecycle,
+draft gating, stable PR cancellation, least-privilege permissions, unique
+status names, and capture-first recovery dependencies.
+
+To minimize Actions minutes, running main validations continue but superseded
+pending main pushes can be coalesced. The latest pending push is prioritized;
+PR runs still cancel outdated validations and manually dispatched workflows
+remain unchanged. Intermediate pending main commits may not all be tested.
+Repository administrators must separately verify required status checks.

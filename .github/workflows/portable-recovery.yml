@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: portable-recovery-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  group: portable-recovery-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.event_name == 'push' && github.ref || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # FR-003/017/021/022, NFR-008/009, SEC-003/007. No deployment secrets or live providers.
