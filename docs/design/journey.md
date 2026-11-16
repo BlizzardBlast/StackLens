@@ -3893,3 +3893,28 @@ This reduces unnecessary GitHub Actions usage during local-first development,
 without adding services, paid runners, test sharding, new privileges, or
 requirements on production behavior. Full validation remains necessary before
 merging a ready PR.
+
+## 2026-11-16 — CI review corrections: draft cancellations and unique check names
+
+**Traceability:** NFR-003, NFR-008/009, GOV-007.
+
+Review of the initial draft-PR optimization found that the synthetic portable
+recovery workflow still executed its database-backed capture and restore jobs
+during draft iteration. It now shares the same draft gating as the quality and
+offsite fixture workflows, and preserves its existing dependent restore order.
+
+All three pull-request workflows now listen for `converted_to_draft`, so a
+re-drafted PR can cancel the earlier in-progress validation. Ready-for-review
+transitions still run all required tests; ordinary main pushes have distinct
+concurrency identities to avoid dropping pending validation. Recovery and backup
+workflows driven by `schedule` or `workflow_dispatch` are not modified.
+
+The fixture capture/verification and portable recovery job displays are unique
+across workflows. The internal `needs` job identifiers are unchanged. If a
+repository administrator configures required checks, they must use these new
+names and verify the complete ready-PR run; a skipped draft job alone is
+not proof that its checks passed. The repository's branch protection settings
+are external to this code change and require separate administrator review.
+
+No new dependencies, permissions, production behavior, or infrastructure
+were introduced.
