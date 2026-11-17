@@ -3905,9 +3905,11 @@ offsite fixture workflows, and preserves its existing dependent restore order.
 
 All three pull-request workflows now listen for `converted_to_draft`, so a
 re-drafted PR can cancel the earlier in-progress validation. Ready-for-review
-transitions still run all required tests; ordinary main pushes have distinct
-concurrency identities to avoid dropping pending validation. Recovery and backup
-workflows driven by `schedule` or `workflow_dispatch` are not modified.
+transitions still run all required tests. Main pushes share a branch-based
+concurrency identity so newer pending runs replace older pending runs without
+cancelling a running validation. This supersedes the earlier distinct-push
+identity approach. Recovery and backup workflows driven by `schedule` or
+`workflow_dispatch` are not modified.
 
 The fixture capture/verification and portable recovery job displays are unique
 across workflows. The internal `needs` job identifiers are unchanged. If a
