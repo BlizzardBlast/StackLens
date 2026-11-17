@@ -18,7 +18,7 @@
     "size:web": "node scripts/web-bundle-size.mjs",
     "test": "pnpm test:deployment && pnpm test:operations && turbo run test",
     "test:browser": "playwright test",
-    "test:deployment": "node --test scripts/vercel-config.test.mjs scripts/github-callback-relay.test.mjs scripts/web-bundle-size.test.mjs",
+    "test:deployment": "node --test scripts/vercel-config.test.mjs scripts/github-callback-relay.test.mjs scripts/web-bundle-size.test.mjs scripts/ci-workflows.test.mjs",
     "test:operations": "node --test --test-concurrency=1 scripts/operations/*.test.mjs",
     "typecheck": "turbo run typecheck && pnpm typecheck:browser",
     "typecheck:browser": "tsc --project tests/browser/tsconfig.json --noEmit",

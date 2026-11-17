@@ -2,6 +2,7 @@ name: portable recovery
 
 on:
   pull_request:
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
   push:
     branches: [main]
 
@@ -9,12 +10,18 @@ permissions:
   contents: read
 
 concurrency:
-  group: portable-recovery-${{ github.ref }}
-  cancel-in-progress: true
+  group: portable-recovery-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.event_name == 'push' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # FR-003/017/021/022, NFR-008/009, SEC-003/007. No deployment secrets or live providers.
 jobs:
   capture:
+    name: Portable recovery / capture
+    # Draft PRs are validated locally; ready_for_review runs the full fixture.
+    if: >-
+      github.event_name != 'pull_request' ||
+      !github.event.pull_request.draft ||
+      github.event.action == 'ready_for_review'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     services:
@@ -66,6 +73,7 @@ jobs:
           if-no-files-found: error
 
   recover:
+    name: Portable recovery / restore
     needs: capture
     runs-on: ubuntu-latest
     timeout-minutes: 10
