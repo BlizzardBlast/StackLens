@@ -3950,3 +3950,14 @@ The existing three pull_request workflows retain their existing behavior.
 Dependency-free regression fixtures assert that each of these event sources
 is discoverable. No new hosted Actions jobs, dependencies or credentials were
 added, and the existing database recovery and backup boundaries are unchanged.
+
+## 2026-11-17 — Reject ambiguous YAML keys in CI policy checks
+
+**Traceability:** NFR-003/009, SEC-001/003, GOV-007.
+
+The dependency-free CI contract tests now reject noncanonical and duplicate
+workflow mapping keys (including whitespace-equivalent `permissions :`,
+`on :`, and `if :` declarations) before checking draft lifecycle, job
+permissions, and PR-related event inventory. They preserve multiline shell
+scripts and separate workflow steps. No runtime CI workflow, permissions,
+dependencies, or validation commands were changed.

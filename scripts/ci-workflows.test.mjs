@@ -47,7 +47,58 @@ const configurations = {
     },
   },
 };
-const read = (file) => readFileSync(new URL(file, directory), "utf8").replaceAll("\r\n", "\n");
+const read = (file) => {
+  const source = readFileSync(new URL(file, directory), "utf8").replaceAll("\r\n", "\n");
+  assertCanonicalMappings(source);
+  return source;
+};
+
+
+/**
+ * Require canonical mapping keys for CI policy tests, without a YAML parser dependency.
+ * Reject duplicate keys and spellings such as "permissions :" before regex checks.
+ */
+function assertCanonicalMappings(source) {
+  const scopes = [];
+  let scalarIndent = -1;
+  const lines = source.replaceAll("\r\n", "\n").split("\n");
+  for (const [index, line] of lines.entries()) {
+    if (!line.trim() || line.trimStart().startsWith("#")) continue;
+    const baseIndent = /^ */.exec(line)[0].length;
+    if (scalarIndent >= 0 && baseIndent > scalarIndent) continue;
+    scalarIndent = -1;
+    let content = line.slice(baseIndent);
+    let indent = baseIndent;
+    if (content.startsWith("- ")) {
+      while (scopes.length && scopes.at(-1).indent >= baseIndent) scopes.pop();
+      content = content.slice(2);
+      indent += 2;
+    }
+    assert.doesNotMatch(
+      content,
+      /^(?:"[^"]+"|'[^']+'|<<|\?[^:]*)\s*:(?=\s|$)/,
+      "Unsupported YAML mapping key at line " + (index + 1),
+    );
+    const entry = /^([a-zA-Z_][\w.-]*)([ \t]*):(?=\s|$)/.exec(content);
+    if (!entry) continue;
+    assert.equal(
+      entry[2],
+      "",
+      "Noncanonical YAML mapping key at line " + (index + 1),
+    );
+    while (scopes.length && scopes.at(-1).indent > indent) scopes.pop();
+    if (!scopes.length || scopes.at(-1).indent < indent) {
+      scopes.push({ indent, keys: new Set() });
+    }
+    assert.ok(
+      !scopes.at(-1).keys.has(entry[1]),
+      "Duplicate YAML mapping key at line " + (index + 1),
+    );
+    scopes.at(-1).keys.add(entry[1]);
+    const value = content.slice(entry[0].length).trim();
+    if (/^[|>][-+]?(\s+#.*)?$/.test(value)) scalarIndent = indent;
+  }
+}
 
 // Inspect a section at its actual indentation level, not matching a step or comment.
 function block(text, name, indent) {
@@ -68,6 +119,7 @@ function block(text, name, indent) {
 }
 // Fail closed on valid YAML forms this lightweight checker does not support.
 function workflowEvents(source) {
+  assertCanonicalMappings(source);
   const headers = [...source.matchAll(/^on:/gm)];
   assert.equal(headers.length, 1, "Expected one block-style on: declaration");
   const events = block(source, "on", 0)
@@ -93,6 +145,7 @@ function reviewedWorkflowInventory(filenames, readSource) {
 }
 
 function assertReadOnlyPermissions(source) {
+  assertCanonicalMappings(source);
   assert.equal(
     [...source.matchAll(/^permissions:/gm)].length,
     1,
@@ -208,4 +261,56 @@ test("review, target and issue comment events are visible to the inventory", () 
     );
     assert.deepEqual(actual.sort(), [...approved, extra].sort());
   }
+});
+
+test("noncanonical and duplicate YAML keys cannot bypass CI policy", () => {
+  const safe = read("quality.yml");
+  const cases = [
+    safe.replace(
+      "    runs-on: ubuntu-latest",
+      "    permissions :\n      contents: write\n    runs-on: ubuntu-latest",
+    ),
+    safe.replace(
+      "    runs-on: ubuntu-latest",
+      "    if : true\n    runs-on: ubuntu-latest",
+    ),
+    safe.replace(
+      "\npermissions:\n",
+      "\non :\n  pull_request_target:\n\npermissions:\n",
+    ),
+    safe.replace(
+      "\npermissions:\n",
+      "\npermissions :\n  contents: write\n\npermissions:\n",
+    ),
+    safe.replace(
+      "  pull_request:\n",
+      "  pull_request:\n  pull_request :\n",
+    ),
+    safe.replace(
+      "    runs-on: ubuntu-latest",
+      "    if: true\n    runs-on: ubuntu-latest",
+    ),
+    safe.replace(
+      "    runs-on: ubuntu-latest",
+      "    \"permissions\":\n      contents: write\n    runs-on: ubuntu-latest",
+    ),
+  ];
+  for (const unsafe of cases) {
+    assert.notEqual(unsafe, safe, "Negative fixture must modify the workflow");
+    assert.throws(() => assertCanonicalMappings(unsafe), /YAML mapping key/);
+  }
+  const elevated = safe.replace(
+    "    runs-on: ubuntu-latest",
+    "    permissions:\n      contents: write\n    runs-on: ubuntu-latest",
+  );
+  assert.throws(
+    () => assertReadOnlyPermissions(elevated),
+    /Unexpected job-level permission override/,
+  );
+  // Block scalar script content and distinct sequence items remain allowed.
+  assertCanonicalMappings(
+    "jobs:\n  sample:\n    steps:\n" +
+      "      - run: |\n          permissions :\n          on :\n" +
+      "      - run: echo ok\n",
+  );
 });
