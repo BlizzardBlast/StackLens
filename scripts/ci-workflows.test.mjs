@@ -64,28 +64,31 @@ function assertCanonicalMappings(source) {
   const lines = source.replaceAll("\r\n", "\n").split("\n");
   for (const [index, line] of lines.entries()) {
     if (!line.trim() || line.trimStart().startsWith("#")) continue;
-    const baseIndent = /^ */.exec(line)[0].length;
-    if (scalarIndent >= 0 && baseIndent > scalarIndent) continue;
+    const spaces = /^ */.exec(line)[0].length;
+    if (scalarIndent >= 0 && spaces > scalarIndent) continue;
     scalarIndent = -1;
-    let content = line.slice(baseIndent);
-    let indent = baseIndent;
-    if (content.startsWith("- ")) {
-      while (scopes.length && scopes.at(-1).indent >= baseIndent) scopes.pop();
+    assert.ok(
+      !line.slice(spaces).startsWith("\t"),
+      "Unsupported YAML mapping key or syntax at line " + (index + 1),
+    );
+    let content = line.slice(spaces);
+    let indent = spaces;
+    const sequenceItem = content.startsWith("- ");
+    if (sequenceItem) {
+      while (scopes.length && scopes.at(-1).indent >= spaces) scopes.pop();
       content = content.slice(2);
       indent += 2;
     }
-    assert.doesNotMatch(
-      content,
-      /^(?:"[^"]+"|'[^']+'|<<|\?[^:]*)\s*:(?=\s|$)/,
-      "Unsupported YAML mapping key at line " + (index + 1),
-    );
-    const entry = /^([a-zA-Z_][\w.-]*)([ \t]*):(?=\s|$)/.exec(content);
-    if (!entry) continue;
-    assert.equal(
-      entry[2],
-      "",
-      "Noncanonical YAML mapping key at line " + (index + 1),
-    );
+    // Fail closed on explicit, tagged, aliased, and other noncanonical keys.
+    // A permissive YAML parser or regex would otherwise miss policy overrides.
+    const entry = /^([a-zA-Z_][\w.-]*):(?=\s|$)/.exec(content);
+    if (!entry) {
+      assert.ok(
+        sequenceItem && !/^(?:[?!&*:]|<<)/.test(content),
+        "Unsupported YAML mapping key or syntax at line " + (index + 1),
+      );
+      continue;
+    }
     while (scopes.length && scopes.at(-1).indent > indent) scopes.pop();
     if (!scopes.length || scopes.at(-1).indent < indent) {
       scopes.push({ indent, keys: new Set() });
@@ -266,6 +269,18 @@ test("review, target and issue comment events are visible to the inventory", () 
 test("noncanonical and duplicate YAML keys cannot bypass CI policy", () => {
   const safe = read("quality.yml");
   const cases = [
+    safe.replace(
+      "    runs-on: ubuntu-latest",
+      "    ? permissions\n    :\n      contents: write\n    runs-on: ubuntu-latest",
+    ),
+    safe.replace(
+      "    runs-on: ubuntu-latest",
+      "    ? if\n    : true\n    runs-on: ubuntu-latest",
+    ),
+    safe.replace(
+      "    runs-on: ubuntu-latest",
+      "    !!str permissions:\n      contents: write\n    runs-on: ubuntu-latest",
+    ),
     safe.replace(
       "    runs-on: ubuntu-latest",
       "    permissions :\n      contents: write\n    runs-on: ubuntu-latest",

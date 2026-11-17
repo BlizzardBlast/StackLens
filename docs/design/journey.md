@@ -3961,3 +3961,15 @@ workflow mapping keys (including whitespace-equivalent `permissions :`,
 permissions, and PR-related event inventory. They preserve multiline shell
 scripts and separate workflow steps. No runtime CI workflow, permissions,
 dependencies, or validation commands were changed.
+
+## 2026-11-17 — Enforce the supported YAML mapping subset
+
+**Traceability:** NFR-003/009, SEC-001/003, GOV-007.
+
+The CI contract guard now requires canonical plain mapping keys for every
+non-comment YAML line outside block scalars and standalone sequence values.
+Unsupported explicit, tagged, merged, quoted, or alias-based key syntax fails
+before token-permission, PR-event and draft-lifecycle assertions. Regression
+fixtures exercise explicit permission and draft conditions as well as tagged
+permission keys. Existing workflows and shell block scalars remain unchanged;
+no new dependency, GitHub Action or privileged workflow was introduced.
