@@ -172,7 +172,8 @@ describe("GitHub App connection [FR-100, SEC-004, SEC-005, SEC-007]", () => {
     await expect(h.service.finish(start.stateCookie, "other", "code")).rejects.toThrow(
       "GitHub connection",
     );
-    const alteredCookie = `${start.stateCookie.startsWith("x") ? "y" : "x"}${start.stateCookie.slice(1)}`;
+    const replacement = start.stateCookie.startsWith("x") ? "y" : "x";
+    const alteredCookie = `${replacement}${start.stateCookie.slice(1)}`;
     await expect(h.service.finish(alteredCookie, state, "code")).rejects.toThrow(
       "GitHub connection",
     );
