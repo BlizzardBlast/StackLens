@@ -3872,3 +3872,114 @@ Every alias retains path-specific limitations, file/byte budgets, and determinis
 The new synthetic tests cover same-batch aliases, cancellation between batches, terminal results
 across batches, and transient retries without provider-body leakage. No API, contract, dependency,
 persistent cache, or hosted infrastructure changed.
+
+## 2026-11-16 — Delay heavy draft-PR CI until review
+
+**Traceability:** NFR-003, NFR-008/009, GOV-007.
+
+The quality workflow and the synthetic offsite backup fixture workflow now skip
+runner-intensive jobs while pull requests are drafts. An explicit
+`ready_for_review` trigger reruns validation when a draft is promoted, even
+if that transition carries a stale draft field in its event payload. Normal
+ready PR changes and main pushes retain their existing validation.
+
+The capture job is the only new gate for offsite backup fixtures; its dependent
+verification job continues to run only after capture succeeds. Superseded PR
+runs may still be cancelled, while main-branch validation is not cancelled by
+a later push. Scheduled offsite backups and manual recovery workflows remain
+unchanged, preserving the existing custody and recovery boundaries.
+
+This reduces unnecessary GitHub Actions usage during local-first development,
+without adding services, paid runners, test sharding, new privileges, or
+requirements on production behavior. Full validation remains necessary before
+merging a ready PR.
+
+## 2026-11-16 — CI review corrections: draft cancellations and unique check names
+
+**Traceability:** NFR-003, NFR-008/009, GOV-007.
+
+Review of the initial draft-PR optimization found that the synthetic portable
+recovery workflow still executed its database-backed capture and restore jobs
+during draft iteration. It now shares the same draft gating as the quality and
+offsite fixture workflows, and preserves its existing dependent restore order.
+
+All three pull-request workflows now listen for `converted_to_draft`, so a
+re-drafted PR can cancel the earlier in-progress validation. Ready-for-review
+transitions still run all required tests. Main pushes share a branch-based
+concurrency identity so newer pending runs replace older pending runs without
+cancelling a running validation. This supersedes the earlier distinct-push
+identity approach. Recovery and backup workflows driven by `schedule` or
+`workflow_dispatch` are not modified.
+
+The fixture capture/verification and portable recovery job displays are unique
+across workflows. The internal `needs` job identifiers are unchanged. If a
+repository administrator configures required checks, they must use these new
+names and verify the complete ready-PR run; a skipped draft job alone is
+not proof that its checks passed. The repository's branch protection settings
+are external to this code change and require separate administrator review.
+
+No new dependencies, permissions, production behavior, or infrastructure
+were introduced.
+
+## 2026-11-16 — CI contract tests and cost-aware main push queuing
+
+**Traceability:** NFR-003, NFR-008/009, GOV-007.
+
+Dependency-free Node tests now run with the existing deployment test command.
+The contracts enumerate all PR-triggered workflows and check the lifecycle,
+draft gating, stable PR cancellation, least-privilege permissions, unique
+status names, and capture-first recovery dependencies.
+
+To minimize Actions minutes, running main validations continue but superseded
+pending main pushes can be coalesced. The latest pending push is prioritized;
+PR runs still cancel outdated validations and manually dispatched workflows
+remain unchanged. Intermediate pending main commits may not all be tested.
+Repository administrators must separately verify required status checks.
+
+## 2026-11-17 — Review all pull-request-related workflow events
+
+**Traceability:** NFR-003, NFR-009, SEC-001/003, GOV-007.
+
+The CI workflow inventory now includes pull_request_target, pull_request_review,
+pull_request_review_comment, and issue_comment alongside ordinary pull_request
+events. These event types have different permission and execution semantics:
+a newly introduced workflow must receive a deliberately reviewed policy rather
+than silently bypass draft cost control or inherit the same conditional guard.
+The existing three pull_request workflows retain their existing behavior.
+
+Dependency-free regression fixtures assert that each of these event sources
+is discoverable. No new hosted Actions jobs, dependencies or credentials were
+added, and the existing database recovery and backup boundaries are unchanged.
+
+## 2026-11-17 — Reject ambiguous YAML keys in CI policy checks
+
+**Traceability:** NFR-003/009, SEC-001/003, GOV-007.
+
+The dependency-free CI contract tests now reject noncanonical and duplicate
+workflow mapping keys (including whitespace-equivalent `permissions :`,
+`on :`, and `if :` declarations) before checking draft lifecycle, job
+permissions, and PR-related event inventory. They preserve multiline shell
+scripts and separate workflow steps. No runtime CI workflow, permissions,
+dependencies, or validation commands were changed.
+
+## 2026-11-17 — Enforce the supported YAML mapping subset
+
+**Traceability:** NFR-003/009, SEC-001/003, GOV-007.
+
+The CI contract guard now requires canonical plain mapping keys for every
+non-comment YAML line outside block scalars and standalone sequence values.
+Unsupported explicit, tagged, merged, quoted, or alias-based key syntax fails
+before token-permission, PR-event and draft-lifecycle assertions. Regression
+fixtures exercise explicit permission and draft conditions as well as tagged
+permission keys. Existing workflows and shell block scalars remain unchanged;
+no new dependency, GitHub Action or privileged workflow was introduced.
+
+## 2026-11-26 — Deterministic OAuth state-cookie tampering test
+
+**Traceability:** FR-100, GOV-007.
+
+The authentication negative test now always changes the first Base64URL
+character instead of sometimes submitting the original valid cookie. This
+removes a known source of intermittent CI failure without changing production
+authentication or workflow policy. Isolated mutation and AES-GCM checks passed;
+full repository verification remains pending.
