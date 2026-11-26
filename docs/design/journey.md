@@ -3973,3 +3973,13 @@ before token-permission, PR-event and draft-lifecycle assertions. Regression
 fixtures exercise explicit permission and draft conditions as well as tagged
 permission keys. Existing workflows and shell block scalars remain unchanged;
 no new dependency, GitHub Action or privileged workflow was introduced.
+
+## 2026-11-26 — Deterministic OAuth state-cookie tampering test
+
+**Traceability:** FR-100, GOV-007.
+
+The authentication negative test now always changes the first Base64URL
+character instead of sometimes submitting the original valid cookie. This
+removes a known source of intermittent CI failure without changing production
+authentication or workflow policy. Isolated mutation and AES-GCM checks passed;
+full repository verification remains pending.
